@@ -1,0 +1,549 @@
+#pragma once
+#include "effect.hpp"
+#include <cstdlib>
+
+namespace airwindohhs {
+template <typename T>
+class FromTape final : public Effect<T>
+{
+    const std::string m_name{ "FromTape" };
+
+    int flip;
+    double iirMidRollerAL;
+    double iirMidRollerBL;
+    double iirMidRollerCL;
+    double iirMidRollerAR;
+    double iirMidRollerBR;
+    double iirMidRollerCR;
+    double iirSampleAL;
+    double iirSampleBL;
+    double iirSampleCL;
+    double iirSampleDL;
+    double iirSampleEL;
+    double iirSampleFL;
+    double iirSampleGL;
+    double iirSampleHL;
+    double iirSampleIL;
+    double iirSampleJL;
+    double iirSampleKL;
+    double iirSampleLL;
+    double iirSampleML;
+    double iirSampleNL;
+    double iirSampleOL;
+    double iirSamplePL;
+    double iirSampleQL;
+    double iirSampleRL;
+    double iirSampleSL;
+    double iirSampleTL;
+    double iirSampleUL;
+    double iirSampleVL;
+    double iirSampleWL;
+    double iirSampleXL;
+    double iirSampleYL;
+    double iirSampleZL;
+    double iirSampleAR;
+    double iirSampleBR;
+    double iirSampleCR;
+    double iirSampleDR;
+    double iirSampleER;
+    double iirSampleFR;
+    double iirSampleGR;
+    double iirSampleHR;
+    double iirSampleIR;
+    double iirSampleJR;
+    double iirSampleKR;
+    double iirSampleLR;
+    double iirSampleMR;
+    double iirSampleNR;
+    double iirSampleOR;
+    double iirSamplePR;
+    double iirSampleQR;
+    double iirSampleRR;
+    double iirSampleSR;
+    double iirSampleTR;
+    double iirSampleUR;
+    double iirSampleVR;
+    double iirSampleWR;
+    double iirSampleXR;
+    double iirSampleYR;
+    double iirSampleZR;
+    uint32_t fpdL;
+    uint32_t fpdR;
+    // default stuff
+    float A;
+    float B;
+    float C;
+    float D;
+    float E;
+
+    enum params
+    {
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
+
+  public:
+    FromTape()
+    {
+        A = 0.5;
+        B = 0.5;
+        C = 0.5;
+        D = 0.5;
+        E = 1.0;
+        iirMidRollerAL = 0.0;
+        iirMidRollerBL = 0.0;
+        iirMidRollerCL = 0.0;
+        iirMidRollerAR = 0.0;
+        iirMidRollerBR = 0.0;
+        iirMidRollerCR = 0.0;
+        iirSampleAL = 0.0;
+        iirSampleBL = 0.0;
+        iirSampleCL = 0.0;
+        iirSampleDL = 0.0;
+        iirSampleEL = 0.0;
+        iirSampleFL = 0.0;
+        iirSampleGL = 0.0;
+        iirSampleHL = 0.0;
+        iirSampleIL = 0.0;
+        iirSampleJL = 0.0;
+        iirSampleKL = 0.0;
+        iirSampleLL = 0.0;
+        iirSampleML = 0.0;
+        iirSampleNL = 0.0;
+        iirSampleOL = 0.0;
+        iirSamplePL = 0.0;
+        iirSampleQL = 0.0;
+        iirSampleRL = 0.0;
+        iirSampleSL = 0.0;
+        iirSampleTL = 0.0;
+        iirSampleUL = 0.0;
+        iirSampleVL = 0.0;
+        iirSampleWL = 0.0;
+        iirSampleXL = 0.0;
+        iirSampleYL = 0.0;
+        iirSampleZL = 0.0;
+        iirSampleAR = 0.0;
+        iirSampleBR = 0.0;
+        iirSampleCR = 0.0;
+        iirSampleDR = 0.0;
+        iirSampleER = 0.0;
+        iirSampleFR = 0.0;
+        iirSampleGR = 0.0;
+        iirSampleHR = 0.0;
+        iirSampleIR = 0.0;
+        iirSampleJR = 0.0;
+        iirSampleKR = 0.0;
+        iirSampleLR = 0.0;
+        iirSampleMR = 0.0;
+        iirSampleNR = 0.0;
+        iirSampleOR = 0.0;
+        iirSamplePR = 0.0;
+        iirSampleQR = 0.0;
+        iirSampleRR = 0.0;
+        iirSampleSR = 0.0;
+        iirSampleTR = 0.0;
+        iirSampleUR = 0.0;
+        iirSampleVR = 0.0;
+        iirSampleWR = 0.0;
+        iirSampleXR = 0.0;
+        iirSampleYR = 0.0;
+        iirSampleZR = 0.0;
+        flip = 0;
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
+    }
+
+    std::string name() override { return m_name; }
+
+    void set_parameter_value(int index, float value) override
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+
+            default: break;
+        }
+    }
+
+    float get_parameter_value(int index) override
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return A;
+            case kParamB: return B;
+            case kParamC: return C;
+            case kParamD: return D;
+            case kParamE: return E;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
+    std::string get_parameter_name(int index) override
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "Louder";
+            case kParamB: return "Softer";
+            case kParamC: return "Weight";
+            case kParamD: return "Output";
+            case kParamE: return "Dry/Wet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    std::string get_parameter_display(int index) override
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return std::to_string(A * 2);
+            case kParamB: return std::to_string(B);
+            case kParamC: return std::to_string(C);
+            case kParamD: return std::to_string(D * 2);
+            case kParamE: return std::to_string(E);
+
+            default: break;
+        }
+        return {};
+    }
+
+    std::string get_parameter_label(int index) override
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "";
+            case kParamB: return "";
+            case kParamC: return "";
+            case kParamD: return "";
+            case kParamE: return "";
+        }
+        return {};
+    }
+
+    void process(T** inputs, T** outputs, long sampleFrames) override
+    {
+        T* in1 = inputs[0];
+        T* in2 = inputs[1];
+        T* out1 = outputs[0];
+        T* out2 = outputs[1];
+
+        double overallscale = 1.0;
+        overallscale /= 44100.0;
+        overallscale *= getSampleRate();
+        double inputgain = A * 2.0;
+        double SoftenControl = B;
+        double RollAmount = (1.0 - SoftenControl) / overallscale;
+        double iirAmount = (0.004 * (1.0 - C)) / overallscale;
+        double altAmount = 1.0 - iirAmount;
+        double outputgain = D * 2.0;
+        double wet = E;
+        // removed extra dry variable
+        double HighsSampleL = 0.0;
+        double SubtractL;
+        double bridgerectifierL;
+        double tempSampleL;
+        double drySampleL;
+        double HighsSampleR = 0.0;
+        double SubtractR;
+        double bridgerectifierR;
+        double tempSampleR;
+        double drySampleR;
+        double randy;
+        double invrandy;
+        double inputSampleL;
+        double inputSampleR;
+        while (--sampleFrames >= 0)
+        {
+            inputSampleL = *in1;
+            inputSampleR = *in2;
+            if (fabs(inputSampleL) < 1.18e-23) {
+                inputSampleL = fpdL * 1.18e-17;
+            }
+            if (fabs(inputSampleR) < 1.18e-23) {
+                inputSampleR = fpdR * 1.18e-17;
+            }
+            drySampleL = inputSampleL;
+            drySampleR = inputSampleR;
+            if (inputgain != 1.0) {
+                inputSampleL *= inputgain;
+                inputSampleR *= inputgain;
+            }
+            randy = (double(fpdL) / UINT32_MAX) * SoftenControl; // for soften
+            invrandy = (1.0 - randy);
+            randy /= 2.0;
+            // we've set up so that we dial in the amount of the alt sections (in pairs) with invrandy being the source section
+            SubtractL = 0.0;
+            SubtractR = 0.0;
+            tempSampleL = inputSampleL;
+            tempSampleR = inputSampleR;
+            iirSampleAL = (iirSampleAL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleAL;
+            SubtractL += iirSampleAL;
+            iirSampleBL = (iirSampleBL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleBL;
+            SubtractL += iirSampleBL;
+            iirSampleCL = (iirSampleCL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleCL;
+            SubtractL += iirSampleCL;
+            iirSampleDL = (iirSampleDL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleDL;
+            SubtractL += iirSampleDL;
+            iirSampleEL = (iirSampleEL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleEL;
+            SubtractL += iirSampleEL;
+            iirSampleFL = (iirSampleFL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleFL;
+            SubtractL += iirSampleFL;
+            iirSampleGL = (iirSampleGL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleGL;
+            SubtractL += iirSampleGL;
+            iirSampleHL = (iirSampleHL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleHL;
+            SubtractL += iirSampleHL;
+            iirSampleIL = (iirSampleIL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleIL;
+            SubtractL += iirSampleIL;
+            iirSampleJL = (iirSampleJL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleJL;
+            SubtractL += iirSampleJL;
+            iirSampleKL = (iirSampleKL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleKL;
+            SubtractL += iirSampleKL;
+            iirSampleLL = (iirSampleLL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleLL;
+            SubtractL += iirSampleLL;
+            iirSampleML = (iirSampleML * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleML;
+            SubtractL += iirSampleML;
+            iirSampleNL = (iirSampleNL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleNL;
+            SubtractL += iirSampleNL;
+            iirSampleOL = (iirSampleOL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleOL;
+            SubtractL += iirSampleOL;
+            iirSamplePL = (iirSamplePL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSamplePL;
+            SubtractL += iirSamplePL;
+            iirSampleQL = (iirSampleQL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleQL;
+            SubtractL += iirSampleQL;
+            iirSampleRL = (iirSampleRL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleRL;
+            SubtractL += iirSampleRL;
+            iirSampleSL = (iirSampleSL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleSL;
+            SubtractL += iirSampleSL;
+            iirSampleTL = (iirSampleTL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleTL;
+            SubtractL += iirSampleTL;
+            iirSampleUL = (iirSampleUL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleUL;
+            SubtractL += iirSampleUL;
+            iirSampleVL = (iirSampleVL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleVL;
+            SubtractL += iirSampleVL;
+            iirSampleWL = (iirSampleWL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleWL;
+            SubtractL += iirSampleWL;
+            iirSampleXL = (iirSampleXL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleXL;
+            SubtractL += iirSampleXL;
+            iirSampleYL = (iirSampleYL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleYL;
+            SubtractL += iirSampleYL;
+            iirSampleZL = (iirSampleZL * altAmount) + (tempSampleL * iirAmount);
+            tempSampleL -= iirSampleZL;
+            SubtractL += iirSampleZL;
+            iirSampleAR = (iirSampleAR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleAR;
+            SubtractR += iirSampleAR;
+            iirSampleBR = (iirSampleBR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleBR;
+            SubtractR += iirSampleBR;
+            iirSampleCR = (iirSampleCR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleCR;
+            SubtractR += iirSampleCR;
+            iirSampleDR = (iirSampleDR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleDR;
+            SubtractR += iirSampleDR;
+            iirSampleER = (iirSampleER * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleER;
+            SubtractR += iirSampleER;
+            iirSampleFR = (iirSampleFR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleFR;
+            SubtractR += iirSampleFR;
+            iirSampleGR = (iirSampleGR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleGR;
+            SubtractR += iirSampleGR;
+            iirSampleHR = (iirSampleHR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleHR;
+            SubtractR += iirSampleHR;
+            iirSampleIR = (iirSampleIR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleIR;
+            SubtractR += iirSampleIR;
+            iirSampleJR = (iirSampleJR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleJR;
+            SubtractR += iirSampleJR;
+            iirSampleKR = (iirSampleKR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleKR;
+            SubtractR += iirSampleKR;
+            iirSampleLR = (iirSampleLR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleLR;
+            SubtractR += iirSampleLR;
+            iirSampleMR = (iirSampleMR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleMR;
+            SubtractR += iirSampleMR;
+            iirSampleNR = (iirSampleNR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleNR;
+            SubtractR += iirSampleNR;
+            iirSampleOR = (iirSampleOR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleOR;
+            SubtractR += iirSampleOR;
+            iirSamplePR = (iirSamplePR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSamplePR;
+            SubtractR += iirSamplePR;
+            iirSampleQR = (iirSampleQR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleQR;
+            SubtractR += iirSampleQR;
+            iirSampleRR = (iirSampleRR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleRR;
+            SubtractR += iirSampleRR;
+            iirSampleSR = (iirSampleSR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleSR;
+            SubtractR += iirSampleSR;
+            iirSampleTR = (iirSampleTR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleTR;
+            SubtractR += iirSampleTR;
+            iirSampleUR = (iirSampleUR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleUR;
+            SubtractR += iirSampleUR;
+            iirSampleVR = (iirSampleVR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleVR;
+            SubtractR += iirSampleVR;
+            iirSampleWR = (iirSampleWR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleWR;
+            SubtractR += iirSampleWR;
+            iirSampleXR = (iirSampleXR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleXR;
+            SubtractR += iirSampleXR;
+            iirSampleYR = (iirSampleYR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleYR;
+            SubtractR += iirSampleYR;
+            iirSampleZR = (iirSampleZR * altAmount) + (tempSampleR * iirAmount);
+            tempSampleR -= iirSampleZR;
+            SubtractR += iirSampleZR;
+            // do the IIR on a dummy sample, and store up the correction in a variable at the same scale as the very low level
+            // numbers being used. Don't keep doing it against the possibly high level signal number.
+            // This has been known to add a resonant quality to the cutoff, which we're using on purpose.
+            inputSampleL -= SubtractL;
+            inputSampleR -= SubtractR;
+            // apply stored up tiny corrections.
+            if (flip < 1 || flip > 3) {
+                flip = 1;
+            }
+            switch (flip)
+            {
+                case 1:
+                    iirMidRollerAL = (iirMidRollerAL * (1.0 - RollAmount)) + (inputSampleL * RollAmount);
+                    iirMidRollerAL = (invrandy * iirMidRollerAL) + (randy * iirMidRollerBL) + (randy * iirMidRollerCL);
+                    HighsSampleL = inputSampleL - iirMidRollerAL;
+                    iirMidRollerAR = (iirMidRollerAR * (1.0 - RollAmount)) + (inputSampleR * RollAmount);
+                    iirMidRollerAR = (invrandy * iirMidRollerAR) + (randy * iirMidRollerBR) + (randy * iirMidRollerCR);
+                    HighsSampleR = inputSampleR - iirMidRollerAR;
+                    break;
+                case 2:
+                    iirMidRollerBL = (iirMidRollerBL * (1.0 - RollAmount)) + (inputSampleL * RollAmount);
+                    iirMidRollerBL = (randy * iirMidRollerAL) + (invrandy * iirMidRollerBL) + (randy * iirMidRollerCL);
+                    HighsSampleL = inputSampleL - iirMidRollerBL;
+                    iirMidRollerBR = (iirMidRollerBR * (1.0 - RollAmount)) + (inputSampleR * RollAmount);
+                    iirMidRollerBR = (randy * iirMidRollerAR) + (invrandy * iirMidRollerBR) + (randy * iirMidRollerCR);
+                    HighsSampleR = inputSampleR - iirMidRollerBR;
+                    break;
+                case 3:
+                    iirMidRollerCL = (iirMidRollerCL * (1.0 - RollAmount)) + (inputSampleL * RollAmount);
+                    iirMidRollerCL = (randy * iirMidRollerAL) + (randy * iirMidRollerBL) + (invrandy * iirMidRollerCL);
+                    HighsSampleL = inputSampleL - iirMidRollerCL;
+                    iirMidRollerCR = (iirMidRollerCR * (1.0 - RollAmount)) + (inputSampleR * RollAmount);
+                    iirMidRollerCR = (randy * iirMidRollerAR) + (randy * iirMidRollerBR) + (invrandy * iirMidRollerCR);
+                    HighsSampleR = inputSampleR - iirMidRollerCR;
+                    break;
+            }
+            flip++; // increment the triplet counter
+            SubtractL = HighsSampleL;
+            bridgerectifierL = fabs(SubtractL) * 1.57079633;
+            if (bridgerectifierL > 1.57079633) {
+                bridgerectifierL = 1.57079633;
+            }
+            bridgerectifierL = 1 - cos(bridgerectifierL);
+            if (SubtractL > 0) {
+                SubtractL = bridgerectifierL;
+            }
+            if (SubtractL < 0) {
+                SubtractL = -bridgerectifierL;
+            }
+            inputSampleL -= SubtractL;
+            SubtractR = HighsSampleR;
+            bridgerectifierR = fabs(SubtractR) * 1.57079633;
+            if (bridgerectifierR > 1.57079633) {
+                bridgerectifierR = 1.57079633;
+            }
+            bridgerectifierR = 1 - cos(bridgerectifierR);
+            if (SubtractR > 0) {
+                SubtractR = bridgerectifierR;
+            }
+            if (SubtractR < 0) {
+                SubtractR = -bridgerectifierR;
+            }
+            inputSampleR -= SubtractR;
+            // Soften works using the MidRoller stuff, defining a bright parallel channel that we apply negative Density
+            // to, and then subtract from the main audio. That makes the 'highs channel subtract' hit only the loudest
+            // transients, plus we are subtracting any artifacts we got from the negative Density.
+            if (outputgain != 1.0) {
+                inputSampleL *= outputgain;
+                inputSampleR *= outputgain;
+            }
+            if (wet != 1.0) {
+                inputSampleL = (inputSampleL * wet) + (drySampleL * (1.0 - wet));
+                inputSampleR = (inputSampleR * wet) + (drySampleR * (1.0 - wet));
+            }
+            // begin 64 bit stereo floating point dither
+            // int expon; frexp((double)inputSampleL, &expon);
+            fpdL ^= fpdL << 13;
+            fpdL ^= fpdL >> 17;
+            fpdL ^= fpdL << 5;
+            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // frexp((double)inputSampleR, &expon);
+            fpdR ^= fpdR << 13;
+            fpdR ^= fpdR >> 17;
+            fpdR ^= fpdR << 5;
+            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // end 64 bit stereo floating point dither
+            *out1 = inputSampleL;
+            *out2 = inputSampleR;
+            *in1++;
+            *in2++;
+            *out1++;
+            *out2++;
+        }
+    }
+};
+} // namespace airwindohhs

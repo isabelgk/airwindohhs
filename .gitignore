@@ -1,7 +1,7 @@
 .idea/
 .vscode/
 tmp/
-*build/
+*build*/
 
 /tools/target/
 
