@@ -70,7 +70,7 @@ BraceWrapping:
 
 BreakInheritanceList: BeforeComma
 BreakConstructorInitializers: BeforeComma
-InsertBraces: true # need to wait for clang-format v15
+InsertBraces: true
 SpacesInLineCommentPrefix:
   Minimum: 1
   Maximum: 1

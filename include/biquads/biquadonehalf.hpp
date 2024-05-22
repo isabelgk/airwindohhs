@@ -6,7 +6,7 @@ namespace airwindohhs {
 template <typename T>
 class BiquadOneHalf final : public Effect<T>
 {
-    const std::string m_name{ "BiquadOneHalf" };
+    std::string m_name{ "BiquadOneHalf" };
 
     double biquadAL[9];
     double biquadAR[9];
@@ -56,9 +56,12 @@ kNumParameters = 4
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    std::string name() override { return m_name; }
+    constexpr std::string_view name()
+    {
+        return m_name;
+    }
 
-    void set_parameter_value(int index, float value) override
+    void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
@@ -71,7 +74,7 @@ case kParamB: B = value; break;
         }
     }
 
-    float get_parameter_value(int index) override
+    float get_parameter_value(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -85,7 +88,7 @@ case kParamB: return B;
         return 0.0;
     }
 
-    std::string get_parameter_name(int index) override
+    constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -99,7 +102,7 @@ case kParamB: return B;
         return {};
     }
 
-    std::string get_parameter_display(int index) override
+    std::string get_parameter_display(int index) const
     {
         switch (static_cast<params>(index))
         {
@@ -113,7 +116,7 @@ case kParamB: return B;
         return {};
     }
 
-    std::string get_parameter_label(int index) override
+    constexpr std::string_view get_parameter_label(int index) const
     {
         switch (static_cast<params>(index))
         {
@@ -125,7 +128,7 @@ case kParamB: return B;
         return {};
     }
 
-    void process(T** inputs, T** outputs, long sampleFrames) override
+    void process(T** inputs, T** outputs, long sampleFrames)
     {
         T* in1 = inputs[0];
         T* in2 = inputs[1];

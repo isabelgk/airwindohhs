@@ -6,7 +6,7 @@ namespace airwindohhs {
 template <typename T>
 class IronOxideClassic final : public Effect<T>
 {
-    const std::string m_name{ "IronOxideClassic" };
+    std::string m_name{ "IronOxideClassic" };
 
     double iirSampleAL;
     double iirSampleBL;
@@ -67,9 +67,12 @@ class IronOxideClassic final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    std::string name() override { return m_name; }
+    constexpr std::string_view name()
+    {
+        return m_name;
+    }
 
-    void set_parameter_value(int index, float value) override
+    void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
@@ -81,7 +84,7 @@ class IronOxideClassic final : public Effect<T>
         }
     }
 
-    float get_parameter_value(int index) override
+    float get_parameter_value(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -94,7 +97,7 @@ class IronOxideClassic final : public Effect<T>
         return 0.0;
     }
 
-    std::string get_parameter_name(int index) override
+    constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -107,7 +110,7 @@ class IronOxideClassic final : public Effect<T>
         return {};
     }
 
-    std::string get_parameter_display(int index) override
+    std::string get_parameter_display(int index) const
     {
         switch (static_cast<params>(index))
         {
@@ -120,7 +123,7 @@ class IronOxideClassic final : public Effect<T>
         return {};
     }
 
-    std::string get_parameter_label(int index) override
+    constexpr std::string_view get_parameter_label(int index) const
     {
         switch (static_cast<params>(index))
         {
@@ -131,7 +134,7 @@ class IronOxideClassic final : public Effect<T>
         return {};
     }
 
-    void process(T** inputs, T** outputs, long sampleFrames) override
+    void process(T** inputs, T** outputs, long sampleFrames)
     {
         T* in1 = inputs[0];
         T* in2 = inputs[1];
