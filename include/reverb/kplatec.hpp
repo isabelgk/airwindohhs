@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::kplatec {
+
+constexpr std::string_view k_name{ "kPlateC" };
+constexpr std::string_view k_short_description{
+    "kPlateC is a plate reverb, not unlike its namesake atop Abbey Road."
+};
+constexpr std::string_view k_long_description{
+    "Onward with the plate reverbs! kPlateC is an interesting contrast to kPlateB, and an example of how Airwindows k-series reverbs work. Since there's no GUI you can't be fooled by different visual depiction of the two plates, so they're exposed as just sound. These are meant to resemble real things, and the real Plate C is said to be even shorter and brighter than the real Plate B. This is on top of them all having an array of controls (I've been asked to flip Damping over so higher numbers equal more damping, but that would apparently be contrary to how the real ones are laid out, not that you're likely to go to London and see… nor I, for that matter, though it would be fun)Since kPlateB came out very nicely, how is kPlateC different?Obviously it's voiced a bit differently to match the real one, but unlike other plugin approaches, the Airwindows plates each run completely different reverb matrix algorithms. I'm not talking about things like saturations etc (though kPlateD, being a tube reverb, has to have completely different software for that than A, B and C which are  hybrid circuitry). What I mean is, all the little delays inside are different (normally so tricky that you come up with one great algo and then adapt that to each flavor of plate).And so, kPlateC is like kPlateB and yet completely different. The room, the space it makes is shallower, wider, a different shape. There will be things where it works way better than kPlateB, and vice versa, because they're just plain different flavors. If a note resonates on one plate, its brother is going to act completely different and won't highlight that note at all.This will be the case for the whole k-series of reverbs as they expand. Hope you like it. Back to work :)"
+};
+constexpr std::string_view k_tags{
+    "reverb"
+};
+
 template <typename T>
 class kPlateC final : public Effect<T>
 {
-    std::string m_name{ "kPlateC" };
-
     double iirAL;
     double iirBL;
     double gainIn;
@@ -207,17 +217,6 @@ class kPlateC final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     kPlateC()
@@ -496,10 +495,16 @@ class kPlateC final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -530,7 +535,37 @@ class kPlateC final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.25;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "inputpad";
+            case kParamB: return "damping";
+            case kParamC: return "low cut";
+            case kParamD: return "predelay";
+            case kParamE: return "wetness";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1410,4 +1445,4 @@ class kPlateC final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::kplatec

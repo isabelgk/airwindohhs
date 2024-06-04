@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::yhighpass {
+
+constexpr std::string_view k_name{ "YHighpass" };
+constexpr std::string_view k_short_description{
+    "YHighpass is soft and smooth to nasty, edgy texture-varying filtering."
+};
+constexpr std::string_view k_long_description{
+    "See YLowpass, except it’s a highpass :) but there are several ‘one more things’, most notably an upgrade to what I’ve been using for denormalization. I ran into issues with YLowpass munching too much CPU. The fixes I came up with, worked so well, that I’ve applied them to Console7, Console7Cascade, Chamber, Galactic, and several plugins that haven’t come out yet :) As a result, my previous video using YLowpass crept up to 70% CPU at times, and this video using the exact same setup and plugins idles around 35%. I call that a good day (OK, week) of work."
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class YHighpass final : public Effect<T>
 {
-    std::string m_name{ "YHighpass" };
-
     enum
     {
         biq_freq,
@@ -67,18 +77,6 @@ class YHighpass final : public Effect<T>
     float E;
     float F; // parameters. Always 0-1, and we scale/alter them elsewhere.
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
-
   public:
     YHighpass()
     {
@@ -112,10 +110,17 @@ class YHighpass final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -148,7 +153,39 @@ class YHighpass final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 0.1;
+            case kParamD: return 0.1;
+            case kParamE: return 1.0;
+            case kParamF: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "freq";
+            case kParamC: return "reson8";
+            case kParamD: return "resedge";
+            case kParamE: return "output";
+            case kParamF: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -369,4 +406,4 @@ class YHighpass final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::yhighpass

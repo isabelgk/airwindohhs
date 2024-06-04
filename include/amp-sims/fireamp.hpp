@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::fireamp {
+
+constexpr std::string_view k_name{ "FireAmp" };
+constexpr std::string_view k_short_description{
+    "FireAmp is a bright, loud, tubey amp sim for leads and dirt guitar."
+};
+constexpr std::string_view k_long_description{
+    "FireAmp is sort of Marshally, compared to the other Airwindows amp sims. It is midrangey and doesn't give very heavy bass or chug, but it's got a characteristic high-mid tone and would work well for some kinds of guitars/tracks, or as layering to bring more of its quality to a larger mix.FireAmp’s the first in a set of old/new plugins I’m doing. They’re the opposite of your usual guitar plugin arsenal: no multi-effects, no squishy thick tone color, barely even settings. FireAmp is ONE tone, that aligns with some kinds of things I like to do with guitars. It sits in the mix like a classic rock track: you’re hearing it with a set of retro tones that blend with FireAmp (in fact, the bass is a Rickenbacker, and the neck pickup’s through another upcoming Airwindows amp sim but the bridge pickup is also through FireAmp).If you want to get freaky with it and want a tone stack, you might try putting ZNotch in front of it, or MackEQ… your tone stack doesn’t HAVE to be part of the amp sim plugin. Just sayin’.It runs zero latency so you can track through it. It’s loud, bright and sonorous, raw as hell, high impact, no gloss or glitz. Even if it’s not your pet sound you might find a use for FireAmp on layered guitars or other sounds… and unlike the original, it has undersampled FireCab built in for its matched tone, and it has a sophisticated dry/wet control that begins giving you raw amp AND raw signal to provide a range of more open tonalities through the high gain amp sim madness. This makes it an interesting choice for dirtying up non-guitar signals: the dry/wet will let you tailor that in interesting ways.I hope you like it. There’s more to come, all of them just as quirky and one-trick pony as FireAmp. Back in the day, I liked to alternate real miked guitar amp usage, with stuff like the Rockman, to get different textures. FireAmp is one such different texture, and you never can tell when it might be useful :)"
+};
+constexpr std::string_view k_tags{
+    "amp-sims"
+};
+
 template <typename T>
 class FireAmp final : public Effect<T>
 {
-    std::string m_name{ "FireAmp" };
-
     double lastSampleL;
     double storeSampleL;
     double smoothAL;
@@ -113,16 +123,6 @@ class FireAmp final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     FireAmp()
@@ -233,10 +233,15 @@ class FireAmp final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -265,7 +270,35 @@ class FireAmp final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.8;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "tone";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1291,4 +1324,4 @@ class FireAmp final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::fireamp

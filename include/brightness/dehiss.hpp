@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::dehiss {
+
+constexpr std::string_view k_name{ "DeHiss" };
+constexpr std::string_view k_short_description{
+    "DeHiss tries to suppress background hiss, like a hiss gate."
+};
+constexpr std::string_view k_long_description{
+    "This acts like a filtery gate. It tries to apply a lowpass filter to suppress quiet background noise whenever loud bright treble isn’t happening. You can use it in creative ways, but it really was designed to suppress hiss from a cheap USB condenser mic. Sort of an experiment. It’s got a dry/wet now in case that comes in handy. I’m not sure how much else is out there specifically like this, but then I’m not sure how much call there is for it in the first place :)"
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class DeHiss final : public Effect<T>
 {
-    std::string m_name{ "DeHiss" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -21,14 +31,6 @@ class DeHiss final : public Effect<T>
     double rawR;
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     DeHiss()
@@ -54,10 +56,13 @@ class DeHiss final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -82,7 +87,31 @@ class DeHiss final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "thresh";
+            case kParamB: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -295,4 +324,4 @@ class DeHiss final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::dehiss

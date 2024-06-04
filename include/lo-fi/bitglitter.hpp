@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::bitglitter {
+
+constexpr std::string_view k_name{ "BitGlitter" };
+constexpr std::string_view k_short_description{
+    "BitGlitter is an old-sampler style digital lo-fi plugin."
+};
+constexpr std::string_view k_long_description{
+    "DeRez is the simpler, purer bit and frequency crusher, and is still the best ‘analog setting’ bitcrusher (because it lets you use floating-point or fractional frequency and bit crushes). It’s a very pure example of those things and you can make it gate with a touch of DC offset from DC Voltage, and it’s even got a touch of grit softening when it frequency crushes to improve its tone.BitGlitter, however, isn’t DeRez. BitGlitter’s something a lot more sophisticated: a kind of sampler emulator. At every stage it’s designed not for bitcrush alone, but to get the particular tonalities you can get out of primitive old samplers. An earlier attempt intentionally went after the old Akai sound, but currently BitGlitter has no specific model. It’s just there to dial in a kind of punchy grit that will make beats sit well against other elements: the video demonstates this.Now, I know there are people who get mad when I make plugins like these. They say, ‘stop making the sound worse!’ and I understand what they mean, but sorry, I won’t stop because I know there are elements to certain ‘bad’ sounds that aren’t just ‘bad’ but usefully different. BitGlitter maximizes this as much as I can, and might be the go-to textural element for this sort of thing if generic bitcrushing etc. just never works for you. And then for some people I think it’ll immediately be their best friend, but I don’t need to explain to that crew what this is. For those who aren’t used to ‘crappy old sampler’ magic…First, BitGlitter’s got gain trim going into a stage of Spiral analog-style saturation. You can overdrive the input effectively. Then, it does a hint of bitcrushing and splits into two separate frequency crushers, each set slightly different. This isn’t ‘accurate’ to any real retro sampler, but it helps broaden the sound. The output of these are blended and given an output gain and a dry/wet in case you need to sneak a little clarity back in there, and a slight averaging blur is added to the blend to further emulate analog circuitry.The result is a coarser, more opaque sound which still lacks modern digital ‘edge’: you can plainly see on a metering plugin like Voxengo SPAN how the highs are softened. It’s not a digital bright-maker, it’s a texture-changer and impact-maker. Especially if you go for darker regions of the Bit Glitter control, you can use this to add ridiculous amounts of midrange punch in that ‘retro hip-hop’ kind of way. There’s a visceralness and aliveness to the grunge because it’s made by an algorithm to act like analog gear might: you won’t get the same result out of just a pile of typical DAW bitcrush and EQ. BitGlitter will do the extreme damage you might be looking for, but it’ll do it with a personality that contributes instead of detracts."
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class BitGlitter final : public Effect<T>
 {
-    std::string m_name{ "BitGlitter" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     double ataLastSampleL;
@@ -33,16 +43,6 @@ class BitGlitter final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     BitGlitter()
@@ -78,10 +78,15 @@ class BitGlitter final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -110,7 +115,35 @@ class BitGlitter final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.0;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "glitter";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -389,4 +422,4 @@ class BitGlitter final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::bitglitter

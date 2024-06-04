@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::lowpass {
+
+constexpr std::string_view k_name{ "Lowpass" };
+constexpr std::string_view k_short_description{
+    "Lowpass2 is an unusual-sounding variable-slope lowpass filter."
+};
+constexpr std::string_view k_long_description{
+    "These (Lowpass and Highpass) are mixing EQs, not mastering ones (though I’m not the boss of you). They’re complementary: the one is the inverse of the other. However, because of their peculiarities that makes them behave quite differently. What they have in common is they’re interleaved IIR filters, something people don’t normally do. The experiment here has to do with my discovery that digital audio only exists in sets of samples (never just as the isolated sample: the waveform isn’t there, the sample value is only a signpost that the audio is to weave its way around)They’ve also got a very unusual parameter, soft/hard or loose/tight, which controls how the IIR filters are fed audio. When you offset it, you get a situation where the cutoff is higher at louder volumes, or at quieter volumes. This is on a sample-by-sample basis so it’s a tone-character modification, subtle but interesting. Loose/tight is just the best way I could describe what’s happening there.Lowpass gives you a treble rolloff (some have joked that I make dozens of treble rolloffs! Yes, but they all sound different) and what’s immediately obvious is, the stuff right up by Nyquist on the threshold of hearing is not rolled off with the rest of the treble. Also, if you only want to cut extreme treble, you can do it with just adjusting the soft/hard control away from the center position. At deeper cut settings, the soft/hard control gives you two different textures (both of which keep a hint of ‘air’ right up top). The dry/wet control allows you to blend your result. Lowpass gives you big sounds with various colorations and a sparkly gloss that comes from your underlying sound: it’s a big-ifying filter that might suit huge synth pads or orchestral tracks.Highpass, the inverse of this, gives totally different impressions. The same filter-offset behavior turns into ‘loose/tight’ and the extreme treble gets stepped on, rather than retained. This makes Highpass take on ‘classic’ tonalities, particularly with the offset on ‘loose’, which gives a tubey and softened texture. If you run it full-wet, you’ll get a radical ‘analogification’, wiping out all extreme lows and the highest highs, and sounding like some small vintage radio at high filter settings. It’s a small-ifying filter that’s also a time warp (with offset on ‘tight’, you have a transistor radio instead, still retro-sounding!) and all you have to do is dial in your boost area and then balance it with dry/wet to get intense texture shaping that normal EQs can’t come close to delivering.Again, these are not mastering EQs unless you face really unusual mastering requirements. They’re mixing tools, and they really do act like different animals so they’re each contained in their own plug. They’ve been around for ages but the revision to VST form has brought them a new level of tonal sophistication plus the very useful dry/wet controls that take them out of ‘experiment-land’ (they have always been building blocks for plugins such as Guitar Conditioner) and makes them stand alone as useful mix tools.This new version of Lowpass exists to fix a bug, but then I added stuff to it that makes it entirely a new animal!The existing Lowpass tries to produce the same cutoff no matter what sample rate you use, but doing that meant high sample rates can never use a fully opened filter. Instead, you got roll-off no matter what. Lowpass2 no longer does that: the filter control goes from complete silence to wide open no matter what sample rate you’re at.But there’s more: Lowpass2 still uses the interleaved IIR filters the original Lowpass pioneered (you’ll notice subtle bleed-through of information near the Nyquist frequency, beyond human hearing, but also the open and involving sound) but now it can use from zero to four poles of filter: so you get a stronger effect, and a sharper roll-off!And that’s important because with four poles of filter you REALLY hear what the Soft/Hard slider does. This interacts with the filter control (don’t expect the cutoff frequency to stay the same) but what it does is vary the cutoff based on what sample value the input is. So you can either roll off harder for the peaks of the sound… or let ’em through more. Since it’s an IIR filter the effect is gradual, but at four poles it’s really noticeable.That gives you two distinct tone colors for your lowpassing, plus special effects: in the video I demonstrate how cranking the control to Hard on pink noise can make it sound like wind noise where you’re going incredibly fast. Lowpass2 is ideal for experimental tone shaping, and for sound design."
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Lowpass final : public Effect<T>
 {
-    std::string m_name{ "Lowpass" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -19,15 +29,6 @@ class Lowpass final : public Effect<T>
     double iirSampleAR;
     double iirSampleBR;
     bool fpFlip;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Lowpass()
@@ -51,10 +52,14 @@ class Lowpass final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -81,7 +86,33 @@ class Lowpass final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "lowpass";
+            case kParamB: return "softhard";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -238,4 +269,4 @@ class Lowpass final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::lowpass

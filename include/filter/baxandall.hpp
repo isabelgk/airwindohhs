@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::baxandall {
+
+constexpr std::string_view k_name{ "Baxandall" };
+constexpr std::string_view k_short_description{
+    "Baxandall2 is Baxandall, extended and made more powerful."
+};
+constexpr std::string_view k_long_description{
+    "Baxandall starts with a two-band filter that, zeroed out, subtracts an inverse lowpass from a lowpass and gives you bit-identical, perfectly transparent sound. That’s if you’re being subtle. If you boost or cut, lows or highs, it gives you the gentle broad boosts you expect, centered on the vital midrange. As you get more intense with the boosting, it gets more extreme, to where if you’re doing double boosts to get an intense exaggerated sound, a mids notch will naturally develop to accentuate the boosting. The whole voicing shifts to accomodate what you want to do with it, and you can play bass against treble or vice versa to get really wild voicings, such as for extreme EQ treatments (in terms of lows or highs)… but using the same natural Airwindows Baxandall tonality, so it won’t sound ‘filtery’, it’ll sound like it was meant to be that way.Airwindows Baxandall uses my interleaved biquad filters (original, purest form, not meant for rapid automation) that run inside a Console5 instance to deepen the sound of the filter.Sometimes the only way you can make something bigger is to strip it down. I'd been exploring EQs for the purposes of putting one in a future Console version, and revisited Baxandall… well, by the time I was done, a lot was different and a lot was still the same. It still uses my interleaved biquad filters (an unusual choice that helps the shallowness of the filter slopes in this very 'broad strokes' EQ). It still uses the technique of sweeping those filter center points to make increasingly extreme effects as you get crazier with it: it gets almost synth-like, starting with general 'tilt EQ' effects of great subtlety but bringing in wild boosts as you crank it. The purpose of that is to do the sort of anti-Soothe thing I favor: if you have a track and it's carrying highs, in no way do you need to also have full bass on it. Instead, you build a mix out of composite parts each of which bring a different voicing to the mix. And Baxandall2 is designed to get you to whatever broad EQ place you need, from a place of naturalness.But there's nothing natural about the cranked-up 24dB boosts and cuts you can now do. This is newly tuned with the filter sweeping to take you straight past the original Baxandall's settings into wild new places. Also, the original Baxandall was made more forgiving by running it inside an internal Console processing, analog-ifying it. But it turns out that I can leave that to actual Console versions and strip Baxandall2 down to the guts of it, which actually gave it a lot more power.This is Baxandall in the form that I will need it, for doing things with. But since it's Airwindows, you can use it too. And you can still use the original Baxandall, that's not going anywhere and has its own merits. Baxandall2 is just… more, at any cost, no holds barred. Hope you like it."
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Baxandall final : public Effect<T>
 {
-    std::string m_name{ "Baxandall" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -23,15 +33,6 @@ class Baxandall final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Baxandall()
@@ -61,10 +62,14 @@ class Baxandall final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -91,7 +96,33 @@ class Baxandall final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "treble";
+            case kParamB: return "bass";
+            case kParamC: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -266,4 +297,4 @@ class Baxandall final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::baxandall

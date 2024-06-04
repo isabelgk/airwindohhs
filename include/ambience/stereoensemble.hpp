@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::stereoensemble {
+
+constexpr std::string_view k_name{ "StereoEnsemble" };
+constexpr std::string_view k_short_description{
+    "StereoEnsemble is a sort of hyperchorus blast from the past."
+};
+constexpr std::string_view k_long_description{
+    "StereoEnsemble is a blast from the past, updated with modern dithering to floating point and undersampling: bottom line is, this is a plugin that can take either a mono or a stereo input and give you a bunch of additional ensemble-y goodness, with particular attention to simulating stereo imaging through staggered delay pairs (making stuff be panned interestingly through adding echoes that have time offsets between left and right channels)."
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class StereoEnsemble final : public Effect<T>
 {
-    std::string m_name{ "StereoEnsemble" };
-
     double dA[7491];
     double dB[7533];
     double dC[5789];
@@ -54,14 +64,6 @@ class StereoEnsemble final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     StereoEnsemble()
@@ -144,10 +146,13 @@ class StereoEnsemble final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -172,7 +177,31 @@ class StereoEnsemble final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "depth";
+            case kParamB: return "fxlevel";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -410,4 +439,4 @@ class StereoEnsemble final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::stereoensemble

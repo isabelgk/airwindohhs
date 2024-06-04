@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::creature {
+
+constexpr std::string_view k_name{ "Creature" };
+constexpr std::string_view k_short_description{
+    "Creature is a soft slew saturator, a new class of noisechanger."
+};
+constexpr std::string_view k_long_description{
+    "So here's something new: didn't exist before, even I didn't have it.Creature is a soft slew saturator. It's a way of working with applying a sin() function to slew clipping. In fact it applies an unbounded sin() function, so it might be technically considered a slew wavefolder? Because that's what everybody needed, was a slew wavefolder. How useful, nerdy, and pointless.Not so much. Listen to this little monster.Creature is up to 32 (or more, at high sample rates) soft slew saturators, stacked up like the poles of a filter. It acts like a distortion, except it's not a distortion. It acts like a filter, but it's even less of a filter. Its interaction with sample rate is really strange (has to scale up with the square root of the sample rate multiplier!)And what Creature really does, is roar.As you keep adding Depth, the gain and the thunder increase unreasonably. The total force on tap is pretty ridiculous, and it keeps getting harder to control as you turn it up. There's an Inv control that can give you a really interesting cancellation that acts like a highpass-ish, but not like any highpass you've ever heard. Using it in phase, in Wet mode, unleashes a monstrous overdrive with humongous bass that refuses to lose weight even at impossibly high gains (real interesting on drum rooms!)There is no overdrive. There is no EQ. There is no highpass.It's just Creature, which is very much its own beast. It's also a very, very simple algorithm (isn't that so often the way?) so especially at low Depth settings, all this monstrousness can be yours for almost no CPU. I'll be finding ways to put this to use, but as always, you've got it fresh from the plugin forges. Be careful, and have fun with your new Creature."
+};
+constexpr std::string_view k_tags{
+    "saturation"
+};
+
 template <typename T>
 class Creature final : public Effect<T>
 {
-    std::string m_name{ "Creature" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -16,15 +26,6 @@ class Creature final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Creature()
@@ -47,10 +48,14 @@ class Creature final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -77,7 +82,33 @@ class Creature final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.26;
+            case kParamB: return 0.26;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "drive";
+            case kParamB: return "depth";
+            case kParamC: return "invwet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -180,4 +211,4 @@ class Creature final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::creature

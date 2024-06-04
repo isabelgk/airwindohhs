@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::orbitkick {
+
+constexpr std::string_view k_name{ "OrbitKick" };
+constexpr std::string_view k_short_description{
+    "OrbitKick is a bass generator and kick drum reinforcer."
+};
+constexpr std::string_view k_long_description{
+    "If you've seen modern recording, you've probably seen a little drumlike object in front of bass drums. This device is a 'SubKick'. It's basically an NS10 woofer hung in front of the kick, so it can be knocked around by subsonic bass waves, and transfer that to electricity for recording. It might or might not be in an actual drum shell, needs to be recorded with an actual preamp (these can have very high output though!) and acts as just another mic, but one that captures the very deepest bass in conjunction with your full drumkit and all your other mics.But what if you could do that… without the pre? And also without the little drum shell, and without the NS10 speaker, and for that matter without the drumkit. Just 'deep bass subs' like a kick drum. On anything.Enter OrbitKick. This is basically a little physical simulation, like a planet orbiting a sun. When your input sound hits, it kicks this thing into orbit and it just spins, gradually slowing down as its orbit gets bigger and bigger. It's a little like a second-order sine wave, in that it's one of those Airwindows things that can get out of hand, which is what the controls are for.Drop is how fast the note will drop, from 'not at all' to real quick. Shape is the same, but makes it drop quicker to start off, so it's your taper: it gives you punchier attacks, rather than 'modular guy beeeoooo' kicks that have no impact. Start controls how high up your attack goes, in conjunction with Thresh, which is the threshold at which the note is kicked off… and Finish is where the note cuts off (set super low, you can get clicky releases).That's all. If you want shorter kicks, make it drop faster, start lower, or finish higher. These controls do it all. That includes weird nasty effects where the note is triggered in a scruffy, inconsistent way. OrbitKick does NOT sound like a sample. It's like a living bass thing, able to put the lowest of bottom octaves on whatever percussive thing you like, or add a thump or 'pewww!' laser sound to any other thing so long as it has a distinct attack. And without a distinct attack it will still work but it'll make an unpleasant noise. And if you can only listen on a laptop or cellphone you may never hear what it does at all…This one goes out to DnB friends of mine in London :) rarely do I get a plugin that will wreak so much mayhem on really, really big sound systems. Be careful out there, or don't :)"
+};
+constexpr std::string_view k_tags{
+    "bass"
+};
+
 template <typename T>
 class OrbitKick final : public Effect<T>
 {
-    std::string m_name{ "OrbitKick" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -20,18 +30,6 @@ class OrbitKick final : public Effect<T>
     float D;
     float E;
     float F;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
 
   public:
     OrbitKick()
@@ -56,10 +54,17 @@ class OrbitKick final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -92,7 +97,39 @@ class OrbitKick final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.5;
+            case kParamE: return 0.5;
+            case kParamF: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "drop";
+            case kParamB: return "shape";
+            case kParamC: return "start";
+            case kParamD: return "finish";
+            case kParamE: return "thresh";
+            case kParamF: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -215,4 +252,4 @@ class OrbitKick final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::orbitkick

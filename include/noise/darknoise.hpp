@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::darknoise {
+
+constexpr std::string_view k_name{ "DarkNoise" };
+constexpr std::string_view k_short_description{
+    "DarkNoise is an alternative method for producing bassier noise directly. Sound design stuff."
+};
+constexpr std::string_view k_long_description{
+    "DarkNoise is a technical experiment, that might be useful for sound design folks, or game coders, or people coding things like algorithmic clap effects. It’s basically a way to generate noise directly that’s more midrangey, or more bassy, without having to filter it (though there’s a filter included, too!)So how it works is: if you just generate rand() every sample, that’s white noise. (or if you use an algorithm like my dithering-to-the-floating-point, which is not crypto-grade noise but runs more CPU-efficiently). And if you take a value and add rand() to it every sample, that’s Brownian noise (something moves, but randomly) but it generates DC offset and needs to get filtered. I’ve also done clever forms of noise like VoiceOfTheStarship (there in your NewUpdates.zip download for free, try it and compare with DarkNoise) which do the brownian noise, but at regular intervals it forces the random noise always to move TOWARDS zero, suppressing the DC naturally.This is different. I’m not sure it’s better but it’s different, and what it does is: say you’re keeping a list of values that are all random. And you’re replacing them with new random values, and you get your output by adding ’em together. Now, imagine that for each random number you put in, that tells you the next position in the list to replace. That’s DarkNoise. It has a brighter top-end than VoiceOfTheStarship, and runs just as fast, but requires you keep a big pile of numbers around. However, you don’t have to actually add them all every sample. It’s in the code, how to work around that part.Enjoy the plugin if you like weird noise sources: again, might be sound design, maybe you’d like to gate it along with something? Gate it along with your snare and pick one of the midrangey settings and you might get a nice beefy reinforcement. Cranked way up, it gives a background noise ambience that’s like wind (heard from indoors, or being out in the wind) which can go from almost still, to thousands of miles an hour."
+};
+constexpr std::string_view k_tags{
+    "noise"
+};
+
 template <typename T>
 class DarkNoise final : public Effect<T>
 {
-    std::string m_name{ "DarkNoise" };
-
     double rL[8193];
     double bL[11][11];
     double lastRandyL;
@@ -25,16 +35,6 @@ class DarkNoise final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamfor(int count = 0,
-kParamfor(int x = 1,
-kParamf[x] = 2,
-kParamfor (int y = 3,
-kNumParameters = 4
-
-    };
 
   public:
     DarkNoise()
@@ -70,10 +70,15 @@ kNumParameters = 4
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor(int count = 0,
+kParamfor(int x = 1,
+kParamf[x] = 2,
+kParamfor (int y = 3,
+kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -102,7 +107,35 @@ case kParamfor (int y: return for (int y;
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return 0;
+case kParamfor(int x: return 0;
+case kParamf[x]: return 0.0;
+case kParamfor (int y: return 0;
+
+default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return "freq";
+case kParamfor(int x: return "dark";
+case kParamf[x]: return "output";
+case kParamfor (int y: return "drywet";
+
+default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -281,4 +314,4 @@ case kParamfor (int y: return "";
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::darknoise

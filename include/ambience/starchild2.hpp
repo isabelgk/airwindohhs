@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::starchild2 {
+
+constexpr std::string_view k_name{ "StarChild2" };
+constexpr std::string_view k_short_description{
+    "StarChild2 is a weird digital ambience/echo plugin adapted to high sample rates."
+};
+constexpr std::string_view k_long_description{
+    "For all that we try to make plugins have natural, acoustic or electric, retro vibe qualities, sometimes there’s a thing which breaks the rules by creating a distinctive voice that has nothing to do with naturalness. I’ve got an old Alesis reverb like that: very primitive, but deep as anything. There have always been odd little boxes with a style all their own, like the Delta Labs Effectron, which is low-fi but uses delta-sigma modulation like an SACD (but much more crudely!)In that spirit, here’s StarChild. The inspiration came from the old Ursa Major Space Station. That said, StarChild sounds nothing like a Space Station, but it does sound like it’s out of this world. Like Space Station, it produces series of echo taps which aren’t perfectly regular. Space Station has little rhythms that it does, while StarChild works on prime number sequences: that produces a sputtery sort of delay line in which it won’t reinforce any one frequency.What you get is a curious delay/ambience effect, in stereo (it’ll widen stuff that’s only in the middle). It can work kind of like a natural ambience that’s a room in a horrible shape, or you can crank out the duration and get weird stretched textures with a variety of granularity. It’s an odd little plugin: didn’t sell that well in its earlier incarnation, yet this revised newer form is hotly anticipated: a bunch of people really started wanting it when Kagi (my payment processor) went out of business and suddenly it couldn’t be sold.Now, years later, this is a version of it that's savvy to sample rates. It's undersampled so you can run at 96k or even 192k while getting the same delay times, the same sounds, and at more or less the same CPU load of the 44.1/48k version. It's been a while since we've seen this plugin, and rightfully so: it sounds really weird and bad! But that's exactly why you can make distinctive noises with it, and who's to say you don't want to sneak an ear-catching sound in there?"
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class StarChild2 final : public Effect<T>
 {
-    std::string m_name{ "StarChild2" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -31,15 +41,6 @@ class StarChild2 final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     StarChild2()
@@ -275,10 +276,14 @@ class StarChild2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -305,7 +310,33 @@ class StarChild2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.7;
+            case kParamC: return 0.2;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "sustain";
+            case kParamB: return "grain";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -834,4 +865,4 @@ class StarChild2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::starchild2

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::consolelabuss {
+
+constexpr std::string_view k_name{ "ConsoleLABuss" };
+constexpr std::string_view k_short_description{
+    "ConsoleLABuss is the Airwindows take on the Quad Eight console."
+};
+constexpr std::string_view k_long_description{
+    ""
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class ConsoleLABuss final : public Effect<T>
 {
-    std::string m_name{ "ConsoleLABuss" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -22,13 +32,6 @@ class ConsoleLABuss final : public Effect<T>
     double gainA;
     double gainB; // smoothed master fader for channel, from Z2 series filter code
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     ConsoleLABuss()
@@ -48,10 +51,12 @@ class ConsoleLABuss final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -74,7 +79,29 @@ class ConsoleLABuss final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "master";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -269,4 +296,4 @@ class ConsoleLABuss final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::consolelabuss

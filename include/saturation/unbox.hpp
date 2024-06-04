@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::unbox {
+
+constexpr std::string_view k_name{ "UnBox" };
+constexpr std::string_view k_short_description{
+    "UnBox is a distortion where only the harmonics that don't alias are allowed to distort."
+};
+constexpr std::string_view k_long_description{
+    "While I’m putting out my library of plugins according to plan, sometimes I need to take a detour into new stuff. UnBox is one example.The idea’s as follows: if you distort stuff digitally, it aliases. This can be seen as harmonics seemingly bouncing off the highest frequency, and going back down again. The idea is that if you have digital saturation or distortion without massive oversampling, you’ll always have aliasing and everything is ruined forever.That’s not quite true. It depends on the frequency, and the form of distortion… and many of my plugins have gentle enough distortion curves that they throw a limited number of harmonics. If you are only generating harmonics within the range of digital audio’s frequencies, you’re fine and there will be no problem until you feed the system a frequency that’s too high. You’re not automatically feeding superhigh frequencies all the time if you’re working with natural recordings: not all sounds contain that kind of high frequency content.If you DO have that sort of high frequency content, what then? It occurred to me I could take the difference between dry and distorted, store it in an averaging filter, and average it. This would suppress high frequency content in only the distortion artifacts. (I then learned that I needed to average the signal being fed to the distortion part, which is Spiral again: it got a little complicated)And I could even highpass the distortion part… and all this is applying only to the distortion part. It’s all handled as a single subtract from the raw signal coming in.What that means is this: UnBox is a distortion that cuts down the level of the signal, but ONLY the mids. Depending on how it’s set, it will let through more and more of the ‘dry’ highs, unaffected. It’ll also let through a hint of bass for definition. Underneath this layer of clarity, the distorted part can be made pretty distorted, but it’ll stay free of aliasing even up into the high frequencies, because those frequencies aren’t actually getting applied to the distortion, and the distortion output’s also being smoothed after the fact. So you’ve got a texture-thickener, an energy-adder, that retains a very analog quality because all of the overtones stay clear of aliasing WITHOUT oversampling. The raw sound is still a direct pass-through and that’s where the clarity comes from."
+};
+constexpr std::string_view k_tags{
+    "saturation"
+};
+
 template <typename T>
 class UnBox final : public Effect<T>
 {
-    std::string m_name{ "UnBox" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -26,15 +36,6 @@ class UnBox final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     UnBox()
@@ -69,10 +70,14 @@ class UnBox final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -99,7 +104,33 @@ class UnBox final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.0;
+            case kParamC: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "unbox";
+            case kParamC: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -465,4 +496,4 @@ class UnBox final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::unbox

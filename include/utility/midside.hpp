@@ -2,23 +2,26 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::midside {
+
+constexpr std::string_view k_name{ "MidSide" };
+constexpr std::string_view k_short_description{
+    "MidSide is mid/side conversion utility plugins."
+};
+constexpr std::string_view k_long_description{
+    "It’s always nice to expand one’s horizons! You don’t have to run the latest Logic to be able to use any plugin in mid/side mode… though you might need to do a little fiddling with settings.EdIsDim comes in two plugs: first use MidSide to convert your stereo track into mid/side (on left and right channels). Then apply your processing (there’s a control with which you can balance the mid/side balance, which also means you can gain stage the M/S content into your plugin), then, go into EdIsDim (read it backwards) to convert back to stereo. The same control is present, and can reverse the gain staging you applied.Some good techniques include using it with Density to saturate the center and leave the stereo width lively, or getting a fresh take on a stereo reverb that’s much wider than usual. But the real purpose is opening up funky routing techniques in your DAW: send the L and R to separate busses, do all manner of things with plugins that don’t even have to be the same, or to line up (sample delay on just mid or side, anyone?) and merge them back to a stereo buss with EdIsDim on it. Or design weird synth patches that are heavy on the left with a lot of odd stereo behaviors, just to run into EdIsDim as an intentional part of the synth sound. Sky’s the limit :)"
+};
+constexpr std::string_view k_tags{
+    "utility"
+};
+
 template <typename T>
 class MidSide final : public Effect<T>
 {
-    std::string m_name{ "MidSide" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     MidSide()
@@ -35,10 +38,12 @@ class MidSide final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -61,7 +66,29 @@ class MidSide final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "midside";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -141,4 +168,4 @@ class MidSide final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::midside

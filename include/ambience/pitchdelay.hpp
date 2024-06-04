@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::pitchdelay {
+
+constexpr std::string_view k_name{ "PitchDelay" };
+constexpr std::string_view k_short_description{
+    "PitchDelay is TapeDelay2 but with pitch shift instead of flutter."
+};
+constexpr std::string_view k_long_description{
+    "So I was at a a synthesizer meet-up talking with some folks and someone asked me if I could do a particular thing. I’d mentioned how my TapeDelay2, which I was about to post that very night, would let you wiggle around the speed control and you’d get crazy wobble JUST like if you were doing it on a tape deck, because of the way I ran the delay buffers. And the request was to make a plugin where the time would wobble but the pitch would not, perhaps using some pitch shifter algorithm.And… I did not make that thing! :D but I made this instead, and here you go!All this is, is TapeDelay2 but instead of the flutter control, it’s got a fixed pitch shift. It’s being done in a more normal way than Glitch Shifter, but for all that it still enables some silly and extreme noises. Everything not flutter/pitch knob related, is exactly the same: all my development time went towards making the pitch shift interesting.If you shift up, you can go towards very shrill crazy up-shifts that are right to the edge of blowing up the plugin. If you shift down, you can drop pitch down to literally nothing… and then keep going until you’re doing reverse buffer looping, which ends up (at a setting of 0) being the same pitch you started with, but backwards. Except it’s not playing the actual audio backwards, it’s cycling the algorithm backwards while the sound still plays ‘forwards’, so you get a ‘voice disguise’ effect. Sneak the setting just off the zero point, and it’s backwards low-speed, good for alien monster voices. If you include the regeneration while doing this you get a glorious mess. Also, the regeneration can be set to WAY more than just feedback, but it subtly restrains itself a bit so that you can hover around total feedback in a usable way. This combined with pitch shifting settings and the filter that comes with TapeDelay2 can give you a whole pile of strange, sorta-analogy noises without even putting more sounds in (it does require some sort of noise beyond digital black to start with, but once it’s going you’ll be able to play it like a weird instrument)Add this to your Tape Delay arsenal. It’s not part of TapeDelay because it’s weird enough to be its own purpose (dedicated plugins for purposes is more or less my thing). Hope you like it :)"
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class PitchDelay final : public Effect<T>
 {
-    std::string m_name{ "PitchDelay" };
-
     double dL[88211];
     double prevSampleL;
     double regenSampleL;
@@ -34,18 +44,6 @@ class PitchDelay final : public Effect<T>
     float D;
     float E;
     float F;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
 
   public:
     PitchDelay()
@@ -88,10 +86,17 @@ class PitchDelay final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -124,7 +129,39 @@ class PitchDelay final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.0;
+            case kParamC: return 0.5;
+            case kParamD: return 0.0;
+            case kParamE: return 0.5;
+            case kParamF: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "time";
+            case kParamB: return "regen";
+            case kParamC: return "freq";
+            case kParamD: return "reso";
+            case kParamE: return "pitch";
+            case kParamF: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -457,4 +494,4 @@ class PitchDelay final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::pitchdelay

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::purestsquish {
+
+constexpr std::string_view k_name{ "PurestSquish" };
+constexpr std::string_view k_short_description{
+    "PurestSquish is an open-sounding compressor with bass bloom."
+};
+constexpr std::string_view k_long_description{
+    "PurestSquish is a compressor, with its own sound. In the video I compare it to Pressure4, Logical4, and SurgeTide, and also show how it can be used in conjunction with SurgeTide (a real ‘sleeper’ plugin not easily understood) to produce amazingly transparent dynamics control. That said, this is not at all a normal compressor plugin and won't act normal.I also spent some time torturing it with sine sweeps, showing how Pressure and Logical are more like ‘analog emulations’ and produce harmonics, while PurestSquish instead does a weird thing when you turn off and on signal generators. So if you’re looking for ways to say ‘this is broken forever!’ watch those parts of the video :)If this doesn’t worry you, PurestSquish also has a bass bloom control that lets you pass subsonics or bass notes through uncompressed, to taste. If it does worry you, chalk it up to PurestSquish running simultaneous two-and-three-sample-interleaved compressors, much like Capacitor runs two-and-three-sample-interleaved filters, and use one of the other compressors I’ve put out, perhaps one of the three also featured in the PurestSquish video."
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class PurestSquish final : public Effect<T>
 {
-    std::string m_name{ "PurestSquish" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -63,16 +73,6 @@ class PurestSquish final : public Effect<T>
     double mergedCoefficientsR;
     int count;
     bool fpFlip;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     PurestSquish()
@@ -136,10 +136,15 @@ class PurestSquish final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -168,7 +173,35 @@ class PurestSquish final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.0;
+            case kParamC: return 1.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "squish";
+            case kParamB: return "bassblm";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -669,4 +702,4 @@ class PurestSquish final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::purestsquish

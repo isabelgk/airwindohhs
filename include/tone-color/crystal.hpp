@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::crystal {
+
+constexpr std::string_view k_name{ "Crystal" };
+constexpr std::string_view k_short_description{
+    "Crystal is a tone shaper and buss soft-clipper."
+};
+constexpr std::string_view k_long_description{
+    "Crystal’s the first of the Character reissues, by request: I know there’s the possibility for this to become people’s favorite plugin, because it already is one user’s favorite buss plugin and he begged me to rerelease it with updated code and VST compatibility. This is the result. Tonally it’s exactly the same as the classic ‘magic’ Audio Unit, but it’s got the denormalization and noise shaping to the floating point buss of 2018 and beyond.The controls you’ll be interested in are Hardness and Personality. Hardness applies the same algorithm that was in ‘New Channel’: though it’s not a replacement for what made Channel special, it’s got its own uses. It lets you define the onset of clipping, whether soft-clip saturation or digital hard clipping. Though this dirties up the sound a little, it lets you dial the ‘fatness’ of the saturation effect and gives you a tonal parameter that no other Airwindows plugin gives you. Think of it as a slider for how much the roaring, overdriven midrange sticks out.Personality is a precursor to what became BussColors (and there are other flavors to come) but in Crystal it’s a little different. The BussColors algorithms are taken from hardware convolution impulses, and there’s a time-constant making the interpolation between ‘loud’ and ‘soft’ impulses happen over several samples. In the Character plugins, this didn’t happen. It was sample-by-sample, so on the one hand there was no dynamic behavior, just each sample got a fixed convolution behavior.On the other hand (and it took me a while to properly understand this) every convolution sample got its own, separate dynamic behavior. The curve was different for each one, so it became a more tightly controlled little kernel rather than a set of possible kernels. There are still people who swear these were the great ones, and I’ve learned to pay closer attention to such things.And the thing is, Crystal’s not using a hardware sample. Unlike anything in BussColors, Crystal’s using a data set that comes from doing a brickwall filter: if I remember correctly, two different ones at different Q/steepness, and then generating the dynamic behavior out of that. So it’s doing a treble-restricting EQ behavior (a FIR filter), but then it manipulates that. The question is, do you like what it does? Some people really, really liked this one. Not everything about it is in line with how I usually do things. That’s why it’s different. Maybe it’s right up your alley? Let your ears guide you, and have fun checking it out."
+};
+constexpr std::string_view k_tags{
+    "tone-color"
+};
+
 template <typename T>
 class Crystal final : public Effect<T>
 {
-    std::string m_name{ "Crystal" };
-
     double bL[35];
     double lastSampleL;
     double bR[35];
@@ -19,16 +29,6 @@ class Crystal final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Crystal()
@@ -54,10 +54,15 @@ class Crystal final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -86,7 +91,35 @@ class Crystal final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.7;
+            case kParamB: return 1.0;
+            case kParamC: return 0.333;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "hardnss";
+            case kParamB: return "personl";
+            case kParamC: return "drive";
+            case kParamD: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -352,4 +385,4 @@ class Crystal final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::crystal

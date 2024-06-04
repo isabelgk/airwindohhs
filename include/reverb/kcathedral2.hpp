@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::kcathedral2 {
+
+constexpr std::string_view k_name{ "kCathedral2" };
+constexpr std::string_view k_short_description{
+    "kCathedral2 is a giant reverby space modeled after the Bricasti Cathedral."
+};
+constexpr std::string_view k_long_description{
+    "Here we go: this should do nicely.This is still a 5x5 Householder matrix like the last time, but that's about the only similarity, and it's not at all the same matrix as last time. I am keeping that as kCathedral because I know full well that people find uses for things, but you can hear pretty plainly in my video on kCathedral2 that this is in another league (as they will all be, going forward).How was that done? A lot of it was time spent generating possible reverb matrices. There's a wide array of ways to evaluate how those become reverbs, none of which existed when I made the original kCathedral. I knew what I wanted but I had no way to measure it… and no way to generate thousands, millions, billions of possible options and automate the process of throwing out the metallic or lame ones. And that changed, over months of work on the tools.There's also new things that didn't exist in the more purist, uncompromising kCathedral. The new one uses one of my reverb delays differently, by turning it into a single solitary allpass (well, two, one per channel) and also adding the very subtlest of modulation to just that one allpass (not inside it, as a separate effect). None of this was present in the original, but even though it's only the tiniest amount, it's felt.But most of all, this time around it's using a completely different approach to early reflections. The real Bricasti Cathedral uses early reflections so strong I mistook them for dry signal being let in. Original kCathedral used a 3x3 matrix, very gingerly, trying not to be obvious because I thought I was hearing dry energy off the Bricasti, therefore the early reflections had to be much quieter, right? kCathedral2 uses a 4x4 matrix… which means it's able to literally use a patch from ClearCoat/CloudCoat, except without regeneration (the sound literally bounces away into the cathedral and doesn't even enter the deep reverb field). That's early reflections that can stand alone as their own reverb.It's subtle, but it's also where I was able to step away from the Bricasti sound and try to establish my own. I think you'll find that the deep room tone is about the same, and the depth of space, but I want those early reflections to be a lot more diffuse (but NOT allpassy), so I've scaled them up and spread them out. It should sound more like detail in the actual room rather than an obvious back wall, which I think will be more useful for how I'll be using it. And I've got a lot closer to that textural butter-sound of the real Bricasti, while retaining some of my own goals for the project.Welcome to kCathedral2. Oops, I did it again (this time more like what I intended for the first time). Thanks to my Patreon patrons, who are literally the reason I can persist at goals like this, and without whom I might have to stop halfway and not get to stuff like this. Hope you like it!"
+};
+constexpr std::string_view k_tags{
+    "reverb"
+};
+
 template <typename T>
 class kCathedral2 final : public Effect<T>
 {
-    std::string m_name{ "kCathedral2" };
-
     double gainOutL;
     double gainOutR;
     double eAL[shortA + 5];
@@ -265,13 +275,6 @@ class kCathedral2 final : public Effect<T>
     uint32_t fpdR;
     // default stuff
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     kCathedral2()
@@ -574,10 +577,12 @@ class kCathedral2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -600,7 +605,29 @@ class kCathedral2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "wetness";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1528,4 +1555,4 @@ class kCathedral2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::kcathedral2

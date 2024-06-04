@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::zbandpass2 {
+
+constexpr std::string_view k_name{ "ZBandpass2" };
+constexpr std::string_view k_short_description{
+    "ZBandpass2 acts more like the Emu e6400 Ultra bandpass in motion, with coefficient interpolation."
+};
+constexpr std::string_view k_long_description{
+    "ZBandpass2 is the followup that adds coefficient interpolation to my Z-Plane Filter emulation. Which of course is not to say that I had the code, or took apart the machine and cloned the schematic: no, these plugins are about running a reference sound into the real live Emu e6400 Ultra sampler, and smashing the crud out of it to get the most out of the filters and their distinct color and behavior, and then trying to mimic that in a plugin purely by ear.The original Airwindows Z filters run more efficiently because they’re not asked to do as much: they have the same tone but aren’t trying to smooth zipper noise and interpolate, so if you need fixed filter settings don’t overlook those. However, half the fun of a real live sampler is to get funky with it, and so ZBandpass2 follows ZLowpass2 in adding the smoothing to everything, so you can automate whatever you like. Remember it’s set up to have lots of distortion and gain on tap, keep the input and output real low if you’re not just trying to melt the thing down (0.1 will give you basically unity gain, and the output will let you pad things a whole lot if you need to)"
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class ZBandpass2 final : public Effect<T>
 {
-    std::string m_name{ "ZBandpass2" };
-
     double iirSampleAL;
     double iirSampleAR;
     enum
@@ -70,16 +80,6 @@ class ZBandpass2 final : public Effect<T>
     float C;
     float D;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
-
   public:
     ZBandpass2()
     {
@@ -116,10 +116,15 @@ class ZBandpass2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -148,7 +153,35 @@ class ZBandpass2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+            case kParamD: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "freq";
+            case kParamC: return "output";
+            case kParamD: return "poles";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -476,4 +509,4 @@ class ZBandpass2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::zbandpass2

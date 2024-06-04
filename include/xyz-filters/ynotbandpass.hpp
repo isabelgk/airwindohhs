@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::ynotbandpass {
+
+constexpr std::string_view k_name{ "YNotBandpass" };
+constexpr std::string_view k_short_description{
+    "YNotBandpass is soft and smooth to nasty, edgy texture-varying filtering, no control smoothing."
+};
+constexpr std::string_view k_long_description{
+    "YNotBandpass has various uses. One I was trying out in the original video, was setting it up as a ‘walkie-talkie’ sort of tone on my voice, and then turning up ResEdge to really trash the hell out of the audio in a characteristic way that’s not easily found anywhere else.In the video for YNotBandpass, the version without control smoothing, I demoed it on a bunch of huge reverb, alternating between a Bricasti Cathedral and my version of that same sound… and the more rapid switching between Freq settings turns out to sound pretty nice! Except when the ResEdge control is used to give a mean, electrical, circuit-bendy quality that still retains a lot of the depth of the underlying sound."
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class YNotBandpass final : public Effect<T>
 {
-    std::string m_name{ "YNotBandpass" };
-
     enum
     {
         biq_freq,
@@ -51,18 +61,6 @@ class YNotBandpass final : public Effect<T>
     float E;
     float F; // parameters. Always 0-1, and we scale/alter them elsewhere.
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
-
   public:
     YNotBandpass()
     {
@@ -90,10 +88,17 @@ class YNotBandpass final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -126,7 +131,39 @@ class YNotBandpass final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 0.1;
+            case kParamD: return 0.1;
+            case kParamE: return 1.0;
+            case kParamF: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "freq";
+            case kParamC: return "reson8";
+            case kParamD: return "resedge";
+            case kParamE: return "output";
+            case kParamF: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -326,4 +363,4 @@ class YNotBandpass final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::ynotbandpass

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::biquadonehalf {
+
+constexpr std::string_view k_name{ "BiquadOneHalf" };
+constexpr std::string_view k_short_description{
+    "BiquadOneHalf is an interleaved biquad filter like Biquad."
+};
+constexpr std::string_view k_long_description{
+    "BiquadOneHalf is tech that’s going into my future plugins. You have to set the frequency twice as high as you would using Biquad, and it can only go up to 1/4 Nyquist, but the way it interacts with the sampling frequency is special and works very well for some types of filtering. You’ll be getting more developed plugins of that nature soon, and all through January, but for now I got this: working version of the new Biquad filter variation, that you can use on stuff.It’s the first version, not the ‘sweepable’ version, because this is going to find its way into fixed-frequency EQs, ‘head bump’ etc… compare it to Biquad remembering to use twice the frequency you otherwise would. It’s happiest on bass or midrange: much like regular Biquad, trying to force it to get real close to its high frequency limit can get messy."
+};
+constexpr std::string_view k_tags{
+    "biquads"
+};
+
 template <typename T>
 class BiquadOneHalf final : public Effect<T>
 {
-    std::string m_name{ "BiquadOneHalf" };
-
     double biquadAL[9];
     double biquadAR[9];
     double biquadBL[9];
@@ -20,16 +30,6 @@ class BiquadOneHalf final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamfor (int x = 0,
-kParamflip = 1,
-kParamA = 2,
-kParamB = 3,
-kNumParameters = 4
-
-    };
 
   public:
     BiquadOneHalf()
@@ -56,10 +56,15 @@ kNumParameters = 4
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor (int x = 0,
+kParamflip = 1,
+kParamA = 2,
+kParamB = 3,
+kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -88,7 +93,35 @@ case kParamB: return B;
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return 0;
+        case kParamflip: return false;
+        case kParamA: return 0.0;
+        case kParamB: return 0.0;
+
+        default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return "type";
+        case kParamflip: return "freq";
+        case kParamA: return "q";
+        case kParamB: return "invwet";
+
+        default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -283,4 +316,4 @@ case kParamB: return B;
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::biquadonehalf

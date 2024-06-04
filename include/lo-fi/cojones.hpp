@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::cojones {
+
+constexpr std::string_view k_name{ "Cojones" };
+constexpr std::string_view k_short_description{
+    "Cojones is a new kind of distorty."
+};
+constexpr std::string_view k_long_description{
+    "Cojones is one of the promised releases from back when I started all this. What’s interesting is, Cojones is also the seeds of Dither Me Timbers and StudioTan. That’s because it does a similar thing: it tracks the trajectory of the waveform (over five instead of three samples) and either heightens or minimizes any disparities it finds. It’s called Cojones, because I thought it highlighted that sort of quality in voices and guitars, though it’s easy to just make it be distorty and strange.You’ll find that boosting Cojones can give a peculiar sort of midrangey sonority. I’m not going to say it’s GOOD sounding, but it is at least distinctive. There’s also a ‘breathy’ which is more three-sample stuff like Dither Me Timbers and StudioTan, and a ‘body’ control that can beef up or cut bass and low mids.Pretty much play with it and if you hate it, throw it away and curse its name and mine. It’s all the rage! :D seriously, if you’re the sort to like this, you know who you are. If you’ve been putting Dither Me Timbers or StudioTan in places that aren’t the output dither, you need to try this instead as you’ll get a lot more out of it. And if its seasoning seems way too spicy and always produces trebly grit, try very slight amounts of its mojo, as this is one that’s set up so you can apply too much.After all, what good is an ugly new distorty if you can’t overuse it and make unpleasant yet unrecognizable noises? :)"
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class Cojones final : public Effect<T>
 {
-    std::string m_name{ "Cojones" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -20,17 +30,6 @@ class Cojones final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     Cojones()
@@ -55,10 +54,16 @@ class Cojones final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -89,7 +94,37 @@ class Cojones final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "breathy";
+            case kParamB: return "cojones";
+            case kParamC: return "body";
+            case kParamD: return "output";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -285,4 +320,4 @@ class Cojones final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::cojones

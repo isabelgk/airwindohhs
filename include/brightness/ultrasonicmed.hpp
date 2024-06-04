@@ -2,23 +2,27 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::ultrasonicmed {
+
+constexpr std::string_view k_name{ "UltrasonicMed" };
+constexpr std::string_view k_short_description{
+    "UltrasonicMed is two stages of supersonic filter, for using inside digital mixes."
+};
+constexpr std::string_view k_long_description{
+    "Hi! This is just what it says on the tin. Airwindows Ultrasonic is the stacked-up, five-biquad filter that rolls off everything above 20k, so in theory it has no sound of its own. It’s there to work in high sample rate mixes, between plugins that have nonlinearities and don’t have their own filtering (some of mine do, like Console7) and it will clean up the top-end of a digital mix.But, the original Ultrasonic has SO many stages of filtering that it starts to become audible, softening the highs, and if you used lots of them you’d eat your CPU and would be over-processing.So, enter Ultrasonic Lite (and Ultrasonic Medium).These are the same sort of thing, except Ultrasonic Lite has only one stage of filtering, and Ultrasonic Medium has two. They also start a teeny bit higher, on the assumption that if you’re reaching for a Lite version of the filter, you’re looking to not hammer your highs too much. Ultrasonic Medium also subtly staggers the placement of its filters so it has a two-stage roll-off that is hopefully more natural sounding than just doubling up Ultrasonic Lite on its own.Use these just like you would use Ultrasonic, if there are places in your digital mix where you think you’d benefit from suppressing ultrasonic frequencies. These are not brickwalls: the idea here is that you can sprinkle these throughout your mix, anywhere you like, both before and after things that are nonlinear and distorty. For the strongest possible effect, use the original Ultrasonic… but in places where you don’t need that much help with the ultra-highs, try Medium or Lite and apply a cleaner, subtler filter that lets more of the air through.If you’ve got something that’s causing an aliasing that will give problems further down the mix chain, and you put Ultrasonic Lite in front of it and the aliasing that would’ve bounced back down to 40k is turned down before it even aliases, making that unwanted 40k quieter… and then there’s another Ultrasonic Lite afterwards and that directly turns down the unwanted, aliasing 40k… then you’ve got a gentle, distributed aliasing suppression across your whole mix, that will really control the tendency of aliasing to just build up and go critical on ya :)(followup: turns out using many instances of this WILL tend to roll off your highs, where using the full version won't. This is because the full version's doing more processing, but creating a steeper filter. This insight led to UltrasonX, and later versions of Console)"
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class UltrasonicMed final : public Effect<T>
 {
-    std::string m_name{ "UltrasonicMed" };
-
     double biquadA[15];
     double biquadB[15];
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     UltrasonicMed()
@@ -38,10 +42,11 @@ class UltrasonicMed final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -62,7 +67,27 @@ class UltrasonicMed final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -176,4 +201,4 @@ class UltrasonicMed final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::ultrasonicmed

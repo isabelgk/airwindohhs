@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::cider {
+
+constexpr std::string_view k_name{ "Cider" };
+constexpr std::string_view k_short_description{
+    "Cider is a re-release of another old Character plugin."
+};
+constexpr std::string_view k_long_description{
+    "Cider is another Character plugin. Works like the last few, sounds kinda like an MCI console? This plugin was posted on a week full of troubles, so there's very little instruction about it. It's a tone coloring plugin, and you can find a more current version of this sound in BussColors4 on the Dark setting."
+};
+constexpr std::string_view k_tags{
+    "tone-color"
+};
+
 template <typename T>
 class Cider final : public Effect<T>
 {
-    std::string m_name{ "Cider" };
-
     double bR[35];
     double lastSampleR;
     double bL[35];
@@ -19,16 +29,6 @@ class Cider final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Cider()
@@ -54,10 +54,15 @@ class Cider final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -86,7 +91,35 @@ class Cider final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.70;
+            case kParamB: return 0.3333333;
+            case kParamC: return 0.3333333;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "hardns";
+            case kParamB: return "persnlty";
+            case kParamC: return "drive";
+            case kParamD: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -376,4 +409,4 @@ class Cider final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::cider

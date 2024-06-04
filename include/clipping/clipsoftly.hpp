@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::clipsoftly {
+
+constexpr std::string_view k_name{ "ClipSoftly" };
+constexpr std::string_view k_short_description{
+    "ClipSoftly is ClipOnly2 but as a softclipper: a very handy building block."
+};
+constexpr std::string_view k_long_description{
+    "What more needs be said? ClipSoftly is ultimate softclipping, using the techniques used on ClipOnly2 for softening the edge of the hard clipping, but on the softest possible clipping. Where ClipOnly2 manipulates the onsets of the brightest transients to give you pure hard-clipping without digital grit, ClipSoftly is doing that without even hardclipping.So what we have here, basically, is a control-less (like ClipOnly and ClipOnly2) safety clipper, but it's a saturation effect. It's also a building block I (or others) can use inside larger plugins or new versions of Console, much like the recent Pop2 uses ClipOnly2 on the output, to give you the ability for really aggressive attacks.You'd use something like ClipOnly2 in mastering specifically because it won't touch the values of any unclipped samples. ClipSoftly is different: it will touch the values of ALL samples, reshaping the whole sound to make it bigger, fatter, tubier.I hope you like it, and the way it'll affect my plugins going forward :)"
+};
+constexpr std::string_view k_tags{
+    "clipping"
+};
+
 template <typename T>
 class ClipSoftly final : public Effect<T>
 {
-    std::string m_name{ "ClipSoftly" };
-
     double lastSampleL;
     double intermediateL[16];
     double lastSampleR;
@@ -15,12 +25,6 @@ class ClipSoftly final : public Effect<T>
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     ClipSoftly()
@@ -42,10 +46,11 @@ class ClipSoftly final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -66,7 +71,27 @@ class ClipSoftly final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -184,4 +209,4 @@ class ClipSoftly final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::clipsoftly

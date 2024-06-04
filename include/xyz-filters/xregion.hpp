@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::xregion {
+
+constexpr std::string_view k_name{ "XRegion" };
+constexpr std::string_view k_short_description{
+    "XRegion is distorted staggered bandpasses, for extreme soundmangling."
+};
+constexpr std::string_view k_long_description{
+    "XNotch too normal for you? HERE YA GO :DXRegion is made out of bandpasses, like XBandpass, and if you keep the First and Last controls set the same it does act like an increasingly manic bandpass.But, if they’re set differently and the Nuke control is up (engaging more poles of filtering) here’s what happens: first we go into the First bandpass, distorting before we filter (turns out if we make these filters glitch out the result is just too predictable) and then we go through each successive bandpass (up to five) each of which goes a step farther towards the frequency setting that’s in Last. We’re covering a region, we’re spreading the response out.But we’re also distorting, each time.So, if First is a higher frequency than Last, we get progressively lower pitched bandpasses and a sort of thick, roaring, dense tone. But if Last is a higher pitch than First… we’re starting with a bassy distort, and then filtering out the SOUND and keeping only the DISTORTIONS. Oh, and the farther apart you spread the controls the more gain it uses.So basically this is raw industrial mayhem. It’s so bonkers you can use it inside uLaw and the result won’t even be crazier. In theory you can use this to get a really intense bandpass effect, for instance distorting a snare or something, and carefully control the gain and ‘Nuke’ (less of that means less bandpasses, and it won’t go all the way towards ‘Last’ anymore). But you can also just go nuts with it for some filter-sweepy, very distorted effects that won’t be like anything you’ve heard. I suspect the ‘nice’ uses of this will be much more limited, though in theory it should be as good at those as XBandpass is (to get a nice smooth distort, don’t spread First and Last too wide, or set them too high or too low, and balance the result with Dry/Wet)There are a lot of people who won’t need this… at ALL. For those who do… hope you like it :)As an aside, XRegion can do a really killer overdriven bass amp kind of a tone."
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class XRegion final : public Effect<T>
 {
-    std::string m_name{ "XRegion" };
-
     double biquad[15];
     double biquadA[15];
     double biquadB[15];
@@ -21,17 +31,6 @@ class XRegion final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     XRegion()
@@ -59,10 +58,16 @@ class XRegion final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -93,7 +98,37 @@ class XRegion final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.0;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "first";
+            case kParamC: return "last";
+            case kParamD: return "nuke";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -460,4 +495,4 @@ class XRegion final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::xregion

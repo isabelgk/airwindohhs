@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::chorus {
+
+constexpr std::string_view k_name{ "Chorus" };
+constexpr std::string_view k_short_description{
+    "ChorusEnsemble is a more complex, multi-tap mono chorus."
+};
+constexpr std::string_view k_long_description{
+    "Here’s the start of some modulation plugins: Chorus will give you a nice basic mono chorusing effect, sweeping one moving delay tap against the dry signal. What makes it unusual is a pile of odd Airwindows things to adjust it this way and that.The sweep is done with a peculiar Airwindows interpolation which both applies a bit of an averaging function, and also a subtle lift to highs to compensate for that. The idea is to have the moving part be totally fluid, analog-like, even though it’s digital.To drive that, there’s a treble boost going into this smoothing delay tap, and it’s based on the Airwindows Energy algorithms: that means this plugin interacts with the raw sample rate in two different ways. It’s designed to make it so, whatever the sample rate, the sounds project through to the most extreme highs without edge or dullness. That means Chorus won’t sound exactly the same at 44.1K, 96K and so on: it will try to deliver the most finely tuned treble for each sample rate, whatever that is, and the tonality might be different. Also, since it’s running a delay buffer, it’s giving you full use of the buffer at all times: the broader settings might be more useful at high sample rates.In general, this should be pretty approachable. Hope you like the tone: there’s more where that came from.Here we can fill out the Airwindows palette of modulation plugins a bit… like Chorus, this is using my special slightly dark interpolation with a little pre-sparkle to get an adaptable, rich chorusing effect. But ChorusEnsemble uses a bank of chorus taps to get a more complex, textured sound that’s farther from the original. You can set it wrongly, so don’t assume all the settings are appropriate: that said, a little care should give you nice lush chorusing that’ll work great on pads and backgrounds. The reason I allow for the ‘ugly’ settings is, who’s to say you might not have a use for them, and if you find that use you’ll have a tonal element that other people don’t have on tap (generally, it’s so hard to sell plugins that can sound wrong and broken that people will tend to shun that and limit you to ‘nice’)."
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class Chorus final : public Effect<T>
 {
-    std::string m_name{ "Chorus" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -28,15 +38,6 @@ class Chorus final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Chorus()
@@ -70,10 +71,14 @@ class Chorus final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -100,7 +105,33 @@ class Chorus final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "speed";
+            case kParamB: return "range";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -258,4 +289,4 @@ class Chorus final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::chorus

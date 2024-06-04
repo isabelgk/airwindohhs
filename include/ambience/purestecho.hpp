@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::purestecho {
+
+constexpr std::string_view k_name{ "PurestEcho" };
+constexpr std::string_view k_short_description{
+    "PurestEcho is optimized Airwindows echo with exactly four evenly spaced taps on tap."
+};
+constexpr std::string_view k_long_description{
+    "PurestEcho gives you four echoes, sample-averaged to deliver extremely precise timing, each with its own tap. That means you can use it as a delay line and set up discrete echoes which then stop completely: no feedback, only a series of trailing echoes which then get out of the way and don’t mud up your mix. Or you can use it for just a single slapback (use the last, for the longest delay time). Or, you can set up odd effects like increasing volume slapbacks, or use of only certain taps.Or, you can get a tone that’s part of the 90s: turn all the delay taps on full and then set the delay time really short. You’ll find there’s a tightly controlled pipe-like honk that emphasizes a musical tone… sort of a Dalek-like robot-like thing… and you can play this using the slider. Note: this slider is NOT smoothed, because it’s smashing the buffer anyway, but more importantly if you’re programming in a bassline using this effect you’d need it to abruptly switch frequencies. So think of it as something you’d play via control automation, not so much through live entry on the slider.Between that and the ability to throw a big rich echo that fakes ‘feedback’ but then gets right out of the way, I think PurestEcho will find its way into peoples’ workflows. I hope you like it :)"
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class PurestEcho final : public Effect<T>
 {
-    std::string m_name{ "PurestEcho" };
-
     const static int totalsamples = 65535;
     double dL[totalsamples];
     double dR[totalsamples];
@@ -20,17 +30,6 @@ class PurestEcho final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     PurestEcho()
@@ -56,10 +55,16 @@ class PurestEcho final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -90,7 +95,37 @@ class PurestEcho final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 1.0;
+            case kParamC: return 0.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "time";
+            case kParamB: return "tap 1";
+            case kParamC: return "tap 2";
+            case kParamD: return "tap 3";
+            case kParamE: return "tap 4";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -281,4 +316,4 @@ class PurestEcho final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::purestecho

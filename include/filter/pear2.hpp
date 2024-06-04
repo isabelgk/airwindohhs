@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::pear2 {
+
+constexpr std::string_view k_name{ "Pear2" };
+constexpr std::string_view k_short_description{
+    "Pear2 is my Pear filter plus nonlinearity."
+};
+constexpr std::string_view k_long_description{
+    "Turns out I got more use out of Pear than anybody else… until now.Pear (as a plugin) is real experimental. It's got fixed cutoff points based on bit shifting, to see what that was like and whether it would maximize tone purity. Maybe it did (you've got it already so you're free to check it out). It's got a Poles control, but it's not meant to be a sweepy synth filter, it was purely an experiment on things I could do with the Holt algorithm.Turns out you can have a lot more fun with it when you turn it loose.Pear2 doesn't restrict the frequencies. In fact it smooths the control, specifically so you can sweep it. You can sweep everything except Poles: there's a switch on that, but you get to add WAY more poles than before.And then there's the Nonlin control… and now it's time to get gnarly.This doesn't have a distortion circuit! As filthy as it can get, none of that is from distortion or saturation. It's purely from the same nonlinearity calculation present in Capacitor2, in BiquadNonlin, and so on. That is applied here to a completely different algorithm based on Holt, and the more poles you add to the gnarly brew, the weirder it gets. You can use this for a really vibey analog-style EQ (high or low shelf: I'll be using it as a crossover) or you can push it until it's making a sound that has not been heard before.So if you liked weirdness like the Y series filters, this is your new toy. Back next week with……more.Yeah, let's just call it 'more' ;)"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Pear2 final : public Effect<T>
 {
-    std::string m_name{ "Pear2" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -91,16 +101,6 @@ class Pear2 final : public Effect<T>
     float C;
     float D;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
-
   public:
     Pear2()
     {
@@ -125,10 +125,15 @@ class Pear2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -157,7 +162,35 @@ class Pear2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "freq";
+            case kParamB: return "nonlin";
+            case kParamC: return "poles";
+            case kParamD: return "invwet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -282,4 +315,4 @@ class Pear2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::pear2

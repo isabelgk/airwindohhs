@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::crunchygroovewear {
+
+constexpr std::string_view k_name{ "CrunchyGrooveWear" };
+constexpr std::string_view k_short_description{
+    "CrunchyGrooveWear is a version of GrooveWear for more edge and distortion."
+};
+constexpr std::string_view k_long_description{
+    "GrooveWear began as a feature on ToVinyl. It defaulted to ‘on a tiny bit’ and gave a slight treble lift and sculpting of the highs, following its working principle: averaging/smoothing the rate of change of the signal, something that’s not normally present in audio processing. This would cause the output to try and ‘keep going’ at the speed it was moving, like a phono cartridge needle that had weight and inertia.The thing is, it was also implemented with a bug (or possibly just an unwitting choice). It’d overshoot, and bring on a kind of treble zing that was distorted and didn’t always work for everybody. When I split this feature out into a dedicated plugin, GrooveWear, I found out through trying to incorporate a dry/wet control that I could apply half the effect and then the ‘groove wear’ wouldn’t overshoot. And it produced a treble-eroding plugin with a different operating principle than normal EQs, with the same ‘glue’ effect but none of the tizz or distortion. And that’s GrooveWear, and I considered it a good bugfix and came up with a way to run the dry/wet control in four stages so you could have the new ‘glue’ over an even wider frequency range, from a ‘purest’ one stage to twice the intensity of the original thing in ToVinyl. I still see that as the ‘groove wear’ to have, for realistically getting a ‘vinyl warmth’ effect, and I stand by that version.And yet… some folks missed the zing. So, this is for them.I’ve experimented and I think this is the optimal algorithm for doing that original ‘energy boost’ up top, except now you can apply it, too, at a wider range, and you can also get up to four stages of the effect. Adjusting the dry/wet will dial in a wide range of tones because of the way the effect kicks in (halfway engaged stages give that treble-eroded quality, so the effect is most striking at 0.25, 0.5, 0.75, and 1.0). And if you fully crank it out, you can get a really intense sort of treble hype that’s not like traditional EQs. It’s more exciter-like, and has no pre-echo even though it seems like it’s a very high Q filter with lots of resonance. It’s crunchy and adds zing and character and if you’re actually seeking fake zip of an interesting color, CrunchyGrooveWear has lots of potential. Remember, if you’re looking for the most extreme crunch, use 0.25, 0.5, 0.75 or 1.0 as intermediate settings actively take highs away again (GrooveWear functions linearly so it doesn’t have this behavior). But you’ve got the full range of adjustments, because sometimes it’s nice to let a plugin into the wild that’s extremely weird and untame. This one’s born to be a secret weapon because it’s strange and unpredictable."
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class CrunchyGrooveWear final : public Effect<T>
 {
-    std::string m_name{ "CrunchyGrooveWear" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -30,14 +40,6 @@ class CrunchyGrooveWear final : public Effect<T>
     double fMid[21];
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     CrunchyGrooveWear()
@@ -74,10 +76,13 @@ class CrunchyGrooveWear final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -102,7 +107,31 @@ class CrunchyGrooveWear final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.064;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "freq";
+            case kParamB: return "apply";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -791,4 +820,4 @@ class CrunchyGrooveWear final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::crunchygroovewear

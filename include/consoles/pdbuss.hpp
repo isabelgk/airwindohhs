@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::pdbuss {
+
+constexpr std::string_view k_name{ "PDBuss" };
+constexpr std::string_view k_short_description{
+    "PDBuss is Console5 and PurestDrive, sittin’ in a tree… (i.e. both at once, on channels and buss)"
+};
+constexpr std::string_view k_long_description{
+    ""
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class PDBuss final : public Effect<T>
 {
-    std::string m_name{ "PDBuss" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -18,14 +28,6 @@ class PDBuss final : public Effect<T>
     double previousSampleR;
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     PDBuss()
@@ -48,10 +50,13 @@ class PDBuss final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -76,7 +81,31 @@ class PDBuss final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "drive";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -211,4 +240,4 @@ class PDBuss final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::pdbuss

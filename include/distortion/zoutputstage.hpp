@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::zoutputstage {
+
+constexpr std::string_view k_name{ "ZOutputStage" };
+constexpr std::string_view k_short_description{
+    "ZOutputStage is the output clipping from the Emu e6400 style Z filters."
+};
+constexpr std::string_view k_long_description{
+    "So I didn't get asked for this, exactly.I got asked for the exciter setting out of the Emu e6400 Ultra. And this isn't it.But I did have an exciter (and so have you, as it's in the plugin collection.) I'm sure it's weirder and twitchier than the Emu one, but it does exist. It just won't sound anything like that sampler, because the sampler has a lot of hardware on the analog outs, as well as being probably a totally different algorithm than mine, one that I have no idea how it's done.Wait a second.The reason I got asked for this was, drum and bass guys in the UK wanted to add some insane grind and energy, to basically synth waves. And I don't have the algo for that… but my exciter is nothing if not insane, and I did an output stage on the Z filters. That would apply exactly the same to an exciter, or anything else. I'd just do it as a simple distortion, except that rather than being a normal distortion it'd use the special filtering used in the Z filters to get that 'frizz' on the edges of clipped sounds that I clearly saw in the recordings of the real e6400. If it did that on distorting filters, it would do the same on an exciter, or anything.And so I did :)This goes after… well, anything. Whatever you like. Turn it up past 0.1 to distort, just like the Z filters. Turn the output way down because it's really hot. Apply to whatever digital mayhem you can wreak, and it should act a little more like it's coming off that sampler.See ya next week :)"
+};
+constexpr std::string_view k_tags{
+    "distortion"
+};
+
 template <typename T>
 class ZOutputStage final : public Effect<T>
 {
-    std::string m_name{ "ZOutputStage" };
-
     double biquadE[15];
     double biquadF[15];
     double iirSampleAL;
@@ -17,14 +27,6 @@ class ZOutputStage final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     ZOutputStage()
@@ -48,10 +50,13 @@ class ZOutputStage final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -76,7 +81,31 @@ class ZOutputStage final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -228,4 +257,4 @@ class ZOutputStage final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::zoutputstage

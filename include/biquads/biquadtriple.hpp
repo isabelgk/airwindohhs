@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::biquadtriple {
+
+constexpr std::string_view k_name{ "BiquadTriple" };
+constexpr std::string_view k_short_description{
+    "BiquadTriple is a handy Airwindows cascaded biquad filter: steeper roll-off before resonance."
+};
+constexpr std::string_view k_long_description{
+    "Here’s another utility plugin! This is the same as BiquadDouble, except it’s three stacked biquads. Otherwise the same: you get to set the frequency, Q etc. for all the filters in parallel. This saves time over doing three instances of Biquad, plus they’re run in series inside Console inside the plugin, so there will be a deeper tone out of this one.It’s for if you wanted to get steeper filter slopes without the cutoff going resonant. This, like BiquadDouble, is very much ‘tools to make tools’, for if you’re mocking up some kind of effect and know you’re going to be using filters. You can test out what you’ll use in your effect, this way. Note: seems like the inv/dry/wet is really just wet/dry/wet, and I have too many new and more worthwhile plugins to put out to fuss over it so I’d advise just taking BiquadTriple as it is. I’d be using it as full-wet anyway though you can bleed in dry for more of a shelf effect if you’re doing a steep rolloff of some kind.I expect to be doing some more variations on this as there are known ways to stack filters where the Q factors are very specific and staggered: however, those will be more aimed at the mixer/end user, and probably will be called isolators (that being a common term for this type of steep crossover-like filter). And again, I’ve got other things to put out that are more interesting, so more will be revealed as I do those experiments. I think an Airwindows isolator-style effect would be good. Bear in mind the biquads can be fussy about extreme settings and moving the sliders abruptly."
+};
+constexpr std::string_view k_tags{
+    "biquads"
+};
+
 template <typename T>
 class BiquadTriple final : public Effect<T>
 {
-    std::string m_name{ "BiquadTriple" };
-
     double biquadA[11];
     double biquadB[11];
     double biquadC[11]; // note that this stereo form doesn't require L and R forms!
@@ -20,16 +30,6 @@ class BiquadTriple final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamfor (int x = 0,
-kParamA = 1,
-kParamB = 2,
-kParamC = 3,
-kNumParameters = 4
-
-    };
 
   public:
     BiquadTriple()
@@ -54,10 +54,15 @@ kNumParameters = 4
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor (int x = 0,
+kParamA = 1,
+kParamB = 2,
+kParamC = 3,
+kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -86,7 +91,35 @@ case kParamC: return C;
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return 0;
+        case kParamA: return 1.0;
+        case kParamB: return 0.5;
+        case kParamC: return 0.5;
+
+        default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return "type";
+        case kParamA: return "freq";
+        case kParamB: return "q";
+        case kParamC: return "invwet";
+
+        default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -282,4 +315,4 @@ case kParamC: return C;
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::biquadtriple

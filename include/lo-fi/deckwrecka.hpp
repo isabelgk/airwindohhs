@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::deckwrecka {
+
+constexpr std::string_view k_name{ "Deckwrecka" };
+constexpr std::string_view k_short_description{
+    "Deckwrecka fattens and dirties up beats."
+};
+constexpr std::string_view k_long_description{
+    "Back in the day, I was asked by composer Alan Gold to create a special plugin. How special? To give you some idea, you might recognize the name quicker as Agzilla… or the DECKWRECKA. And so, that became the name of the plugin, appearing on the Deckwrecka blog, then lost to time.Until now! Hope this sits well with the eponymous Deckwrecka. It was always free and now it’s doubly free because it’s open source too. Now it’s brought up to date with the most recent Airwindows technologies, and it’s available in VST form for the first time ever. :DSo what exactly is this thing? It’s like a thunderousness overdrive. It’s huge, slamming, dirty bass, like spinning records on a turntable run through 1000 watts and a pile of monster bassbins. Technically it’s like extra bass plus overdrive plus certain types of dirt and grunge all rolled up together into a pile of funk. Or at least that’s the endeavour.You can use it how you please, but you can throw it on kick drums for EDM and hip-hop, or whatever elements need to be more beefy and sub-rattling."
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class Deckwrecka final : public Effect<T>
 {
-    std::string m_name{ "Deckwrecka" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -71,13 +81,6 @@ class Deckwrecka final : public Effect<T>
     double iirSampleYR;
     double iirSampleZR;
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Deckwrecka()
@@ -153,10 +156,12 @@ class Deckwrecka final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -179,7 +184,29 @@ class Deckwrecka final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "wreck";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -535,4 +562,4 @@ class Deckwrecka final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::deckwrecka

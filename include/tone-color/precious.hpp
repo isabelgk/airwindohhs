@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::precious {
+
+constexpr std::string_view k_name{ "Precious" };
+constexpr std::string_view k_short_description{
+    "Precious is a re-release of another old Character plugin."
+};
+constexpr std::string_view k_long_description{
+    "So this is pretty straightforward: another Character re-issue, now free and open source and available in VST form. Woot!Might serve as a good color-adder, or fake guitar amp? Based on Precision 8 impulses, but it’s turned into very much its own thing: I think this became Holo in the Busscolors plugins. In the original form, here, you can crank up the color intensity a lot, or distort the hell out of it."
+};
+constexpr std::string_view k_tags{
+    "tone-color"
+};
+
 template <typename T>
 class Precious final : public Effect<T>
 {
-    std::string m_name{ "Precious" };
-
     double bR[35];
     double lastSampleR;
     double bL[35];
@@ -19,16 +29,6 @@ class Precious final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Precious()
@@ -54,10 +54,15 @@ class Precious final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -86,7 +91,35 @@ class Precious final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.70;
+            case kParamB: return 0.3333333;
+            case kParamC: return 0.3333333;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "hardns";
+            case kParamB: return "persnlty";
+            case kParamC: return "drive";
+            case kParamD: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -376,4 +409,4 @@ class Precious final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::precious

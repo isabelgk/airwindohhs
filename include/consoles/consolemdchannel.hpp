@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::consolemdchannel {
+
+constexpr std::string_view k_name{ "ConsoleMDChannel" };
+constexpr std::string_view k_short_description{
+    "ConsoleMDChannel goes for the tone shaping of the classic MCI console!"
+};
+constexpr std::string_view k_long_description{
+    "This has been a real journey, to get to this point. (see 'ConsoleMC' for more on that subject)ConsoleMD is replacing my fully analog mixing system, which I'm now looking to sell off. Technically, just the mixer, as I can re-use the Lavry for tracking, where I used to have it dedicated to re-capturing the mixdown from the Heritage Audio mixer. This is what it took, to retire that glorious beast.It's a channel strip that functions like a normal Console Channel, except it's got treble, a sweepable mid that only boosts (like the classic MCI mid boost), bass, a fader that runs before the EQ section like the classic MCI, and a special pan switching network that's like an evil cousin of LCR panning. And it's a summing buss that brings the summing character of the big MCI desks with a gnarly analog dirtiness that's not simply 'add a distortion box' but is actually a modification of other recent and unique work I've put out.ConsoleMD draws on the following recent plugins: Creature. NOT SubTight. Sinew. ResEQ2. Pear. BitShiftPan. There is not a single normal DSP algorithm in this thing unless you count sin() and asin() functions. It is ALL built out of current, 2023 Airwindows plugins that have all been pretty well received, sometimes with a fair bit of excitement. I told you all this was working up to something. This is it.Specifically, this is the first 'it' to come together: I've got at least five other big console concepts that deserve this treatment, but ConsoleMD is right here for you to jump into, right now. There's a couple reverbs in the demo, including kCathedral which is a call-out to the corresponding Bricasti patch. Those are for later.ConsoleMD is designed around running at 96k (or possibly 192k if you're so inclined) but ought to work at 44.1k. If you're at low sample rate and seek to oversample it 2x or 4x it shouldn't do it any harm.All of the EQ options are designed to be pristine when flat (mids, being boost only, are flat at 0.0 boost, not 0.5) and bring in multiple stages as you crank them harder and harder, whether it's the highs and mids getting increasingly saturated or the mids getting increasingly high-Q, allowing for everything from clarity to tonal extremeness thoroughly beyond what any real MCI console would do. This is not a clone, it's a tone in its own right, that tries to do the same job as some of the greatest big analog consoles ever to exist, but does it by the unforgiving and touchy rules of digital.I hope it brings you joy, and helps you get your sound as it helps me get mine."
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class ConsoleMDChannel final : public Effect<T>
 {
-    std::string m_name{ "ConsoleMDChannel" };
-
     double pearA[18];
     double pearB[22];
     double mpkL[2005];
@@ -29,18 +39,6 @@ class ConsoleMDChannel final : public Effect<T>
     float D;
     float E;
     float F;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
 
   public:
     ConsoleMDChannel()
@@ -80,10 +78,17 @@ class ConsoleMDChannel final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -116,7 +121,39 @@ class ConsoleMDChannel final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.25;
+            case kParamC: return 0.0;
+            case kParamD: return 0.5;
+            case kParamE: return 0.5;
+            case kParamF: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "treble";
+            case kParamB: return "midfreq";
+            case kParamC: return "midpeak";
+            case kParamD: return "bass";
+            case kParamE: return "pan";
+            case kParamF: return "fader";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -573,4 +610,4 @@ class ConsoleMDChannel final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::consolemdchannel

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::smooth {
+
+constexpr std::string_view k_name{ "Smooth" };
+constexpr std::string_view k_short_description{
+    "Smooth can tame pointy sounds or make drums explode."
+};
+constexpr std::string_view k_long_description{
+    "Here’s one of the classic Airwindows secret weapons, up to date and VST and free (yes, Patreon blah blah, you know the drill). It can be subtle or incredibly aggressive, and it’s named Smooth.You can use it on things like spikey acoustic guitars, overly edgy mics, anywhere the treble is just getting obnoxious: it’s as good as ToVinyl or Acceleration for that but is more of a clipper than a slew limiter. In that role it’s like buttering the highs up just a bit, and you can set it carefully to just snip off the stray edges super-transparently. Used right, Smooth is better than anything at dialing back individual instruments’ edginess without hurting the tone.You can also crank on large amounts of Smooth on sources like drums, to produce a huge explosive effect that’s comparable to OneCornerClip: this’ll produce obvious distortions on tonal sources (which might be fine for all I know) but on drums and percussion it sort of blends with and thickens the drum sound. It’ll bring out mids and lows, and at extreme settings it’ll go into a ‘dynamic inversion’ thing that’s like hyper-distortion.You get that, an output level, and dry/wet: with the range of possible adjustments, this ought to count as another ‘indispensable plugin’ for more than a few of you. Smooth is really approachable if you remember that, like my Acceleration limiter, it shouldn’t sound like you’re using anything if you use it subtly. You can always pull back Smooth until it sounds like it isn’t doing anything, even on the 2-buss if you like. Treat that and ‘smooth smash’ as separate uses and you should be good: in the one case you’re not supposed to hear it removing anything except by comparison, and in the other case you’re laughing and watching the world burn.As one does, these days :)"
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class Smooth final : public Effect<T>
 {
-    std::string m_name{ "Smooth" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -34,15 +44,6 @@ class Smooth final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Smooth()
@@ -81,10 +82,14 @@ class Smooth final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -111,7 +116,33 @@ class Smooth final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 1.0;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "smooth";
+            case kParamB: return "output";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -350,4 +381,4 @@ class Smooth final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::smooth

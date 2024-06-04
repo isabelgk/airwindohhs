@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::avermatrix {
+
+constexpr std::string_view k_name{ "AverMatrix" };
+constexpr std::string_view k_short_description{
+    "AverMatrix turns averaging into a full-featured EQ."
+};
+constexpr std::string_view k_long_description{
+    "My Average plugin is pretty handy. It gives you from one to ten taps of simple averaging, as a continuously variable thing. At higher settings, there are comb-filtery artifacts that come in as a result of how averaging works, but you can tune them with the filter setting and they sound pretty natural… and averaging has very good time response because it doesn’t have an IIR ‘tail’, so it’s very clean-sounding in ways normal filters aren’t.AverMatrix takes that, and gives you one to ten POLES of filtering like in the first Average. That’s continuous too: you can have three and a half poles, no trouble (it just generates the third pole and then fades halfway into it) so the subtlety of adjustment is great.AND, also by request, AverMatrix uses the Inv/Dry/Wet trick some of my other plugins use, and it’s a great idea to include. Go to full ‘inverse’ and AverMatrix is made to keep the dry and subtract the inverted wet from it… which means, now it’s a highpass. An amazing-sounding highpass, with great clarity and airy-ness and just as clean transient behavior, and just like applying dry/wet on the regular averaging, you can apply dry/inverse to give only a subtle treble lift. I think this is going to work real well for people. And one more thing: since native averaging at high numbers of taps gives a funny notch that you can tune, and since this is inverse, you can use this behavior to give a highs boost with a funny, tuneable peak. Set it wrongly and maybe it’ll make your mic sound nasty (don’t reinforce existing spikes in the mic’s response) but place it just right and you can get treble lift that neatly avoids the resonances of your mic… and enjoy the response of a much fancier microphone. (your settings will be sample-rate dependent so tune it again if you change sample rate)"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class AverMatrix final : public Effect<T>
 {
-    std::string m_name{ "AverMatrix" };
-
     double bL[11][11];
     double bR[11][11];
     double f[11];
@@ -17,15 +27,6 @@ class AverMatrix final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     AverMatrix()
@@ -51,10 +52,14 @@ class AverMatrix final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -81,7 +86,33 @@ class AverMatrix final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.0;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "average";
+            case kParamB: return "depth";
+            case kParamC: return "invwet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -214,4 +245,4 @@ class AverMatrix final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::avermatrix

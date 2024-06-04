@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::console7crunch {
+
+constexpr std::string_view k_name{ "Console7Crunch" };
+constexpr std::string_view k_short_description{
+    "Console7Crunch shows you Cascade but with its EQ weighted for more edge and grit."
+};
+constexpr std::string_view k_long_description{
+    "Console7Crunch is a variation on Console7Cascade, to experiment with something. Cascade stacked up distortion algorithms inside an instance of Ultrasonic, basically. For that reason, it distorted the super-highs very early on, and compensated for this in later stages, rolling off brightness and smoothing the distortion out. Well, with experiments like UltrasonX, and some upcoming even-more-intense filtering of that nature, I wanted to do a variation on Console7Cascade where the ONLY thing I changed was the order of the filtering. They’re supposed to combine to a perfectly flat multistage filter, and they do… but the way it hits nonlinearities and clipping is a whole other story.The result is a Console7Cascade that’s more crunchy, with more obvious clipping and an additional ability to deliver distorted punch in the extreme highs: Console7Crunch. It’s not wildly different (all this is meant to be ultrasonic! But of course it affects everything anyhow) but it’s a noticeably different color for when you’re looking for higher gain in the Console7 system. I hope you like it, and I found the experiment interesting."
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class Console7Crunch final : public Effect<T>
 {
-    std::string m_name{ "Console7Crunch" };
-
     double gainchase;
     double chasespeed;
     double biquadA[15];
@@ -19,13 +29,6 @@ class Console7Crunch final : public Effect<T>
     uint32_t fpdR;
     // default stuff
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Console7Crunch()
@@ -51,10 +54,12 @@ class Console7Crunch final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -77,7 +82,29 @@ class Console7Crunch final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.39;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "crunch";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -366,4 +393,4 @@ class Console7Crunch final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::console7crunch

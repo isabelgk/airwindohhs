@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::elation {
+
+constexpr std::string_view k_name{ "Elation" };
+constexpr std::string_view k_short_description{
+    "Elation is a re-release of another old Character plugin."
+};
+constexpr std::string_view k_long_description{
+    "This is Elation, which is NOT REALLY a sort of LA-2A like thing. That’s because it builds a distinct sound out of LA-2A convolution impulses, makes it already not an LA-2A, and then doesn’t properly compress :D it does something, but it doesn’t count as compressing. I’m not sure what I was up to here.But it’s got the Character plugin ‘character slider’ that lets you greatly accentuate the tonal effect (this is another one that steals bass if that interests you) and a drive slider that lets you crunch things, and unlike typical plugins it has a dry/wet on the top for some reason! So, if you’re looking for a ‘analog-ifier’ based on dynamic convolution that can hype up a sound in an interesting way, and it’s important to you that you use something other people won’t have or aren’t using, this is your silver bullet: like the other Character plugins, it’s a weird secret weapon that won’t sound like other peoples’ plugin chains. If you can work with what this one has, then you can bring a bit of color that people won’t have constantly heard."
+};
+constexpr std::string_view k_tags{
+    "tone-color"
+};
+
 template <typename T>
 class Elation final : public Effect<T>
 {
-    std::string m_name{ "Elation" };
-
     double compAL;
     double compBL;
     double compCL;
@@ -32,16 +42,6 @@ class Elation final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Elation()
@@ -80,10 +80,15 @@ class Elation final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -112,7 +117,35 @@ class Elation final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.3333333;
+            case kParamC: return 0.3333333;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "drywet";
+            case kParamB: return "persnlty";
+            case kParamC: return "drive";
+            case kParamD: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -545,4 +578,4 @@ class Elation final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::elation

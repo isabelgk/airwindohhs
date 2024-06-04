@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::console0buss {
+
+constexpr std::string_view k_name{ "Console0Buss" };
+constexpr std::string_view k_short_description{
+    "Console0Buss is a radical, minimalist Console system."
+};
+constexpr std::string_view k_long_description{
+    ""
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class Console0Buss final : public Effect<T>
 {
-    std::string m_name{ "Console0Buss" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -17,14 +27,6 @@ class Console0Buss final : public Effect<T>
     double avgBR;
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     Console0Buss()
@@ -43,10 +45,13 @@ class Console0Buss final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -71,7 +76,31 @@ class Console0Buss final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "vol";
+            case kParamB: return "pan";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -262,4 +291,4 @@ class Console0Buss final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::console0buss

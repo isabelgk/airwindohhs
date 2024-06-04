@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::kchamberar {
+
+constexpr std::string_view k_name{ "kChamberAR" };
+constexpr std::string_view k_short_description{
+    "kChamberAR is a take on tape echo into chamber echo."
+};
+constexpr std::string_view k_long_description{
+    "While I'm working on other stuff, here's a wild little toy!I've been struggling to get the sound of the Abbey Road chamber, on my Monday streams. Pretty sure what I'm doing works better with larger spaces (which I'm certainly going to do) and that I've got to dig into other approaches for studio-friendly, nice chambers (which I'm certainly going to do, especially since I might get to my goal June or July and get the Bricasti to study).So I didn't get the Abbey Road chamber, not really. But what did I get?Welcome to kChamberAR! Instead of a nice, classy Abbey Road chamber, it's a tape echo into a chamber gone terribly wrong. Or maybe it won't seem so wrong… but it's dirty, aggressive, and wild. If you crank the regeneration up it distorts and goes into infinite echo. If you crank up the bass cut, it filters way harder than the real Abbey Road STEED unit ('cos why not), and if you mess with the delay time, you get wild pitch modulations, all of which feed into the little, boxy, room.I honestly think this works better as an instrument and didn't work as a capital-C Chamber, much less the Abbey Road chamber. There's better to come, as far as serious chamber emulations go. When I do meet my goal and get the Bricasti to study, chambers will be first in my investigations, and I'll get to the bottom of the problem.Oh… because the delay works like you're speeding up the tape more and more, if you crank it all the way to the left for minimum delay, it's probably eating more CPU. For predelay keep it in the middle and it should be fine for that. The reason it goes that much faster is, you can tune the delay to bass notes like a monstrous Karplus-Strong oscillator which then drives (overdrives) a small room. And this is such a horrifying, awesome sound that I had to let you have it.I'll have more legit stuff coming soon. For now, have fun with the new monstrosity. It won't behave, but nothing you have will make noises like it, and that's always part of what I do :)"
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class kChamberAR final : public Effect<T>
 {
-    std::string m_name{ "kChamberAR" };
-
     double iirAL;
     double iirBL;
     double steedRegenL;
@@ -212,17 +222,6 @@ class kChamberAR final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     kChamberAR()
@@ -503,10 +502,16 @@ class kChamberAR final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -537,7 +542,37 @@ class kChamberAR final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.5;
+            case kParamC: return 0.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "delay";
+            case kParamC: return "regen";
+            case kParamD: return "low cut";
+            case kParamE: return "wetness";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1349,4 +1384,4 @@ class kChamberAR final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::kchamberar

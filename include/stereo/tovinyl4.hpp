@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::tovinyl4 {
+
+constexpr std::string_view k_name{ "ToVinyl4" };
+constexpr std::string_view k_short_description{
+    "ToVinyl4 is a vinyl-mastering simulator bringing several vinyl-type colors."
+};
+constexpr std::string_view k_long_description{
+    "ToVinyl has several uses. You can use it to reshape the bass in your track, making it more mono or tightening up the center. It’s a special multipole IIR filter that acts almost like a ‘mega-bass’ plugin: it doesn’t just take away, it rearranges (so don’t expect it to act like a normal digital cut, you might see increased peak energy down low.)Then, there’s the acceleration limiter. This algorithm is unlike any other Airwindows treble-reducer: it zeroes in on just the sorts of transients that’d burn up a cutting head, and zaps them ruthlessly. (if you own a cutting head you’re responsible for checking this, but some of you folks are still using Spitfish, and I’m pretty sure this will way outperform Spitfish.) The effect is treble softening without any obvious treble reduction, and it’ll make stuff sound like classic vinyl grooves very effectively.But that’s nothing compared to the next control, Groove Wear. This one analyzes the virtual groove, and then sets up an imaginary stylus going down that groove, and gives it a tiny bit of inertia. It’s more slew mojo (and not tied to any particular frequency, it doesn’t even know what a frequency is) and the effect (should you choose to use it) is a very characteristic darkening and slight trashening of the most extreme highs. You can shut it off entirely, or turn it up, and you can combine it with the acceleration limiter to get pretty much any ‘vinyl LP high end’ you want. Some settings even bring a touch of moving-coil sparkle: it’s not all darken, in fact Groove Wear is very much its own thing distortion-wise.Combine it all together and you’ve got ToVinyl4, the up-to-date version of a classic Airwindows for-pay plugin."
+};
+constexpr std::string_view k_tags{
+    "stereo"
+};
+
 template <typename T>
 class ToVinyl4 final : public Effect<T>
 {
-    std::string m_name{ "ToVinyl4" };
-
     double ataLastOutL;
     double ataLastOutR;
     double s1L;
@@ -98,16 +108,6 @@ class ToVinyl4 final : public Effect<T>
     float C;
     float D;
 
-    enum params
-    {
-        kParamfor(int count = 0,
-kParamaMid[count] = 1,
-kParambMid[count] = 2,
-kParamfMid[count] = 3,
-kNumParameters = 4
-
-    };
-
   public:
     ToVinyl4()
     {
@@ -197,10 +197,15 @@ kNumParameters = 4
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor(int count = 0,
+kParamaMid[count] = 1,
+kParambMid[count] = 2,
+kParamfMid[count] = 3,
+kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -229,7 +234,35 @@ case kParamfMid[count]: return fMid[count];
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return 0;
+        case kParamaMid[count]: return 0.0;
+        case kParambMid[count]: return 0.0;
+        case kParamfMid[count]: return 0.0;
+
+        default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return "mid hip";
+        case kParamaMid[count]: return "sidehip";
+        case kParambMid[count]: return "h limit";
+        case kParamfMid[count]: return "gv wear";
+
+        default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -906,4 +939,4 @@ case kParamfMid[count]: return fMid[count];
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::tovinyl4

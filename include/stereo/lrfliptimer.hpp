@@ -2,21 +2,24 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::lrfliptimer {
+
+constexpr std::string_view k_name{ "LRFlipTimer" };
+constexpr std::string_view k_short_description{
+    "LRFlipTimer is a utility that swaps Left with Right every few (1-10) minutes."
+};
+constexpr std::string_view k_long_description{
+    "I don’t know how useful this’ll be for you: a person asked me for it, and I was able to do it. This just does one thing.Every few minutes (as in, one minute to ten minutes) it swaps the L and R channels. It sweeps them across in about a tenth of a second, to prevent any sort of pop or anything. When it’s in LR or RL mode, it is 100% direct pass-through of the audio data word, so this is as clean as stuff like LeftToMono: it’s one of those ones that just copies the data over, not even touching it. That said, this doesn’t belong in your mix: the idea is that if you’re mixing and you do stuff asymmetrically, it’s like visual arts: you might need to flip the canvas left-to-right to see if things are off balance. That’s all this plugin does. You set how many minutes will elapse before it flips or re-flips."
+};
+constexpr std::string_view k_tags{
+    "stereo"
+};
+
 template <typename T>
 class LRFlipTimer final : public Effect<T>
 {
-    std::string m_name{ "LRFlipTimer" };
-
     uint32_t tick;
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     LRFlipTimer()
@@ -26,10 +29,12 @@ class LRFlipTimer final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -52,7 +57,29 @@ class LRFlipTimer final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "minutes";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -157,4 +184,4 @@ class LRFlipTimer final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::lrfliptimer

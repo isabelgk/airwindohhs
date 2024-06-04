@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::ynotlowpass {
+
+constexpr std::string_view k_name{ "YNotLowpass" };
+constexpr std::string_view k_short_description{
+    "YNotLowpass is soft and smooth to nasty, edgy texture-varying filtering, no control smoothing."
+};
+constexpr std::string_view k_long_description{
+    "YNotLowpass introduces a new way to internally distort filters, and a new control… Resonant Edge! The ‘normal’ position for this is around 0.1 on the control. If you make it less, you get a slightly asymmetrical distortion that lets you get really warm analog filter sounds, even when they’re resonant. If you crank it up, the Resonant Edge lets you go to very aggressive, glitchy sounds that are a lot more like circuit bending than bit-banging.This is the alternate version of YLowpass, except without control smoothing. That means it'll be slightly less CPU-hungry, and might be preferable for situations like use in VCV Rack at very small buffer sizes. These are also buying me some time to work on the upcoming ConsoleMC, which is beginning to take shape… and on a new update for ToTape, for which I've got an idea for a bias control. So, use YNotLowpass if you'd like slightly more CPU efficiency, if you run tiny buffers, if you are using it as a fixed filter sound, or if you want that 'neuro' glitchy zipper-noise sound, at which it'll be really good since it already has an aggressively unnatural filter tone :)"
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class YNotLowpass final : public Effect<T>
 {
-    std::string m_name{ "YNotLowpass" };
-
     enum
     {
         biq_freq,
@@ -51,18 +61,6 @@ class YNotLowpass final : public Effect<T>
     float E;
     float F; // parameters. Always 0-1, and we scale/alter them elsewhere.
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
-
   public:
     YNotLowpass()
     {
@@ -90,10 +88,17 @@ class YNotLowpass final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -126,7 +131,39 @@ class YNotLowpass final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 0.1;
+            case kParamD: return 0.1;
+            case kParamE: return 1.0;
+            case kParamF: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "freq";
+            case kParamC: return "reson8";
+            case kParamD: return "resedge";
+            case kParamE: return "output";
+            case kParamF: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -326,4 +363,4 @@ class YNotLowpass final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::ynotlowpass

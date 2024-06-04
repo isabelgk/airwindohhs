@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::groovewear {
+
+constexpr std::string_view k_name{ "GrooveWear" };
+constexpr std::string_view k_short_description{
+    "GrooveWear is for scrubbing highs off mechanically like a stylus would."
+};
+constexpr std::string_view k_long_description{
+    "Here’s something interesting! I revisited some pieces of ToVinyl4, one of ’em being GrooveWear. In fiddling with it, I discovered that I could put in a dedicated wet/dry for just that one part, and if I did, I got perfect high-frequency rolloff at 50%. In other words, as an effect it was working as intended (bit of overshoot available, like the needle was loose in the groove), but I could also redesign it as a tone-softener.It’s all based on variations of averaging. I’ve got Average to soften just only sample values (it has some interesting quirks but I swear by that algorithm for naturally rolling off highs in a way that doesn’t sound digital). GrooveWear goes one step beyond that, and averages slews (not sample values). That means it’s averaging the rate of change. Then, later, I did Aura, which is averaging the rate of change OF the rate of change… but that’s another story ;)More importantly, I came up with a nice feature doing the revision. The GrooveWear contained in ToVinyl uses two stages of processing, since it can be a subtle effect. I worked out a convenient way to make the dry/wet control handle multiple stages so, as you increase it, you’re progressively adding stage after stage with the final stage going from dry to wet: it means you can start off with a very mathematically clean amount of effect, just one stage dry/wet, and then keep adding more. And in the spirit of that, I doubled the stages so now GrooveWear has four.So, you can adjust the intensity control that specifies how much slew averaging the stages are doing (acts like a sort of frequency range control for the effect) or you can adjust the dry/wet to go from pristine to incredibly deep groove wear. It’s partly roll-off of the highs but it’s not JUST normal EQ, texturally it’s quite different because the effect doesn’t try to stop big transients like a square-wave’s sides, it tries to stop smaller-scale detail stuff while retaining the big harmonic content of waves. It’s averaging slew, not deleting it, so certain waveforms get through untouched… you’ll see.(Followup: this technique of stepping through wet/dry stages was also used for the Z series filters)"
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class GrooveWear final : public Effect<T>
 {
-    std::string m_name{ "GrooveWear" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -30,14 +40,6 @@ class GrooveWear final : public Effect<T>
     double fMid[21];
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     GrooveWear()
@@ -74,10 +76,13 @@ class GrooveWear final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -102,7 +107,31 @@ class GrooveWear final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.064;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "wear";
+            case kParamB: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -790,4 +819,4 @@ class GrooveWear final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::groovewear

@@ -2,22 +2,26 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::doublepaul {
+
+constexpr std::string_view k_name{ "DoublePaul" };
+constexpr std::string_view k_short_description{
+    "DoublePaul is like PaulDither but more so."
+};
+constexpr std::string_view k_long_description{
+    "This is for sort of a special purpose.I’ve got an outrageous custom dither (well, wordlength reducer: there’s no noise and no randomness in it) called Not Just Another Dither. For final output, it’s that I recommend.However, I’ve got a mastering engineer friend (Hi Bob!) who favors another dither of mine, PaulDither. The reason is, it’s traditional TPDF dither. It handles dithering duties perfectly (with a slight Airwindows-izing: the weight of the final noise floor is balanced to make one ‘bit’ function as zero, and to make the dither activate adjacent bits on either side for a better sound. This also gives a teeny least-significant-bit DC offset, if you assume ‘zero’ is between the two smallest bits, positive and negative)I wanted to give Bob (and anyone else selecting traditional TPDF) something fancier that still counted as purely normal dither. So, here’s DoublePaul.It’s TPDF highpassed dither, just like PaulDither. But, I’m also using some adjacent samples to skew the noise profile even further into the highs. It’s just a redistribution of energy, and it leaves the key pair of full-intensity noise samples to stay as TPDF dither. I just doctored the way you hear the noise, to push it a little farther into the highs. I’ve also backed off the teeny DC offset, and shaped every filter tap by ear. If you liked PaulDither, try DoublePaul and see if you like taking the PaulDither concept just a teeny bit farther, with no penalty to how the TPDF works. It’s just like a little sinc interpolation, a thing that’s trying to hide the TPDF energy by pushing it farther into the extreme highs. If you don’t trust NotJustAnotherDither, but you’d like something even quieter than PaulDither, try this."
+};
+constexpr std::string_view k_tags{
+    "dithers"
+};
+
 template <typename T>
 class DoublePaul final : public Effect<T>
 {
-    std::string m_name{ "DoublePaul" };
-
     double bL[11];
     double bR[11];
     uint32_t fpdL;
     uint32_t fpdR;
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     DoublePaul()
@@ -29,10 +33,11 @@ class DoublePaul final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -53,7 +58,27 @@ class DoublePaul final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -177,4 +202,4 @@ class DoublePaul final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::doublepaul

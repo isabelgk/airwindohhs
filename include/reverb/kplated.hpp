@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::kplated {
+
+constexpr std::string_view k_name{ "kPlateD" };
+constexpr std::string_view k_short_description{
+    "kPlateD is a plate reverb, not unlike its namesake atop Abbey Road."
+};
+constexpr std::string_view k_long_description{
+    "We're not done, but we're done with the lettered plate reverbs not unlike certain ones in a famous studio! And we're ending with a banger. This is kPlateD. This is the one that wasn't modified to run with hybrid circuitry, though it's still got the circuitry removed from the box to lower noise (ok, easier to do that with a plugin: I'm literally not putting fake mains hum or anything, in). This is the all-tube one.Just listen, and compare it with the others, notably kPlateA which is also more of a 'long deep' plate.You're not going to get the sheer scale of the difference off competing plugins, and these are free open source and if fixes are ever needed everyone will get fixes or updates for free, forever, with source code so you could maintain it yourself: how much is that worth to you? Probably not as much as being extorted for software, because people will always pay more money if they're backed into a corner and forced to. But you know, I don't need ALL of the money from all of the people. Just enough to live, and buy a Neve console to put in my home :) (just kidding)So even though it's purely software, the tube circuitry is plainly obvious as a contrast to the other three with their hybrid sound. How is this done? Partly through tuning everything (and selecting the actual reverb matrices) to suit the target sound. And partly through literally coding each of them a little differently, with kPlateD being by far the most distinct, its internal saturation algorithms being a whole different type.So if I can do this, why didn't I do it with kPlateA, B and C? For the same reason the Beatles album Abbey Road and the Pink Floyd album Dark Side of the Moon wouldn't automatically be better if they were cut on the old REDD consoles. Each sound serves a purpose. They convey distinct atmospheres, which your ear can learn and remember, so rather than struggling to adapt all manner of strange controls you can do 'this should have kPlateB' and then concentrate on what music's meant to go into it. Hope you enjoy the atmosphere of the classic kPlateD :)"
+};
+constexpr std::string_view k_tags{
+    "reverb"
+};
+
 template <typename T>
 class kPlateD final : public Effect<T>
 {
-    std::string m_name{ "kPlateD" };
-
     double iirAL;
     double iirBL;
     double gainIn;
@@ -211,17 +221,6 @@ class kPlateD final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     kPlateD()
@@ -504,10 +503,16 @@ class kPlateD final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -538,7 +543,37 @@ class kPlateD final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.25;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "inputpad";
+            case kParamB: return "damping";
+            case kParamC: return "low cut";
+            case kParamD: return "predelay";
+            case kParamE: return "wetness";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1408,4 +1443,4 @@ class kPlateD final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::kplated

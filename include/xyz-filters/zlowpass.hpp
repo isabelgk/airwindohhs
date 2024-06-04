@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::zlowpass {
+
+constexpr std::string_view k_name{ "ZLowpass" };
+constexpr std::string_view k_short_description{
+    "ZLowpass2 acts more like the Emu e6400 Ultra lowpass in motion, with coefficient interpolation."
+};
+constexpr std::string_view k_long_description{
+    "Onward! Today we have ZLowpass. I think this one might be the closest to the hardware yet! It works like my previous Z series filters, except it’s the lowpass this time.You might notice my video looks a bit different: that’s because my Blackmagic ATEM Mini finally and permanently blew up. I’m pretty sure I know why: there were times I ran it for long periods, I’ve often run many inputs into it or had it working hard doing things like chromakeying/lumakeying stuff at higher resolution and downscaling the result to HD, or running my laptop’s HDMI feed into it and having it upscale THAT to the higher native resolution, overlay the main camera and then downscale again to HD. On top of that, I’ve had it sitting on top of my Lavry DAC, and we’ve had some heat waves this summer.So, it melted. For a while it just had its input to the computer die (I found a Razer capture card to be more reliable) and then in some livestreams it’s been flaking out, and tonight it blew up for good and couldn’t even run a single camera. Anyone out there, be careful with these things. They’re just $300 or so, but you cannot push them too hard in warm conditions or they will melt. Or maybe the fan blew up. I know I can’t return it under warranty because, being me, I took it apart to see if I could make the cooling work better. Too little too late. Be warned and don’t run these little buggers hard, or do lots of up and downscaling, while sitting them on a warm thing. No more ATEM Mini.Until I get another, that is, and this time will NOT touch a thing about it, will fill in any warranty card it has, and will probably get a little laptop cooler pad or something. Whatever it takes, because my setup ended up pretty sweet if it wasn’t for the thing melting under the strain. (Replacement of the ATEM will NOT be out of what I’m saving up for getting a bigger and more classic sampler. Never fear, that journey will progress unhindered.)Anyway, here’s ZLowpass :D(followup: I did in fact replace the ATEM Mini, put it on a heatsink with a blue heatsink pad between, and used it extensively, and the replacement didn't melt. I ended up putting it aside and shooting video directly on the camera, so I could use 4k resolutions. The replacement ATEM with the heatsink should still be good.)Need I even say more?My Z series filters were hotly sought after by a specific crew of localized Airwindows fans :D but they paid for their relatively high CPU efficiency with a dose of zipper noise, and that’s not really a ‘close emulation of the classic Emu e6400 Z-Plane filters’. At the time I hadn’t worked out the tech involved.A bunch of plugins and a set of Y series filters (which have their own interesting qualities, in their own right) later… and the Y plugins were the ones I chose to learn the ways of filter coefficient interpolation, and all of it implemented with the Airwindows sound… we have… ZLowpass2!Oh, and I think some changes I had to make to alter the biquad distortion factors, actually got me CLOSER to the classic-sampler sound.So this is a sampler filter, designed to give you a seamless blend through several options the real unit offered. It also gives you a HUGE amount of gain on tap, because the DnB folks liked to internally clip stuff in the sampler and then hit the filter with it. Even with the first ZLowpass, I got some special quirks of the sampler represented in the sound. This one’s even better, particularly if you’re sweeping the controls around to ‘play’ the sampler EQ. If you want a more glitchy effect for some neuro-sparkle, or if you just want more CPU free, ZLowpass (original) is still there for you. I think if I got ZLowpass2 sounding better for static, unchanging settings, it’s not by a lot: it’s mostly in motion that this one is meant to shine.Hope you like it! I’ll be working through some of the not-posted yet plugins and will not be addressing the other Z2 filters just yet. I want to hear whether this one’s doing its job for you all, as this is probably the keeper (if you automate the controls, and why wouldn’t you).Thank you for bearing with me! There will be more to come. My Patreon keeps me able to do this work :)"
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class ZLowpass final : public Effect<T>
 {
-    std::string m_name{ "ZLowpass" };
-
     double biquadA[15];
     double biquadB[15];
     double biquadC[15];
@@ -25,16 +35,6 @@ class ZLowpass final : public Effect<T>
     float D;
 };
 #endif
-
-enum params
-{
-    kParamA = 0,
-    kParamB = 1,
-    kParamC = 2,
-    kParamD = 3,
-    kNumParameters = 4
-
-};
 
 public:
 ZLowpass()
@@ -64,10 +64,15 @@ ZLowpass()
     // this is reset: values being initialized only once. Startup values, whatever they are.
 }
 
-constexpr std::string_view name()
+enum params
 {
-    return m_name;
-}
+    kParamA = 0,
+    kParamB = 1,
+    kParamC = 2,
+    kParamD = 3,
+    kNumParameters = 4
+
+};
 
 void set_parameter_value(int index, float value)
 {
@@ -96,7 +101,35 @@ float get_parameter_value(int index)
     return 0.0;
 }
 
+T get_parameter_default(int index)
+{
+    switch (static_cast<params>(index))
+    {
+        case kParamA: return 0.1;
+        case kParamB: return 0.5;
+        case kParamC: return 1.0;
+        case kParamD: return 0.5;
+
+        default: break;
+    }
+    return 0.0;
+}
+
 constexpr std::string_view get_parameter_name(int index)
+{
+    switch (static_cast<params>(index))
+    {
+        case kParamA: return "input";
+        case kParamB: return "freq";
+        case kParamC: return "output";
+        case kParamD: return "poles";
+
+        default: break;
+    }
+    return {};
+}
+
+constexpr std::string_view get_parameter_title(int index)
 {
     switch (static_cast<params>(index))
     {
@@ -430,4 +463,4 @@ void process(T** inputs, T** outputs, long sampleFrames)
 }
 
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::zlowpass

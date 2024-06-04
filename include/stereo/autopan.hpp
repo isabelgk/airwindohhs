@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::autopan {
+
+constexpr std::string_view k_name{ "AutoPan" };
+constexpr std::string_view k_short_description{
+    "AutoPan is for getting some organic stereo movement into your mix."
+};
+constexpr std::string_view k_long_description{
+    "This is pretty simple: I got asked for an auto-pan. So I Airwindowsified it a bit, and here you go.It’s set up to get some nice organic movement into your mix in various ways. Rate is how fast it goes (from nearly static, to a rapid flutter).Phase means each channel relative to each other: on either side, you get full L-R and back again. At the center, it’s a mono tremolo (though, for stereo channels). Off-center, it’ll offset the sines in such a way that the sound sets up a swirling, circular stereo motion: swooping forward from the side, going across, and then back to near-silence again. Basically, centered is ‘not side motion’ and to the sides is ‘more side motion’.Wide just cuts the mid channel. What this does for the auto-panning is, it’ll make stuff stretch out a bit beyond the edges of the speakers. If you’ve got something full to the side then you’ll get a bit of the opposite on the other speaker. Full wide is ‘only side channel’ and you’ll hear it in both because that’s what you get when you have only side channel: centered ‘mono’ sound, just out of phase completely. You’ll probably want to use smaller amounts of this, unless…Dry/Wet is the final useful thing here. You can set up extreme stuff, like full Side or weird motions with Phase, and then just dial it back with Dry/Wet and it’ll give you a nice subtle activity of whatever you set up: don’t sleep on Dry/Wet here, you can get nice effects through using aggressive settings elsewhere and just sneaking in a little Dry/Wet. Especially if you’re doing extreme things with Wide, Dry/Wet is how you can integrate that into a sound so it’s just a nice little subtle motion that’s interesting. Or of course you can just crank it out, I’m not your mom :)"
+};
+constexpr std::string_view k_tags{
+    "stereo"
+};
+
 template <typename T>
 class AutoPan final : public Effect<T>
 {
-    std::string m_name{ "AutoPan" };
-
     double rate, oldfpd;
     uint32_t fpdL;
     uint32_t fpdR;
@@ -16,16 +26,6 @@ class AutoPan final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     AutoPan()
@@ -47,10 +47,15 @@ class AutoPan final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -79,7 +84,35 @@ class AutoPan final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 0.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "rate";
+            case kParamB: return "phase";
+            case kParamC: return "wide";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -188,4 +221,4 @@ class AutoPan final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::autopan

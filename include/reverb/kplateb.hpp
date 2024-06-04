@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::kplateb {
+
+constexpr std::string_view k_name{ "kPlateB" };
+constexpr std::string_view k_short_description{
+    "kPlateB is a plate reverb, not unlike its namesake atop Abbey Road."
+};
+constexpr std::string_view k_long_description{
+    "In the continuing saga of 'Chris makes plugins in a competitive marketplace', kPlateB is one heck of a statement!This is the follow-up to the plugin kPlateA, which I've talked about recently. It sought to get the sound of a famous EMT plate reverb on top of a famous recording studio, through study of internet examples of that sound. Turned out to be a little more complicated than that, but who's counting? As a result, you've got kPlateA, and it's a big deep plate reverby sound.Plate B from that studio is said to be shorter and brighter, and indeed the examples you can find of that sound in plugin form draw the plate in a different color (I believe in the real world they're all big steel objects and none of them are painted nor are any of them the gold foil EMTs, but artistic license) and in other plugins the algorithm's EQed a bit different and the controls give you shorter reverb times.Airwindows is different.In kPlateB, as with ALL different reverbs that will ever exist in the 'k' section of Airwindows-land, the fundamental algorithm is different, even the topology and basic code of the verb is different, and notably both of these use the following technique: my studio computer grinds away for hours or days to generate a 3x3 Householder matrix for allpasses that can be used two ways, horizontally and vertically. Same allpass values, but L and R see them in completely different combinations. And then, even more hours and days of grind for a 5x5 Householder matrix that does the delays of the actual reverb, the same way: L and R see completely different combinations in the same matrix which then has the sides crossfeed into each other in a way that's custom for each set of matrices. So the guts of the thing are totally different each time, and will continue to be (technically this means I could make a celebrity a bespoke space for just them to use, but they'd have to make it worth my while to NOT share that data with the open source world ;) )So, you've got kPlateA, and it sounds big and platey and deep and metallic and not unlike a big ol' plate reverb.kPlateB sounds not unlike MAGIC.It really freaked me out in the nicest way, how good this one sounds. Audio put through it just blooms, coming alive and sitting in a wonderful space. It's gonna be a hard act to follow… except that there will be a place for each of these, and a place for more traditional acoustic spaces I come up with later. It just so happens that kPlateB really does the 'envelop sound in a lush, vivid atmosphere' thing really well. I think kPlateA sits back a lot deeper and sounds more old and retro. kPlateD will have to sound even more retro as it models a tube EMT-140, not custom hybrid ones. kPlateC will need to be even shorter and brighter to properly emulate the famous real ones out there. All will have to have custom algorithms and matrices.I'm doing this as fast as I can, and I think it's coming along quite well. Sky's the limit, really. Hope you enjoy the sound of your new reverb plate as much as I enjoy it, having made it :)"
+};
+constexpr std::string_view k_tags{
+    "reverb"
+};
+
 template <typename T>
 class kPlateB final : public Effect<T>
 {
-    std::string m_name{ "kPlateB" };
-
     double iirAL;
     double iirBL;
     double gainIn;
@@ -215,17 +225,6 @@ class kPlateB final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     kPlateB()
@@ -512,10 +511,16 @@ class kPlateB final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -546,7 +551,37 @@ class kPlateB final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.25;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "inputpad";
+            case kParamB: return "damping";
+            case kParamC: return "low cut";
+            case kParamD: return "predelay";
+            case kParamE: return "wetness";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1450,4 +1485,4 @@ class kPlateB final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::kplateb

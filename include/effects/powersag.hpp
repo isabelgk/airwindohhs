@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::powersag {
+
+constexpr std::string_view k_name{ "PowerSag" };
+constexpr std::string_view k_short_description{
+    "PowerSag2 is my improved circuit-starve plugin, now with inverse effect!"
+};
+constexpr std::string_view k_long_description{
+    "We’re going to explore the early Desk plugins (as free VSTs), so here we’ll start off with one of the underlying principles! PowerSag models the problem of analog power supplies that can’t source enough current to drive the output of the circuit. The circuit doesn’t directly distort, but the more output it’s been making, the less is in reserve. This is part of the Desk line of plugins, but now it’s a distinct component to play with.You get a Depth and Speed control. Dial in the effect by exaggerating Depth and then exploring with Speed: it’ll create a variety of compressey or distortey effects, but since they’re sucking energy out of the body of the sound, it’s a completely different type of distortion from saturation or clipping. Then, return Depth to zero and sneak small amounts of it back in, until the desired effect is reached. You’ll get a more tubey effect with extremely slow Speed, a big-console transistory effect with very quick Speed.The neat thing about PowerSag is that, if you like grunge and distortion, it’s capable of adding some grind to the sound while pulling the channel back in the mix, where traditional distortion and saturation pushes sounds forward. When you balance that with normal overdrive, you can get a lot of energy and character happening without everything becoming too fatiguing and up-front. Balance is good, being able to trim the body of a sound is good: if you like sculpting mixes with distortion and saturation, this might be right up your alley :)This is PowerSag (my circuit-power-supply-starve plugin), but the internals are coded differently for more efficiency on modern CPUs, it gets twice as much maximum effect range (which will help if you’re using it at high sample rates) and it now has an inverse/wet control. That means that you can hear what’s being taken AWAY (which is typically a grungey, gatey effect) and fade into that if it helps you get more meat into some of your sounds."
+};
+constexpr std::string_view k_tags{
+    "effects"
+};
+
 template <typename T>
 class PowerSag final : public Effect<T>
 {
-    std::string m_name{ "PowerSag" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -18,14 +28,6 @@ class PowerSag final : public Effect<T>
     int gcount;
     float A;
     float B;
-
-    enum params
-    {
-        kParamfor(int count = 0,
-kParamcontrolL = 1,
-kNumParameters = 2
-
-    };
 
   public:
     PowerSag()
@@ -50,10 +52,13 @@ kNumParameters = 2
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor(int count = 0,
+kParamcontrolL = 1,
+kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -78,7 +83,31 @@ case kParamcontrolL: return controlL;
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return 0;
+        case kParamcontrolL: return 0;
+
+        default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return "depth";
+        case kParamcontrolL: return "speed";
+
+        default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -241,4 +270,4 @@ case kParamcontrolL: return controlL;
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::powersag

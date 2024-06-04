@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::console8litebuss {
+
+constexpr std::string_view k_name{ "Console8LiteBuss" };
+constexpr std::string_view k_short_description{
+    "Console8LiteBuss is simplified Console8, working with just a single mix buss."
+};
+constexpr std::string_view k_long_description{
+    "Here's a useful update on Console8! The original Console8 was unlike any other Airwindows Console, as it's designed to be used only in a Channel/Submix/Buss configuration. Its ultrasonic filtering needs to run through all three stages in order to be set up right. Yet, Console8 also introduced other things: a custom distributed highpass algorithm for acting more like real-world analog circuits, treble softening to mimic the use of transformers, and as a result you got a distinctive sound that wasn't present in more purist Console versions.Enter Console8Lite! Bear in mind that the full three-stage Console8 will still have a slight edge in certain ways: the interactions with the ultrasonic filtering are more intense, and things like the capacitor emulation work more effectively on the larger mix topology with more stages. But there's also a place for simpler, more direct mixers, and that's where Console8Lite comes in.It's designed from the ground up to bring all the Console8 features but in simpler, traditional Airwindows Console form. You put the channel plugins last on each channel, have the faders at unity gain, and put the buss plugin first on the buss. Everything else, from the custom highpassing to the treble softening to the ability to boost the buss output into an on-board version of ClipOnly2, is there in the simpler form, easier to set up and ready to bring analog tone to your DAW mix.When using it, set it up like any pre-8 version of Console. Use it as a replacement for Console8, though each plugin is roughly equivalent to a Console8 stage's In and Out run in series: if you mix and match it with Console8 full version it'll function but the ultrasonic filtering will no longer be calibrated.Hope you like the new, simpler and more direct Console8Lite :)"
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class Console8LiteBuss final : public Effect<T>
 {
-    std::string m_name{ "Console8LiteBuss" };
-
     double iirAL;
     double iirBL;
     double iirAR;
@@ -49,13 +59,6 @@ class Console8LiteBuss final : public Effect<T>
     // default stuff
     float A;
 
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
-
   public:
     Console8LiteBuss()
     {
@@ -95,10 +98,12 @@ class Console8LiteBuss final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -121,7 +126,29 @@ class Console8LiteBuss final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "fader";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -471,4 +498,4 @@ class Console8LiteBuss final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::console8litebuss

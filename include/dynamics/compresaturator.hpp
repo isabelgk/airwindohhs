@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::compresaturator {
+
+constexpr std::string_view k_name{ "Compresaturator" };
+constexpr std::string_view k_short_description{
+    "Compresaturator fades between compressing and soft clipping."
+};
+constexpr std::string_view k_long_description{
+    "One of the final plugins from the Kagi era, this stopped being available for a while when Kagi went out of business. It’s like a soft-saturator in which you can dial in even more cleanness, but couple it with a weird springy quality that’s very dynamic. It occupies more of the role of a stem or buss compressor than a peak limiter, but makes for a very powerful loudenator. The idea is that you can get a loud punchy sound but with more attitude than usual.Since it’s one of those strange Airwindows algorithms, be aware you can push it too far and get it to ‘flutter’ or oscillate like a tremolo or do other odd things: in normal use that shouldn’t ever be a concern, I’m just saying that this plugin isn’t normal and doesn’t sound or act quite like other plugins.In other words, classic Airwindows :) hope you like it!"
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class Compresaturator final : public Effect<T>
 {
-    std::string m_name{ "Compresaturator" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -23,17 +33,6 @@ class Compresaturator final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     Compresaturator()
@@ -63,10 +62,16 @@ class Compresaturator final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -97,7 +102,37 @@ class Compresaturator final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "drive";
+            case kParamB: return "clamp";
+            case kParamC: return "expand";
+            case kParamD: return "output";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -330,4 +365,4 @@ class Compresaturator final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::compresaturator

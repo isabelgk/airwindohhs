@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::gringer {
+
+constexpr std::string_view k_name{ "Gringer" };
+constexpr std::string_view k_short_description{
+    "Gringer is a full-wave rectifier plugin, like a Green Ringer guitar effect."
+};
+constexpr std::string_view k_long_description{
+    "Here’s another no-controls wonder… that ‘models’ an actual obscure guitar effect that also has no controls! And it makes horrible unmusical noises, just like the original obscure effect makes horrible unmusical noises! Whee!Seriously, though, here’s Gringer. It’s like an emulation of the old Dan Armstrong Green Ringer, kinda. No attempt was made to exactly circuit model anything, but it does the full-wave rectification thing that characterizes this effect, you can bypass it by bypassing the plugin, and it’s got a couple of biquad bandpasses (with VERY wide bandwidth) to mimic having analog circuitry and DC-blocking capacitors on input and output.Stick it on your guitar solo and see what you get. Please don’t stick it on your mastering console. No good will come of that."
+};
+constexpr std::string_view k_tags{
+    "effects"
+};
+
 template <typename T>
 class Gringer final : public Effect<T>
 {
-    std::string m_name{ "Gringer" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -15,12 +25,6 @@ class Gringer final : public Effect<T>
     double outbandL[9];
     double inbandR[9];
     double outbandR[9];
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     Gringer()
@@ -42,10 +46,11 @@ class Gringer final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -66,7 +71,27 @@ class Gringer final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -209,4 +234,4 @@ class Gringer final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::gringer

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::distance3 {
+
+constexpr std::string_view k_name{ "Distance3" };
+constexpr std::string_view k_short_description{
+    "Distance3 combines the best parts of Distance and Discontinuity."
+};
+constexpr std::string_view k_long_description{
+    "By request from my livestreams, let's jump right back into the Discontinuity thing, but this time combined with a much older plugin: the original Distance!This is a kind of plugin meant to darken the sound and make stuff sound really far away. Originally, I was thinking something that could take all the highs out and accentuate rumble, like turning a sound into the thunder version of itself. And so the first Distance worked basically as an EQ: three stacked stages of processing that combined to make stuff huge, kind of like my monitoring plugin SubsOnly.Thing is, that doesn't have any nonlinearities to speak of in it, not the kind that happen in the real world over that much air. And at the time I was working on a Console version called Atmosphere, and thought I had a handle on bringing in that kind of nonlinearity. And so the next one was Distance2… but it lost some of the purity and depth of Distance, but didn't sound quite the way I wanted. It was the best I could do at the time, and is still there if you're interested in different sorts of darken/distort.And then I brought in Discontinuity and was working on it in livestreams and someone mentioned, what if it was part of Distance? And the interesting thing is that Discontinuity also gets its sound from… three stages of processing, stacked. (as in, not side-by-side but in series, one after the other.)Anytime you look at a situation like that, you can think to yourself: well, I could run these two plugins on after the other, but what if I interleaved the stages? One of Distance, one of Discontinuity, another Distance, another Discontinuity, and so on? Surely that would combine the effects in a more interesting way, merge them into a new distinct thing as they work on each other in turn?And so here is Distance3. It goes right back to the tone quality of Distance, but it has all of the 'loud vibe' from Discontinuity, and outperforms either of them if you need the synthesis of both. There's probably lots of uses for this and my hope is that it'll be very easy to find those uses: if a thing has to be convincingly far away and you've already got reverb and ambience taken care of, Distance3 should immediately get you there in the best possible way."
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Distance3 final : public Effect<T>
 {
-    std::string m_name{ "Distance3" };
-
     float A;
     float B;
     float C;
@@ -63,15 +73,6 @@ class Distance3 final : public Effect<T>
     uint32_t fpdR;
     // default stuff
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
-
   public:
     Distance3()
     {
@@ -115,10 +116,14 @@ class Distance3 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -145,7 +150,33 @@ class Distance3 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "distance";
+            case kParamB: return "top db";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -433,4 +464,4 @@ class Distance3 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::distance3

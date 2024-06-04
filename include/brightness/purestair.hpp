@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::purestair {
+
+constexpr std::string_view k_name{ "PurestAir" };
+constexpr std::string_view k_short_description{
+    "PurestAir is a brightness experiment."
+};
+constexpr std::string_view k_long_description{
+    "A while back, I got reminded of this plugin. Someone said, ‘you haven’t put this out, when are you going to?’ and I said ‘Oh, that’s right, I haven’t’.So here you go. It’s a bit weird. Normally ‘Purest’ plugins are ultra-simple. This isn’t quite like that and I don’t remember why. It’s sort of like Air or Energy, an air-band boost or cut, but it’s also got a limiting factor where it’ll refuse to boost past a certain intensity of treble. In that way, it’s like Acceleration. Except it’s not exactly Acceleration, not exactly a slew clipper… heck, it’s not even like Air or Energy. It’s a little like a de-esser in Bizarro World? Working oppositely?Anyway, it’s yours if you want it. There are many odd ways to do EQ code. This is clearly one of them, and it seems to be not exactly like anything else I’ve done, and it sure does crank up the extreme air band if you want that. And it’s got that clamping factor to cap it (though similarly to Acceleration, it’ll give you trouble trying to hear what’s being done). I guess check it out, and if your ears are amazing WAY up in the ultra-treble, and you also like the sound of it, you’ll probably be able to hear the action of the limiter just fine.Me, I’m more interested in dark reverbs and deeper spaces and bass, so this was never my pet plugin: maybe it can be yours :)"
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class PurestAir final : public Effect<T>
 {
-    std::string m_name{ "PurestAir" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -34,15 +44,6 @@ class PurestAir final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     PurestAir()
@@ -71,10 +72,14 @@ class PurestAir final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -101,7 +106,33 @@ class PurestAir final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.0;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "boost";
+            case kParamB: return "limit";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -257,4 +288,4 @@ class PurestAir final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::purestair

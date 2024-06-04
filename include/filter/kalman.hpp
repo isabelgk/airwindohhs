@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::kalman {
+
+constexpr std::string_view k_name{ "Kalman" };
+constexpr std::string_view k_short_description{
+    "Kalman is not a real filter!"
+};
+constexpr std::string_view k_long_description{
+    "So… come with me, if you will, on this journey.There's a huge amount of audacious Airwindowsness that hinges on this little bit of code that was never meant to work for audio purposes. This isn't just from finance or science, it's literally from GPS satellites and their care and feeding.Meet Kalman. To the best of my knowledge, nobody has this as an audio filter up to now. And now you do, and you're staring at it going 'wait, what?', and rightly so. At first glance this ticks none of the boxes, and then it sounds awful.What's happening? Kalman is 'filtering', but really it's trying to predict a 'real' position from what it sees as hopelessly noisy data. The thing is, it's the audio input data. None of it is 'wrong' in any sense. In other situations I go to great lengths to preserve every detail, and here Kalman is, trying to get rid of 'mistakes' that aren't even mistakes.However, this is also how Air3 got its amazing ability to extract or suppress the air band. So what happens when you're sweeping it from the highs right down through the midrange, into bass and beyond?Bad things. It neither knows nor cares what a frequency is, or whether it's producing a filter slope. Really, it's not. It's producing wavelike outputs like it was charting a GPS course and only roughly correlating them to audio frequencies. It won't produce sharp breaks in its curve, but the farther you go down, the more its 'steering' will interfere with the audio, producing a sort of grinding, overbearing solidity, like the audio was freezing solid or turning to stone.This is not even an audio filter, remember. I'm sure anyone who's tried this, abandoned it, immediately, because you set it to full-wet and it immediately sounds awful.More fools they!This thing is best experienced not as a synth-style filter, not some sweepable musical thing, but as a crossover. You can hear either it, or on the 'inv' setting, its opposite. You can subtract its output from the dry signal, and then recombine them again. Works just fine in fact. And that's where things get really interesting.Full wet produces this unbearably heavy, petrifyingly solid, unyielding sound. Up higher it's an exaggerated version of the Air3 roll-off. It makes everything dead, weighty, even when higher frequencies burst through in artifacts it's like they're the bones of the sound you started with. It's a really strong texture.When you subtract it, you've got this hot, lively, aggressive texture. It's fiery, energetic, a little like my old plugin Cojones which identified unpredictable elements in the sound in the treble regions. This will do it at any tonal range: I'd say frequency, but the whole effect defies frequency. You can have opposite tone colors with your opposite frequency ranges: low/stone, high/fire. At the extremes, the effect is so aggressive it's disruptive and sounds broken and wrong.And then… just blend them more subtly, and Kalman shows what it's really for.When both elements are present (in this one, it's inv/wet settings that are near the center and mostly dry, but it'd also work as Fire/Stone faders meant to stay mostly balanced) you can lean the whole texture in different directions across an amazingly wide range of basic tonality. You can fool with just the deep subs, making them monumental or leaning them out. You can darken abrasive upper mids, or mid-mids, or, heck, lower mids if you like. Above the range will be more or less Fire, below will be more or less Stone. The range, however, will never be just an isolated 'cutoff frequency' because the whole thing completely transforms that whole range.If you can transform how you hear away from 'frequency' and hear things in terms of texture, you can apply sound changes completely unattainable by normal filtering, no matter how complex. And the neat thing is, since it's a form of crossover, it excels at subtlety. And since the range options (shown here as simply 'Kalman') are so wide, you can transform texture of all sorts, not just 'stone = heavy = weight = bass'. Heck no! You can adjust a piano to have weightier low midrange if you like, or take a drum room sound and make everything over the bass frequencies more fiery. You can take a big guitar amp, crank the weight, and then just sneak up the Kalman knob until the brutality of the lows are undeniable.There will be more like this, as seen in the video. But Kalman is here now. You're welcome to begin playing with it. If it fights you, don't give up on it too easy. You might be able to do more with less. I think in many cases that inv/wet control is going to hover nearly exactly halfway. It won't take much to get this plugin doing obvious texture shaping. The rest is up to you…"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Kalman final : public Effect<T>
 {
-    std::string m_name{ "Kalman" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -41,14 +51,6 @@ class Kalman final : public Effect<T>
     float A;
     float B;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
-
   public:
     Kalman()
     {
@@ -68,10 +70,13 @@ class Kalman final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -96,7 +101,31 @@ class Kalman final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "kalman";
+            case kParamB: return "invwet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -265,4 +294,4 @@ class Kalman final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::kalman

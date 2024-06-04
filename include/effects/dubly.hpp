@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::dubly {
+
+constexpr std::string_view k_name{ "Dubly" };
+constexpr std::string_view k_short_description{
+    "Dubly is a retro vibe and atmosphere maker."
+};
+constexpr std::string_view k_long_description{
+    "Some people will recognize this instantly… even if you don't do heavy metal in Dubly, you know :)Here's what this is. There's a famous sort of noise reduction, with variations, that's based around the idea of taking the audio, filtering it, compressing it 2:1 and adding that TO the signal. You then record that to tape. And when you play it back, you take that combination, compress it and filter it AGAIN, but this time subtract it from the signal. And hey presto, perfect sound!Well… nope. Doesn't add up. Changes the sound. The thing is… that changed sound is sort of magical.How come? For starters, when you distort tape you get harmonics. If you do that to the sound you start getting harmonics a lot sooner, over a broader range of sounds… but then you're taking the added harmonics you just made, and you're subtracting them again. You're turning them down. You're making the dynamics of your sound come with dynamically varying harmonics, a real color adder, but without the dynamic squashing of just plain saturating. And that's not even getting into when you've got the machines misaligned… or tuned by ear to bring out a particular magical sparkliness and ambience that's NOT really accurate, but maybe is the special sauce for a particular studio's recording machines… we may never know, we know only that these old noise reduction things were fiddly beasts…So what if you strip all that down, Airwindows-style, to only the basic principle?Meet Dubly. It uses uLaw technology (really!) for good, not evil! It does the most general form of that processing, NOT like any specific very proprietary tech, and uses a simple distortion inside rather than any tricky tape emulation (that can come later!). It defaults to 0.5, where it will just bring a delicate aura of retro magic to the sound. But, the way it's calibrated (very tricky, by nature) you can crank it out and mis-calibrate it. And when you do, you'll get more and more into a crazy, hyped, intensified zone that adds a lot of treble energy. But this doesn't make it into a 'single ended' version of the processing (even though that's a known secret weapon). It remains the double-ended, full chain, noise-reducing system (that is, if the single distortion stage was adding noise, which it isn't). Just… twisted.There will obviously be more of this, but for now, you can do your heavy metal in Dubly, you know. It will get a little lighter and spacier and more atmospheric, which is probably why this is Not Done. But who knows, maybe you'll like a little Dubly on your record. Hope you like it :)"
+};
+constexpr std::string_view k_tags{
+    "effects"
+};
+
 template <typename T>
 class Dubly final : public Effect<T>
 {
-    std::string m_name{ "Dubly" };
-
     double iirSampleAL;
     double iirSampleBL;
     double iirSampleAR;
@@ -17,14 +27,6 @@ class Dubly final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     Dubly()
@@ -46,10 +48,13 @@ class Dubly final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -74,7 +79,31 @@ class Dubly final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "dubly";
+            case kParamB: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -228,4 +257,4 @@ class Dubly final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::dubly

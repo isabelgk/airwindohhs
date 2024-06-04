@@ -2,21 +2,24 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::msfliptimer {
+
+constexpr std::string_view k_name{ "MSFlipTimer" };
+constexpr std::string_view k_short_description{
+    "MSFlipTimer is a utility that swaps stereo with mono every few (1-10) minutes."
+};
+constexpr std::string_view k_long_description{
+    "Here's a request I got, a variation on one that's in the utility category. While I ramp up to more interesting stuff I can do some of the background work while putting out the thing that someone asked me to make :)Every few minutes (as in, one minute to ten minutes) MSFlipTimer switches from stereo to mono. It does this in about a tenth of a second, to prevent any sort of pop or anything. When it’s in stereo it is 100% direct pass-through of the audio data word, so this is as clean as stuff like LeftToMono: it’s one of those ones that just copies the data over, not even touching it. That said, this doesn’t belong in your mix: the idea is that if you’re mixing and you tend to screw up the mono mix by doing too much crazy stuff with stereo, this'll repeatedly force you to grapple with it in its mono form."
+};
+constexpr std::string_view k_tags{
+    "stereo"
+};
+
 template <typename T>
 class MSFlipTimer final : public Effect<T>
 {
-    std::string m_name{ "MSFlipTimer" };
-
     uint32_t tick;
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     MSFlipTimer()
@@ -26,10 +29,12 @@ class MSFlipTimer final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -52,7 +57,29 @@ class MSFlipTimer final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "minutes";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -159,4 +186,4 @@ class MSFlipTimer final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::msfliptimer

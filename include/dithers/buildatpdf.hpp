@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::buildatpdf {
+
+constexpr std::string_view k_name{ "BuildATPDF" };
+constexpr std::string_view k_short_description{
+    "BuildATPDF is a dither-making toolkit."
+};
+constexpr std::string_view k_long_description{
+    "I've explained how DoublePaul was made: taking a TPDF highpass dither, and including additional nearby samples to cause the tone of the noise to be more high-pitched.Wouldn’t be fair if I didn’t give you a chance to play with it yourself :)To use BuildATPDF the way I used it, set the middle sliders to -1 and +1. Then adjust the other sliders until you’ve tailored the sound of the noise in a way you like. With the other sliders at 0, you have PaulDither. If the surrounding sliders ‘oscillate’ (going minus, plus, minus, plus) you have more of what DoublePaul is. Tailor the highpass in ways gentle or obvious, or even darken the highpass while leaving its dither functionality intact! It’s the combination of a -1 and +1 tap that gives you highpassed TPDF. (This won’t work with +1 and +1, because it’s the same random noise passing through the plugin: it needs to play a positive node against a negative node)Or, you can set up the -1 and +1 taps, and then just play with the sliders to see what it sounds like!"
+};
+constexpr std::string_view k_tags{
+    "dithers"
+};
+
 template <typename T>
 class BuildATPDF final : public Effect<T>
 {
-    std::string m_name{ "BuildATPDF" };
-
     double bL[11];
     double bR[11];
     double f[11];
@@ -25,22 +35,6 @@ class BuildATPDF final : public Effect<T>
     // parameters. Always 0-1, and we scale/alter them elsewhere.
     uint32_t fpdL;
     uint32_t fpdR;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kParamG = 6,
-        kParamH = 7,
-        kParamI = 8,
-        kParamJ = 9,
-        kNumParameters = 10
-
-    };
 
   public:
     BuildATPDF()
@@ -63,10 +57,21 @@ class BuildATPDF final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kParamG = 6,
+        kParamH = 7,
+        kParamI = 8,
+        kParamJ = 9,
+        kNumParameters = 10
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -107,7 +112,47 @@ class BuildATPDF final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.5;
+            case kParamE: return 0.5;
+            case kParamF: return 0.5;
+            case kParamG: return 0.5;
+            case kParamH: return 0.5;
+            case kParamI: return 0.5;
+            case kParamJ: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "first";
+            case kParamB: return "second";
+            case kParamC: return "third";
+            case kParamD: return "fourth";
+            case kParamE: return "fifth";
+            case kParamF: return "sixth";
+            case kParamG: return "seventh";
+            case kParamH: return "eighth";
+            case kParamI: return "ninth";
+            case kParamJ: return "tenth";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -260,4 +305,4 @@ class BuildATPDF final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::buildatpdf

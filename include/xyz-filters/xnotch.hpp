@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::xnotch {
+
+constexpr std::string_view k_name{ "XNotch" };
+constexpr std::string_view k_short_description{
+    "XNotch is a distorted digital EQ, not as glitchy as the others."
+};
+constexpr std::string_view k_long_description{
+    "This is a little different from some of the X series filters. I was asked whether I could do a notch filter like the other stuff I’d been doing: all these filters with Nuke controls that do crazy things when you distort them.This is not quite like that.XNotch is the same topology: biquad filters, with distortion stages in there. But instead of distorting inside the filter for crazy behavior and weird noises, this one distorts BETWEEN stages of filtering and that makes it act much more normal. So… why would I include it in the weird-zone with stuff like XHighpass?Because the combination of those things and the dry/wet control makes it INCREDIBLY useful.What you do is, for a sound source (for instance a kick drum mic), you dial in a notch where you want it. As you add input drive, or increase Nuke, the saturation will get more and more intense, but only apply to the stuff outside the notch. You can thicken up percussive sounds very well this way, or take drum overheads and focus on the treble sparkle by notching out midrange, or sweep it around for a phasey effect (this plugin is unusually well-behaved for automation, for some reason the notch biquad takes modulation better than usual) and then bring in dry to balance the intensity of the effect.But if you’re using it to thicken up sounds, you can continue to push the saturation or Nuke while you’re doing that, which means you’re contouring both the tone and the compression of just the stuff you’re trying to enhance, and balancing it against a dry signal that’s effectively uncompressed/unsaturated. The real reason I knew I had to put this out just as it was, is because it became easy to just dial this stuff in, with very few controls, and no fuss.It doesn’t do crazy things (unless you count allowing for heavy distortion) but the thing it does, is a thing I’ve been needing. I think it might replace Console7Cascade for some of my drum tracks, just because it can saturate and also notch, which will give me a way broader spectrum of available, useful tones.And now you’ve got that, too :)"
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class XNotch final : public Effect<T>
 {
-    std::string m_name{ "XNotch" };
-
     double biquad[15];
     double biquadA[15];
     double biquadB[15];
@@ -20,16 +30,6 @@ class XNotch final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     XNotch()
@@ -56,10 +56,15 @@ class XNotch final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -88,7 +93,35 @@ class XNotch final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 1.0;
+            case kParamC: return 0.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "freq";
+            case kParamC: return "nuke";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -381,4 +414,4 @@ class XNotch final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::xnotch

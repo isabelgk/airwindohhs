@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::onecornerclip {
+
+constexpr std::string_view k_name{ "OneCornerClip" };
+constexpr std::string_view k_short_description{
+    "OneCornerClip is an ultimate full-bandwidth clipper."
+};
+constexpr std::string_view k_long_description{
+    "OneCornerClip works like this: it’s like ADClip, except it spreads out the onset to clipping over possibly many samples. They converge upon the maximum possible output, which means the front edge of a clip takes on a continuous curve, moving its energy down into lower frequencies where the clippage is less bright and gritty, and more brutal and ballsy.Then, on departing the clip, the waveform just snaps instantly to the next unclipped value, with no attempt to soften: so your waveshaping ends up getting one corner (on departing the clip) and one rounded onset (entering the clip).What this means is, you can smash this with bass and it’ll remain bassy. Smash it with midrange and it’ll be middy. It shapes itself to the needs of your track, the distortion taking on the character of what you’re putting in. And that means, you can slam stuff absurdly hard through this while retaining character… and you can retain size and scale and depth.I didn’t really design it for 2-buss mastering duties though I’m sure it’ll find some use there. It’s more a technical experiment that came to life and ate Tokyo. I think it’ll do great for nasty industrial noise, for obliterating drum room tracks, just a whole bunch of uses: because this isn’t a special purpose effect. It’s a big fat dirty distortion, and that makes it more flexible than bright gritty distortions, in that it can wear your frequency balance like a mask. It IS still distortion, so you won’t be using it for clean things. But it’s also very good at soaking up brief clips without revealing itself, so it’s not an insane choice for subtler use. I keep it at 0.618 for general use: that gets a good range of tones."
+};
+constexpr std::string_view k_tags{
+    "clipping"
+};
+
 template <typename T>
 class OneCornerClip final : public Effect<T>
 {
-    std::string m_name{ "OneCornerClip" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -22,17 +32,6 @@ class OneCornerClip final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     OneCornerClip()
@@ -59,10 +58,16 @@ class OneCornerClip final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -93,7 +98,37 @@ class OneCornerClip final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.33333333333333333;
+            case kParamB: return 0.966;
+            case kParamC: return 0.966;
+            case kParamD: return 0.618;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "pos thr";
+            case kParamC: return "neg thr";
+            case kParamD: return "voicing";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -274,4 +309,4 @@ class OneCornerClip final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::onecornerclip

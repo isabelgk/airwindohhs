@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::ncseventeen {
+
+constexpr std::string_view k_name{ "NCSeventeen" };
+constexpr std::string_view k_short_description{
+    "NCSeventeen is Dirty Loud!"
+};
+constexpr std::string_view k_long_description{
+    "NC-17 was designed as the loudenator-killer. It uses the same technology as ADClip’s energy redistribution stuff, but on a soft-clipper, and instead of just feeding the energy back in, it uses it to modulate a Chebyshev filter: sort of complicated, but it’s definitely one of those Airwindows things. First to use such a soft clipper as the primary loudness maximizer, and secondly to use such a weird technology after it. Why a Chebyshev? To produce second harmonic. Why do that? To feed deep bass back in despite the loudenating. Okay, so the whole idea is pretty strange.What happens?Firstly, the whole tone changes, whether you’re pushing loudness or not. Check that first. You might immediately dislike the result, or if you seek ‘glue’ maybe you’ll like it, or use it to replace some other ‘glue’ effect. If you’re still with NC-17 after checking that, proceed to turn it up (or mix hotter into it). You’ll find no specific ‘break point’: instead, it just gets dirtier and dirtier the harder you push. The whole texture of loudness dynamics is altered, so you get the loudness cues of distortion but with a bass foundation mere distortion won’t permit, and a continuous spectrum between ‘more or less clean’ and ‘impossibly too loud’.This one will also handle cleaner synthesizer tones, EDM, the kinds of sounds that reveal the artifacts of other loudenators ruthlessly. With NC-17, instead you get a slight ‘grungening’ but then it refuses to break up in the normal sense, just stretches to fit. (this one might be the one you want on drum submixes, too)"
+};
+constexpr std::string_view k_tags{
+    "saturation"
+};
+
 template <typename T>
 class NCSeventeen final : public Effect<T>
 {
-    std::string m_name{ "NCSeventeen" };
-
     double lastSampleL;
     double iirSampleAL;
     double iirSampleBL;
@@ -26,14 +36,6 @@ class NCSeventeen final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     NCSeventeen()
@@ -64,10 +66,13 @@ class NCSeventeen final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -92,7 +97,31 @@ class NCSeventeen final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "louder";
+            case kParamB: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -667,4 +696,4 @@ class NCSeventeen final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::ncseventeen

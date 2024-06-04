@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::slew2 {
+
+constexpr std::string_view k_name{ "Slew2" };
+constexpr std::string_view k_short_description{
+    "Slew2 works like a de-esser or acceleration limiter: controls extreme highs."
+};
+constexpr std::string_view k_long_description{
+    "Sometimes I just get lucky :)This plugin is just the anti-aliasing technology I was experimenting with in 2010, applied to Slew, my simple slew clipper. I thought it was going to make the slightly grungy Slew smoother (Slew is a clipper, and can be expected to have clipper-like qualities). That anti-aliasing code was a bit odd. It’s possible I made a mistake somewhere.If so, I’m keeping it, and now what I invented is out for VST also, and free to all.Slew2 doesn’t act anything like Slew. What it does, is it puts a particular behavior on the extreme highs. Set to an intermediate value, it’s an acceleration limiter. Cranked all the way up… well, check out the video. It behaves like one of the nodes in Average (also coming to VST) with a 100% cancellation, but the point of total cancellation is also the Nyquist frequency. Slew2 produces a very natural-sounding brickwall filter exactly at that frequency, with the response falling off faster and faster until it’s totally gone when you hit the Nyquist limit (digital sampling theory: at 44.1K (CD quality) it is 22.05K where the treble cuts off).People are using this for de-essers, and it’s pretty much ideal for any sound that must not be overwhelming in the super highs. The peculiar character of the rolloff means it’s suitable for almost anything because it won’t affect lower treble, and the fact that it’s really a clipper means you can use the slider to set a threshold where, the harder you push Slew2, the more it’ll refuse to let more brightness through. I’ve not tried using it as an acceleration limiter on a mastering lathe, but it could probably do that: which also means if you’re going for classic analog tone, you can just toss this on the 2-buss and use just enough to take excess brightness away. Slew2 is one of the ‘secret weapon’ plugins I was specifically asked to port to VST, and I’m happy to bring it to you all."
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class Slew2 final : public Effect<T>
 {
-    std::string m_name{ "Slew2" };
-
     double LataLast3Sample;
     double LataLast2Sample;
     double LataLast1Sample;
@@ -44,13 +54,6 @@ class Slew2 final : public Effect<T>
     uint32_t fpdR;
     float A;
 
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
-
   public:
     Slew2()
     {
@@ -72,10 +75,12 @@ class Slew2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -98,7 +103,29 @@ class Slew2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "clamping";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -298,4 +325,4 @@ class Slew2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::slew2

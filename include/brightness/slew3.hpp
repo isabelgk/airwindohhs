@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::slew3 {
+
+constexpr std::string_view k_name{ "Slew3" };
+constexpr std::string_view k_short_description{
+    "Slew3 is a new approach to slew clipping meant for a more analog-like darkening effect."
+};
+constexpr std::string_view k_long_description{
+    "A Chris’s work is never done! Or at least it’s not, when it comes to refining basic tonal building blocks that apply to many plugins. It’s just recently that I updated Capacitor with an analog behavior found (quite strikingly) in certain real-world capacitors. I’m at it again.This makes a third Slew plugin, and every one is strikingly different. Slew (original) darkens radically and makes a grungy, clipped tone (it’s in Channel, too, very subtly). Slew2, though there are some similarities in code, acts wildly different: it produces an intense rolloff that is only right up at the Nyquist frequency, and is an elegant anti-glare solution, but barely has a tone at all.Slew3 uses ideas from Acceleration and DeBess to produce a slew clipping that’s actually reading information beyond what the samples provide: it’s like it reconstructs the wave a bit and is most effective where you’d get intersample peaks. It’s NOT an EQ: it has very striking dynamic qualities. It’s not a pure ‘glare cutter’ like Slew2, either: there’s a limit to how much it will darken. But what it’s all about is producing an analog top-end on your digital content.This is an experimental plugin. In development, some of my audio caused it to freak out, and it took extra time to get it to behave (I suppose I could also put out the freak-out version but for now let’s stay safe, OK?). It’s not quite linear or predictable (neither is real analog) and though I feel like it might have some very serious mojo to bring, I’m also interested in whether it dies given certain kinds of audio. I’m pretty sure I have it tamed to where it won’t do anything crazy, but is it really the silver bullet? I guess we’ll find out together."
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class Slew3 final : public Effect<T>
 {
-    std::string m_name{ "Slew3" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -18,13 +28,6 @@ class Slew3 final : public Effect<T>
     double lastSampleAR;
     double lastSampleBR;
     double lastSampleCR;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Slew3()
@@ -43,10 +46,12 @@ class Slew3 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -69,7 +74,29 @@ class Slew3 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "clampng";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -172,4 +199,4 @@ class Slew3 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::slew3

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::density {
+
+constexpr std::string_view k_name{ "Density" };
+constexpr std::string_view k_short_description{
+    "Density2 is a different color for Density, some old code I had that people wanted."
+};
+constexpr std::string_view k_long_description{
+    "This one started a lot! The algorithm used here has echoed through many other Airwindows plugins. It’s literally the smoothest saturation you can have in a plugin: the transfer function’s a sine. This is what’s in Channel, too: there are many ways to adapt such a simple mathematical function.But there’s more! Because Density runs multiple stages, allowing it to bulk up the tone into an overblown, insanely fat and saturated distort-fest. And then you can highpass just the distorted stuff alone, and trim its output gain, and mix it with the unfiltered dry to produce lots of tonal possibilities. And then there’s the spatial positioning factor: saturating stuff this way brings it forward in the mix. You can also isolate midrangey elements and bring them forward using that trick.And then there’s the negative values: if you UNsaturate, you get a thinned out lean tone and it drops back instead of pushing forward. And you can blend that too.Density’s one of the better utility plugins. It’s there to reshape tones in myriad ways, mostly having to do with fatness or thinness, also having to do with upfrontness or recedingness. It can also give articulation to sounds that are murky, or simply produce the hugest fattest roaring wall of grunge you ever heard.So in the absence of somebody coming forth and saying ‘this is on my quadrillion selling hit record’… weirder things have happened, occasionally to me… you should consider this as an alternate tone for Density. It’s been around for a while, but people wanted to see it again: specifically, to see it run on modern machines and in VST and so on. How could I say no? I’ve altered it as little as possible: there were always some weird things about it, but I refactored it to retain EVERYTHING unintentional or unusual. I gave it modern Airwindows handling of denormalized numbers, and it dithers to floating point instead of using the noise shaping to floating point that I used back then. Everything else is just as it was: no ‘fixing’ or making it do what I ‘meant to do’.…this is on somebody's quadrillion selling hit record. I'm still not going to tell you who, or how they used it. <3"
+};
+constexpr std::string_view k_tags{
+    "distortion"
+};
+
 template <typename T>
 class Density final : public Effect<T>
 {
-    std::string m_name{ "Density" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -20,16 +30,6 @@ class Density final : public Effect<T>
     float B;
     float C;
     float D; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Density()
@@ -54,10 +54,15 @@ class Density final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -86,7 +91,35 @@ class Density final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.2;
+            case kParamB: return 0.0;
+            case kParamC: return 1.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "density";
+            case kParamB: return "highpass";
+            case kParamC: return "out level";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -279,4 +312,4 @@ class Density final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::density

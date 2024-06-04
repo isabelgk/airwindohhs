@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::pressure5 {
+
+constexpr std::string_view k_name{ "Pressure5" };
+constexpr std::string_view k_short_description{
+    "Pressure5 expands Pressure4 with after-boost and built-in ClipOnly2."
+};
+constexpr std::string_view k_long_description{
+    "This plugin builds on 2017’s Pressure4 in numerous ways. I made it for my own use: I was mixing an album in Console7 that had to follow a previous album I’d mixed on an analog board, and I needed extensive 2-buss management and the ability to deliver a final output and control mix density across a lot of parameters measured by a meter I’ve invented (which isn’t available, it’s just for my personal use and doesn’t work properly in a releasable way). And now Pressure5 is out and you can have it!Pressure is a compressor with some unusual controls: there’s a ‘mewiness’ control that manages the way the ratio engages. You can dial in the intensity with which it ‘dynamic inverts’ and super-squishes the audio. It’s got a very wide speed range that can go real fast for a dense, distorted sort of sound, and it’s now got an additional control that nobody else has: ‘PawClaw’. This manages the way ‘mewiness’ handles transients, the intent being to extra-squish the spiky transients on ‘Paw’ or to let them through more on ‘Claw’. It’s very subtle, but it’s there to tailor the way stuff hits the compression in an entirely unique way. I don’t think anything else has a ‘PawClaw’ control, but now you have one :)The other part of Pressure5 is the output stage: Pressure5’s output control has the capacity to boost, into a built-in ClipOnly2. So it’s got that chunky, non-edgy hard clipping drive, that works at all sample rates, as part of the plugin. I intend Pressure5 to be used as a final buss comp/clip stage letting you dial in whatever you need, and then just taking the output and dithering it and being done. If you don’t want to go direct to final release, pad the output control so you’re not clipping anymore and ClipOnly2 will bypass itself like it’s not even there, serving as only a safety clipper."
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class Pressure5 final : public Effect<T>
 {
-    std::string m_name{ "Pressure5" };
-
     double muVary;
     double muAttack;
     double muNewSpeed;
@@ -54,18 +64,6 @@ class Pressure5 final : public Effect<T>
     float E;
     float F; // parameters. Always 0-1, and we scale/alter them elsewhere.
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
-
   public:
     Pressure5()
     {
@@ -107,10 +105,17 @@ class Pressure5 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -143,7 +148,39 @@ class Pressure5 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.25;
+            case kParamC: return 1.0;
+            case kParamD: return 0.5;
+            case kParamE: return 0.5;
+            case kParamF: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "pressre";
+            case kParamB: return "speed";
+            case kParamC: return "mewines";
+            case kParamD: return "pawclaw";
+            case kParamE: return "output";
+            case kParamF: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -474,4 +511,4 @@ class Pressure5 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::pressure5

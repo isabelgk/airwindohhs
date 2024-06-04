@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::transdesk {
+
+constexpr std::string_view k_name{ "TransDesk" };
+constexpr std::string_view k_short_description{
+    "TransDesk is more of a transistory, rock desk analog modeling."
+};
+constexpr std::string_view k_long_description{
+    "Continue the look into classic Airwindows analog modeling with TransDesk!There’s a famous analog console known for rock mixes. It might not have the preamplifiers to hang with the APIs and Neves of the world, but it’s been a watchword for mixdowns, both for the sound and for the extreme flexibility it offers (automation, effective EQ, compression). I’m not going to name it, but I was tuning TransDesk to get into a similar area: in particular, I wanted to get a comparable aggressiveness into the highs. This isn’t a plugin for making things soft and sweet, it’s for rocking out.That said, there are many paths to this ocean of sonic mayhem, and what distinguishes TransDesk is that it gets its sound with very little processing. You don’t lose much mojo just to get that coat of sonic paint. In some ways the immediacy of this approach is closer to the analog truth. In other ways, it’s less a would-be clone of a classic big console, more a way to get some of that energy. (Technically, I’m doing it by trying to match the overload characteristics, including power supply idiosyncrasies that affect the way energy can be drawn for the highs.)The result is another Desk-style plugin, with a completely different sound. It’s not calibrated to work with Console (that’s the for-pay version of Desk that consolidated these and calibrated them all) and it doesn’t have special requirements for where it should go. Place it where you want that style of tone coloring: like Desk, you can use it on auxes and submixes (including ones ‘inside’ Console) to better emulate running through a lot of circuitry."
+};
+constexpr std::string_view k_tags{
+    "subtlety"
+};
+
 template <typename T>
 class TransDesk final : public Effect<T>
 {
-    std::string m_name{ "TransDesk" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -22,12 +32,6 @@ class TransDesk final : public Effect<T>
     double lastSampleR;
     double lastOutSampleR;
     double lastSlewR;
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     TransDesk()
@@ -56,10 +60,11 @@ class TransDesk final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -80,7 +85,27 @@ class TransDesk final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -352,4 +377,4 @@ class TransDesk final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::transdesk

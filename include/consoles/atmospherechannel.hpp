@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::atmospherechannel {
+
+constexpr std::string_view k_name{ "AtmosphereChannel" };
+constexpr std::string_view k_short_description{
+    "AtmosphereChannel is Console5 processing with powerful new acoustic distance effects."
+};
+constexpr std::string_view k_long_description{
+    "I’m pleased with this one: it’s in the Console5 family (so its parts can be interchanged with any other Console5 plugins) but it represents a few different breakthroughs, and if they work out, I’ll be keeping them.First, this is a multi-stage slew clipper. The effect’s a bit like PDConsole, a gluing and taming of bright digital highs: but, where PDConsole uses the algorithm of PurestDrive to get a more analog mixing-desk kind of sound, Atmosphere’s many stages of slew clipping (across fourteen samples, each with a different maximum slew) enforces the behavior of free air and acoustic distance. This has been a goal for quite a while, but I’ve never got results like these before (might be worth fitting a more exaggerated version into a ‘Distance 2’, if people like). It’s not calibrated to overwhelm, but the scale of your mix should be huge, and since it’s an extended-window slew clipping effect your quieter, subtler sounds don’t get muddied.This type of processing steps on the annoying digital harshness with a heavy foot, but doesn’t directly EQ: the results you get will depend on what it would be like to have your sound blasting away through a perfect playback system at a distance of ten to thirty feet. If you need up-close, bright and loud sounds, you’ll need to use another system (such as PurestConsole), this one is for space and scale. It’ll probably work well for some electronic mixes if they’re meant to sound loud, it’ll give a real hugeness to rock or metal mixes (so long as the desired effect is more ‘live gig’ in scale) and it will really come into its own summing orchestral stuff from virtual instruments (or anything with similar scale/power needs)."
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class AtmosphereChannel final : public Effect<T>
 {
-    std::string m_name{ "AtmosphereChannel" };
-
     double gainchase;
     double settingchase;
     double chasespeed;
@@ -55,13 +65,6 @@ class AtmosphereChannel final : public Effect<T>
     double thresholdL;
     double thresholdM;
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     AtmosphereChannel()
@@ -114,10 +117,12 @@ class AtmosphereChannel final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -140,7 +145,29 @@ class AtmosphereChannel final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -469,4 +496,4 @@ class AtmosphereChannel final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::atmospherechannel

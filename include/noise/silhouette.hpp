@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::silhouette {
+
+constexpr std::string_view k_name{ "Silhouette" };
+constexpr std::string_view k_short_description{
+    "Silhouette replaces the sound with raw noise sculpted to match its dynamics."
+};
+constexpr std::string_view k_long_description{
+    "I thought I’d let people play with the precursor to Texturize, which so far has not made it into the Patreon era of Airwindows… meet Silhouette!Silhouette was created for playing finished music through and seeing if you could still make out a beat. It was an anti-loudness-war plugin, made long ago to illustrate that point. And it replaces the whole sound with a blast of noise which retains the dynamics of the underlying music… if there is any. Dynamics, that is.Texturize was this, tone-shaped to match the sound of the underlying music (mostly going a lot more bassy). And Texturize proved a lot of fun for people, some of whom asked, can we have that but brighter? So be careful what you wish for. Silhouette now comes with the same wet/dry control as Texturize, so you can use it as a subliminal noise generator. But it’s ALL bright, so you have to turn it down further in order for it to ‘hide’ behind the audio. And that means it can’t really do what Texturize does: it’ll stick out.But in sticking out, the subliminals it will generate are VERY different from what Texturize does. I’d describe it as hype and energy and tension. Be careful not to turn it up too high: it’ll be incredibly obvious anytime you do. Some sounds, some mixes, will just never work with it.But isn’t it fun sometimes to not care about that and just try out something wild to see what it does? Silhouette finds its use in that space. I hope you like it."
+};
+constexpr std::string_view k_tags{
+    "noise"
+};
+
 template <typename T>
 class Silhouette final : public Effect<T>
 {
-    std::string m_name{ "Silhouette" };
-
     double lastSampleL;
     double outSampleL;
     double lastSampleR;
@@ -16,13 +26,6 @@ class Silhouette final : public Effect<T>
     uint32_t fpdR;
     // default stuff
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Silhouette()
@@ -43,10 +46,12 @@ class Silhouette final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -69,7 +74,29 @@ class Silhouette final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -223,4 +250,4 @@ class Silhouette final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::silhouette

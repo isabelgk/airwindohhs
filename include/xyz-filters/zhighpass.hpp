@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::zhighpass {
+
+constexpr std::string_view k_name{ "ZHighpass" };
+constexpr std::string_view k_short_description{
+    "ZHighpass2 acts more like the Emu e6400 Ultra highpass in motion, with coefficient interpolation."
+};
+constexpr std::string_view k_long_description{
+    "And here… we… go!I picked the highpass to attempt first off the e6400 because it’s way harder. In recordings of the real unit, if you overdrive the samples you can hear how the machine flips out when you sweep the highpass up real high. Part of this is from the output stages of the device having characteristics not unlike Mackity: you get a strange overshoot, and that’s from the hardware.These are not exactly ’emulations’ in the sense of stealing all the code out of the 6400 and then modeling the entire circuit and basically jacking the whole thing. That’s not what I do, and that stuff always ends up sounding very plastic to my ear (way too much overprocessing to try and get the fiddly details the same: you end up with a clone, but soulless)Instead, ZHighpass is first in a series of Z-plugins, building on what I learned with the X series, and designed to act and respond the same as the real deal, but in the box. I got as close as I could with my own techniques, using some details (like where the filters hard-clip, and the likely Q factors) to zero in further. My hope is not as much that I’ve perfectly duplicated every detail of the hardware device… but that I made a plugin with enough of the soul of that device, that you can get equally musical results out of it. You should be able to USE ZHighpass much the way you’d use the real sampler and its genuine Z-Plane filters, to get filter swoops and voicings that deliver as much of the aggressive mojo you’d enjoy from the real thing.Except that you can take it a little bit farther, and adjust it in ways not available on the real-deal sampler, to your taste. ‘Cos we’re not here just to clone what DnB maestros did in the Nineties. We’re playing with this particular sampler and mimicking some of its tricks because it turns out that was an amazing-sounding instrument, that gave you stuff typical DAW EQs don’t even come close to offering. And now, with ZHighpass, you can easily turn your DAW into that kind of instrument, on as many tracks as you like, anytime and anywhere you like.And the cooling fan’s (probably) way quieter. And it’s easier to patch. Props to the real e6400 Ultra, though. You’ll be hearing more from that, in upcoming weeks.By request, here’s the followup to ZHighpass!ZHighpass2 is the followup that adds coefficient interpolation to my Z-Plane Filter emulation. Which of course is not to say that I had the code, or took apart the machine and cloned the schematic: no, these plugins are about running a reference sound into the real live Emu e6400 Ultra sampler, and smashing the crud out of it to get the most out of the filters and their distinct color and behavior, and then trying to mimic that in a plugin purely by ear.The original Airwindows Z filters run more efficiently because they’re not asked to do as much: they have the same tone but aren’t trying to smooth zipper noise and interpolate, so if you need fixed filter settings don’t overlook those. However, half the fun of a real live sampler is to get funky with it, and so ZHighpass2 follows ZLowpass2 in adding the smoothing to everything, so you can automate whatever you like. Remember it’s set up to have lots of distortion and gain on tap, keep the input and output real low if you’re not just trying to melt the thing down (0.1 will give you basically unity gain, and the output will let you pad things a whole lot if you need to)Note also that I found an uninitialized variable in the previous ZLowpass2: the smoothing of the Wet control wasn’t being started out correctly. It didn’t seem to do anything but all the same I’ve fixed it: redownload it if you’re concerned, or use the updated version that’s in the big plugin collections below."
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class ZHighpass final : public Effect<T>
 {
-    std::string m_name{ "ZHighpass" };
-
     double biquadA[15];
     double biquadB[15];
     double biquadC[15];
@@ -23,16 +33,6 @@ class ZHighpass final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     ZHighpass()
@@ -62,10 +62,15 @@ class ZHighpass final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -94,7 +99,35 @@ class ZHighpass final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+            case kParamD: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "freq";
+            case kParamC: return "output";
+            case kParamD: return "poles";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -420,4 +453,4 @@ class ZHighpass final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::zhighpass

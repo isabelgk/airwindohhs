@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::highpass2 {
+
+constexpr std::string_view k_name{ "Highpass2" };
+constexpr std::string_view k_short_description{
+    "Highpass2 is an unusual-sounding variable-slope highpass filter."
+};
+constexpr std::string_view k_long_description{
+    "So, the way the interleaved IIR filters act in Highpass is like this: the harder you filter, the more the filter rolls off the very highest frequencies. That’s because it’s like the inverse of Lowpass2. It’s got the same four poles, the same type of tone doctoring (in this case, loose and tight for what bass remains) but the way to use it might be distinct.I think it works well for getting a subsonic roll-off (perhaps with the four poles of filtering, like a mini ToVinyl highpass) and then using the Loose option to let the bass move a little more. I found it more difficult to distinguish what the funny-named slider was doing, but it’s still intense on high settings. And it’s great for trapping in high percussion because of the clarity of the passband and the way it rolls off over 20K (or higher, if you’re at higher sample rates).And of course, like Lowpass2, this is here to fix the limitations of the original Highpass on those very same sample rates, going from no filtering to total filtering."
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Highpass2 final : public Effect<T>
 {
-    std::string m_name{ "Highpass2" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -32,16 +42,6 @@ class Highpass2 final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Highpass2()
@@ -78,10 +78,15 @@ class Highpass2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -110,7 +115,35 @@ class Highpass2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.5;
+            case kParamC: return 0.25;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "hipass";
+            case kParamB: return "lstite";
+            case kParamC: return "poles";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -315,4 +348,4 @@ class Highpass2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::highpass2

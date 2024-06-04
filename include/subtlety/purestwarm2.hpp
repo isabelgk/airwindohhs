@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::purestwarm2 {
+
+constexpr std::string_view k_name{ "PurestWarm2" };
+constexpr std::string_view k_short_description{
+    "PurestWarm2 adds dual dry/wet controls for each side of the waveform."
+};
+constexpr std::string_view k_long_description{
+    "PurestWarm2 is PurestWarm, but better. I was asked for a version of PurestWarm with a dry/wet (which would make it even more subtle and gentle) and then I thought, why not TWO dry/wets, one for either side of the waveform? That way you could massage both the positive and negative sides of the wave (seen briefly in the video: I wiggle the cursor around to show which side’s being reined in by which slider) to taste, or both at once.And so that’s what PurestWarm2 is (plus, ultrasonic filtering added for use at high sample rates). It’s also using a performance tweak I hit on, defining the filter coefficients when the plugin’s instantiated, rather than once every sample buffer. Not a complicated thing, but for anyone who made use of PurestWarm, this should count as a nice upgrade. And it’s a direct request: since I was asked for PurestWarm but with a dry/wet, how could I not?"
+};
+constexpr std::string_view k_tags{
+    "subtlety"
+};
+
 template <typename T>
 class PurestWarm2 final : public Effect<T>
 {
-    std::string m_name{ "PurestWarm2" };
-
     enum
     {
         fix_freq,
@@ -30,14 +40,6 @@ class PurestWarm2 final : public Effect<T>
     float A;
     float B;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
-
   public:
     PurestWarm2()
     {
@@ -54,10 +56,13 @@ class PurestWarm2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -82,7 +87,31 @@ class PurestWarm2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "drypos";
+            case kParamB: return "dryneg";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -194,4 +223,4 @@ class PurestWarm2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::purestwarm2

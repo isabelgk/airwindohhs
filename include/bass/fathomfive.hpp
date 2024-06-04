@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::fathomfive {
+
+constexpr std::string_view k_name{ "FathomFive" };
+constexpr std::string_view k_short_description{
+    "FathomFive is a way of supplementing extreme bass that’s not just EQ."
+};
+constexpr std::string_view k_long_description{
+    "FathomFive introduces a special Airwindows algorithm that acts like a combination between an EQ and a bass amp. This plugin can be used in sound design or on isolated tracks, but it’s also part of an Airwindows DAW workflow I outline in the video I’ve made. The idea is this: rather than blur and damage your sound by running through lots of ‘fake analog’ effects on your buss to impart deepness and analog-like tone, use the Airwindows plugins Console4 and FathomFive to get a big-sounding mix while letting most mix elements through with minimal processing. You can run the ‘bass bloom’ behavior on an aux, and feed it with only the elements you want, and then integrate it into the sound with Console4 which both works the way Console wants to be used, and addresses limitations that Console has when used all by itself.It’s all in the rather long video, and of course you can simply download and use the plugin if you prefer making up your own rules. There are no rules, I’m only explaining one very specific use case where FathomFive works symbiotically with Console.(followup: this is a very old plugin. Newer ones that do this type of thing with increasing ease and friendliness are DubSub, DubCenter, and BassKit. FathomFive is wilder, and you probably want to keep an eye on whether it is spitting out excessive DC offsets, as the algorithm these plugins use for the bass is tricky to manage)"
+};
+constexpr std::string_view k_tags{
+    "bass"
+};
+
 template <typename T>
 class FathomFive final : public Effect<T>
 {
-    std::string m_name{ "FathomFive" };
-
     bool WasNegativeL;
     bool SubOctaveL;
     double iirSampleLA;
@@ -27,16 +37,6 @@ class FathomFive final : public Effect<T>
     // parameters. Always 0-1, and we scale/alter them elsewhere.
     uint32_t fpdL;
     uint32_t fpdR;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     FathomFive()
@@ -60,10 +60,15 @@ class FathomFive final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -92,7 +97,35 @@ class FathomFive final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.0;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "root note";
+            case kParamB: return "suboctave";
+            case kParamC: return "frequency";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -240,4 +273,4 @@ class FathomFive final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::fathomfive

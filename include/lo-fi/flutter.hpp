@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::flutter {
+
+constexpr std::string_view k_name{ "Flutter" };
+constexpr std::string_view k_short_description{
+    "Flutter is the most recent Airwindows flutter, standalone."
+};
+constexpr std::string_view k_long_description{
+    "This is by request. Sometimes you want stuff to go a little unsteady and wobbly, but you don't want a full-on tape emulation with, like, dubly and everything. (you don't do heavy metal in dubly, you know.) And so, here is Flutter, standalone!This is a tricky little algorithm, so let me give some details on what's happening here. It's not a vibrato, or even particularly random. Flutter gets its rate of waver, from the input signal coming in. This probably means that if you put a test tone in, you get a regular warble… or maybe even some awkward noise… out. The reason it does this is to react to the input waveform more directly. I realize the input waveform doesn't directly modsulate tape flutter, but this does, so there you go.In practice, you get a flutter/warble that stays pretty subtle right up to when it doesn't. Push it far enough and you get aggressive flutter. Dial it back and it quickly becomes more well-behaved, but it's still functioning and can do a nice job of destabilizing pitch in a tapelike way. A side effect of this quirky approach is that it runs with low enough (but NOT zero) latency that you can use it on a live instrument. You can sneak it onto a delay send, or reverb send, to give yourself just a little spread and layering to what otherwise sounds digitally flat and flawless. Or you can sit it on regular tracks and just go for that very subtle mulch-tone of old school retro, and use other means to dirty the sound up.Sometimes it's handy to be able to take something ultra-pure, like a bell or electric piano, and destabilize it without any tonal adjustment at all. Retain the chime but add that bit of drift. I hope you like Flutter."
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class Flutter final : public Effect<T>
 {
-    std::string m_name{ "Flutter" };
-
     double dL[1002];
     double dR[1002];
     int gcount;
@@ -18,13 +28,6 @@ class Flutter final : public Effect<T>
     uint32_t fpdR;
     // default stuff
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Flutter()
@@ -49,10 +52,12 @@ class Flutter final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -75,7 +80,29 @@ class Flutter final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "flutter";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -169,4 +196,4 @@ class Flutter final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::flutter

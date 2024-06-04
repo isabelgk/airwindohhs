@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::chamber2 {
+
+constexpr std::string_view k_name{ "Chamber2" };
+constexpr std::string_view k_short_description{
+    "Chamber2 is a feedforward reverb, a blur delay, and a glitch topping!"
+};
+constexpr std::string_view k_long_description{
+    "Sometimes you just want to watch the glitch BURN…So here's what happened. I wanted to try a modification to Chamber. It's a reverb where every delay time inside the feedforward network was exactly the golden ratio of the next. Why? Why not, I thought. What happened with that was, I got a sort of oddly-colored echo, but one that turned into very seamless reverb as long as you had some regeneration in there. Interesting! And so I coded a reverb where some of the delay taps were quite tiny, and that's Chamber.But what would happen if it wasn't always the golden ratio? What if you tried other ratios?Well, nothing for it but to try it, right? And I had to take ALL the delays inside, and make them potentially full length echoes, meaning the amount of memory it takes is WAY larger than what original Chamber wants. You can get the original tones out of it, but in doing that you're wasting huge amounts of delay buffer. The plugin just doesn't see them at all, and they sit there doing nothing. So, don't use Chamber2 where Chamber will do.What happens when you have the 'thick' control at 0? You have the most expensive, wasteful, CPU and memory hogging delay ever. You've got over 4000 delays, all precisely the same. So don't do that either (note: if it were only that simple)But what if you put 'thick' slightly off 0? You now have a blur echo. You've got a delay which is also a Chamber reverb in which all the echoes are ALMOST the same. And you can dial in the blurriness of this echo. Not only that, regeneration will further blur the echo. So you can take the no-blur setting, and sweep the 'thick' control higher while regenerating. And it'll (somewhat glitchily: you are buffer smashing) blur its way from direct echo into a chamber reverb, which will also make the echo happen faster (your internal delays are getting shorter, all in synchronization).And then you can let the regenerations fade away. And then… what if you snap the 'thick' control back to 0 again?Suddenly you have a full-on glitch buffer effect, from audio you had in the sample buffers when you went to the chamber reverb effect. Boom, there it is, at whatever delay rate you have set on the 'size' control at top.Obviously this is extremely nasty. But it's also a shocking, bold effect with a tinge of the accidental. And when the effect turns up in the VCV Rack dailies, or is used in Bespoke or wherever… it's an open invitation to throw crazy LFOs and sample-and-hold on the 'thick' control, and just use Chamber2 as a glitchy noise generator. It'll grab buffer snippets from its delay mode, it'll blur them into reverb, it'll throw other echo bits on top of that: a proper mad scientist laboratory for sonic mayhem, from your friendly neighborhood Chris.You can dial in nice verb/echo hybrid sounds and use those too, I won't stop you. I'm just making sure everyone understands the possibilities of this one. Chamber2 glitches in very special ways. Hope you like it :)"
+};
+constexpr std::string_view k_tags{
+    "reverb"
+};
+
 template <typename T>
 class Chamber2 final : public Effect<T>
 {
-    std::string m_name{ "Chamber2" };
-
     double aEL[10000];
     double aFL[10000];
     double aGL[10000];
@@ -73,16 +83,6 @@ class Chamber2 final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Chamber2()
@@ -188,10 +188,15 @@ class Chamber2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -220,7 +225,35 @@ class Chamber2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.34;
+            case kParamB: return 0.31;
+            case kParamC: return 0.28;
+            case kParamD: return 0.25;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "delay";
+            case kParamB: return "regen";
+            case kParamC: return "thick";
+            case kParamD: return "wet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -576,4 +609,4 @@ class Chamber2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::chamber2

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::ynothighpass {
+
+constexpr std::string_view k_name{ "YNotHighpass" };
+constexpr std::string_view k_short_description{
+    "YNotHighpass is soft and smooth to nasty, edgy texture-varying filtering, no control smoothing."
+};
+constexpr std::string_view k_long_description{
+    "See YNotLowpass, except it’s a highpass :) interestingly, the original YHighpass saw some significant improvements in CPU usage. Turns out that going to YNot mode, with no control smoothing, boosts performance even more.You can use YNotHighpass (or the control-smoothed version, YHighpass) to do a really unnatural, abrasive sweep up into the supersonic. It's not just about increasing resonance: the ResEdge does an unusual, nasty thing to the tone, and used as a highpass it's a really distinctive sound. I don't think it would work as a consistent part of anybody's tone for anything, but for that very reason it might be great as an unexpected move :)Hope you like YNotHighpass, and I'm working on a whole bunch of more generally useful things that take longer to develop."
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class YNotHighpass final : public Effect<T>
 {
-    std::string m_name{ "YNotHighpass" };
-
     enum
     {
         biq_freq,
@@ -51,18 +61,6 @@ class YNotHighpass final : public Effect<T>
     float E;
     float F; // parameters. Always 0-1, and we scale/alter them elsewhere.
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kNumParameters = 6
-
-    };
-
   public:
     YNotHighpass()
     {
@@ -90,10 +88,17 @@ class YNotHighpass final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -126,7 +131,39 @@ class YNotHighpass final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 0.1;
+            case kParamD: return 0.1;
+            case kParamE: return 1.0;
+            case kParamF: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "freq";
+            case kParamC: return "reson8";
+            case kParamD: return "resedge";
+            case kParamE: return "output";
+            case kParamF: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -326,4 +363,4 @@ class YNotHighpass final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::ynothighpass

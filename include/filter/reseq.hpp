@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::reseq {
+
+constexpr std::string_view k_name{ "ResEQ" };
+constexpr std::string_view k_short_description{
+    "ResEQ2 is a single, sharp, sonorous mid peak."
+};
+constexpr std::string_view k_long_description{
+    "Sometimes I’m just contrarian, and sometimes it’s for a reason.I keep getting asked to make a ‘Soothe’ plugin. I get that: it’s hyped, it lets you make stuff louder, my plugins are free and open source, why not etc etc. I understand why I’m getting asked to do that.However, I’m here to explain why this week’s Airwindows plugin is an OPPOSITE ‘Soothe’, and why you would want to do the opposite of Soothe (a sophisticated and very busy plugin that scans for resonant peaks and whacks just the frequencies that are resonating the hardest).ResEQ is literally the farthest from that you can get. It’s a bit like the filter banks on an old Polymoog. You set up frequencies (as many as eight, in parallel) and hear ONLY what those tight resonances let through. It’ll kill other sounds as much as 90 or 100 dB down, nuke them completely beyond hearing. Far from evening out the tapestry of the sound and removing frequencies that poke out, it turns the WHOLE track into just beams of narrowly defined frequency.You can do this with light, too. I think Polaroid experimented with this. You can reconstruct a full-color image from several bands of tightly resonant color, because of how the eye interprets them. The same is true for the ear. Given enough distinct bands of super-resonant audio you get a kind of facsimile of the original sound, and it begins to sound like an insane, ultra-resonant fullrange sound, just completely weirded out. (if you try to put this on a mix buss you have only yourself to blame)So… WHY?!?Because if you do that on a track in your mix, all the other tracks can speak clearly past the weird ResEQ one. It remains super-audible but completely gets out of the way. This is not really what you’d put on a front-and-center track, a lead vocal, an orchestra stem. Nope. You’d put this on the third set of guitar overdubs (the thickener!), on that background synth, on the horn buried in the back of the mix, on that extra drums overdub that’s a little wacky. ResEQ goes on the colorful elements, the stuff that should have BIG COLOR but not get in the way. How do you get some quirky element or extra thing to jump way out without getting in the way? Set up ResEQ on it, voice it so it’s covering the range you want. Tweak it until it has the right vibe (you can isolate or remove really narrow sound characteristics, truly transform a recording with it) and then sit it back or let it jump up front and slap peoples’ ears. Either way, that track will make its presence known, bigtime, whether it’s quiet or loud. It’s all about the mids, high or low: if you need super high or super low, you’ll be using something else. Mids are where mojo lives.It’s got a dry/wet control, too. So you COULD use it sort of like a normal EQ. But why would you do that when you can reconstruct an ear-grabbing caricature of the sound, with tons of character and mojo, AND have that sound sit easily in the mix making space for everything else?This is another 'piece of an upcoming great plugin'. In order to do an MCI console properly I had to do a good mid peak.And we're talking 'way better than just a sharp biquad filter' mid peak. I needed clarity and character beyond what regular digital EQ cookbooks could cook up.ResEQ2 continues on the work I started in the original ResEQ, where I observed that Manley EQ impulses for sharp resonances seemed to be like a sine-like ring, except the onset did NOT seem to be at the same frequency: seemed to start faster, even double the frequency. I made a whole plugin, ResEQ, giving it my best shot for generating multiple resonant 'rings' and combining them, to produce a convolution impulse that was the sum of multiple analog-like resoances. It still exists: it's way before I routinely worked at 96k, and it's got a lot of quirks, but it does get a distinct sound.I returned to those deep, murky waters when trying to come up with a sweepable mid peak like certain classic analog consoles.ResEQ2 is the result. It's the opposite of what you'll normally find in great classic analog consoles. A lot of the classics really had quite limited analog EQ: detailed parametric sculpting came in with SSL, and to some extent API before that. In the olden days, things were a lot simpler (and you gained something sonically from this simplicity).But there were a few special cases, and so you had MCI's sweepable mid, that could only boost. Not cut. It just gave you a sort of ring, wherever you wanted it. Not the most flexible circuit… but a hitmaker.This is because, contrary to modern practice, there's huge power in being able to single out a midrange, upper-mid, or treble frequency, and sort of just open up the top of it so it can get effortlessly loud. Instead of just blasting everything, you find one presence peak on your track that really lets it speak, and you just give that a boost. More peak energy, more clarity exactly where it's most useful, and it's almost never in the same place for different instruments or vocalists, so the combined sound of the mix cuts through on dozens of sonorities at once, and everything is powerful and clear.It's the mids equivalent of Airwindows Weight for bass, and it works incredibly well (even if you do it with biquads or EQ-design cookbooks). And I don't have the analog-Console projects finished yet… but you can have this part of it now.Use the 'ow argh way too extreme' settings like 1.0, where everything kind of turns into an audio laser, to dial in exactly what spot opens up an instrument or voice for maximum passion and sonority. Then, dial it back to around 0.5 and begin increasing it, seeing at what point you've got too much of a good thing. ResEQ2 is great at being a subtle light-bringer and giving clarity to a track. It's also a full-on energy weapon that can be set to 'way too much', so use it however you please. The resonance increases as you turn it up, so feel free to dial it back if it gets ringy. Probably not a good plugin for mixing live sound unless you like dial-a-feedback :) hope you enjoy ResEQ2!"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class ResEQ final : public Effect<T>
 {
-    std::string m_name{ "ResEQ" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -25,21 +35,6 @@ class ResEQ final : public Effect<T>
     float G;
     float H;
     float I;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kParamG = 6,
-        kParamH = 7,
-        kParamI = 8,
-        kNumParameters = 9
-
-    };
 
   public:
     ResEQ()
@@ -71,10 +66,20 @@ class ResEQ final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kParamG = 6,
+        kParamH = 7,
+        kParamI = 8,
+        kNumParameters = 9
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -113,7 +118,45 @@ class ResEQ final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.0;
+            case kParamC: return 0.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.0;
+            case kParamF: return 0.0;
+            case kParamG: return 0.0;
+            case kParamH: return 0.0;
+            case kParamI: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "reso 1";
+            case kParamB: return "reso 2";
+            case kParamC: return "reso 3";
+            case kParamD: return "reso 4";
+            case kParamE: return "reso 5";
+            case kParamF: return "reso 6";
+            case kParamG: return "reso 7";
+            case kParamH: return "reso 8";
+            case kParamI: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -704,4 +747,4 @@ class ResEQ final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::reseq

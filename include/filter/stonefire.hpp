@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::stonefire {
+
+constexpr std::string_view k_name{ "Stonefire" };
+constexpr std::string_view k_short_description{
+    "Stonefire is the non-EQ EQ designed for ConsoleX."
+};
+constexpr std::string_view k_long_description{
+    "There's a reason people have never turned to using Kalman filters for audio purposes.They're tricky little buggers, unpredictable, with a 'filter slope' that makes no sense at all. They'll take the crossover point and bounce it around wildly, they'll throw in weird gatey behaviors, they'll turn what's supposed to be a 'smooth' 'filtered' sound into an edgy growl and sputter. They're meant to pull real data out of a pile of noise, not to take real audio and give you anything sensible. Nobody would want a Kalman filter for audio purposes.Stonefire uses two different kinds of Kalman filters for audio, as crossovers. The top crossover is the same as what's in Air3. The bottom crossover comes with a range control (even though that won't give you a 'frequency') and is the same as what's in Kalman.And when used properly, Stonefire gives you unprecedented levels of tonal control over the texture and presentation of your sound, in a way that almost doesn't even have to do with frequency.There's three bands, plus the Range control. Air, Fire, and Stone. Each can be cut back to zero, or boosted (Fire and Stone match, while Air has a lot more gain on tap but will match from 0.5 down to 0.0.) If you cut them back to zero you'll get the weird Kalman behavior, but it'll help you set the Range control appropriately. You can set it so Stone covers the lowest lows (never JUST those, it will always do other stuff too) or up to the high mids and lower treble.Then, if you keep everything balanced and make smaller adjustments, the secret of the Kalman filter emerges. You have to use it as a crossover, and let it apply its incredibly strong character to texture, not frequency. It utterly fails to be a 'filter', but it's an extraordinary texture-shaper, and it's what I'm going to be building the upcoming ConsoleX system around.Use the Air control like you would in Air3. You can cut back super-highs while seeming to not affect the brightness at all, with a strikingly natural effect. Or, boost it to bring that sparkly aura and light up the sound. It's a custom algorithm that deals with high sample rates by just ramping up the boost: treat it with respect, but it's there to serve your needs for glitter or lack of same.Use the Fire control like it was an attitude knob, as much as a midrange. You can get a lot of wildness out of this one with careful settings of Range. Between Fire and Stone, only one can be louder: it's a crossover. If you're boosting Fire, that means you want your sound to command attention.Use the Stone control like it's the bedrock of your sound. If you lean entirely on it and kill all the Fire, you'll get a monumentally heavy, sputtering, gatey foundation that zeroes in on the lowest lows, but also tries to put backbone behind anything it thinks is heavy and powerful. This includes lower midrange. Cutting it can control unwieldy bass, but adding it isn't the same as adding a 'bass boost': it'll zero in on things like kick weight and try to present them with unnatural isolation. The secret to adding weight with the Stone control is to let it not seem to be that much of a boost: you can transform the feel of a sound well before you hear 'added bass'. You can also dial the Range up and use the same effect up into the midrange, for an intensely solid punchy character anywhere a sound seems flimsy.God help you if you try to measure this thing with PluginDoctor or SPAN. I don't even have any idea what will happen. It's all made out of Kalman filters, which are not for use with audio.Except… when they are ;)Enjoy the new tone shaping. If it's too ugly, use way less, see how it treats you :)"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Stonefire final : public Effect<T>
 {
-    std::string m_name{ "Stonefire" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -86,16 +96,6 @@ class Stonefire final : public Effect<T>
     float C;
     float D;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
-
   public:
     Stonefire()
     {
@@ -126,10 +126,15 @@ class Stonefire final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -158,7 +163,35 @@ class Stonefire final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "air";
+            case kParamB: return "fire";
+            case kParamC: return "stone";
+            case kParamD: return "range";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -418,4 +451,4 @@ class Stonefire final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::stonefire

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::neverland {
+
+constexpr std::string_view k_name{ "Neverland" };
+constexpr std::string_view k_short_description{
+    "Neverland is a re-release of my old Neve-style color adder, exacly as it was."
+};
+constexpr std::string_view k_long_description{
+    "Neverland is my old Neve emulation from 2007. It’s out of the Character collection, and I’m re-releasing these in 64 bit and VST because there are people asking me to do that. If I make it exactly like how it was, you can open old mixes and retain the settings you had, so the Character plugins are kept exactly the same (though they do get denormalization fixes, and the dithering to 32 bit floating point where applicible)."
+};
+constexpr std::string_view k_tags{
+    "tone-color"
+};
+
 template <typename T>
 class Neverland final : public Effect<T>
 {
-    std::string m_name{ "Neverland" };
-
     double bR[35];
     double lastSampleR;
     double bL[35];
@@ -19,16 +29,6 @@ class Neverland final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Neverland()
@@ -54,10 +54,15 @@ class Neverland final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -86,7 +91,35 @@ class Neverland final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.74;
+            case kParamB: return 0.3333333;
+            case kParamC: return 0.3333333;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "hardns";
+            case kParamB: return "persnlty";
+            case kParamC: return "drive";
+            case kParamD: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -376,4 +409,4 @@ class Neverland final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::neverland

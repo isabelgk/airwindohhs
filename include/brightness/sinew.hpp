@@ -2,25 +2,28 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::sinew {
+
+constexpr std::string_view k_name{ "Sinew" };
+constexpr std::string_view k_short_description{
+    "Sinew combines sines and slew clipping for a tape bias effect!"
+};
+constexpr std::string_view k_long_description{
+    "Looks like I'm working on three major fronts at the moment, and here's a key advance on at least one of them :)Sinew is the answer to the question, 'what if slew clipping, but it was more restrictive the closer you got to what would be regular clipping?'I realize the answer is typically going to be 'slew what now?' but Airwindows fans are long aware of the strange pleasures of slew clipping. What you don't know is, the real answer to that question is 'then you get something that acts like analog tape's inability to capture super loud high frequencies'… but without the actual tape saturation!This might have all kinds of uses: I know it's going to find its way into a ToTape update. For now, you can have the raw version, the one where (like other Slew-oriented plugins) you can set it to extreme values and screw up the sound in interesting ways. Sinew might be just the thing for making heavy guitars louder, or adding guts to drums, but you can try it on whatever you like.It'll hang on to brightness for quite a long time, until suddenly it's really stepping on the sound. What's happening there is, you can't hear it doing more subtle work, so you only hear it when it's turned up too far. Listen to the character of things and you might hear it kicking in without apparently cutting back brightness at all! This is the farthest thing from a simple filter. Good luck experimenting with Sinew!"
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class Sinew final : public Effect<T>
 {
-    std::string m_name{ "Sinew" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     double lastSinewL;
     double lastSinewR;
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Sinew()
@@ -39,10 +42,12 @@ class Sinew final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -65,7 +70,29 @@ class Sinew final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "sinew";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -158,4 +185,4 @@ class Sinew final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::sinew

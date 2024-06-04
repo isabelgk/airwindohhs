@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::biquadplus {
+
+constexpr std::string_view k_name{ "BiquadPlus" };
+constexpr std::string_view k_short_description{
+    "BiquadPlus is Biquad plus zipper noise suppression! For twiddling the controls."
+};
+constexpr std::string_view k_long_description{
+    "By request, a kind of bugfix!Understand, a simpler implementation of a biquad filter isn’t a ‘bug’, exactly. I may have not had everything figured out, but if you’re designing fixed filters or looking to tune in EQs on something in your mix, the biquad filters I’ve been making are actually better. Without the extra smoothing code they run more efficiently and eat less CPU, and they’re still useful, plus there’s less to them so they’re more approachable.But, a lot of musicians seem to enjoy cranking the filters around… and now that I’m using Bespoke all the time, I can put an LFO literally on any damn thing by rightclicking it. And it wasn’t all that difficult to do… I rolled it in to some documentation upgrades I did on the advice of Paul from Surge Synthesizer. One thing about hanging out with the open source music people is, stuff starts happening faster than you could possibly imagine. I had a crash bug in Bespoke on some strange things I needed to build into my main music making procedures, and Ryan had a fix the next MORNING. It’s daunting and wonderful to hang out with these earnest, motivated people.You’ll see more on that, sooner than you think.But right now… enjoy a cleaner, smoother Biquad, plus zipper noise suppression! I needed to come up with my Airwindows way to accomplish this, and got it done. More to come."
+};
+constexpr std::string_view k_tags{
+    "biquads"
+};
+
 template <typename T>
 class BiquadPlus final : public Effect<T>
 {
-    std::string m_name{ "BiquadPlus" };
-
     enum
     {
         biq_freq,
@@ -42,16 +52,6 @@ class BiquadPlus final : public Effect<T>
     float C;
     float D;
 
-    enum params
-    {
-        kParamfor (int x = 0,
-kParamA = 1,
-kParamB = 2,
-kParamC = 3,
-kNumParameters = 4
-
-    };
-
   public:
     BiquadPlus()
     {
@@ -73,10 +73,15 @@ kNumParameters = 4
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor (int x = 0,
+kParamA = 1,
+kParamB = 2,
+kParamC = 3,
+kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -105,7 +110,35 @@ case kParamC: return C;
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return 0;
+        case kParamA: return 1.0;
+        case kParamB: return 0.5;
+        case kParamC: return 0.5;
+
+        default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return "type";
+        case kParamA: return "freq";
+        case kParamB: return "q";
+        case kParamC: return "invwet";
+
+        default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -272,4 +305,4 @@ case kParamC: return C;
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::biquadplus

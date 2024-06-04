@@ -2,24 +2,28 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::notjustanothercd {
+
+constexpr std::string_view k_name{ "NotJustAnotherCD" };
+constexpr std::string_view k_short_description{
+    "NotJustAnotherCD is a next-gen wordlength reducer at 16 bit, with DeRez."
+};
+constexpr std::string_view k_long_description{
+    ""
+};
+constexpr std::string_view k_tags{
+    "dithers"
+};
+
 template <typename T>
 class NotJustAnotherCD final : public Effect<T>
 {
-    std::string m_name{ "NotJustAnotherCD" };
-
     double bynL[13];
     double bynR[13];
     double noiseShapingL;
     double noiseShapingR;
     uint32_t fpdL;
     uint32_t fpdR;
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     NotJustAnotherCD()
@@ -51,10 +55,11 @@ class NotJustAnotherCD final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -75,7 +80,27 @@ class NotJustAnotherCD final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -363,4 +388,4 @@ class NotJustAnotherCD final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::notjustanothercd

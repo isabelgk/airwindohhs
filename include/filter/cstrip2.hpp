@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::cstrip2 {
+
+constexpr std::string_view k_name{ "CStrip2" };
+constexpr std::string_view k_short_description{
+    "CStrip2 refines and optimizes CStrip, by request!"
+};
+constexpr std::string_view k_long_description{
+    "It's been a while since we've seen an Airwindows channel strip! Here's why CStrip2 is here.First, I was asked to do it. Specifically, I was asked to take the delay-trim and gate out of CStrip, and also to replace the highpass and lowpass with Capacitor, and keep the compressor exactly as it is, and also could I put a saturation effect on the end? That sort of thing doesn't always click with me, but hang on a moment, there's more.Second, we've got an Airwindows port to VCV Rack (which might expand to a CLAP, or more, along the same lines) but it's limited to ten controls. There are only two Airwindows plugins with more than ten controls. One is Pafnuty (which would be well suited to Rack or Rack-like environments). The other… is CStrip.Or WAS, because CStrip2 is here!There are also related things. It seems to me the EQ technique I use might fit in future versions of Console that include built-in EQ, and model famous recording desks, especially old ones. That's not to say the CStrip EQ is designed to do that, because it's not: but it covers some interesting bases, like saturating boosts to bring them forward and unsaturating cuts to drop them back, and the relatively shallow slopes lend themselves to fixed-frequency built in EQ bands. There are classic desk topologies where the channels and busses have idiosyncratic choices for the EQ bands, and to model that would tend to bring outputs into the realms of classic albums done on those desks. I've got more Console summing algorithms in the works to support this exploration.Oh, and that output saturation goes like this: 0 to 1/3 is dry signal, 1/3 to 2/3 crossfades into Spiral like it is on the plugin Channel (versions 7, 8 and 9 have this) and 2/3 to 1 crossfades into the Density algorithm for maximum fatness and drive. This is probably going to be fun for people to play with, or leave it below 1/3 if you want clean output.That's CStrip2! I hope you like it :)"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class CStrip2 final : public Effect<T>
 {
-    std::string m_name{ "CStrip2" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -111,22 +121,6 @@ class CStrip2 final : public Effect<T>
     float H;
     float I;
     float J;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kParamG = 6,
-        kParamH = 7,
-        kParamI = 8,
-        kParamJ = 9,
-        kNumParameters = 10
-
-    };
 
   public:
     CStrip2()
@@ -234,10 +228,21 @@ class CStrip2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kParamG = 6,
+        kParamH = 7,
+        kParamI = 8,
+        kParamJ = 9,
+        kNumParameters = 10
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -278,7 +283,47 @@ class CStrip2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.5;
+            case kParamE: return 0.5;
+            case kParamF: return 1.0;
+            case kParamG: return 0.0;
+            case kParamH: return 0.0;
+            case kParamI: return 0.0;
+            case kParamJ: return 0.33;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "treble";
+            case kParamB: return "mid";
+            case kParamC: return "bass";
+            case kParamD: return "trebfrq";
+            case kParamE: return "bassfrq";
+            case kParamF: return "lowcap";
+            case kParamG: return "hicap";
+            case kParamH: return "compres";
+            case kParamI: return "compspd";
+            case kParamJ: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1037,4 +1082,4 @@ class CStrip2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::cstrip2

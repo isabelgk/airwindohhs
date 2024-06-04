@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::multibanddistortion {
+
+constexpr std::string_view k_name{ "MultiBandDistortion" };
+constexpr std::string_view k_short_description{
+    "MultiBandDistortion is an old weird gnarly sound wrecker :)"
+};
+constexpr std::string_view k_long_description{
+    "Some plugins just want to watch the world burn :)I don’t have all that much to say about this one. I’ve been needing to post it: I’ve got folks who ask me for soundgoodizer/OTT type things and try to get a ‘slammed’, deeply unnatural, multiband kind of effect going… and all my life I’ve been learning how to get AWAY from that kind of sonic disassociation and audio gibberish towards stuff with a very different texture. So I’m not a natural match for that kind of thing, and yet I get asked for my take on plugins like that.So, long ago, I made MultiBandDistortion. I figured if you were going to wreck your sound, let’s REALLY wreck it, and I did some very gnarly things in there that I now don’t entirely understand. I know that if you turn ‘stable’ down, you get a choppy effect not unlike the ZVex Fuzz Factory pedal, only not: the interaction between the bands can get sketchy. Again, I don’t remember how this worked and don’t expect to be revising it or making it more controllable or cleaner: that kind of misses the point. If you’re trying to get a slick version of this kind of thing you start by not using this kind of thing :)"
+};
+constexpr std::string_view k_tags{
+    "distortion"
+};
+
 template <typename T>
 class MultiBandDistortion final : public Effect<T>
 {
-    std::string m_name{ "MultiBandDistortion" };
-
     double ataLast3SampleL;
     double ataLast2SampleL;
     double ataLast1SampleL;
@@ -54,21 +64,6 @@ class MultiBandDistortion final : public Effect<T>
     float H;
     float I;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kParamG = 6,
-        kParamH = 7,
-        kParamI = 8,
-        kNumParameters = 9
-
-    };
-
   public:
     MultiBandDistortion()
     {
@@ -107,10 +102,20 @@ class MultiBandDistortion final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kParamG = 6,
+        kParamH = 7,
+        kParamI = 8,
+        kNumParameters = 9
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -149,7 +154,45 @@ class MultiBandDistortion final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.0;
+            case kParamC: return 0.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.0;
+            case kParamF: return 1.0;
+            case kParamG: return 1.0;
+            case kParamH: return 1.0;
+            case kParamI: return 0.75;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "freqcy";
+            case kParamB: return "h gain";
+            case kParamC: return "l gain";
+            case kParamD: return "h hard";
+            case kParamE: return "l hard";
+            case kParamF: return "h mtrx";
+            case kParamG: return "l mtrx";
+            case kParamH: return "stable";
+            case kParamI: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -541,4 +584,4 @@ class MultiBandDistortion final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::multibanddistortion

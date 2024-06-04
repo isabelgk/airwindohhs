@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::pop2 {
+
+constexpr std::string_view k_name{ "Pop2" };
+constexpr std::string_view k_short_description{
+    "Pop2 adds control and punch to Pop."
+};
+constexpr std::string_view k_long_description{
+    "Back in the day, I said I would get an Allen and Heath compressor to do Pop2. That is not what happened here, and Pop2 is not a hardware emulation (even though I'm demonstrating it against a Heritage Audio Successor using a sidechain filter on the hardware comp that Pop2 doesn't even have)What happened is this: Pop was the best testbed for some experiments I needed to do. I needed to split out attack and decay speeds (as much as I could, on this crazy algorithm!) and I needed to build ClipOnly2 into the output stage.This is because there's a trick you can do if you know how. If you compress in such a way that a huge spikey attack pokes out, and then you clip that attack, you can get and control a sort of distorted 'splat' on the attack that highlights it usefully. (I didn't make this up: Paul Frindle talked about it publically as a useful thing to do)The result of these experiments is Pop2, a software compressor so intense that you have to shoot it out with a rackmount compressor which will set you back $1700… and even then, it's not a given which wins. The hardware will give you more midrange sonority (that Successor is fully transformer balanced and a really nice piece of kit) and hangs on to decays in a characteristic way… but Pop2 stands up for itself damn well, plus you can run one on all 16 inserts of your hybrid analog/digital recording setup, plus there's a bit of a price difference.On a personal note I apologize for the delay and lack of plugin last week: I was at a hospital but not over myself or my lady, in this case it's my best friend out here in Vermont. Suffice to say I am studio building like a madman because it is my way of coping with grief and loss, and I'll rest at times too, but he would appreciate me turning to my lifework at such a time, as he's been an inspiration to me in turn: and that's enough of that for now. Just know: maybe sometimes go for your dreams and don't wait, because you never know when your life or those near you will be just taken away.I am proud to still be here helping you go for YOUR dreams, and hope that Pop2 helps you do that. Please help support my Patreon and I'll continue to charge forth doing everything I can, and it also helps me be there for my friends and loved ones when I need to drop everything and drive or fly to somebody's side (which we will hope does not become a constant refrain!)Love you folks, talk to you later :)"
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class Pop2 final : public Effect<T>
 {
-    std::string m_name{ "Pop2" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -39,17 +49,6 @@ class Pop2 final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     Pop2()
@@ -95,10 +94,16 @@ class Pop2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -129,7 +134,37 @@ class Pop2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.5;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "compres";
+            case kParamB: return "attack";
+            case kParamC: return "release";
+            case kParamD: return "drive";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -443,4 +478,4 @@ class Pop2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::pop2

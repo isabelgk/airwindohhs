@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::dynamics {
+
+constexpr std::string_view k_name{ "Dynamics" };
+constexpr std::string_view k_short_description{
+    "Dynamics is a combination compressor gate."
+};
+constexpr std::string_view k_long_description{
+    "Dynamics started with a request: the gate, from CStrip, on its own. Then I thought, what if I included the compression too? I could tweak both and see if I could make 'em better for the new plugin. And then I thought, what would it be like if I combined them into a single dynamics object?I think it worked.Dynamics can be very transparent, or you can crank the speed and intensity to be hyper-squished… but since it's a single plugin, you can hypercompress AND gate as a unit. That means you're triggering the gate off the source audio, you're able to control the closing of the gate like it's raw sound, but the sound you're gating is the compressed one. And that means terrific control and cleanness on the sculpted, tightened sounds. I've designed it so you can make it gate on almost anything, and squish very aggressively. It's unlinked so you can use it on a stereo submix with distinct parts for each side, or put it on a mono track to control and shape it."
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class Dynamics final : public Effect<T>
 {
-    std::string m_name{ "Dynamics" };
-
     // begin Gate
     bool WasNegativeL;
     int ZeroCrossL;
@@ -48,16 +58,6 @@ class Dynamics final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Dynamics()
@@ -106,10 +106,15 @@ class Dynamics final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -138,7 +143,35 @@ class Dynamics final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.5;
+            case kParamC: return 0.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "comp";
+            case kParamB: return "speed";
+            case kParamC: return "gate";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -505,4 +538,4 @@ class Dynamics final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::dynamics

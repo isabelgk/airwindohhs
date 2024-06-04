@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::tape {
+
+constexpr std::string_view k_name{ "Tape" };
+constexpr std::string_view k_short_description{
+    "TapeFat is the tone control from TapeDelay."
+};
+constexpr std::string_view k_long_description{
+    "This one’s for me. It’s very similar to last week’s ToTape, but with the following differences:-simpler name-overdrive uses Spiral, not the Mojo algorithm-simpler controls (not exactly ‘input gain’ but close)-changes to the Head Bump algorithm-no flutterThis is what I WANTED to do with ToTape6, and didn’t. In some ways, that’s good: if I’d axed flutter I would not have spent all day struggling with it and coming up with a better algorithm that more closely resembles real physical tape, something that could come in handy for future echo plugins etc. If I’d done the things I’ve done with Tape, to ToTape6, then ToTape6 wouldn’t be as adjustable as it is. There’s room for both, and I gave people the complicated many-knobs version because I know you too well ;) and I know what people like, and I’m there for you.But I also have dreams of my own. So, the plugin (first ever from Airwindows) that carries just the generic name ‘Tape’ is Airwindows tape emulation MY way.I’ve heard a lot of tape in my time, being over 50 years old. I’ve dubbed and re-dubbed tapes a lot. So I dialed in (and re-programmed) Tape by loading up eight instances of it, in a row, and making it behave itself as well as could be expected while running audio through eight instances of Tape. It’s not meant to be clean if you do that: it’s meant to be eightfold trash, but the right kind of trash I’m familiar with when you’ve got that much generation loss and head bump buildup. I knew that if I could get that right, if I could get it to behave okay under that kind of duress, I could rely on it as a go-to output stage (going just before Monitoring) that would condition the sound in the right kind of way.And so it does.Tape will be heard from again, but much as ToTape5 bore the standard for Airwindows tape emulation for years, Tape is my personal choice for ‘mix into’ DAW output stage and it’ll stand for a while, I think. If you need more phat or more flutter or more controls etc etc, use ToTape6, which is just as good in many ways. This is just my ‘director’s cut’ version, designed to my tastes, for if you trust my ears and my choices. Since it’s Airwindows, ToTape6 (and 5) still works and you can have both. This one is for those of you who pursue the simple creed: I have a (virtual) tape machine. I record to my tape machine. I am happy. :)This plugin came out with an original version and then had a Redux update in which I added a control: a slider for the head bump, as people were finding the head bump excessive. Cranking it up all the way gave you the original behavior, but I defaulted it to 0.5.Tape Delay is the reissue (in updated and VST-ified form) of one of my first plugins. This is a precursor to Iron Oxide: it uses a technique for tone shaping that’s like a simplified Iron Oxide. Instead of being a direct EQ, it’s a huge cluster of delay taps, and also a little bit like a convolution impulse combined with an averaging: you get an averaging of just prime-numbered sample delay times. This turns out to work quite well (a direct version of this tone shaper by itself is also coming out)The delay part is what makes this a fun toy. It can do some outlandish things, and also has some gotchas. It chases the delay setting in such a way that you get wild pitch bends from manipulating the control, not just buffer-smashings and dropouts. But, you also get buffer smashings and dropouts, so I wouldn’t dignify this with calling it ’emulation’: it’s just a way of fooling with the delay time control, live. If you’re rough with the control, it’ll get quite choppy. Also, if you intend to use this without glitches, you’ve got to enable the plugin and give it maybe a quarter or half second to chase to its desired setting, or you’ll hear a pitch zoop as the plugin starts up. That’s because this one starts at zero delay on reset, so if there’s audio happening it’ll get caught in the initial zip of the delay time.If you can work with that, or don’t mind the weirdness, then you can enjoy this blast from the past that used to be AU-only for years and years: there’s a lot of interesting stuff like that, for instance Glitch Shifter. This one can give you mad dubby effects, either decaying into heavy Memory Man-like darkness or doing a tape slapback or decaying into bright airyness. Because of the prime-number based tone shaping, regeneration doesn’t produce reinforced artifacts, just continues to emphasize the tone shift you dialed in. (the tone-only version of this that’s coming, could be used in Blue Cat’s Late Replies plugin to make that a Tape Delay-alike, but without the delay time weirdness.)Again, be careful using this on audio regions that are tightly trimmed to the very beginning of the sound: this one needs a second to stabilize if you’re using it to sound like a normal delay. Or, you can just do whatever you like :)TapeDelay2 gives you substantial changes over my original TapeDelay. It’s no longer trying to do the ‘Iron Oxide’ style tone shaping the original one did. In fact, it’s not even a delay in the same sense as its predecessor.Instead, it’s a brand new, undersampled, Airwindows-bandpassed monster ready to make a whole pile of very convincing sounds. As plugin delays go, this covers a big range of purposes.You’ve got a nice long delay time that’s still available at higher sample rates, thanks to the undersampling techniques. The delay line (and the regeneration) makes use of Airwindows bandpasses, but only on the undersampled content: meaning that if you’ve got it set to very nearly full range (resonance of zero) it’ll give the same subtle highpassing and lowpassing no matter what sample rate you’re at (a normal bandpass would have to roll off closer to the sample rate’s Nyquist frequency, in other words it would let through too many highs to do a proper tape emulation). You can tighten the bandwidth by increasing resonance. You can adjust the region you’re highlighting. And you can still adjust the frequency control even when set to full wide, which gives you more of a tilt EQ. It really turned out to have a lot of flexibility, and there’s two separate bandpasses so that you can shape the overall tone and also focus in on the regenerations if you like. Vintage sounds in the classic Airwindows way, meaning ‘no overprocessing, just high fidelity clean and simple processing’. Also, the dry/wet operates like my recent reverbs: 50% means full dry AND full wet, so you can bring in subtle echoes without altering the gain of your underlying track. Use it like a kind of reverb, with whatever tone and resonance works for you!And lastly, just to top it off, Tape Flutter. This is a new implementation that I’ve never tried before. Instead of a simple vibrato, in TapeDelay2 the flutter keys off the amplitude of the underlying track, making it a lot more wavery and irregular. Subtle effects are easily achieved in most settings, and crank it up for more of a warbly dirty-tape quality. It should be irregular enough to sound like real tape wobble. It’s done by modulating the tape speed… because unlike any previous Airwindows tape effect, TapeDelay2 works by taking a full-length tape loop and literally speeding it up, rather than trying to change the length of the delay in any way. So both the warble, and any manipulations you make to the delay time, act like messing with the pitch of a physical tape machine with a set record and playback head… which turns out to be the best way to do this :)This is one of the good ones. Hope ya like it!I thought I had it all worked out. Put out a proper, well-coded TPDF dither, the highpassed variation on it I’ve called PaulDither, and move on to the fancy boutique stuff.But there was this one experiment I had in mind. If you could do the highpass by delaying and then subtracting the random noise (and it gained you a bit of efficiency in the bargain), why not delay it more? It’d create comb filtering, a cancellation node. Why not keep delaying until the cancellation node dropped right down to around 1.5K?Surely this would give me a nice cancellation notch right where the ear is most sensitive, and heightened clarity. What could go wrong?Nope! I made a prototype, called it ‘NodeDither’, began experimenting, and immediately found that I’d made… a flanger! The long delay settings were useless. It made obvious overtones just out of the dither noise, a blatant tone color cast that wouldn’t produce the desired effect. It didn’t even produce an obvious notch in the response where I wanted it. The only thing it did do, was continue to function as a working TPDF dither no matter what the setting was (more on this later).But, something else turned up in the experiments, and that’s what brought you TapeDither.If you use one sample of delay and inverting the noise, you get PaulDither: simple one-pole highpass. If you use two samples of delay, you get another sort of texture: kind of silky, but still digitally bright and intrusive. Using lots of delay, such as ten samples, starts to sound like the flanger, undesirable.But, there’s something interesting about powers-of-two delay times. One, two, four, eight and so on, these delay times are slightly less ‘colored’ in tone than the others. I think it has to do with interactions with the sample rate: they seem to line up more neatly, making it slightly more easy not to hear the pitch of the ‘flangey’ quality.And four samples of delay (and then inverting the noise) produces something rather special: a noise profile that closely resembles what you hear off reel-to-reel tape.I can’t specify particular brands because (a) I hate when people do that to brand names not their own and (b) it’s a technical discovery, not some complicated way of forcing digital audio to mimic a particular brand. It’s no specific tape stock or tape machine. But what it is, is a voicing for TPDF dither that rolls off in an obvious way, around where tape noise rolls off. There’s another little bump past that, which many people won’t be able to hear, and then it begins to roll off again as it reaches the Nyquist frequency beyond where digital audio can’t go. Compare that to any normal flat, TPDF, or highpassed dither. Those keep putting out noise energy right up to the frequency limit.TapeDither is every bit a TPDF dither, technically correct and flawless as far as dither goes. But it also is a highpassed dither with a softer tonal voicing that resembles good tape machines, and that doesn’t affect the dither performance at all. It doesn’t attenuate the audio content at all. Only the background dither noise is turned into what you’d get off a tape deck, all while the audio is protected from truncation and digital artifacts.I would use this anywhere I was sending processed stems or tracks outboard to a multichannel DAC, for mixing in the analog domain or summing with an outboard summing box. Without hesitation. I’d use fancier boutique dithers on the 2-buss, though this will work there too… but if I was doing an analog mix from a multichannel converter, there is nothing I’d rather use than TapeDither. (maybe Naturalize. Maybe.)That’s because it’s one thing to apply an interesting dither (like Spatialize, for instance, or some noise shaper) on the 2-buss and get a unique texture or presentation on the audio. But if you’re stacking up lots of tracks and all of them get the same treatment, it’s vital to use something that won’t develop an exaggerated tone signature when multiplied that way. For dither, TPDF gives you that behavior, and TapeDither is the TPDF that most closely mimics the reality of analog mixing back in the days of big reel-to-reel machines. The tone of its noise floor is already more pillowy, mellow and relaxing than most TPDF or highpassed TPDF, and then when you stack up lots of tracks of it, the texture’s better still.I’m still excited to bring out Naturalize, but I’m just as excited about what TapeDither means. It makes me want to build analog consoles and mix into them, just so I can put TapeDither on any output that’s not playing raw 24 bit data exactly as captured. Anything with processing or gain on it would get a dithered output, and it would be a matter of—faders up—hello, Seventies :)Well, I like audio from the Seventies. I suppose I’d better work out how to do some of the sonic quirks of Doubly while I’m at it! Not that a rock band would use Doubly…Sometimes it’s good to have just a little specialty plugin that does a useful thing. Hard to do that in the commercial plugin biz, where everything has to be the biggest hype to date: but hey! Thanks to Patreon I’m free of all that, and can follow my vision.It helps that I put out a lot of plugins: it’d be weird to do this as my only plugin for the month. But, while I work on Desk4 and StarChild from the greatest-hits list, I thought I’d sprinkle a little TapeDust for you.This is slightly different from the tape noise in Iron Oxide, though it’s the same general principle. It is a slew noise plugin. What that means is, the noise ONLY hits high frequencies or anywhere the signal’s moving rapidly (there’s a teeny bit of other noise added at high settings, but it’s mostly that).Note the ‘or anywhere the signal’s moving rapidly’. This isn’t a crossover. If you put in a sine wave that’s low and loud, you’ll get very obvious noise only as it crosses through zero, and that’ll sound odd. In general, cranking this up is weird. It’ll depend hugely on what kind of signal you’ve got… but that’s the beauty of it if you can master where to use this plugin.Basses? Probably no way. Full mix? Getouttahere, no chance outside very low settings. Guitar? Hmmm. Drums, loops? A pattern emerges.TapeDust can convert ugly sharp treble attacks on pointy percussive atonal sounds to pretty much any degree of dense, noisy, natural-sounding crunch. It’s a type of noise, so it also gives analog-style variance to repeated samples that might sound over-digital. And the less tonal, or the less ‘pure clear note’ the signal is, the more TapeDust you can get away with. Since it’s a slew noise, it hits the treble of your signal HARD, but since it’s a noise, it’s not filtering or softening the sound as much as it’s just eroding it, weathering it, making it more natural. Anywhere you’ve got bright highs on a nonpure sound, you can grind them off with TapeDust.Of course, if you’re cool with using super-low settings, you can do that anywhere: it’s just important to register that this very specialized and dedicated tool is super picky about what it likes to work on. It’s a beautiful example of taking your production skills deeper: use something that can sound horrible and wrong, and find places where it’s in its element. You can do outlandish textural things, taking something like a clean electro mix with deep clean bass, and sticking heavy TapeDust on just one element in the mix to contrast with the un-grungy elements. I hope you like TapeDust. It’s the kind of plugin I love to make.(note: there has been a bug in this plugin causing it to sound different than intended)TapeFat is just the tone control from TapeDelay. It works like an averaging filter that you can use to either roll off highs (or eventually mids), or subtract the effect to create a highpass and take out the lows.The reason this is interesting is, that tone control is completely bizarre. It’s an averaging filter, but on a pile of delay taps arranged according to prime numbers. Works more like an ambience control, but more densely packed. If you put an impulse through it you don’t get a smoothed-out lowpass so much as a bizarre micro-reverb. Since it’s using primes, it doesn’t reinforce any particular frequency. Since it’s an ambience, it doesn’t have any pre-echoes like linear phase EQs, and the artifacts it produces become a tone of their own (either in-phase, or inverted).You can hear it on the video, which has a number of things updated, not least this: the new audio is directly captured analog sorta-house music out of my livestreams. This way you ought to be able to really hear the way my plugins retain analog qualities, because now the demo music is essentially AAD: not products of other DAW mixes or digital synthesis, but source material."
+};
+constexpr std::string_view k_tags{
+    "tape"
+};
+
 template <typename T>
 class Tape final : public Effect<T>
 {
-    std::string m_name{ "Tape" };
-
     double iirMidRollerAL;
     double iirMidRollerBL;
     double iirHeadBumpAL;
@@ -32,14 +42,6 @@ class Tape final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     Tape()
@@ -78,10 +80,13 @@ class Tape final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -106,7 +111,31 @@ class Tape final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "slam";
+            case kParamB: return "bump";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -505,4 +534,4 @@ class Tape final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::tape

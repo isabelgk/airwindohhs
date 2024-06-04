@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::floor {
+
+constexpr std::string_view k_name{ "Floor" };
+constexpr std::string_view k_short_description{
+    "Floor is fake bottom octave for fun and profit!"
+};
+constexpr std::string_view k_long_description{
+    "So this is one of those weird ‘considered harmful’ plugins… the ‘Don’t do this’ plugins. I don’t really advocate for this one as I don’t entirely approve: it’s kind of like some of the loudenators in that respect, and indeed it has similar characteristics.Floor does an odd thing that’s like trying to synthesize fake harmonics related to the real bass content, to make you think there’s a lower octave there when there isn’t. It might not be the most perfect implementation of this (I understand there’s a Waves plugin that does this type of processing and I think I must have modeled it on that) but it’s the Airwindows take on reverse-engineering that type of processing, while knowing nothing but the desired effect and the general category of what’s happening.This means it’s now part of the open source toolkit and can find its way into other stuff: here’s hoping real bass continues to be a thing (honestly, so much of what I do with Airwindows serves to improve linearity in the tiny micro-modulations that help us hear extended bass as a satisfying, resonant thing) even with an expanded toolkit around these frequencies. A lot of my recent work around DubSub and BassKit has been about introducing extended bass frequencies in a desirable way. I could’ve tacked the Floor algorithm onto there, and I decided that wasn’t good to do.Why would you want to do fake bass?Because you can get more loudness out of it. (also, maybe you’re just doing something interesting with tonalities, or exploiting the algorithm to make a different sound…) Mostly, it’s just about making it seem like you can go louder with the same content. It’s not really the same, it’s altered, but it’s simulating/faking the effect of an extended bottom octave and restricting the ‘swing’ of those frequencies so they cover the smaller range taken up by a higher frequency, because they’re really NOT the extended frequencies anymore, just some rearranged energy trying to pretend it’s deep bass. (I’m not sure how Floor will work as a DC blocker for RawConsole5 fans: seems like it might have undesirable effects? How do you even fake DC energy?)"
+};
+constexpr std::string_view k_tags{
+    "bass"
+};
+
 template <typename T>
 class Floor final : public Effect<T>
 {
-    std::string m_name{ "Floor" };
-
     bool flip; // end defining of antialiasing variables
     double iirSample1AL;
     double iirSample1BL;
@@ -35,15 +45,6 @@ class Floor final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Floor()
@@ -83,10 +84,14 @@ class Floor final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -113,7 +118,33 @@ class Floor final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.0;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "floor";
+            case kParamB: return "drive";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -503,4 +534,4 @@ class Floor final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::floor

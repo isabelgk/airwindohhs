@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::dubsub {
+
+constexpr std::string_view k_name{ "DubSub" };
+constexpr std::string_view k_short_description{
+    "DubSub is a fully featured bass doctor."
+};
+constexpr std::string_view k_long_description{
+    "Be careful what you wish for. I like making plugins with very few controls, but when you have to use ALL the controls…Here’s how it works. The top section, Treble Grind, is like a bass guitar presence circuit. You shouldn’t use that for hi-fi purposes, if you want clean pass-through use the Dry/Wet. Treble Grind works like a distortion, and has an Inverse/Out control allowing you to subtract it as well as add it. ‘zero’ is in the middle.Crossover determines what goes to the Treble Grind, and what goes to the bass sections. To make it track bass better, set the crossover low.Bass Drive is how hard you’re pushing the main bass section. It’s essentially an adjustable Head Bump control like in ToTape. Bass Voicing controls the depth of the bass boost: setting it higher up sounds more like overdriving a bass amp. Bass Inv/Out is the same as in the Treble Grind section, an ‘attenuverter’ like in certain Eurorack modules: it lets you subtract the bass, not just add it.Sub Drive, Sub Voicing, and Sub Inv/Out are much like the bass section, except they work on an octave-divided version of the bass section. This helps it get good octave-down sounds some of the time, but it’s not anything like a digital suboctave synthesizer: it’s working crudely like an analog octave divider, which means it can make horrible noises if it doesn’t have clean signal to work with. This is of course intentional :) if you want it to do a recognizable sub-note, feed it a carefully controlled signal off a single track. Or, you can set it very deep and not mix in all that much of it, and get an interesting effect sound. For cleaner deep bass, work with the main bass section, or voice both of them very deep in hopes of cleaning up the sub-bass section a little by refusing to let it have more complicated signals."
+};
+constexpr std::string_view k_tags{
+    "bass"
+};
+
 template <typename T>
 class DubSub final : public Effect<T>
 {
-    std::string m_name{ "DubSub" };
-
     double iirDriveSampleAL;
     double iirDriveSampleBL;
     double iirDriveSampleCL;
@@ -109,22 +119,6 @@ class DubSub final : public Effect<T>
     float H;
     float I;
     float J;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kParamG = 6,
-        kParamH = 7,
-        kParamI = 8,
-        kParamJ = 9,
-        kNumParameters = 10
-
-    };
 
   public:
     DubSub()
@@ -238,10 +232,21 @@ class DubSub final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kParamG = 6,
+        kParamH = 7,
+        kParamI = 8,
+        kParamJ = 9,
+        kNumParameters = 10
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -282,7 +287,47 @@ class DubSub final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.9;
+            case kParamB: return 0.5;
+            case kParamC: return 0.74;
+            case kParamD: return 1.0;
+            case kParamE: return 0.95;
+            case kParamF: return 0.5;
+            case kParamG: return 0.2;
+            case kParamH: return 0.2;
+            case kParamI: return 0.5;
+            case kParamJ: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "tgrind";
+            case kParamB: return "grdout";
+            case kParamC: return "xover";
+            case kParamD: return "bsdrive";
+            case kParamE: return "bsvoice";
+            case kParamF: return "bassout";
+            case kParamG: return "sbdrive";
+            case kParamH: return "sbvoice";
+            case kParamI: return "subout";
+            case kParamJ: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -850,4 +895,4 @@ class DubSub final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::dubsub

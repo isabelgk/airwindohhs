@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::hull2 {
+
+constexpr std::string_view k_name{ "Hull2" };
+constexpr std::string_view k_short_description{
+    "Hull2 is a very clear three-band EQ."
+};
+constexpr std::string_view k_long_description{
+    "We ended up using the Hull algorithm in something! It's what makes the high band of ConsoleLA work. Hull2 is taking the guts of that code and giving it to you as a pristine, no-saturation, no analog mojo, pure EQ.Note that I didn't say 'normal' ;)The idea here is that it's very, very simple algorithms that combine to produce complicated results. When I describe what happens here, keep that in mind: the code that produces it is incredibly pure and simple, and the tone of these odd and complicated effects is very transparent and hangs onto expressiveness instead of degrading the tone.You've got a treble, mid, and bass control. If you move them all together, you get a simple gain control that's roughly as good as PurestGain. It's very close to PurestGain, if you've moved all three controls exactly together, and that's how transparent Hull2 can be.If you boost treble relative to mid (at any position), you get the 10k-centered boost from ConsoleLA, but without any harmonics or other alterations. It's an even clearer effect. It centers on 10k and falls off slightly above that (remembering that, flat, it's a perfect bypass).If you cut treble relative to mid, you get at first a soft notch, then increasingly steep. And then, the notch gets shallower again, and then it becomes a very steep roll-off slightly higher than that.If you boost lows relative to mid (at any position) you begin to lift the lows, while subtly cutting around 700 hz causing the sensation that the bass region is shifting lower while boosting.If you cut lows relative to mid, it'll subtly lift those same lower-mids, so again it's like shifting the voicing of the track rather than just 'adding and removing exact frequencies'. It's very broad-stroke EQ, like two tilt-EQs with a hinge in the middle, if that makes any sense.All this is designed in, but it's not done by banks of EQs doing elaborate (and unaccountable) things. It comes out of how very simple algorithms interact with each other, so the behaviors are somewhat designable but it's kind of unavoidable. It's the cost of using these crossovers at these steepnesses, and the trick is to design it so the weirdnesses do musically useful things. And then, the other trick is to construct the three-band EQ by deconstructing the input in such a way that you can just add it together again and get the input back.You could have the craziest, wildest crossover behavior, with all sorts of pre-ring or whatever (Hull2 doesn't, but you could have this) and subtract it from the highs to get a mid band. If you do that, both the bands will have exactly matching pre-ripple, if there's pre-ring (same with phase issues, etc).And then if you put 'em back together you have the original back: no more ripple, phase or anything.And of course if you apply only a tiny amount, you get only a tiny amount of whatever character is part of the crossover. And that's the principle in ConsoleLA, and in ConsoleMC (and MD), and now it's in Hull2, where ConsoleLA's treble crossover was developed.Hope you find some use for it :)"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Hull2 final : public Effect<T>
 {
-    std::string m_name{ "Hull2" };
-
     double hullL[225];
     double hullR[225];
     int hullp;
@@ -19,15 +29,6 @@ class Hull2 final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Hull2()
@@ -55,10 +56,14 @@ class Hull2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -85,7 +90,33 @@ class Hull2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "treble";
+            case kParamB: return "mid";
+            case kParamC: return "bass";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -258,4 +289,4 @@ class Hull2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::hull2

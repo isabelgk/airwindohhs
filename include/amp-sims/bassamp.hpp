@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::bassamp {
+
+constexpr std::string_view k_name{ "BassAmp" };
+constexpr std::string_view k_short_description{
+    "BassAmp is an old plugin with new tweaks, that gives some bass guitar tones."
+};
+constexpr std::string_view k_long_description{
+    "This is BassAmp. (I’ve been asked to do amp sim type plugins, so it’s a start). Back in the day I experimented with some of these things, though I’ve always been more interested in wiring up physical hardware, especially for guitar distortions and things. I’ve brought this one up to date in some ways, debugging a problem with the ‘dub’ channel and using my modern techniques for dithering to the floating point bus, and so on.It’s got basically a bright channel, midrange (which is just dry, as a slider), a bass channel with a characteristic woolly tone that has a kind of noisy blur on the small amount of treble it does have, and a ‘sub’ channel that really doesn’t work, so use it as a crazy special effect. BassKit might get you a cleaner sub-octave, but this will give you a trashy sub-octave that’s mostly garbage, even on a single-note line. So you’ll be leaving it off, I think."
+};
+constexpr std::string_view k_tags{
+    "amp-sims"
+};
+
 template <typename T>
 class BassAmp final : public Effect<T>
 {
-    std::string m_name{ "BassAmp" };
-
     double LataLast6Sample;
     double LataLast5Sample;
     double LataLast4Sample;
@@ -131,16 +141,6 @@ class BassAmp final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     BassAmp()
@@ -276,10 +276,15 @@ class BassAmp final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -308,7 +313,35 @@ class BassAmp final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.75;
+            case kParamB: return 0.0;
+            case kParamC: return 0.75;
+            case kParamD: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "high";
+            case kParamB: return "dry";
+            case kParamC: return "dub";
+            case kParamD: return "sub";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -885,4 +918,4 @@ class BassAmp final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::bassamp

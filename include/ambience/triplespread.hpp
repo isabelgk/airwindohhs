@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::triplespread {
+
+constexpr std::string_view k_name{ "TripleSpread" };
+constexpr std::string_view k_short_description{
+    "TripleSpread is a stereo tripler with extra wideness and GlitchShifter processing."
+};
+constexpr std::string_view k_long_description{
+    "Here’s a fun little toy that might make it into the toolkits of some otherwise non-Airwindows types :)TripleSpread is based off the code of GlitchShifter, but it’s designed around one task, and that is the ‘split a track into three, pan one hard left and pitch it down a few cents, pan another hard right and pitch it up a few cents’. That’s what it does. It’s a tripler. Alternately, if you put it on a LR pair of instruments, it’ll double each of those instruments and stay very stereo. Or if you put it on an LCR submix, it can sound like about twelve instruments. That’s the specialty of TripleSpread: making a big wide stereo effect.Except that it adds a new twist: as you bring up dry/wet, introducing the effect and progressively overpowering ‘dry’ (where the mono signal might be) it also fades out the mid content of the added stereo stuff. So you get a hyper-wide. Specifically, you get a hyper-wide that seamlessly fades between your clean, direct sound (however many sources you have in it) and the expanded, widened sound (adding pitch-shifted elements that are wider than the stereo field). These can be subtly pitch shifted, or nearly a semitone out if you crank it.And if that’s not enough, it’s still Glitch Shifter based, so you can increase the tightness control until it glitches out or reverts to dry… or you can turn it way down, until the pitch shifted tripled voices hardly relate to the original sound at all. That might be cool for ambient pads, wide stereo synthetic things or what have you: it’ll add an unpredictable echoey effect that’s also pitch shifted. Tighten it up, and you control that vagueness as much as you like. Tighten it more, and you can tie it to whatever rhythmic element you like: it’s certainly capable of widening LCR guitars while keeping the ‘guitar orchestra’ effect relatively tight, or you can get silly and try it on percussive sounds as long as you’re OK with it either glitching, or blurring the timing.So, the key distinction between this and StereoDoubler is that TripleSpread pushes the width of the added widening voices rather than just putting them hard left and hard right. You do that by pushing the dry/wet harder."
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class TripleSpread final : public Effect<T>
 {
-    std::string m_name{ "TripleSpread" };
-
     VstInt32 pL[131076];
     VstInt32 offsetL[258];
     VstInt32 pastzeroL[258];
@@ -55,15 +65,6 @@ class TripleSpread final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamfor (int count = 0,
-kParamfor (int count = 1,
-kParamoffsetL[count] = 2,
-kNumParameters = 3
-
-    };
 
   public:
     TripleSpread()
@@ -127,10 +128,14 @@ kNumParameters = 3
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor (int count = 0,
+kParamfor (int count = 1,
+kParamoffsetL[count] = 2,
+kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -157,7 +162,33 @@ case kParamoffsetL[count]: return offsetL[count];
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int count: return 0;
+case kParamfor (int count: return 0;
+case kParamoffsetL[count]: return 0;
+
+default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int count: return "spread";
+case kParamfor (int count: return "tighten";
+case kParamoffsetL[count]: return "drywet";
+
+default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -602,4 +633,4 @@ case kParamoffsetL[count]: return "";
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::triplespread

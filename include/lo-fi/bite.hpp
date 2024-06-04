@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::bite {
+
+constexpr std::string_view k_name{ "Bite" };
+constexpr std::string_view k_short_description{
+    "Bite is an unusual edge-maker."
+};
+constexpr std::string_view k_long_description{
+    "Bite puts on a sort of midrange edge. At high sample rates it’ll be more of a trebly edge. It’s no specific frequency, so much as it’s just a harshening factor: you can also use it inversely, to take out midrange edge. It runs a couple samples of latency: on VST that works as a couple samples of delay. Again: an experiment, a science project."
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class Bite final : public Effect<T>
 {
-    std::string m_name{ "Bite" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -31,14 +41,6 @@ class Bite final : public Effect<T>
     double sampleIR;
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     Bite()
@@ -74,10 +76,13 @@ class Bite final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -102,7 +107,31 @@ class Bite final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "bite";
+            case kParamB: return "output level";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -227,4 +256,4 @@ class Bite final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::bite

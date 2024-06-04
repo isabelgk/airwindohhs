@@ -2,25 +2,27 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::ulawdecode {
+
+constexpr std::string_view k_name{ "uLawDecode" };
+constexpr std::string_view k_short_description{
+    "uLawDecode is a Console-like encode/decode pair, but much more extreme."
+};
+constexpr std::string_view k_long_description{
+    ""
+};
+constexpr std::string_view k_tags{
+    "utility"
+};
+
 template <typename T>
 class uLawDecode final : public Effect<T>
 {
-    std::string m_name{ "uLawDecode" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     uLawDecode()
@@ -38,10 +40,13 @@ class uLawDecode final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -66,7 +71,31 @@ class uLawDecode final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -178,4 +207,4 @@ class uLawDecode final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::ulawdecode

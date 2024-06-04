@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::kplatea {
+
+constexpr std::string_view k_name{ "kPlateA" };
+constexpr std::string_view k_short_description{
+    "kPlateA is a plate reverb, not unlike its namesake atop Abbey Road."
+};
+constexpr std::string_view k_long_description{
+    "So I just happened to turn my efforts to plate reverbs last week, since the internet exploded over some plugin drama and some of the plugins in question just happened to be models of some specific plate reverbs in a famous place: atop Abbey Road Studios. There were four of them, and I'm sure I can't make a plugin to model those exact ones, as the rights to the name are probably all tied up. And I wouldn't suggest that I tried to make reverb plugins MORE realistic than those made by this company with rights to the name. That would be rude! :DBut I bet nothing is stopping me from making plugins and using the LETTER. And indeed nothing is stopping me from finding examples of dry sound and then the sound of these other plugins, and using that as a reference to the lettered EMT plate reverb on top of Abbey Road, or indeed figuring out that this other company rather overprocessed its stuff and finding ways to get a similar effect that's cleaner, deeper and more intense.It's actually a really interesting puzzle to do this sort of thing… especially when you don't really have good reference yet, as it's all happening so fast. But now you have kPlateA. And in it, you might just have a new best plate reverb. It's using multiple fancy Householder feedforward matrices, all sorts of filtering, undersampling to make it useable at 96k and 192k, and seeing as it was developed on my antique Macbook Pro running Snow Leopard, I daresay it both sounds better and runs better than its competition.Oh, one more thing: you get to own it. And by that I mean, not only do you get it maintained and supported for free (thanks to a thriving Patreon and those who help me), but it is also MIT-licensed open source code. So you get to own it, in the sense of you can take the code and skin it with a big GUI with pictures of plate reverbs with funny waves drawn on them, if you feel that is really necessary. You just have to credit Airwindows.Or, you may find that the way this can sit in the mix, means the GUI with pictures of plate reverbs with funny waves drawn on them, isn't really as necessary as you thought it was :)"
+};
+constexpr std::string_view k_tags{
+    "reverb"
+};
+
 template <typename T>
 class kPlateA final : public Effect<T>
 {
-    std::string m_name{ "kPlateA" };
-
     double iirAL;
     double iirBL;
     double gainIn;
@@ -211,17 +221,6 @@ class kPlateA final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     kPlateA()
@@ -504,10 +503,16 @@ class kPlateA final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -538,7 +543,37 @@ class kPlateA final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+            case kParamD: return 0.0;
+            case kParamE: return 0.25;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "inputpad";
+            case kParamB: return "damping";
+            case kParamC: return "low cut";
+            case kParamD: return "predelay";
+            case kParamE: return "wetness";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1430,4 +1465,4 @@ class kPlateA final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::kplatea

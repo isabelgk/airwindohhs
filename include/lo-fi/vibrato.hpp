@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::vibrato {
+
+constexpr std::string_view k_name{ "Vibrato" };
+constexpr std::string_view k_short_description{
+    "Vibrato lets you vibrato, chorus, flange, and make odd FM noises."
+};
+constexpr std::string_view k_long_description{
+    "The heart of Vibrato is the Airwindows moving-delay-tap interpolation code also found in Chorus and Flanger, but here there’s some extra functionality plus ways to partially simulate those other plugins: while you can make the full-wet sound do a nice vibrato (automate to taste), there are other fun things to do. You can use the dry/wet to get a chorusing effect, or with less depth, a flange: or set it to ‘inverse’ to get the same but with a through-zero flange that’ll cancel almost totally to silence. This can also be used as an interesting sort of highpass (or of course, using normal wet, as a sort of lowpassy effect). That’s all with the main vibrato control, which has an extremely wide speed range.Or, if that’s not enough, you can bring in the FM vibrato. This has the same type of speed control, and a depth control of its own, but instead of affecting the audio directly, it affects the speed of the main vibrato. You can use this at low speeds to provide an interesting modulation to the main vibrato, flange or chorus, or crank it up to produce distinctive overtones. And again, automate it to do even more interesting things.Vibrato is a nice little utility plugin, and I think it deserves a place as a go-to ‘time modulation’ plugin for people who have a solid understanding of how these effects work. It’s not hugely complex, or specialized, and it’s just complicated enough to be sophisticated. Want a lush chorus? Vibrato. Warbly effect? Vibrato. Thin things out in a way that sounds airy and interesting? Vibrato, inverse-zone, near 0.5 for maximum effect. Funny overtones and resonances? Vibrato, full-wet, up in the audio range. Even more metallic? Bring in some FM."
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class Vibrato final : public Effect<T>
 {
-    std::string m_name{ "Vibrato" };
-
     double pL[16386]; // this is processed, not raw incoming samples
     double pR[16386]; // this is processed, not raw incoming samples
     double sweep;
@@ -30,17 +40,6 @@ class Vibrato final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     Vibrato()
@@ -77,10 +76,16 @@ class Vibrato final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -111,7 +116,37 @@ class Vibrato final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.3;
+            case kParamB: return 0.0;
+            case kParamC: return 0.4;
+            case kParamD: return 0.0;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "speed";
+            case kParamB: return "depth";
+            case kParamC: return "fmspeed";
+            case kParamD: return "fmdepth";
+            case kParamE: return "invwet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -264,4 +299,4 @@ class Vibrato final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::vibrato

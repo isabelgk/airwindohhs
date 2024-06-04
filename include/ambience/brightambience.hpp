@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::brightambience {
+
+constexpr std::string_view k_name{ "BrightAmbience" };
+constexpr std::string_view k_short_description{
+    "BrightAmbience3 adds undersampling for high sample rates, and better feedback."
+};
+constexpr std::string_view k_long_description{
+    "BrightAmbience is one of the old secret weapons of classic Airwindows. It’s nasty enough to be pretty unique, and nice enough to be useable. What it does, is it sets up a BIG pile of delay taps spaced by prime numbers. There’s a decay control and a sustain control: the sustain will help with its CPU hungriness, the decay won’t. Dry/wet is at the top (what can I say, this was an early one) and wet tends to run HOT so you might like to use it as mostly dry and add its coloration to things as needed.It’s CPU hungry because it’s using a really naive method of doing all that, but it also has a really distinct sound that differs from what you can get out of convolution reverbs. And since the distribution of delay taps is prime-numbered but also kind of naive, instead of getting a convincing room you get a sort of steel-chamber effect with a nasty resonance up near the Nyquist frequency. But that can work as a special effect. Back in the day I meant this to be a great reverb, but it’s not. However, it IS a great ‘crazy bright ambience effect’, though it’s pretty CPU hungry like I said. You can apply it to anything that you’d like a halo of shiny around, and its tone is nicer at 96K as I demo it. (the sustain is tied to maximum sample delay, so higher sample rates will give you shorter sustains and denser shininess)This is just like BrightAmbience, except different in pretty much every detail. Techwise (skip to next paragraph if you like) it is using a totally different prime number series, ‘super-primes’ for its delay spacing, and then it’s offsetting alternately left and right delay taps to the next prime number in line, meaning that it’s a dual mono ‘ambience’ but center signals WILL get stereo spread. Also, there’s a kind of regeneration that was real tricky to do, but it means you can get a clean digital slapback, or any degree of ‘fuzzed out’ bright ambient slapback all the way to the wash of sparkly atmosphere, either subtly regenerated or cleanly gated.Okay, but what does it do, and what does it sound like?Super ultra bright ambience space that doesn’t get in the way. You can put it on things like drums for 80s gated verb, you can do dub-like things through using it to make a blurry slapback, but this thing is bonkers at putting Star Quality Vocal Glitter on voices. You don’t have to have it loud, and you don’t have to stretch it out so long that it feels like a reverb. That’s not the point, this is about doing that classic Lexicon thing (without, I might add, using ANY actual Lexicon sounds or algorithms) where you can fill in a bright, glossy atmosphere around the voice that makes it sound like star quality. You probably don’t want to treat it like a reverb, on a send or whatever (maybe on a vocal bus? It’ll handle split harmony vocals very elegantly since it’s dual-mono). Instead you want to use it like your lead vocals alone go into a special chamber. Might also be an inspiring thing to monitor while tracking: I sure had fun playing with it in my headphones, and if it’s on your mix while tracking you might not have to print it on the actual vocal track. Everything about it is evolved from BrightAmbience, even the algorithm that makes it.Oh, also if you’re a coder and want to get your hands on the delay taps, it took hours of looking up and typing in specific prime numbers, as there is no such thing as a ‘list of super-primes except every other one uses the next real prime after the super-prime, making the list pan every little echo to alternate sides using inter-aural delays’. And maybe you never even thought of such a thing. But if you think you can make use of such a thing, in the .h file (for the AU, anyway) is a definition of ‘primeL[]’ and ‘primeR[]’ that you can simply copy and paste. It’s 489 total entries which will get you a half-second or more out from the dry signal, even at 96k, and you just use ‘primeL[]’ and ‘primeR[]’ to specify the delay taps you want, typically in a range (like, entries 40 to 60 will give you a little ambient blur starting at whatever ‘primeL[40]’ is, which is 1031 samples)It’s MIT license so you only have to shout me out and you can do anything you want with it… so don’t say I never gave you nothin’ :DBrightAmbience is a very old plugin. The original was all about taking sounds coming in, and transforming them into lengths of extruded and very bright reverb. BrightAmbience2 transformed that, in turn, into a more adaptable creation that used inter-aural delays to create a subtle stereo effect like an aura around mono content.BrightAmbience3 adds undersampling. Now high sample rate mixes retain a consistent tone and reverb length to what the CD-rate plugin would do… and it’s more CPU-efficient running at the elevated rates… and the subtle darkening in tone makes it worth a re-listen.But now, on top of all that, we’ve got a new way to apply feedback at the ‘wider’ reverb settings, which allows you to feed THOSE back too. And that means, BrightAmbience3 has just taken on a new life for a variety of vibey, distinctly analog-feeling blurred delay effects. Even the really wide reverb settings will still feed back at full crank (though they just give you a sort of droney resonant quality) and the medium settings produce a variety of unusual sounds that are a little bit like when you have a crummy old antique echo effect, and it has no clarity, but when you turn up the feedback strong retro flavors begin to take over… you can’t get clean infinite regeneration that way, but tune it to taste and dial back the feedback control until you have enough echo for your purposes.Or, ignore the feedback and just use it as BrightAmbience, but with a greater range of effect at higher sample rates, and a richer tone thanks to the undersampling."
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class BrightAmbience final : public Effect<T>
 {
-    std::string m_name{ "BrightAmbience" };
-
     int32_t pL[25361];
     int32_t pR[25361];
     int gcount;
@@ -20,6 +30,28 @@ class BrightAmbience final : public Effect<T>
 };
 #endif
 
+public:
+BrightAmbience()
+{
+    for (int count = 0; count < 25360; count++) {
+        pL[count] = 0;
+        pR[count] = 0;
+    }
+    gcount = 0;
+    A = 0.0;
+    B = 0.0;
+    C = 0.0;
+    fpdL = 1.0;
+    while (fpdL < 16386) {
+        fpdL = rand() * UINT32_MAX;
+    }
+    fpdR = 1.0;
+    while (fpdR < 16386) {
+        fpdR = rand() * UINT32_MAX;
+    }
+    // this is reset: values being initialized only once. Startup values, whatever they are.
+}
+
     enum params
     {
         kParamfor(int count = 0,
@@ -28,33 +60,6 @@ kParamA = 2,
 kNumParameters = 3
 
     };
-
-  public:
-    BrightAmbience()
-    {
-        for (int count = 0; count < 25360; count++) {
-            pL[count] = 0;
-            pR[count] = 0;
-        }
-        gcount = 0;
-        A = 0.0;
-        B = 0.0;
-        C = 0.0;
-        fpdL = 1.0;
-        while (fpdL < 16386) {
-            fpdL = rand() * UINT32_MAX;
-        }
-        fpdR = 1.0;
-        while (fpdR < 16386) {
-            fpdR = rand() * UINT32_MAX;
-        }
-        // this is reset: values being initialized only once. Startup values, whatever they are.
-    }
-
-    constexpr std::string_view name()
-    {
-        return m_name;
-    }
 
     void set_parameter_value(int index, float value)
     {
@@ -81,7 +86,33 @@ case kParamA: return A;
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return 0;
+        case kParamgcount: return 0;
+        case kParamA: return 0.0;
+
+        default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor(int count: return "drywet";
+        case kParamgcount: return "sustain";
+        case kParamA: return "decay";
+
+        default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1634,4 +1665,4 @@ case kParamA: return A;
     }
 
     };
-    } // namespace airwindohhs
+    } // namespace airwindohhs::brightambience

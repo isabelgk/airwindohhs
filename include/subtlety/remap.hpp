@@ -2,27 +2,28 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::remap {
+
+constexpr std::string_view k_name{ "Remap" };
+constexpr std::string_view k_short_description{
+    "Remap puts the guts back into overloudenated audio!"
+};
+constexpr std::string_view k_long_description{
+    "Is your audio too flat?Here’s the thing. We have an endless series of saturations, console models, tape emulations, iron oxide slams, smooth compressors, naughty compressors, magneto-dynamic infundibulators… as music-mongers, it seems we spend all our time distorting, squishing and flattening.And this is normal, because if you don’t do some of that it’s easy to come up with a very empty, stark, vanilla recording. Most of the genres we know and love feature some form of distortion or dynamics compression, or more likely both.But what about when we get carried away, and the result is about as impactful as Muzak? (which is fine in its place, but we crave a lot more)Until recently it didn’t matter because louder was always ‘better’… but now, Replay Gain and a million automatic gain functions have rendered the loudness our enemy. If you squish just a little too much you can end up flat, boring AND turned down by the gain control. So what do we do to get more impact and mojo WITHOUT splatting our mixes against a digital wall?Remap is finally out to answer that. You might not need it: if you’ve got great self-control or always squish too little, it might not help you. But for an awful lot of people, Remap can be the ‘hail mary’ mix de-squisher, after the fact. And since it works the way it does, it can find uses of other sorts, for it’s a pretty simple algorithm.Remap does a fairly decent job of taking a full scale sine wave and transmogrifying it into a softened triangle wave, if you set it just right. It heightens the pointiness, the peak energy, the aura of things. If you don’t exaggerate it, it stays nice and clean. If you do exaggerate it, you get a fierce crunchy punchiness but that’s what the dry/wet control is for. It produces peaks above 0dB on fullscale content, so be warned: it’s basically putting the dynamics back. Especially with soft-clipped stuff, Remap can reshape your original wave back again… or provide expansion and power where none existed.Pretty much anywhere your mix feels flat and congested, Remap can help (so long as your gain staging is toward the loud side). Turn it up until it’s too much then back it off. Below 0.5 will always be very subtle: above 0.5, things might get funky in a hurry. You might find a huge fierce bass drum manifesting itself, or guitars growing fangs and attitude, or vocals enunciating more clearly and passionately, belting harder. It depends on what’s already in your mix: used correctly, Remap can bring more of it out. There will be most likely ONE focus point for the Remap slider, for any given mix or sound within its range. Find that and then use output level and dry/wet to balance that super-real signal with however much of the source you want. This one REALLY likes dry/wet to give you natural results, the focal point might be a real gritty tonality. No gloss, just guts and kick and attitude."
+};
+constexpr std::string_view k_tags{
+    "subtlety"
+};
+
 template <typename T>
 class Remap final : public Effect<T>
 {
-    std::string m_name{ "Remap" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Remap()
@@ -41,10 +42,14 @@ class Remap final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -71,7 +76,33 @@ class Remap final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 1.0;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "remap";
+            case kParamB: return "output";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -200,4 +231,4 @@ class Remap final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::remap

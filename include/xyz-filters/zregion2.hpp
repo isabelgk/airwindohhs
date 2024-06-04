@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::zregion2 {
+
+constexpr std::string_view k_name{ "ZRegion2" };
+constexpr std::string_view k_short_description{
+    "ZRegion2 is an Emu e6400 style Airwindows Region filter, with coefficient smoothing."
+};
+constexpr std::string_view k_long_description{
+    "ZRegion2 comes out at the same time as ZRegion, but note that I'm still putting out ZRegion. This is because ZRegion will always run at lower CPU than ZRegion2, because the first plugin doesn't do coefficient smoothing. It's for if you have a fixed tone setting to use, OR if you want to have a slight glitchy/zipper-noise quality on some audio and you're moving the controls.If you're going for automation, the Z2 filters are the ones that interpolate the coefficients across the sample buffer, meaning they'll make control changes smooth. No crackling! This eats more CPU, but a lot of the fun with these filters comes from actively manipulating them. The original sampler never had a Region filter type, but now you can make believe it did, and produce aggressive and textural bandpass-y effects across a broader range than the original sampler's ZBandpass. Hope you like it!This concludes the AirwindowsPedia. Expect this file to be expanded as new plugins come in. Might end up needing one of these for the Free Studio sample instruments, eventually…-chris"
+};
+constexpr std::string_view k_tags{
+    "xyz-filters"
+};
+
 template <typename T>
 class ZRegion2 final : public Effect<T>
 {
-    std::string m_name{ "ZRegion2" };
-
     double iirSampleAL;
     double iirSampleAR;
     enum
@@ -72,17 +82,6 @@ class ZRegion2 final : public Effect<T>
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
-
   public:
     ZRegion2()
     {
@@ -121,10 +120,16 @@ class ZRegion2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -155,7 +160,37 @@ class ZRegion2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.5;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "first";
+            case kParamC: return "last";
+            case kParamD: return "poles";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -613,4 +648,4 @@ class ZRegion2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::zregion2

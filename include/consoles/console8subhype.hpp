@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::console8subhype {
+
+constexpr std::string_view k_name{ "Console8SubHype" };
+constexpr std::string_view k_short_description{
+    "Console8SubHype swaps out for Console8SubIn, for a brighter sparklier circuit."
+};
+constexpr std::string_view k_long_description{
+    "The original Console8 had a treble soften that was too weird to let people have. Used in every stage, it shaped the sound plenty, but it let through this weird airy brightness and hyper-focus that was far too extreme to have as the base Console sound. I tried reining it in with a dry/wet and that only created bizarre cancellations and other problems, and so I dug deeper and came up with a treble softening that played better at widely varying audio levels and gave the impact and solidity I needed. And the weird airy first version was gone forever.Here it is :)Here’s what you need to know: the plugins Console8ChannelHype, Console8SubHype, and Console8BussHype have no controls, and you can swap them out with Console8ChannelIn, Console8SubIn, and Console8BussIn. Those are the plugins that have the treble softening at each stage, and those are the ones you replace. The more stages you replace, the more hyped and trebly the result will be: maybe not to the extent of taking an EQ and cranking it, but the whole tonality is different. The In plugins have a solidness, more tough-sounding and physical: the Hype plugins are softer, more ethereal. They’re still manipulating the sound and are actually softening high-mids and treble, but the presence band is sticking out.Treat them like they’re preamp modules with a different circuit and its own sound, which you can use in three places on the resulting console. You can have them on individual channels for the most direct effect, or on the submixes where they’ll change the tone of the whole sub, or on the buss to take the entire mix and hype it in this way. If you’ve got a sound going through two or more stages of hype, it’ll be more obvious, and using it on later stages will tend to change the shape and color of the mix as a whole, not just the individual sounds.I can’t tell you how to incorporate these: it’s too Airwindowsy for that. Console8 is the latest Console made more direct with simpler, more obvious rules, but it doesn’t tell you how to mix, and when you include the Console8Hype plugins it becomes very difficult to explain what swapping them in will do. It depends on what your mix is, what you’re trying to do with it, and it’s heavily about textural values like solidness versus ethereal spaceyness, physical versus abstract, hard versus soft, not stuff you can just boil down to frequencies and DB values. It means direct access to tone options that are distinctly different, and applying them to not only sounds but the way the mix comes together. Hype on an individual track versus Hype on the buss are the same amount of ‘hype’, but totally different things in the final mix, and I can’t tell you which are going to be better for you.So I won’t. Console8Hype is your secret weapon and where you incorporate it is your affair: even other people knowing about Console8 might not hit upon the way you integrate Hype stages into the mix. This post may well drop out of sight quickly as Console8Hype is another layer of tricky on top of the already demanding Console8… and that’s fine. I’ll be using it, and I’ll answer questions about it, but not everybody needs to ‘get’ this."
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class Console8SubHype final : public Effect<T>
 {
-    std::string m_name{ "Console8SubHype" };
-
     double iirAL;
     double iirBL;
     double iirAR;
@@ -36,12 +46,6 @@ class Console8SubHype final : public Effect<T>
     uint32_t fpdR;
     // default stuff
 
-    enum params
-    {
-        kNumParameters = 0
-
-    };
-
   public:
     Console8SubHype()
     {
@@ -67,10 +71,11 @@ class Console8SubHype final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -91,7 +96,27 @@ class Console8SubHype final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -293,4 +318,4 @@ class Console8SubHype final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::console8subhype

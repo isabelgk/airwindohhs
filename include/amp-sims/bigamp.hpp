@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::bigamp {
+
+constexpr std::string_view k_name{ "BigAmp" };
+constexpr std::string_view k_short_description{
+    "BigAmp is a very flexible amplike thing with a taste for the bizarre."
+};
+constexpr std::string_view k_long_description{
+    "Let’s go a little farther! BigAmp steps even farther away from what you might call ‘realistic’ amp sim behavior. It’s more like the Z series filters, or perhaps the X filters: you can make it act sort of ‘normal’, but it also lets you twist the knobs way beyond what’s realistic. So, you can use BigAmp for layering, or to supplement a sound, or just do strange things. There’s one more amp sim before I get into other, different plugins (and indeed different whole things like the sample instruments I’m developing, as heard in ‘Skronk’ and these demos) but BigAmp is perhaps the widest-ranging of the lot."
+};
+constexpr std::string_view k_tags{
+    "amp-sims"
+};
+
 template <typename T>
 class BigAmp final : public Effect<T>
 {
-    std::string m_name{ "BigAmp" };
-
     double lastSampleL;
     double storeSampleL;
     double lastSlewL;
@@ -79,16 +89,6 @@ class BigAmp final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     BigAmp()
@@ -165,10 +165,15 @@ class BigAmp final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -197,7 +202,35 @@ class BigAmp final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.8;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "tone";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1117,4 +1150,4 @@ class BigAmp final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::bigamp

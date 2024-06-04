@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::spiral2 {
+
+constexpr std::string_view k_name{ "Spiral2" };
+constexpr std::string_view k_short_description{
+    "Spiral2 is Spiral with controls including Presence. Also, a historical post presented in full as it is just after my Dad's death. Post follows:"
+};
+constexpr std::string_view k_long_description{
+    "I will need to take a week to sort of meditate and settle my mind, but it was important to me to still be giving stuff to my fans and patrons etc. so I was looking around for something fairly easy to do. For instance, take Spiral and give it the ‘Density/Drive’ treatment, including things like pre and post gain and a highpass and a dry/wet. Busywork but nothing particularly innovative.I think Dad would have been proud that I stumbled across something that was kind of innovative anyhow. Now I have Spiral2. It has those controls (that people really wanted: and if you set them to unity/neutral, they bypass so you can have EXACTLY the same as Spiral itself, if you like) but something else happened…It occurred to me, if I was blending between dry signal and the sin() function saturated signal using the signal itself as the blend factor, I was just using a sample. Well, I also knew how to store a sample, and then the next time it’d be ‘lastSample’. And what would happen if I blended between dry and the saturated one… using the PREVIOUS sample?With low frequency stuff, pretty much nothing. But what if there was high frequency stuff? What’d happen then?Turns out, it’s a little like ‘Pyewacket’, my compressor that compresses into a ‘negative Density’ effect that lets peaks through. With that, the front of the wave is unusually pure and punchy, and there’s better articulation of sounds. With Spiral2, it lets onset transients through, especially if they’re happening suddenly out of existing silence (and bear in mind it can be only one sample of silence for it to work). It’s not a super obvious effect… but if you use Spiral to chop off peaks, and add this new effect (which I could only call Presence) then you can get quite the opposite effect: at full Presence, it sounds like everything’s being distorted but the meters show how onset transients are still getting through.If you set it halfway, it becomes very close to peaking at exactly 0 dB. If you set it to 0 you get the original Spiral (note that it still has the ‘continuing around the sin() curve’ effect so if you over-slam it, it’ll choke and go quieter).So, I wanted to do something nice for my peeps since everybody has been so kind and supportive. Turns out my muse thought that was the sweetest intention ever, and really came through for me. Enjoy Spiral2: you’ll find that Presence is quite a striking effect. I think in extreme cases it’s TOO much air, but that’s why it’s on a slider, which is really just a crossfader between the two ‘circuits’, normal and with the one sample delay on the ‘sense’ circuit.See ya soon, and I hope you like Spiral2. If you would have dropped $50 on this without a moment’s hesitation once you hear what it can do by trying it, please do that using the Patreon. I’m looking to keep expanding and be more ambitious, if that’s OK. It’s more fun being ambitious with a budget, and food and shelter and stuff :)"
+};
+constexpr std::string_view k_tags{
+    "saturation"
+};
+
 template <typename T>
 class Spiral2 final : public Effect<T>
 {
-    std::string m_name{ "Spiral2" };
-
     double iirSampleAL;
     double iirSampleBL;
     double prevSampleL;
@@ -23,17 +33,6 @@ class Spiral2 final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     Spiral2()
@@ -61,10 +60,16 @@ class Spiral2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -95,7 +100,37 @@ class Spiral2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.0;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+            case kParamB: return "highpass";
+            case kParamC: return "presence";
+            case kParamD: return "output";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -231,4 +266,4 @@ class Spiral2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::spiral2

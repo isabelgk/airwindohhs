@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::overheads {
+
+constexpr std::string_view k_name{ "Overheads" };
+constexpr std::string_view k_short_description{
+    "Overheads is for compressing only part of the sound, strangely!"
+};
+constexpr std::string_view k_long_description{
+    "I could say this was a compressor for putting on drum overheads to take out the drums and leave only the cymbals, but that would only be scratching the surface…Overheads is one of those old Airwindows plugins built on really strange ideas. Let's assume we want to compress drums but leave cymbals. How might we do that? We could filter, but why would we do that when we could do something more perverse? Instead, let's take a really short delay, like a flange. Next, invert it: compression gets driven by the source audio minus the delayed. Then expand the delay. Then what?Then, high frequencies tend to slip through the cracks between the delay gap. They don't get affected as strongly. But deeper frequencies will produce one part louder than the other, and subtracting produces an output that can kick in the compression. Except it might not, because the sounds might not line up. So add a control called 'Node' to move the delay gap. But how do you know what to do with 'node'? Best change it to something else: 'Sharp', for instance (which is what happened). Then what?So, put 'Sharp' in the middle somewhere. Start cranking up Compr to compress it, and you'll hear the sound squish, then negate: an area in the sound will dynamically invert, as if you're deleting the snare or kick or whatever, but it will be weird. Move 'Sharp' around to adjust it: larger 'Sharp' should let it grab slightly deeper sounds, smaller 'Sharp' shifts the cancellation up a little. Push 'Compr' further to hear what it does. To actually use it for its intended purpose, back it off so you're only slightly clamping down the drums and leaving the cymbals, making space for spot mics. It'll mess with the cymbals: see if you like how that works.Or: do whatever go nuts, do crimes, ruin everything. Put it on every drum and set them all differently. Get a really bizarre sound that's not like anything else, live long, prosper. (if you do, join my Patreon!)No promises.Oh, also, as seen in the video, if you use this on a sine wave at just the right level, it will turn the sine wave into a triangle. I totally didn't mean for it to do that, and am not really sure how it manages it. Beware. Have fun :)"
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class Overheads final : public Effect<T>
 {
-    std::string m_name{ "Overheads" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -18,15 +28,6 @@ class Overheads final : public Effect<T>
     double ovhL[130];
     double ovhR[130];
     int ovhCount;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Overheads()
@@ -51,10 +52,14 @@ class Overheads final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -81,7 +86,33 @@ class Overheads final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "compr";
+            case kParamB: return "sharp";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -194,4 +225,4 @@ class Overheads final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::overheads

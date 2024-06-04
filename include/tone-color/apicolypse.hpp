@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::apicolypse {
+
+constexpr std::string_view k_name{ "Apicolypse" };
+constexpr std::string_view k_short_description{
+    "Apicolypse is a re-release of my old API-style color adder, exacly as it was."
+};
+constexpr std::string_view k_long_description{
+    "Apicolypse works the same way Neverland did. It’s a drop-in replacement for old mixes, and was a precursor to BussColors. It’s got a simpler method of generating its dynamic impulses, making them a sort of continuous spectrum between the low-level and high-level sounds. Like Neverland, it’s 44.1K though it will still function at any rate you like (sort of pitched up): like Neverland, it’s got a hardness control that at 0 is the ‘Density’ algorithm, at 1.0 is straight digital clipping at the extreme, and at any setting between is a sort of hybrid that turned out to not be the greatest: a switch from perfectly clean, to soft-clip at any desired transition point. Technically if you had it so it only kicked in on hot peaks, it’d be hard to find fault with it: I don’t recommend setting it (on this or any Character plug or ‘Crystal’) to a position where soft-clip kicks in at very low level. Either do Hardness at zero, or high enough that most of the audio stays ‘un-distorted’: you can do what you like, though, I’m not the boss of you :)"
+};
+constexpr std::string_view k_tags{
+    "tone-color"
+};
+
 template <typename T>
 class Apicolypse final : public Effect<T>
 {
-    std::string m_name{ "Apicolypse" };
-
     double bR[35];
     double lastSampleR;
     double bL[35];
@@ -19,16 +29,6 @@ class Apicolypse final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Apicolypse()
@@ -54,10 +54,15 @@ class Apicolypse final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -86,7 +91,35 @@ class Apicolypse final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.70;
+            case kParamB: return 0.3333333;
+            case kParamC: return 0.3333333;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "hardns";
+            case kParamB: return "persnlty";
+            case kParamC: return "drive";
+            case kParamD: return "output";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -374,4 +407,4 @@ class Apicolypse final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::apicolypse

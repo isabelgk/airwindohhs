@@ -2,22 +2,26 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::purestconsole2buss {
+
+constexpr std::string_view k_name{ "PurestConsole2Buss" };
+constexpr std::string_view k_short_description{
+    "PurestConsole2Buss is the distributed filter version of PurestConsole."
+};
+constexpr std::string_view k_long_description{
+    ""
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class PurestConsole2Buss final : public Effect<T>
 {
-    std::string m_name{ "PurestConsole2Buss" };
-
     double biquadA[15];
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     PurestConsole2Buss()
@@ -36,10 +40,11 @@ class PurestConsole2Buss final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -60,7 +65,27 @@ class PurestConsole2Buss final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -165,4 +190,4 @@ class PurestConsole2Buss final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::purestconsole2buss

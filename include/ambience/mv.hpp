@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::mv {
+
+constexpr std::string_view k_name{ "MV" };
+constexpr std::string_view k_short_description{
+    "MV2 is a dual-mono reverb based on BitShiftGain and the old Midiverbs, adapted to high sample rates."
+};
+constexpr std::string_view k_long_description{
+    "Back in the days of really old school digital reverbs, there were a couple weird and obscure ones that had a special mojo. I’ve got one: the original Alesis Midiverb. It’s quite low-fi and only has RCA jacks, but there’s a certain something about its sound.Turns out one of its secrets isn’t so secret: the first two versions of the Midiverb don’t have a multiply unit. That means you can’t do certain reverb things correctly. Reverbs use a kind of delay effect called an allpass filter, which involves multiplying by 0.618 (I’ve sometimes generalized this to ‘the golden ratio to N decimal places’, where N equals ‘a lot’). But the old Midiverb couldn’t do that… so it made an ‘allpass filter’ by multiplying its stuff by 0.5. A bit shift.Airwindows fans will know that there’s something special about a bit shift: especially in floating point, you can change volumes by 6dB pretty much losslessly. No, make that ‘totally losslessly’ since in floating point you’re only changing the exponent and could change it right back and lose absolutely nothing: the mantissa is never touched.What would happen if you took this old school way of doing allpasses, and made a modern reverb out of it, using full-quality floating point to do it? What if you followed up by making the regeneration also strictly ‘bit shift’, increments of 6dB or infinite regeneration, losslessly? What if you added a way to roll off highs by averaging output samples of the allpasses, and did THAT entirely using bit shifts as well? And allowed for a big number of allpasses (26, all different increasing prime lengths), and gave varying treble rolloff by independently controlling which of the allpasses got the average treatment?Welcome to the infinite land of MV. This is nothing like a normal reverb, but it’s got some great superpowers, not least of which is the ability to just sustain a ‘bloom’ forever. You can automate it by kicking the regeneration up to 1.0 any time you like.You can dial in different degrees of highs roll-off using the bright control, or leave it at 100% shiny. Combining this with more restrained regenerations like 0.51 or 0.26 at medium-to-high sizes will give you very decent ‘impossibly huge reverbs’ of various characters. MV doesn’t do early reflections or plausible spaces, just the infinite wash, but that’s somewhat configurable.It runs dual-mono, so you can dial down the size a bit (not too much or it’ll get nasty, you’re removing allpasses from the chain) and use it as an ambiance generator, and it’ll put all reverb tails ‘behind’ the sounds that make them: centered stuff stays centered, wide or stereo stuff goes super-wide. For this reason it’s very suited to use on auxes and submixes: you can add ‘space’ that’s very pure-soundingIt can do full, 1/2, 1/4, 1/8 and I think 1/16 level regenerations: set the feedback and it will use the bit shift amount nearest below the setting, so no matter what you do it will always retain its audio character. And the whole thing runs inside a PurestConsole instance except for the regeneration, which is extra… which means that if you build up a wall of infinite reverb, it can’t go into reverb runaway because distorted samples will wrap around and get quieter: you’ll have to trim down the output, but this makes infinite regeneration super-usable without applying any kind of compressor or limiter inside the loop. Since you can also do zero regeneration and it’s just a pile of allpasses, you can also do a ‘gated reverb’ effect if you like, which is good at airing up the mix but then getting out of the way.Back in the days of really old school digital reverbs, there were a couple weird and obscure ones that had a special mojo. I’ve got one: the original Alesis Midiverb. It’s quite low-fi and only has RCA jacks, but there’s a certain something about its sound.Turns out one of its secrets isn’t so secret: the first two versions of the Midiverb don’t have a multiply unit. That means you can’t do certain reverb things correctly. Reverbs use a kind of delay effect called an allpass filter, which involves multiplying by 0.618 (I’ve sometimes generalized this to ‘the golden ratio to N decimal places’, where N equals ‘a lot’). But the old Midiverb couldn’t do that… so it made an ‘allpass filter’ by multiplying its stuff by 0.5. A bit shift.Airwindows fans will know that there’s something special about a bit shift: especially in floating point, you can change volumes by 6dB pretty much losslessly. No, make that ‘totally losslessly’ since in floating point you’re only changing the exponent and could change it right back and lose absolutely nothing: the mantissa is never touched.What would happen if you took this old school way of doing allpasses, and made a modern reverb out of it, using full-quality floating point to do it? What if you followed up by making the regeneration also strictly ‘bit shift’, increments of 6dB or infinite regeneration, losslessly? What if you added a way to roll off highs by averaging output samples of the allpasses, and did THAT entirely using bit shifts as well? And allowed for a big number of allpasses (26, all different increasing prime lengths), and gave varying treble rolloff by independently controlling which of the allpasses got the average treatment?Here's the new MV: all this, but adapted to high sample rates. The previous one's still there! But if you try to use it at 96k or 192k, the whole tone and delay time will be shifted to higher pitches, shorter reverb blooms (bloom being the type of SFX this is). MV2 uses undersampling so it can run at high sample rates and sound the same… and so it can use less CPU at the elevated sample rate.You can dial in different degrees of highs roll-off using the bright control, or leave it at 100% shiny. Combining this with more restrained regenerations like 0.51 or 0.26 at medium-to-high sizes will give you very decent ‘impossibly huge reverbs’ of various characters. MV doesn’t do early reflections or plausible spaces, just the infinite wash, but that’s somewhat configurable. It's also a really primitive algorithm compared to some of my others: this is a case of me updating older stuff so it maintains usefulness in the modern day, it's not about me making a new greatest reverb. Though, you know, if you like it that's perfectly fine :)It runs dual-mono, so you can dial down the size a bit (not too much or it’ll get nasty, you’re removing allpasses from the chain) and use it as an ambiance generator, and it’ll put all reverb tails ‘behind’ the sounds that make them: centered stuff stays centered, wide or stereo stuff goes super-wide. For this reason it’s very suited to use on auxes and submixes: you can add ‘space’ that’s very pure-soundingIt can do full, 1/2, 1/4, 1/8 and I think 1/16 level regenerations: set the feedback and it will use the bit shift amount nearest below the setting, so no matter what you do it will always retain its audio character. And the whole thing runs inside a PurestConsole instance except for the regeneration, which is extra… which means that if you build up a wall of infinite reverb, it can’t go into reverb runaway because distorted samples will wrap around and get quieter: you’ll have to trim down the output, but this makes infinite regeneration super-usable without applying any kind of compressor or limiter inside the loop. Since you can also do zero regeneration and it’s just a pile of allpasses, you can also do a ‘gated reverb’ effect if you like, which is good at airing up the mix but then getting out of the way."
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class MV final : public Effect<T>
 {
-    std::string m_name{ "MV" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -149,17 +159,6 @@ class MV final : public Effect<T>
     int alpX, delayX;
     int alpY, delayY;
     int alpZ, delayZ;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     MV()
@@ -391,10 +390,16 @@ class MV final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -425,7 +430,37 @@ class MV final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "depth";
+            case kParamB: return "bright";
+            case kParamC: return "regen";
+            case kParamD: return "output";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1296,4 +1331,4 @@ class MV final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::mv

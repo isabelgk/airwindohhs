@@ -2,22 +2,26 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::slewonly {
+
+constexpr std::string_view k_name{ "SlewOnly" };
+constexpr std::string_view k_short_description{
+    "SlewOnly is a mix check plugin that shows you only the extreme highs."
+};
+constexpr std::string_view k_long_description{
+    "By request, here’s my mix monitoring tools, for VST and Audio Unit, Mac and PC! Please remember, these like Guitar Conditioner are control-less plugins so you don’t operate them by opening their windows: they’re either on or off, which probably is shown in your DAW mixer window already.SlewOnly gives you what it says on the tin: only the difference between samples, expressed as a sample. This produces a super-bright sound with zero latency and absolutely no pre-ring or post-ring. You can do two poles of this filtering: just add another SlewOnly. But, as is, this will give you an incredibly clear and transparent window on the ultra-highs, so you can dial in subtleties in the treble. Beware: don’t switch right back to the normal sound or it’ll sound incredibly dull. Rest your ears for a moment before resuming work.SubsOnly does the same thing for subsonic bass. It sounds a little like a house party from an adjacent house. You can tweak sub-bass elements and really hear how they’re balancing against each other, and if you’re packing too much into the subs you’ll hear that as well. Get things thumping properly through SubsOnly and it should translate well to all manner of bassbins and subwoofers.Lastly, these are calibrated (in SlewOnly quite literally: pink noise will be about the same amplitude with or without it, though the tone will be way different) so that you can switch them in and out, and expect roughly the same loudnesses. It’s okay if SubsOnly is louder for fullbodied bass: with that, it’s not so much about level-matching, it’s about getting your sound (at whatever desired loudness) and then having the bass still make sense through SubsOnly. If you’re madly overloading it, there won’t be groove, just a lot of thunder and noise, at elevated levels. These go on at the end of your master buss, so you can hear what your 2-buss chain did to the sound. Especially if you try and go for ‘commercially loud’ volumes, sanity checking with these tools can be a real silver bullet."
+};
+constexpr std::string_view k_tags{
+    "utility"
+};
+
 template <typename T>
 class SlewOnly final : public Effect<T>
 {
-    std::string m_name{ "SlewOnly" };
-
     double lastSampleL;
     double lastSampleR;
     uint32_t fpdL;
     uint32_t fpdR;
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     SlewOnly()
@@ -26,10 +30,11 @@ class SlewOnly final : public Effect<T>
         lastSampleR = 0.0;
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -50,7 +55,27 @@ class SlewOnly final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -125,4 +150,4 @@ class SlewOnly final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::slewonly

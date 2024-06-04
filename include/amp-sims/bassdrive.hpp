@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::bassdrive {
+
+constexpr std::string_view k_name{ "BassDrive" };
+constexpr std::string_view k_short_description{
+    "BassDrive is an old secret weapon, like a kind of bass amp."
+};
+constexpr std::string_view k_long_description{
+    "There was this plugin called BassDrive… and it was a secret weapon. It was unlike any Airwindows plugin because it ran on painfully hard-coded biquad filter code, looked up from calculators online: which also meant it was locked to 44.1K (at least, to get the expected behavior). But it was also unlike anyone else’s plugin of that nature, because it used lots of Airwindows overdrive inside it. The controls seemed to say normal EQ things like ‘bass, mid, treble’, but they didn’t give you those things, they gave you funny bands voiced in a weird way.And this is because it was the eccentric Airwindows way of trying to mimic the SansAmp Bass DI. Not the pedal form… the rackmount RBI version.The weird part is I ended up not liking that one (I came to prefer the pedal-form VT Bass) but before I got rid of it, I’d gone and shaped biquad filters to its voicings. But then, I implemented them strangely (note the intense notch at 10K, not present in the real one!) and made ’em overdrive a lot more. So it’s a lot LIKE a SansAmp RBI, but then again it’s totally not because it turned into its own thing.And then, even though this could be used for bass guitars, I started to hear about how it was working as a secret weapon on heavy guitar sounds…So this is exactly how the ‘secret weapon’ plugin was. It’s the blast from the past, now also available for Mac, Windows and Linux VST. And I know how eccentric it is, but sometimes that’s the point. I’m working on a bunch of stuff that’s meant to be normal (or at least flexible). This ain’t. It’s just weird. If you hate it, it’s not getting any better, abandon it with a clear conscience. On the other hand if its dark magic speaks to you… then hey, enjoy the new weapon. And rest assured that people who need good behavior out of their plugins will not be finding your secret, because BassDrive will scare them away first."
+};
+constexpr std::string_view k_tags{
+    "amp-sims"
+};
+
 template <typename T>
 class BassDrive final : public Effect<T>
 {
-    std::string m_name{ "BassDrive" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -49,17 +59,6 @@ class BassDrive final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     BassDrive()
@@ -116,10 +115,16 @@ class BassDrive final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -150,7 +155,37 @@ class BassDrive final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 0.5;
+            case kParamE: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "presnce";
+            case kParamB: return "high";
+            case kParamC: return "mid";
+            case kParamD: return "low";
+            case kParamE: return "drive";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -750,4 +785,4 @@ class BassDrive final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::bassdrive

@@ -2,23 +2,26 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::dyno {
+
+constexpr std::string_view k_name{ "Dyno" };
+constexpr std::string_view k_short_description{
+    "Dyno is a lot like Mojo, but for intensity instead of loudness."
+};
+constexpr std::string_view k_long_description{
+    "Dyno is similar in some ways to Mojo, but Dyno has a completely different character. Instead of loudenating, it ‘intensenates’. It’s a little bit like Remap in that way, but it’s not the same as Remap. You won’t get a volume boost out of it really, nor will it let you slam it for fatter peaks.Instead, it brings fire and intensity to the audio and reshapes the waveform in a Mojo-like ‘evolution of Spiral’ way. Because it doesn’t take to slamming in the same way, it’s going to be a more subtle effect, but for those who got excited by Remap, this one deserves your attention."
+};
+constexpr std::string_view k_tags{
+    "saturation"
+};
+
 template <typename T>
 class Dyno final : public Effect<T>
 {
-    std::string m_name{ "Dyno" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Dyno()
@@ -35,10 +38,12 @@ class Dyno final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -61,7 +66,29 @@ class Dyno final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "input";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -145,4 +172,4 @@ class Dyno final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::dyno

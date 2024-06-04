@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::buttercomp2 {
+
+constexpr std::string_view k_name{ "ButterComp2" };
+constexpr std::string_view k_short_description{
+    "ButterComp2 is improved ButterComp with an output control and sound upgrades."
+};
+constexpr std::string_view k_long_description{
+    "So here’s what happened: in working on the new ButterComp, I found a mistake. Because of a thing C programming lets you do (assign, in an if statement) it turned out the original ButterComp didn’t actually use the interleaved compressors after all. The one in CStrip does, but actual ButterComp (which has its own distinct fans!) doesn’t. It’s strictly a bi-polar compressor: it does each half of the wave different, and blends them.Because of this, I’ve made the source code (also being released) represent what the plugin actually does in practice. It’s a little simplified, and it’s worth paying attention to, for people who like the simplest most minimal form of ButterComp.But, because of this, I get to release ButterComp2 as very much its own thing! I even came up with a subtle tweak: it modifies its release just a touch, slowing it when the signal’s hot. That’s on a sample-by-sample basis… and it’s on the OUTPUT of the compressor. So, this further smoothing effect is subject to the output level control. And the dry/wet. In fact if you had it all dry, the release modification is therefore as if you had it on the input… making it blend not only between positive and negative wave compression, but also between feedback and feed-forward release time modifications :)But really what you need to do is listen to it.With the interleaved compressors fully working AND the bi-polar compression on each, there is indeed the four distinct compressors working in parallel. The whole thing is very gentle (hence the name) but you’ll get a glue and tonal reshaping out of it as it will even out the bulk of the waveform, making it balanced between positive and negative. It’ll also soak up treble detail in a characteristic way, and you’ll really hear the quality of ButterComp2 on ambiences and reverb tails. It’ll float things in space in this holographic way… I thought it made for a significant tonal improvement over the simpler ButterComp."
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class ButterComp2 final : public Effect<T>
 {
-    std::string m_name{ "ButterComp2" };
-
     double controlAposL;
     double controlAnegL;
     double controlBposL;
@@ -29,15 +39,6 @@ class ButterComp2 final : public Effect<T>
     float A;
     float B;
     float C;
-
-    enum params
-    {
-        kParamcontrolAposL = 0,
-        kParamcontrolAnegL = 1,
-        kParamcontrolBposL = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     ButterComp2()
@@ -71,10 +72,14 @@ class ButterComp2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamcontrolAposL = 0,
+        kParamcontrolAnegL = 1,
+        kParamcontrolBposL = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -101,7 +106,33 @@ class ButterComp2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamcontrolAposL: return 1.0;
+            case kParamcontrolAnegL: return 1.0;
+            case kParamcontrolBposL: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamcontrolAposL: return "compress";
+            case kParamcontrolAnegL: return "output";
+            case kParamcontrolBposL: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -377,4 +408,4 @@ class ButterComp2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::buttercomp2

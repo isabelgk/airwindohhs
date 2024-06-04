@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::brassrider {
+
+constexpr std::string_view k_name{ "BrassRider" };
+constexpr std::string_view k_short_description{
+    "BrassRider is One Weird Trick for drum overheads in metal!"
+};
+constexpr std::string_view k_long_description{
+    "So this is pretty simple, and pretty distinctive. I made it for my friend Tim (one day I’ll repost his amazing rant, on the brink of his possible death, to musicians about ‘stop buying DAWs! Stop buying mic pres and plugins and becoming sound engineers! Learn to play your instrument!’) and it’s possible it has only one user, Tim. If so, it’s okay. This is a weird trick, a very specialized little toy. I do think it’s good at its strange purpose, though.BrassRider is a drum overhead rider for metal mixers.Here’s the situation. If you are doing a metal mix of extreme brutality, you are probably making very intense, sculpted spot-mic sounds. You probably have a mic on every tom, every drum, perhaps also on key cymbals. And you probably have overheads, because hey, overheads. Drums use overheads, right?And your overheads probably aren’t helping you AT ALL. You’re getting ‘jazz drummer’, ‘classic rock’ snare and tom sounds poking through from the overheads, and you hate them. Yet, there are some cymbal crashes that should get into the mix. What to do?BrassRider does one thing (one weird trick!) to help you. It watches for crashes (noise like white noise) and it cranks the volume WAY up when that goes beyond a threshold. You turn up the threshold control to start engaging this behavior. There’s a dry wet control that you might not even use if your mixes are truly brutal and heavy (who needs reality?)So then, BrassRider is cranking your overheads when the crashes are hit. So what you do is you bury the overhead mics in the mix, completely. And you use BrassRider to make them peek out only when there has to be a decent hint of crash cymbal in there. And most of the time, BrassRider totally kills the overheads so your drum sounds have maximum sculpted brutality and work the way you want them.I don’t sit around making metal mixes so I can’t demo this properly, and I made it so I’m not that concerned with doing the ultimate demo for people who don’t know what they’re doing and have to be sold on the tool. Tim would be disgusted with me if I went around trying to popularize this one and teach noobs how to use it. So, if all that confused you, this is not the plugin for you. Also, I’m not going to teach you how to use it in a metal mix (except maybe on Monday livestreams. ;) ) And if you know exactly what I’m talking about and you’re already dialing it in, a wild mad light in your eyes, well… you’re welcome :)"
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class BrassRider final : public Effect<T>
 {
-    std::string m_name{ "BrassRider" };
-
     double d[80002];
     double e[80002];
     double highIIRL;
@@ -30,14 +40,6 @@ class BrassRider final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     BrassRider()
@@ -74,10 +76,13 @@ class BrassRider final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -102,7 +107,31 @@ class BrassRider final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "thresh";
+            case kParamB: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -254,4 +283,4 @@ class BrassRider final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::brassrider

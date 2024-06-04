@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::midamp {
+
+constexpr std::string_view k_name{ "MidAmp" };
+constexpr std::string_view k_short_description{
+    "MidAmp is a clean amp sim meant to work like a loud Twin or something of that nature."
+};
+constexpr std::string_view k_long_description{
+    "MidAmp is another amp sim, this one going for a high-powered clean combo sound. You know, a Twin kind of sound. It’s got a wide range of EQ and can be rolled off real far, and it can be extra bright and spiky if you want that. I demonstrate it in the video on a Tele part, then unexpectedly to dirty up a thumping bass (which it does really well) and lastly on some very aggressive drums to make them even crazier."
+};
+constexpr std::string_view k_tags{
+    "amp-sims"
+};
+
 template <typename T>
 class MidAmp final : public Effect<T>
 {
-    std::string m_name{ "MidAmp" };
-
     double lastSampleL;
     double storeSampleL;
     double lastSlewL;
@@ -75,16 +85,6 @@ class MidAmp final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     MidAmp()
@@ -157,10 +157,15 @@ class MidAmp final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -189,7 +194,35 @@ class MidAmp final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.8;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "tone";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1063,4 +1096,4 @@ class MidAmp final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::midamp

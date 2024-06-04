@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::guitarconditioner {
+
+constexpr std::string_view k_name{ "GuitarConditioner" };
+constexpr std::string_view k_short_description{
+    "GuitarConditioner is like a Tube Screamer voicing without the squishiness and indistinctness."
+};
+constexpr std::string_view k_long_description{
+    "I designed this plugin when I saw what Slew was capable of. It uses a combination of Slew and Highpass in a sort of parallel matrix arrangement, with heavy use of my Highpass’s unusual tone shaping features (extreme lows get Tight tone shaping behavior, and a boosted mids circuit is set to Loose rolloff for the proper texture). Both aspects hit their own Slew at different levels and with different voicings, causing a distinct tone quality.This is not a Tube Screamer plugin at all. It’s an alternate tone for doing similar things but with more sonority, focus and impact. It’s intended for Djent style sounds and people who can play much, much better and more aggressively than me :)The reason Slew is relevant to a Tube Screamer effect is, the guitar pedal uses op-amps that can be limited in their ability to deliver slew and bass. Therefore, they don't only distort and make louder, they also restrict treble and bass in a nonlinear way, and that's the same thing my Slew effect does. So Guitar Conditioner is Airwindows techniques addressing the same purpose."
+};
+constexpr std::string_view k_tags{
+    "effects"
+};
+
 template <typename T>
 class GuitarConditioner final : public Effect<T>
 {
-    std::string m_name{ "GuitarConditioner" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -24,12 +34,6 @@ class GuitarConditioner final : public Effect<T>
     double iirSampleTBR;
     double iirSampleBAR;
     double iirSampleBBR; // for Highpasses
-
-    enum params
-    {
-        kNumParameters = 0
-
-    };
 
   public:
     GuitarConditioner()
@@ -59,10 +63,11 @@ class GuitarConditioner final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kNumParameters = 0
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -83,7 +88,27 @@ class GuitarConditioner final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -271,4 +296,4 @@ class GuitarConditioner final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::guitarconditioner

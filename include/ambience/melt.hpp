@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::melt {
+
+constexpr std::string_view k_name{ "Melt" };
+constexpr std::string_view k_short_description{
+    "Melt is a wobbly chorusy weird diffuse effect."
+};
+constexpr std::string_view k_long_description{
+    "As useful as utility plugins are, sometimes you just have to do something wobbly and weird. Here’s Melt!To explain what it’s doing will be a little tricky. You can just download it and play with it, but if you want to know what’s under the hood, here goes.Suppose you have a delay buffer. You can read ‘echoes’ out of the delay buffer. If you like, you can move them around, which changes their pitch.What if you started reading at one point, and stopped at another? You’d get a delayed ‘moving average’, a series of samples combined. It would be duller, rolled-off.If you took that section and moved IT, then you’d have a rolled-off, darker delay tap that changed pitch.Now, what if you took all the start points and all the end points, and made them all wobble and sway around independently, so that the shifting delay taps also changed in tone color and volume even while they pitch-shifted around?Well, that’s Melt. It’s pretty freaky, when cranked way up. You can run a long extended delay, causing it to resemble a strange retro ambience effect, or you can tighten it right up so that you have more of a chorusy thing. It probably should always have a bunch of pitch shift depth, otherwise it’s a mite boring. You can include dry, or just crank up the wobbly weirdness: should be nice on pads and things, or anything that has to be more dark and diffuse and unpredictable."
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class Melt final : public Effect<T>
 {
-    std::string m_name{ "Melt" };
-
     float dL[32002];
     float dR[32002];
     float combineL;
@@ -28,16 +38,6 @@ class Melt final : public Effect<T>
     float B;
     float C;
     float D; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     Melt()
@@ -74,10 +74,15 @@ class Melt final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -106,7 +111,35 @@ class Melt final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.25;
+            case kParamB: return 0.75;
+            case kParamC: return 1.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "depth";
+            case kParamB: return "range";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -391,4 +424,4 @@ class Melt final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::melt

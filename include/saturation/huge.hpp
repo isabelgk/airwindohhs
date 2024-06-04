@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::huge {
+
+constexpr std::string_view k_name{ "Huge" };
+constexpr std::string_view k_short_description{
+    "Huge is a dirty, dirty loudenator."
+};
+constexpr std::string_view k_long_description{
+    "So the idea here was to explore a trick people are doing with Pafnuty: adding just a few odd harmonics, to get really smooth and mellow saturation. You can keep going, and the more harmonics you add the closer you get to a square wave (or just really intense saturation), but when you intentionally pick just a couple it means all your lower frequencies are totally free of aliasing, since you're not really saturating: just doing a transform that gives you only the added harmonics. If those are below the Nyquist frequency, you automatically have zero aliasing.But what do you get if you do this, and then magically omit all the frequencies that are so high that they'd be aliasing?Probably wonderful ultimate loudenation. And Huge is not that.Instead, it's tracking the slew rates of all the outputs and just watches to see if those high frequencies are wiggling too fast… and cuts them off if they are. So in theory it's doing the wonderful clean ultimate high saturation with never an aliasing frequency.And in practice it's just STUPID LOUD with extra bassiness and a level of dirt and grunge you wouldn't believe, from all those harmonics switching on and off. Clearly there are still some bugs in the system. This is not the lovely pure pristine loudenator, it's a kind of monster, unlike anything I've heard.There is one control apart from the boost control (that's roughly unity gain at about 0.2: it's simply an input trim, that's all it does). The other control is Nasty. You could also call it Placebo, as damn if I can work out whether it's doing much: I find it, too, seems good at around 0.2 but I could be wrong. It's controlling how aggressively the plugin cuts off harmonics, so when you increase Nasty, it should allow the harmonics to go closer to aliasing. That said, if you send test tones through this, you'll get a confusing mess, and if you send clean sounds through it, you'll get a rude shock.If you send loud aggressive sounds through it you will level buildings. Choose wisely, and enjoy :)"
+};
+constexpr std::string_view k_tags{
+    "saturation"
+};
+
 template <typename T>
 class Huge final : public Effect<T>
 {
-    std::string m_name{ "Huge" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -40,14 +50,6 @@ class Huge final : public Effect<T>
     float A;
     float B;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
-
   public:
     Huge()
     {
@@ -68,10 +70,13 @@ class Huge final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -96,7 +101,31 @@ class Huge final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.2;
+            case kParamB: return 0.2;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "huge";
+            case kParamB: return "nasty";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -445,4 +474,4 @@ class Huge final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::huge

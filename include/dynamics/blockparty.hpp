@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::blockparty {
+
+constexpr std::string_view k_name{ "BlockParty" };
+constexpr std::string_view k_short_description{
+    "BlockParty is like a moderately saturated analog limiter."
+};
+constexpr std::string_view k_long_description{
+    "What do you get when you cross an Airwindows compressor, with OneCornerClip?Pretty much this. Okay, so it wasn’t a very difficult riddle, was it?BlockParty acts like a somewhat distorty limiter. It’s not at all about lookahead (in fact it doesn’t have any) or preserving tones pristinely. Instead, it takes the onset of sounds that would compress, and manipulates the attack in the way that OneCornerClip does. The threshold gets kicked way down, and gradually expands to full scale, and since the threshold’s determining compression, that means BlockParty doesn’t have a stable compression threshold. It’s interactive with the audio you’re giving it.Because it’s on the OneCornerClip model, that means it’s a mostly-compressor with OneCornerClip-like behaviors. That means bass which blooms and has fullness even under heavy load, and highs that don’t poke out or distract. The result is a thing that sounds real analog-y but not super clean. You can use very small amounts of it (there’s a lot of gain on tap) to do peak limiting for loudness maximizing, or you can slam things into it for effect. It’s called BlockParty because heavily limited stuff sounds like blocks of loudness: it’ll get you some of those sounds, but not as cleanly as your classic ‘loudness war’ limiters. It’ll also smash drums and things in its own distinctive way, which might be its strongest suit. On the end of it is a clipping stage to make sure nothing you do will ever produce overs. The clipping stage is AFTER the dry/wet, so to get a true dry you’ve got to turn it off: this is because raw digital clipping is another style of loudenating, so if you were going super-hot into BlockParty and wanted to dial in some pure digital clipping you could use the dry/wet to do it (or, if including some dry would have given you overs because your direct buss signal includes overs).BlockParty is a fierce loudenator with a voice and style all its own, using techniques that are distinctly Airwindows. It might be just what you needed, or it might be a little too grungy for you… but either way, there’s nothing quite like it, so check it out."
+};
+constexpr std::string_view k_tags{
+    "dynamics"
+};
+
 template <typename T>
 class BlockParty final : public Effect<T>
 {
-    std::string m_name{ "BlockParty" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -55,14 +65,6 @@ class BlockParty final : public Effect<T>
     double thresholdBR;
     int count;
     bool fpFlip;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     BlockParty()
@@ -118,10 +120,13 @@ class BlockParty final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -146,7 +151,31 @@ class BlockParty final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "pound";
+            case kParamB: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -723,4 +752,4 @@ class BlockParty final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::blockparty

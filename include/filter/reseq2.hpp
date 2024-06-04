@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::reseq2 {
+
+constexpr std::string_view k_name{ "ResEQ2" };
+constexpr std::string_view k_short_description{
+    "ResEQ2 is a single, sharp, sonorous mid peak."
+};
+constexpr std::string_view k_long_description{
+    "This is another 'piece of an upcoming great plugin'. In order to do an MCI console properly I had to do a good mid peak.And we're talking 'way better than just a sharp biquad filter' mid peak. I needed clarity and character beyond what regular digital EQ cookbooks could cook up.ResEQ2 continues on the work I started in the original ResEQ, where I observed that Manley EQ impulses for sharp resonances seemed to be like a sine-like ring, except the onset did NOT seem to be at the same frequency: seemed to start faster, even double the frequency. I made a whole plugin, ResEQ, giving it my best shot for generating multiple resonant 'rings' and combining them, to produce a convolution impulse that was the sum of multiple analog-like resoances. It still exists: it's way before I routinely worked at 96k, and it's got a lot of quirks, but it does get a distinct sound.I returned to those deep, murky waters when trying to come up with a sweepable mid peak like certain classic analog consoles.ResEQ2 is the result. It's the opposite of what you'll normally find in great classic analog consoles. A lot of the classics really had quite limited analog EQ: detailed parametric sculpting came in with SSL, and to some extent API before that. In the olden days, things were a lot simpler (and you gained something sonically from this simplicity).But there were a few special cases, and so you had MCI's sweepable mid, that could only boost. Not cut. It just gave you a sort of ring, wherever you wanted it. Not the most flexible circuit… but a hitmaker.This is because, contrary to modern practice, there's huge power in being able to single out a midrange, upper-mid, or treble frequency, and sort of just open up the top of it so it can get effortlessly loud. Instead of just blasting everything, you find one presence peak on your track that really lets it speak, and you just give that a boost. More peak energy, more clarity exactly where it's most useful, and it's almost never in the same place for different instruments or vocalists, so the combined sound of the mix cuts through on dozens of sonorities at once, and everything is powerful and clear.It's the mids equivalent of Airwindows Weight for bass, and it works incredibly well (even if you do it with biquads or EQ-design cookbooks). And I don't have the analog-Console projects finished yet… but you can have this part of it now.Use the 'ow argh way too extreme' settings like 1.0, where everything kind of turns into an audio laser, to dial in exactly what spot opens up an instrument or voice for maximum passion and sonority. Then, dial it back to around 0.5 and begin increasing it, seeing at what point you've got too much of a good thing. ResEQ2 is great at being a subtle light-bringer and giving clarity to a track. It's also a full-on energy weapon that can be set to 'way too much', so use it however you please. The resonance increases as you turn it up, so feel free to dial it back if it gets ringy. Probably not a good plugin for mixing live sound unless you like dial-a-feedback :) hope you enjoy ResEQ2!"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class ResEQ2 final : public Effect<T>
 {
-    std::string m_name{ "ResEQ2" };
-
     double mpkL[2005];
     double mpkR[2005];
     double f[66];
@@ -19,14 +29,6 @@ class ResEQ2 final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     ResEQ2()
@@ -54,10 +56,13 @@ class ResEQ2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -82,7 +87,31 @@ class ResEQ2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "msweep";
+            case kParamB: return "mboost";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -232,4 +261,4 @@ class ResEQ2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::reseq2

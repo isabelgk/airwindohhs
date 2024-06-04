@@ -2,24 +2,27 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::sweeten {
+
+constexpr std::string_view k_name{ "Sweeten" };
+constexpr std::string_view k_short_description{
+    "Sweeten is where you can find super-clean second harmonic."
+};
+constexpr std::string_view k_long_description{
+    "So this serves a few purposes. Sweeten is one of the super-minimal, one knob plugins. It makes second harmonic: much like SingleEndedTriode, or Inflamer. The first purpose is to exist, so if you're thinking 'I gotta sweeten this sound, now which Airwindows plugin of the three billion and twelve does that? Conflagration? No, that can't be it' then you can go 'is there one literally called Sweeten', and now there is! And it does what you'd expect, even harmonics (second harmonic, specifically). That's all it does.Another purpose is because I use stuff like this in my designs. So it's useful to have a chunk of code that I can take and put in the midrange section of an EQ, or something, if I think it's lacking that subtle nonlinearity which comes out of some circuits. Sweeten is specifically designed to let me do that quickly and easily, and if I make a tool for myself which is actually neat and efficient, I give it to people.The only thing Sweeten can do that you can't already do with Inflamer is be simple, and maybe one or two fewer math operations, and that's IT. This isn't new (second harmonic isn't new, either). My hope is that it's such an elegant, easily identifiable little device that it'll come in handy. It's also using the stepped-control, bit-shift-gain thing I do lately, so one thing about it is that it'll prevent you overprocessing. If you turn it up until you can hear it a little too well, drop back a step and then you can't tell it's doing anything, but it very much still is. For many types of processing (second harmonic emphatically included!) the optimal setting is where it's doing its thing but at no point is it ever distracting or sticking out as a mixing mistake. Sweeten is predisposed to quickly get you to that point with no fuss.I'll be using it: if anybody else finds it useful, that's even better :)"
+};
+constexpr std::string_view k_tags{
+    "subtlety"
+};
+
 template <typename T>
 class Sweeten final : public Effect<T>
 {
-    std::string m_name{ "Sweeten" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     double savg[20];
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Sweeten()
@@ -39,10 +42,12 @@ class Sweeten final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -65,7 +70,29 @@ class Sweeten final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "sweeten";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -241,4 +268,4 @@ class Sweeten final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::sweeten

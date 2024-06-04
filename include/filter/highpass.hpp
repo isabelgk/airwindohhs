@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::highpass {
+
+constexpr std::string_view k_name{ "Highpass" };
+constexpr std::string_view k_short_description{
+    "Highpass2 is an unusual-sounding variable-slope highpass filter."
+};
+constexpr std::string_view k_long_description{
+    "These (Lowpass and Highpass) are mixing EQs, not mastering ones (though I’m not the boss of you). They’re complementary: the one is the inverse of the other. However, because of their peculiarities that makes them behave quite differently. What they have in common is they’re interleaved IIR filters, something people don’t normally do. The experiment here has to do with my discovery that digital audio only exists in sets of samples (never just as the isolated sample: the waveform isn’t there, the sample value is only a signpost that the audio is to weave its way around)They’ve also got a very unusual parameter, soft/hard or loose/tight, which controls how the IIR filters are fed audio. When you offset it, you get a situation where the cutoff is higher at louder volumes, or at quieter volumes. This is on a sample-by-sample basis so it’s a tone-character modification, subtle but interesting. Loose/tight is just the best way I could describe what’s happening there.Lowpass gives you a treble rolloff (some have joked that I make dozens of treble rolloffs! Yes, but they all sound different) and what’s immediately obvious is, the stuff right up by Nyquist on the threshold of hearing is not rolled off with the rest of the treble. Also, if you only want to cut extreme treble, you can do it with just adjusting the soft/hard control away from the center position. At deeper cut settings, the soft/hard control gives you two different textures (both of which keep a hint of ‘air’ right up top). The dry/wet control allows you to blend your result. Lowpass gives you big sounds with various colorations and a sparkly gloss that comes from your underlying sound: it’s a big-ifying filter that might suit huge synth pads or orchestral tracks.Highpass, the inverse of this, gives totally different impressions. The same filter-offset behavior turns into ‘loose/tight’ and the extreme treble gets stepped on, rather than retained. This makes Highpass take on ‘classic’ tonalities, particularly with the offset on ‘loose’, which gives a tubey and softened texture. If you run it full-wet, you’ll get a radical ‘analogification’, wiping out all extreme lows and the highest highs, and sounding like some small vintage radio at high filter settings. It’s a small-ifying filter that’s also a time warp (with offset on ‘tight’, you have a transistor radio instead, still retro-sounding!) and all you have to do is dial in your boost area and then balance it with dry/wet to get intense texture shaping that normal EQs can’t come close to delivering.Again, these are not mastering EQs unless you face really unusual mastering requirements. They’re mixing tools, and they really do act like different animals so they’re each contained in their own plug. They’ve been around for ages but the revision to VST form has brought them a new level of tonal sophistication plus the very useful dry/wet controls that take them out of ‘experiment-land’ (they have always been building blocks for plugins such as Guitar Conditioner) and makes them stand alone as useful mix tools.So, the way the interleaved IIR filters act in Highpass is like this: the harder you filter, the more the filter rolls off the very highest frequencies. That’s because it’s like the inverse of Lowpass2. It’s got the same four poles, the same type of tone doctoring (in this case, loose and tight for what bass remains) but the way to use it might be distinct.I think it works well for getting a subsonic roll-off (perhaps with the four poles of filtering, like a mini ToVinyl highpass) and then using the Loose option to let the bass move a little more. I found it more difficult to distinguish what the funny-named slider was doing, but it’s still intense on high settings. And it’s great for trapping in high percussion because of the clarity of the passband and the way it rolls off over 20K (or higher, if you’re at higher sample rates).And of course, like Lowpass2, this is here to fix the limitations of the original Highpass on those very same sample rates, going from no filtering to total filtering."
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Highpass final : public Effect<T>
 {
-    std::string m_name{ "Highpass" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -19,15 +29,6 @@ class Highpass final : public Effect<T>
     double iirSampleAR;
     double iirSampleBR;
     bool fpFlip;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kNumParameters = 3
-
-    };
 
   public:
     Highpass()
@@ -51,10 +52,14 @@ class Highpass final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -81,7 +86,33 @@ class Highpass final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+            case kParamB: return 0.5;
+            case kParamC: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "highpass";
+            case kParamB: return "loosetight";
+            case kParamC: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -237,4 +268,4 @@ class Highpass final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::highpass

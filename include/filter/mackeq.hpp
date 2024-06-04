@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::mackeq {
+
+constexpr std::string_view k_name{ "MackEQ" };
+constexpr std::string_view k_short_description{
+    "MackEQ is the Mackie distortion but with treble and bass controls added."
+};
+constexpr std::string_view k_long_description{
+    "Folks who wanted Mackity, were looking to do some crazy things with it. We’re taking an old Mackie 1202, pre-VLZ (I have one and know how to abuse it for effect) and we’re mangling sounds with it. People wanted to take a kick drum, run it through one channel turned all the way up, patch that to another channel with crazy EQ and also turned up until ready to explode, and so on. Mackity was my best shot at just the input section of the 1202, with all the gain on tap but set up to work as close to ‘clean’ as these desks ever got: more so, in fact, as it doesn’t add hiss and chip noise. Mackity was really good at sounding exactly like that, for those who like patching out of the insert points and getting a reasonably hi-fi sound out of their old 90s mixer.There are plenty of people who know without the shadow of a doubt, that the very idea is ridiculous: that, compared to your Neves and APIs etc, these tiny budget mixers are garbage.They will HATE this plugin. This is the same thing only with the garbage EQs in the 1202, the original two-band version, in which you can also overdrive the op-amps inside the EQs for good measure. Nothing about this sounds nice. You might want to pad down the output if you try: it’s pretty horrifying.Some folks will go and immediately do that… and some of those, are very used to their original Mackie analog mixers, and know the exact tone they should get. And I can’t tell you whether those folks will be happy with MackEQ, because I have the real one (not an 8-buss, but a 1202) to compare with, and I did not get a perfect exact clone. I got something else. I think it might be useful: certainly it can get the correct TYPE of tone, but I don’t believe I have the true 100% 90s drum and bass madness exactly down. There’s a texture in there, especially when you start aggressively distorting highs, that just defies being captured in a plugin, much like you don’t really get a Marshall Plexi in the box.But I captured SOMETHING in a plugin, and it’s in the ballpark. If you can accept a slight re-voicing of the thing, or if your use of it doesn’t involve torturing hi-hats and such in the first place, you might find MackEQ is useful to you. That’s my hope. I daresay I’ll find uses for it myself… including, use after certain secret projects I’m still working on. Seems I’ve devoted myself to the DnB flame. If only I could play the music, I’d really be on to something :)"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class MackEQ final : public Effect<T>
 {
-    std::string m_name{ "MackEQ" };
-
     double iirSampleAL;
     double iirSampleBL;
     double iirSampleCL;
@@ -32,17 +42,6 @@ class MackEQ final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     MackEQ()
@@ -81,10 +80,16 @@ class MackEQ final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -115,7 +120,37 @@ class MackEQ final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+            case kParamE: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "trim";
+            case kParamB: return "hi";
+            case kParamC: return "lo";
+            case kParamD: return "gain";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -447,4 +482,4 @@ class MackEQ final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::mackeq

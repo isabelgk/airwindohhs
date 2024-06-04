@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::grindamp {
+
+constexpr std::string_view k_name{ "GrindAmp" };
+constexpr std::string_view k_short_description{
+    "GrindAmp is a heavier amp sim for many purposes."
+};
+constexpr std::string_view k_long_description{
+    "GrindAmp gives sort of a Mesa-y tone, and is good for chugging guitars with some beef to them.GrindAmp is a followup to FireAmp, and you’ll hear them back-to-back in the video. And where FireAmp is all about that midrange howl and rawness, GrindAmp is a different style: heavier! Thing is, you must understand how these work. They’re distortions voiced to work with guitars, into filtering and truncated, undersampled cab emulation that has dynamic processing. When I say truncated I mean it: there’s very little cabinet rumble or any over-hang beyond the immediate sound. Also, the dry/wet control both brings in dry AMP sound against the cab sim, and also dry guitar sound against the amp sim… at the same time.So GrindAmp is every bit as much designed for a Rockman-type, extremely direct and dry tone, as it is for an amped, miked tone. It’s sort of a hybrid. Why would you ever do this? For the same reason Def Leppard used Rockmans on Hysteria: you can use this kind of tone to bring in a part without getting in the way of everything else. You can arrange with whole instruments, bringing in stuff to emphasize certain qualities. If you used FireAmp you’d be bringing in extremely raucous midrange, if you use GrindAmp you have a lot more low-end punch and the ability to push the gain a bit higher (though I think it’s at its best when you’re allowing it to be kinda percussive)Neither of these have chorusing and delay/reverb… but hey! I’ve been putting out plugins that do that, and I bet Chamber will do the slapback thing on a guitar very well, and there’s always PocketVerbs Spring: Airwindows plugins are deeply modular and you already have literally hundreds of them so if you wanted to go full Rockman with GrindAmp (or FireAmp: more to come) then nothing’s stopping you. And they’re free, so nothing is stopping you. And they’re open source, so if you really really REALLY wanted to build them into one plugin… amazingly, you can! Or you can let me make ’em for you :)"
+};
+constexpr std::string_view k_tags{
+    "amp-sims"
+};
+
 template <typename T>
 class GrindAmp final : public Effect<T>
 {
-    std::string m_name{ "GrindAmp" };
-
     double smoothAL;
     double smoothBL;
     double smoothCL;
@@ -137,16 +147,6 @@ class GrindAmp final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     GrindAmp()
@@ -279,10 +279,15 @@ class GrindAmp final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -311,7 +316,35 @@ class GrindAmp final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.8;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "tone";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1475,4 +1508,4 @@ class GrindAmp final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::grindamp

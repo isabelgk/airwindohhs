@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::derez2 {
+
+constexpr std::string_view k_name{ "DeRez2" };
+constexpr std::string_view k_short_description{
+    "DeRez2 brings more authentic retro-digital hardware tones."
+};
+constexpr std::string_view k_long_description{
+    "DeRez is the Airwindows bitcrusher that interpolates a sample between sample-rate-crushed outputs so the top end is smooth rather than gritty, and the only (far as I know) ANALOG bitcrusher (or at least floating point resolution?). That means you can set it to 32 and a third K sample rate, and seven point one three five bits. By ear, please: if you are needing to set a third of a K of sample rate without hearing it, I can’t help you. The point being, DeRez was already cool as a continuous-rate rate-crusher and arbitrary bit depth linear bitcrusher. I don’t think anyone else has that (of course now they can: it’s open source MIT license, so just credit Airwindows and code away)How do you make that not just better but way better?DeRez2’s ‘Hard’ control maxes out as the previous plugin (with a few behind-the-scenes upgrades, but exactly the same algorithm at the heart). But the interesting part is when you turn it OFF: set ‘Hard’ to zero. Two things happen.The sample-rate crusher begins to incorporate intermediate samples in a different way. When it’s changing, it saves up the previous sample… and uses that, not an interpolation, as the intermediate value. It’s trying to bridge the gap between rate-crushed values with a dry sample value. This causes a strange grungy transparency and a zone between ‘clean’ and rate-crushed that’s eerily reminiscent of old digital hardware. It stops sounding in-the-box, even though it remains completely bitcrushed with a totally different texture.The bit-crusher remains ‘analog’ (arbitrary bit depth, like 12 and a half bits) but on full soft, it uses uLaw encode and decode, so it becomes nonlinear! Same as the famous Aphex Twin ‘long play DAT’ and old retro nonlinear digital hardware, the loud parts get bigger ‘steps’ and quiet stuff gets smaller ‘steps’, producing a totally different tonality. You can use this and the sample-rate crush at the same time, subtly or obviously, to dial in vintage-digital tonalities that are totally satisfying and convincing, but completely different from the source audio. You’d never know it started out different because it winds up sounding completely right.I’ve been asked for dedicated emulations of vintage sampler gear. Instead, try this: no copying, but a new way to get that kind of tonality and dial it in to taste. If you need the darkening and texture of classic samplers, DeRez2 will do the same job in a new way with features the real retro gear didn’t have.Why does this one have the dry/wet? Because since the rate-crusher uses the previous sample for transitions, blending it with dry makes the transitions further softened with averaging. You can fade between pristine and clear, dark and cloudy, and totally retro-sampler thanks to that effect (which wouldn’t have happened with the previous DeRez, though you can try it on full Hard and see)What’s with the halfway settings between Soft and Hard? It engages wet/dry balance on the uLaws inside the plugin. If you do that to uLaw, you get weird broken results and it doesn’t work nicely. It just so happens that going from soft to halfway gives a big volume and grunge boost. So rather than have it as a clean off/on control, the Hard control lets you use that unforeseen weirdness as an intentional effect. If you have it dialed in but you’d like to punch up the aggression for effect, automate the Hard control and use it as a booster, for a unique result."
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class DeRez2 final : public Effect<T>
 {
-    std::string m_name{ "DeRez2" };
-
     double lastSampleL;
     double heldSampleL;
     double lastDrySampleL;
@@ -26,16 +36,6 @@ class DeRez2 final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     DeRez2()
@@ -66,10 +66,15 @@ class DeRez2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -98,7 +103,35 @@ class DeRez2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 1.0;
+            case kParamC: return 1.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "rate";
+            case kParamB: return "rez";
+            case kParamC: return "hard";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -338,4 +371,4 @@ class DeRez2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::derez2

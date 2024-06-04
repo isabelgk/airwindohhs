@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::dubcenter {
+
+constexpr std::string_view k_name{ "DubCenter" };
+constexpr std::string_view k_short_description{
+    "DubCenter is a version of DubSub where the bass reinforcement is purely mono."
+};
+constexpr std::string_view k_long_description{
+    "So here’s DubSub (below) with mono bass. This isn’t the last you’ll hear of this tool as I have BassKit coming out (which is the more approachable, well-behaved version of DubCenter) but this is the one that will let you get the most extreme. If you were using DubSub to its fullest, this one lets you do the same only with the bass and sub outputs centered.The reason you’d want to do that is, whether for sound reinforcement or vinyl mastering there’s little reason to have stereo bass. It just makes the woofers fight each other, below a certain frequency (which depends on how far apart your speakers are). This is why elliptical EQs exist.And the thing with DubCenter is, you don’t have to filter the original audio or mid/side it! All you have to do is use DubCenter to reinforce the bass, and it’ll automatically make that added content mono. This is even better than using (for instance) ToTape and its head bump mechanics to reinforce bass, because that (like a real tape deck) produces a stereo head bump. This produces the same fullness with the same algorithm, but it’s strictly mono so you get the effect of an elliptical EQ without having to run one! Only the super-deep stuff gets reinforced and the information and phase relationships of your original mix go untampered with.Again, BassKit will do this in a super-convenient way with much of the tweeky functionality simplified or taken out (for that one, there is no chance of abusing the sub-octave to do weird stuff as it’s restricted to only convincing subs content) but DubCenter is the one like DubSub, where you can make it do crazy things. You’ll find it in your plugin menu next to DubSub, most likely. Have fun!"
+};
+constexpr std::string_view k_tags{
+    "bass"
+};
+
 template <typename T>
 class DubCenter final : public Effect<T>
 {
-    std::string m_name{ "DubCenter" };
-
     double iirDriveSampleAL;
     double iirDriveSampleBL;
     double iirDriveSampleCL;
@@ -72,22 +82,6 @@ class DubCenter final : public Effect<T>
     float H;
     float I;
     float J;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kParamG = 6,
-        kParamH = 7,
-        kParamI = 8,
-        kParamJ = 9,
-        kNumParameters = 10
-
-    };
 
   public:
     DubCenter()
@@ -164,10 +158,21 @@ class DubCenter final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kParamG = 6,
+        kParamH = 7,
+        kParamI = 8,
+        kParamJ = 9,
+        kNumParameters = 10
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -208,7 +213,47 @@ class DubCenter final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.9;
+            case kParamB: return 0.5;
+            case kParamC: return 0.74;
+            case kParamD: return 1.0;
+            case kParamE: return 0.95;
+            case kParamF: return 0.5;
+            case kParamG: return 0.2;
+            case kParamH: return 0.2;
+            case kParamI: return 0.5;
+            case kParamJ: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "tgrind";
+            case kParamB: return "grdout";
+            case kParamC: return "xover";
+            case kParamD: return "bsdrive";
+            case kParamE: return "bsvoice";
+            case kParamF: return "bassout";
+            case kParamG: return "sbdrive";
+            case kParamH: return "sbvoice";
+            case kParamI: return "subout";
+            case kParamJ: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -598,4 +643,4 @@ class DubCenter final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::dubcenter

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::isolator2 {
+
+constexpr std::string_view k_name{ "Isolator2" };
+constexpr std::string_view k_short_description{
+    "Isolator2 is Isolator, but with control smoothing and a new resonance booster."
+};
+constexpr std::string_view k_long_description{
+    "Isolator2 is Isolator, my very steep lowpass or highpass or shelf filter, but now it’s got smoothed coefficients so you can automate it and make it move better. Also, it’s even steeper. Also, it now has the power to give you added resonance! So you can put an edge on your filter/isolator sweeps, for a really narrow high-resonance sound that’s very striking as a ‘synth filter’ tone."
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class Isolator2 final : public Effect<T>
 {
-    std::string m_name{ "Isolator2" };
-
     enum
     {
         biq_freq,
@@ -52,16 +62,6 @@ class Isolator2 final : public Effect<T>
     float C;
     float D;
 
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
-
   public:
     Isolator2()
     {
@@ -93,10 +93,15 @@ class Isolator2 final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -125,7 +130,35 @@ class Isolator2 final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 0.0;
+            case kParamC: return 0.0;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "freq";
+            case kParamB: return "reso";
+            case kParamC: return "high";
+            case kParamD: return "low";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -424,4 +457,4 @@ class Isolator2 final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::isolator2

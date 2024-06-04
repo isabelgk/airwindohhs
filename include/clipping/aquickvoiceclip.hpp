@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::aquickvoiceclip {
+
+constexpr std::string_view k_name{ "AQuickVoiceClip" };
+constexpr std::string_view k_short_description{
+    "AQuickVoiceClip softens headset mic recordings that have been super hard clipped on capture."
+};
+constexpr std::string_view k_long_description{
+    "I hope this is handy for somebody: I made it for myself. The idea is, if you’re a youtuber or something and have the ability to post-process your mic feed, you might have it set up so normal levels give a normal sound, but then if some monster jumps out and KILLS you in your video game, you might scream very loudly into your mic and blow the recording into ridiculously loud clipping.This does several things. Firstly, it clips and softens those moments further and tries to suppress some of the highs you got from the super-hard clipping. Secondly, it’s got a highpass which can subdue thumps and pops, and can also be used in conjunction with something like a pitch shifter to give cartoony voices (I’ve tried this with DiracFxAU, now known as zynaptiq: only used their demo AU, didn’t use their library in anything code-wise and won’t be doing so as they are unaffordable). I found highpassing before the pitch processing was very helpful for toon voices of that type.This isn’t the seriousest of plugins, but I’ve seen people ask me for it, so now it’s free and Mac/PC VST too. I think it’s best confined to its intended use, processing single voice tracks that have wildly distorted moments. If you try to use it on the 2-buss I will be very cross with you ;)"
+};
+constexpr std::string_view k_tags{
+    "clipping"
+};
+
 template <typename T>
 class AQuickVoiceClip final : public Effect<T>
 {
-    std::string m_name{ "AQuickVoiceClip" };
-
     double LataLast6Sample;
     double LataLast5Sample;
     double LataLast4Sample;
@@ -70,13 +80,6 @@ class AQuickVoiceClip final : public Effect<T>
     // default stuff
     float A;
 
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
-
   public:
     AQuickVoiceClip()
     {
@@ -131,10 +134,12 @@ class AQuickVoiceClip final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -157,7 +162,29 @@ class AQuickVoiceClip final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.42;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "highpass";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -622,4 +649,4 @@ class AQuickVoiceClip final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::aquickvoiceclip

@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::pdchannel {
+
+constexpr std::string_view k_name{ "PDChannel" };
+constexpr std::string_view k_short_description{
+    "PDChannel is Console5 and PurestDrive, sittin’ in a tree… (i.e. both at once, on channels and buss)"
+};
+constexpr std::string_view k_long_description{
+    "What can I even say? This is pretty much just what you’d think it is. Console5 (PurestConsole version) with a PurestDrive stage in every channel and on the buss. There’s a dedicated control for each PurestDrive, and since it’s implemented as a single plugin it saves you having to go out to the 32-bit floating point buss (not applicable to the 64-bit buss VST, in that case it saves you having to go out to that buss)Behavior-wise, it’s a Console5 variant. You can swap in the channel or buss and exchange it for any other Console5 plugin of that type and it’ll work as intended. I should mention that I don’t really mean for these to be all mix-and-match, even though I know people will want to do that: in my opinion it’s best to find an optimal combination where the channels match and the buss is your preferred buss (maybe from the same Console variation, maybe not) and then tweaking for channel EQ etc is done using more normal tools. I’m allowing people to do the digital version of recording stuff with all different preamps in the belief that’s best, because I know it pleases some people a lot, but don’t think that you MUST make a big mix-n-match Console rig from all the different variations. It’ll be more cohesive if you use the same ones: the threads of the tapestry will match.And if you’re using PDConsole as your preferred version, you’re going to have a really soft, lush tapestry. It’s not a big blur-and-ooze offender, but all the same it will pull everything into a smoother, more seamless zone. If you’re craving analog warmth of the recording-console type, this is probably the version of Console5 that most closely resembles an analog console built of hardware electronic parts. Other Consoles seek to deliver holographic imaging or great depth (there’s one coming later which ignores sounding like hardware, and tries to sound like acoustic sounds mixing LOUD in free air, not even a mixing desk at all). But PDConsole blatantly goes for that lush, big-console sound, smoothing and rounding stuff off in a controlled, euphonic way (without getting muddy about it).I put out these experiments because I know that for some people out there, one will be by far the best. It won’t be the same one for everyone, but I like knowing that there will be some listeners who go ‘Yeah! This one is absolutely the one for me. I’m now all set, and my mixes sound even more like my intentions’."
+};
+constexpr std::string_view k_tags{
+    "consoles"
+};
+
 template <typename T>
 class PDChannel final : public Effect<T>
 {
-    std::string m_name{ "PDChannel" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -18,14 +28,6 @@ class PDChannel final : public Effect<T>
     double previousSampleR;
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     PDChannel()
@@ -48,10 +50,13 @@ class PDChannel final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -76,7 +81,31 @@ class PDChannel final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "drive";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -197,4 +226,4 @@ class PDChannel final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::pdchannel

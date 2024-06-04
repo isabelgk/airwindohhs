@@ -2,26 +2,28 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::exciter {
+
+constexpr std::string_view k_name{ "Exciter" };
+constexpr std::string_view k_short_description{
+    "Exciter is an Aural Exciter plugin that can be both subtle and extreme."
+};
+constexpr std::string_view k_long_description{
+    "This plugin isn't my usual jam, but I've been listening to this type of effect all my life. The Steely Dan album 'The Royal Scam' wouldn't be the same without the Exciter effect. And now it's a free Airwindows plugin!Note that this is NOT a clone of hardware, or any particular brand. As I usually do, I've extracted the guts of the effect and then adapted it so it can be used normally or exaggerated. You'll find that as you apply the effect, it'll start off sounding like it does nothing, gets more and more intense and then suddenly blows up into crazy distortion. To use it like a normal exciter, fine-tune it so that it's just barely making transients 'pop'. If you're hearing obvious crunch, you've already got it cranked up higher than real-world examples would let you do.The effect works like this: get a sharp band filter going to extract certain kinds of information. Distort it with a soft clip (I use a sin() function, and some real-world examples used a 4049 hex inverter chip, which does a very similar super soft distort when used as an audio effect: it's the chip that made up Craig Anderton's 'Tube Sound Fuzz' circuit back in the day, and I still have lots of these chips to play with :D ) Then, once you've distorted this bandpass, add just only the distortion elements back into the full bandwidth signal, by subtracting the bandpass again.Exciter lets you adjust the frequency you're using, and dial in the amount of effect you want. I'm pretty sure it'll consistently sound good (not quite natural, but this is 'late seventies heightened detail' tone here, it doesn't have to sound natural) if you're careful to not crank it too much. And of course this is Airwindows, you can crank it on stuff that doesn't have much to excite, and blast it on bright stuff to make a distinct form of gritty evil distortion for effect.A lot of the stuff I like in analog is when transistors and chips are misused and freaking out. You can get tones like that out of Exciter, if you like. You can put it in the middle of uLaw, if you like. I've not tried that so you can be the first. I hope you enjoy Exciter :)"
+};
+constexpr std::string_view k_tags{
+    "effects"
+};
+
 template <typename T>
 class Exciter final : public Effect<T>
 {
-    std::string m_name{ "Exciter" };
-
     double biquad[11];
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     Exciter()
@@ -42,10 +44,13 @@ class Exciter final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -70,7 +75,31 @@ class Exciter final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.6;
+            case kParamB: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "freq";
+            case kParamB: return "excite";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -214,4 +243,4 @@ class Exciter final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::exciter

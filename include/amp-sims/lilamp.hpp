@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::lilamp {
+
+constexpr std::string_view k_name{ "LilAmp" };
+constexpr std::string_view k_short_description{
+    "LilAmp is a tiny amp sim, like a little bitty practice amp without that much gain."
+};
+constexpr std::string_view k_long_description{
+    "Here’s a cute little monster for you! LilAmp is an alternate take on my amp sims (resurrected from way back when, and brought up to speed to some extent). Unlike something like FireAmp or GrindAmp, this one’s much lower gain and acts like little practice amps, but the kind with a lot of loudness and sonority.You use this when you want more of a clean, articulate effect, or when you’re trying to highlight the treble and midrange (for instance, for leads, or to turn a snare into a loud, confined whack). You can make it be more mellow, too, but it will always be ‘LilAmp’ and speak up in a certain way. Something I found it useful for, is rhythm guitar that’s kind of Stonesy and not all that saturated: you can get the right kind of midrange bark out of it.All these amp sims (there are more coming, too!) incorporate the cab sim stuff I’d also done back in the day, and they all have a rather special dry/wet control where backing off the full-wet sound gives you two stages of dry/wet, one for the cab sim and one for the amp sim. So things clean up in a distinctive way that’s not like any other plugin, or anything you could get out of a real amp, for that matter. Treat LilAmp as a flexible way to get this type of sound, because it’s way more interested in doing that, than in trying to mimic any particular literal amp. Rather than taking a real amp and EQing and shaping it to your mix, you take LilAmp and morph it directly until it does what’s needed (this applies to the other Airwindows amp sim plugins, too)."
+};
+constexpr std::string_view k_tags{
+    "amp-sims"
+};
+
 template <typename T>
 class LilAmp final : public Effect<T>
 {
-    std::string m_name{ "LilAmp" };
-
     double lastSampleL;
     double storeSampleL;
     double lastSlewL;
@@ -84,16 +94,6 @@ class LilAmp final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kNumParameters = 4
-
-    };
 
   public:
     LilAmp()
@@ -173,10 +173,15 @@ class LilAmp final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -205,7 +210,35 @@ class LilAmp final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.8;
+            case kParamD: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain";
+            case kParamB: return "tone";
+            case kParamC: return "output";
+            case kParamD: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -1035,4 +1068,4 @@ class LilAmp final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::lilamp

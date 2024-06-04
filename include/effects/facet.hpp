@@ -2,23 +2,26 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::facet {
+
+constexpr std::string_view k_name{ "Facet" };
+constexpr std::string_view k_short_description{
+    "Facet is a new kind of hard clip that adds two sharp corners into the wave."
+};
+constexpr std::string_view k_long_description{
+    "Facet came out of me trying to come up with a new and distinct kind of distortion for the combined-distortions plugin I’m going to do. Rather than just bring Drive, Density, Spiral, Mojo etc. together, I wanted to add something different.So, Facet adds a ‘clip point’ but rather than a hard clip it just changes the ‘knee’ of the transfer function so your peaks can still go super high, way beyond 0 dB if you like.But, they change ‘angle’ at a sharp point which becomes sort of a corner in the sound. Except for high settings it’s both high up in the loudness, and a very gentle ‘corner’: still sharp, but very little change.And down near zero, it’s damn near total hard clipping. At silence, it literally is a hard clip to silence.Aw hell. Play with it, see what you think. i can’t explain this one well, at least not right now. The mad scientist labs have released another weird one. It will act like it’s a hard clip or a semi-dirty saturation, except the range of adjustment acts different, and it’ll throw an odd artifact on pure low-frequency tones… just play with it, see what you get. It will find its way into the combined plugin because it’s got a flavor all its own, but I can’t describe it today."
+};
+constexpr std::string_view k_tags{
+    "effects"
+};
+
 template <typename T>
 class Facet final : public Effect<T>
 {
-    std::string m_name{ "Facet" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
     float A;
-
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
 
   public:
     Facet()
@@ -35,10 +38,12 @@ class Facet final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -61,7 +66,29 @@ class Facet final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "facet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -143,4 +170,4 @@ class Facet final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::facet

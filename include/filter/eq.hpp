@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::eq {
+
+constexpr std::string_view k_name{ "EQ" };
+constexpr std::string_view k_short_description{
+    "EQ is just the EQ parts of CStrip."
+};
+constexpr std::string_view k_long_description{
+    "CStrip actually came out of this: a set of EQs specially coded to work together. It’s a lossless three-band (as in, the bands are made by different IIR filtrations being subtracted from each other, so if it’s flat it’s totally bit-identical output and also it has no pre-echo) with a special highpass and lowpass. Each of these things gets switched out of the circuit if not in use (much like CStrip). That makes EQ a very nice default EQ for broad-stroke filtering.The slopes aren’t super high, but that just helps it sound more natural (for a more striking-sounding filter, try Capacitor which is a more aggressively sloped highpass and lowpass). I could have given it set frequencies, but it seems like that’s kind of handy. This plugin is given to you (in AU, and Mac/Win/Linux VST) by request, as I’ve had a user ask for it even though CStrip is already out. So, for a simpler and more approachable Airwindows EQ, here’s EQ :)This work is supported by my Patreon, and I’m happy to say I’m back in the top 50 of the ‘Music’ section at ‘Graphtreon‘: I always like that, feels like I’m getting somewhere with all this. I also like something else, too: I’m definitely giving you folks ‘Aura’ this month. It’s thanks in large part to a mysterious creature known as Slipperman who got involved, and in his honor, next month you’re getting ‘Golem’. Remember, the bigger a success the Patreon is, the more I’m able to persuade people that my way of doing things is good. So if you want this sort of thing to catch on, throw money as that’s all people pay attention to these days…Other stuff I’m working on is Atmosphere, DeRez, and the latest Righteous, Righteous4. Also, if anybody wants to meet me, and also enjoy a rather special academic experience, I’m attending a scholarly lecture by a certain Doctor Bill Bruford in Albany NY this Tuesday, which I’m very excited for. I have no idea how well this’ll go over but I have a smaller version of the famous bent cymbal he discovered (the real one tragically broke after much use), and I mean to give it to him as a gift in honor of his creativity in the field of timbre. Anyway, wild horses wouldn’t keep me away from there, so if my car behaves itself you can meet both me and a REAL great person ;)(as a follow-up, by 2022 I'm hanging down just above 100 in the global Patreon music rankings, and I did in fact get to Albany and the lecture by Bill Bruford. I got in late, and confused him with my cymbal gift after the lecture (Bruford: 'but it's not the one!' which, true, it was not, and I got quite flustered. I hope he understood in some way that I just wanted to give him something, somehow. And no Airwindows people were there, which simplified things I guess)"
+};
+constexpr std::string_view k_tags{
+    "filter"
+};
+
 template <typename T>
 class EQ final : public Effect<T>
 {
-    std::string m_name{ "EQ" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -101,20 +111,6 @@ class EQ final : public Effect<T>
     float F;
     float G;
     float H;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kParamF = 5,
-        kParamG = 6,
-        kParamH = 7,
-        kNumParameters = 8
-
-    };
 
   public:
     EQ()
@@ -218,10 +214,19 @@ class EQ final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kParamG = 6,
+        kParamH = 7,
+        kNumParameters = 8
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -258,7 +263,43 @@ class EQ final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.5;
+            case kParamC: return 0.5;
+            case kParamD: return 1.0;
+            case kParamE: return 0.4;
+            case kParamF: return 0.4;
+            case kParamG: return 0.0;
+            case kParamH: return 0.5;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "treble";
+            case kParamB: return "mid";
+            case kParamC: return "bass";
+            case kParamD: return "lowpass";
+            case kParamE: return "trebfrq";
+            case kParamF: return "bassfrq";
+            case kParamG: return "hipass";
+            case kParamH: return "outgain";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -753,4 +794,4 @@ class EQ final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::eq

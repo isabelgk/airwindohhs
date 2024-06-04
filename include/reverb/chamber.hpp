@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::chamber {
+
+constexpr std::string_view k_name{ "Chamber" };
+constexpr std::string_view k_short_description{
+    "Chamber2 is a feedforward reverb, a blur delay, and a glitch topping!"
+};
+constexpr std::string_view k_long_description{
+    "I actually meant to do something completely different. Honest.It was time to dig into the feedforward reverbs again, maybe rearrange them in some interesting way. Do something with the geometry of them, have them go two-into-three-into-four or something along those lines, and we were hanging out in the Monday coding livestream, starting to experiment… and one of my crew tossed out a sequence of numbers. Fibonacci numbers. Could we hear what those sounded like as delay constants?Wasn’t bad. Chat got buried in Fibonacci numbers for a while: we are always enthusiastic at finding weird applications of things that shouldn’t be any use. After all, to get reverb tails to become seamless, the delay constants have to be set up properly. Prime numbers are key. Fibonacci sequences have nothing to do with this. And then, someone in chat observed… as the Fibonacci numbers get bigger they start approximating to the golden ratio.Yoicks, scooby! We’d better try it! AND THEN…Chamber is a feedforward reverb, using three banks of four delays each in a Householder feedback matrix, except it’s feedforward. Only the very end feeds back into the beginning again, just like Verbity, just like Galactic (it is dual-mono like Verbity, as its peculiar merits fit well with a dual-mono arrangement). And the delays go to a longest delay (maximum delay size) and each one in turn, back to the first, is exactly the golden ratio smaller than the previous. It’s like a big spiral of delay times, perfect to lots of decimal places. If you listen to just one instance of each delay (by turning Longness to zero, and Chamber lets you HAVE literally zero feedback), that’s a weird stuttery slapback. By itself, an arbitrary little chirp, a complicated slapback that doesn’t sound particularly interesting.And then if you turn the feedback up, with Longness, it stretches out into a continuous, seamless, perfect reverb tail, just as if all the delay times had been worked out to be perfect little prime ratios.This was an astounding discovery. It means you can dial in any degree of feedback or none, use any delay time (everything’s calculated out on the fly), do anything with it and it’ll adapt. It’ll always sound like a chamber, hence the name, but it’s maybe more malleable than any reverb I’ve ever made. And to make it even more malleable, Chamber’s Darkness control is tweaked so that the fall-off over time is always accurate to the sound of audio decaying in air in a theoretically ultimate room (studied from recordings of giant underground concrete cisterns) but the tone-shaping is darkened using very warm, basic IIR filters. And on top of that, a new control for the feedforward reverbs: since Chamber is such a studio tool, I gave it a highpass. So you can plunk it on any sort of buss or channel, run it mostly dry, bring in the reverb (Chamber and Verbity are designed so as you add verb, the dry remains unaltered until you get to 0.5 on the Wetness control, at which point the verb is at full volume and you start fading the dry signal) and then begin dialing back the bassiness of the reverb without touching the dry. Very useful for a chamber or plate send, and built right in!Hope you like it. Oh, and one more thing: in working on this, I found a bug that was in the Undersampling code I use. The bug was making a bit of unwanted edge, only in high sample rate stuff, only above 20kHz. I’d had someone discover this in Verbity, but I didn’t know what to do other than filter it at the time, and hadn’t done anything yet.So now (as of right now: redownload what you need) Verbity, Galactic, IronOxideClassic2, and Chamber are FIXED. Go back and redownload them, or get them out of the collections for various different platforms. They have all had the ultrasonic noise cleaned up: there is still a touch of audio there as part of the algorithm, but it turns out it’s much less than I thought and that’s reflected in cleaner sound. It should not change saved mixes significantly as it is entirely supersonic, but if it did it would only help as the traces of noise weren’t useful for any purpose, they were a bug, samples being slightly out of order at 96 and 192k. No change at 44.1 or 48k.Chamber actually goes a step farther, in that I added more code that subtly averages the supersonic samples… that can apply to new plugins going forward, but Verbity, Galactic, and IronOxideClassic2 don’t have that as it could work like a tone change. So, compare the new Verbity to Chamber if you’d like to check out the tiny amount of added depth we’ll have going forward.Sometimes you just want to watch the glitch BURN…So here's what happened. I wanted to try a modification to Chamber. It's a reverb where every delay time inside the feedforward network was exactly the golden ratio of the next. Why? Why not, I thought. What happened with that was, I got a sort of oddly-colored echo, but one that turned into very seamless reverb as long as you had some regeneration in there. Interesting! And so I coded a reverb where some of the delay taps were quite tiny, and that's Chamber.But what would happen if it wasn't always the golden ratio? What if you tried other ratios?Well, nothing for it but to try it, right? And I had to take ALL the delays inside, and make them potentially full length echoes, meaning the amount of memory it takes is WAY larger than what original Chamber wants. You can get the original tones out of it, but in doing that you're wasting huge amounts of delay buffer. The plugin just doesn't see them at all, and they sit there doing nothing. So, don't use Chamber2 where Chamber will do.What happens when you have the 'thick' control at 0? You have the most expensive, wasteful, CPU and memory hogging delay ever. You've got over 4000 delays, all precisely the same. So don't do that either (note: if it were only that simple)But what if you put 'thick' slightly off 0? You now have a blur echo. You've got a delay which is also a Chamber reverb in which all the echoes are ALMOST the same. And you can dial in the blurriness of this echo. Not only that, regeneration will further blur the echo. So you can take the no-blur setting, and sweep the 'thick' control higher while regenerating. And it'll (somewhat glitchily: you are buffer smashing) blur its way from direct echo into a chamber reverb, which will also make the echo happen faster (your internal delays are getting shorter, all in synchronization).And then you can let the regenerations fade away. And then… what if you snap the 'thick' control back to 0 again?Suddenly you have a full-on glitch buffer effect, from audio you had in the sample buffers when you went to the chamber reverb effect. Boom, there it is, at whatever delay rate you have set on the 'size' control at top.Obviously this is extremely nasty. But it's also a shocking, bold effect with a tinge of the accidental. And when the effect turns up in the VCV Rack dailies, or is used in Bespoke or wherever… it's an open invitation to throw crazy LFOs and sample-and-hold on the 'thick' control, and just use Chamber2 as a glitchy noise generator. It'll grab buffer snippets from its delay mode, it'll blur them into reverb, it'll throw other echo bits on top of that: a proper mad scientist laboratory for sonic mayhem, from your friendly neighborhood Chris.You can dial in nice verb/echo hybrid sounds and use those too, I won't stop you. I'm just making sure everyone understands the possibilities of this one. Chamber2 glitches in very special ways. Hope you like it :)"
+};
+constexpr std::string_view k_tags{
+    "reverb"
+};
+
 template <typename T>
 class Chamber final : public Effect<T>
 {
-    std::string m_name{ "Chamber" };
-
     double iirAL;
     double iirBL;
     double iirCL;
@@ -77,17 +87,6 @@ class Chamber final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     Chamber()
@@ -195,10 +194,16 @@ class Chamber final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -229,7 +234,37 @@ class Chamber final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.35;
+            case kParamB: return 0.35;
+            case kParamC: return 0.35;
+            case kParamD: return 0.35;
+            case kParamE: return 0.35;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "bigness";
+            case kParamB: return "longness";
+            case kParamC: return "liteness";
+            case kParamD: return "darkness";
+            case kParamE: return "wetness";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -590,4 +625,4 @@ class Chamber final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::chamber

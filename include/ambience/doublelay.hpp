@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::doublelay {
+
+constexpr std::string_view k_name{ "Doublelay" };
+constexpr std::string_view k_short_description{
+    "Doublelay is StereoDoubler with independent delays and feedback."
+};
+constexpr std::string_view k_long_description{
+    "This one was a request: I have a weakness for doing plugins for folks who worked on records I grew up listening to on vinyl. So often we recognize only the rock stars, but the guys behind the desks do so much to help the magic happen. And this plugin is there to bring the magic. It was a GREAT suggestion.Doublelay starts with Stereo Doubler, then adds delay taps to the pitch-shifted L and R independently, and then it also lets you feed back the results into the input again, in a secret combination that nobody knowing me will be surprised to know is the Golden Ratio. It's 0.618.... direct feedback, and the inverse as crossfeed. The direct feedback will continue pitch shifting up and up, and the inverse/crossfeed will continue shifting the pitch back again to where it started. The end result is an ability to further expand the spatiality and pitch-iality of the effect to taste, up to 1.0 where you'll get close to infinite feedback… unless you're using the pitch shifting, where it will trail off faintly into color-smeared audio trails.Or you can skip the feedback and use it to thicken vocals and things, or do an 'echojam' effect in stereo with just two taps where the echoes are also pitch shifts, or have one side not be a delay and the other side be a big delay: turns out there are a lot of things you can do, and since this is a very immediate (based on the very 'raw' sounding Glitch Shifter by way of Stereo Doubler) delay based effect, the added ambience you create will not fill up nearly as much space as a full-on reverb might do. Truly a great way to fill up some mix space with what you've already got in the tracks, and go on from there if you like. And I hope you do like Doublelay."
+};
+constexpr std::string_view k_tags{
+    "ambience"
+};
+
 template <typename T>
 class Doublelay final : public Effect<T>
 {
-    std::string m_name{ "Doublelay" };
-
     double dL[48010];
     double dR[48010];
     int dcount;
@@ -54,17 +64,6 @@ class Doublelay final : public Effect<T>
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kParamC = 2,
-        kParamD = 3,
-        kParamE = 4,
-        kNumParameters = 5
-
-    };
 
   public:
     Doublelay()
@@ -135,10 +134,16 @@ class Doublelay final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -169,7 +174,37 @@ class Doublelay final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.2;
+            case kParamB: return 0.1;
+            case kParamC: return 0.2;
+            case kParamD: return 0.0;
+            case kParamE: return 0.6;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "detune";
+            case kParamB: return "delay l";
+            case kParamC: return "delay r";
+            case kParamD: return "feedbk";
+            case kParamE: return "drywet";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -593,4 +628,4 @@ class Doublelay final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::doublelay

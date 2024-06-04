@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::biquaddouble {
+
+constexpr std::string_view k_name{ "BiquadDouble" };
+constexpr std::string_view k_short_description{
+    "BiquadDouble is a handy Airwindows cascaded biquad filter: steeper roll-off before resonance."
+};
+constexpr std::string_view k_long_description{
+    "So it’s a boring old biquad.Except, if you’re into the details of how stuff works, it’s not THAT boring. It’s two biquad filters stacked, which means you can get twice as much cutoff steepness before resonance. Since it’s Airwindows, you can have any possible resonance setting anyway, from ‘impossibly high’ to so wide that it’s basically full bandwidth. That interacts interestingly with the stacked filters: some of the weird effects with super-wide filters will act different here. On top of that, it’s two stacked filters inside an internal Console mixing system: so the tone of the filter itself is ‘expanded’ in a way not common to boring old biquad filters. And it’s the most efficient (but least cooperative) biquad, meaning that it runs and sounds great but doesn’t always cooperate with rapid automation, so that might get interesting if you’re not careful.Why do this at all?Because I sometimes like mocking up effects and plugins out of component parts. And if I was to use a stacked biquad filter as part of something else, it’s just more convenient to dial in the correct settings and get the tone exactly right: I could use two ‘Biquad’ instances, but remember that BiquadDouble stacks its filters INSIDE the Console processing, so it might not be as good to fake it, plus I’d have to set both the Biquad instances the same…The real answer is ‘because that’s how I roll’. Nobody asked for this. But maybe you reach for a biquad filter for simple tone shaping, and you keep trying to find a butter zone between too shallow, and too resonant. This might become your go-to basic filter. I can’t predict what will take off: for all I know, this is THE basic digital filter everyone’s been waiting for, the one that just sounds right for every purpose. Or not. But you can’t know until you try :)"
+};
+constexpr std::string_view k_tags{
+    "biquads"
+};
+
 template <typename T>
 class BiquadDouble final : public Effect<T>
 {
-    std::string m_name{ "BiquadDouble" };
-
     double biquadA[11];
     double biquadB[11]; // note that this stereo form doesn't require L and R forms!
     // This is because so much of it is coefficients etc. that are the same on both channels.
@@ -19,16 +29,6 @@ class BiquadDouble final : public Effect<T>
     float B;
     float C;
     float D;
-
-    enum params
-    {
-        kParamfor (int x = 0,
-kParamA = 1,
-kParamB = 2,
-kParamC = 3,
-kNumParameters = 4
-
-    };
 
   public:
     BiquadDouble()
@@ -52,10 +52,15 @@ kNumParameters = 4
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamfor (int x = 0,
+kParamA = 1,
+kParamB = 2,
+kParamC = 3,
+kNumParameters = 4
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -84,7 +89,35 @@ case kParamC: return C;
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return 0;
+        case kParamA: return 1.0;
+        case kParamB: return 0.5;
+        case kParamC: return 0.5;
+
+        default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+        case kParamfor (int x: return "type";
+        case kParamA: return "freq";
+        case kParamB: return "q";
+        case kParamC: return "invwet";
+
+        default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -272,4 +305,4 @@ case kParamC: return C;
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::biquaddouble

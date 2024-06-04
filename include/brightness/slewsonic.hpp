@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::slewsonic {
+
+constexpr std::string_view k_name{ "SlewSonic" };
+constexpr std::string_view k_short_description{
+    "SlewSonic combines SlewOnly with ultrasonic filtering to solo brightness."
+};
+constexpr std::string_view k_long_description{
+    "This plugin was a journey! The video isn't even its final form. The idea was to find out whether SlewOnly aliases. Could you filter out ultrasonics and get a smoother SlewOnly?The answer is 'kinda', but then things got out of hand…SlewSonic lets you stack up as many as three instances of SlewOnly, each with ultrasonic filtering around them to resist aliasing. Except it's not always ultrasonic, because now you can set it from 25k all the way down to 5k. When you do that, you get the smoothest, darkest SlewOnly ever!But what even is SlewOnly? It's a monitoring plugin, very simple, that shows only the extreme treble, and balances the levels in a calibrated way to help you mix. SlewOnly is in all versions of Airwindows Monitoring, alongside SubsOnly and PeakOnly. It's there to show you stuff you wouldn't hear off just the regular mix. So if you switch over to SlewOnly, it should still be a mix, still about the same volume, still about the same density.The thing is, when you stack those up, the calibrated volume adjustment gets more and more extreme. So mega-boosts can create really LOUD super-treble. And this could be useful highlighting cymbals, whispers… anything where you want to solo those frequencies. The Bright control fades between the direct sound and one, two or three stages of SlewOnly, and the Mute control specifies the highest frequencies you keep, so it could fight aliasing even at lower sample rates.I'm imagining this as a tool for dedicated hi-hat tracks, stuff like that. You should be able to get exactly what you want. Hope you like SlewSonic!"
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class SlewSonic final : public Effect<T>
 {
-    std::string m_name{ "SlewSonic" };
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -23,14 +33,6 @@ class SlewSonic final : public Effect<T>
     double biquadD[15];
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     SlewSonic()
@@ -56,10 +58,13 @@ class SlewSonic final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -84,7 +89,31 @@ class SlewSonic final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5;
+            case kParamB: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "mute";
+            case kParamB: return "bright";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -328,4 +357,4 @@ class SlewSonic final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::slewsonic

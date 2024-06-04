@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::goldenslew {
+
+constexpr std::string_view k_name{ "GoldenSlew" };
+constexpr std::string_view k_short_description{
+    "GoldenSlew is a multistage slew clipper based on the Golden Ratio."
+};
+constexpr std::string_view k_long_description{
+    "Slew clipping is a fairly uncommon effect: it takes the bright off sounds, but replaces it with a distorty edge. You've already got Slew to do slew clipping with, and if you like Channel part of what you like is its built-in slew clipping… but what if you could expand on what slew clipping does?GoldenSlew is a chain of slew clippers becoming increasingly restrictive as they go, each one scaled by a factor related to the Golden Ratio (if it was applied to the 'slew' control). You would think this would produce a simple result: the sound would always be restricted to the smallest amount in the chain, and it'd sound just like Slew.Except it SO doesn't… because each new value's working from what the previous one was clipped to. And so, when you apply slew clipping as a chain, you get a completely different effect. And what it sounds like… is distant, roaring, big, loud, powerful in a way you just don't get from slew clipping alone.Be warned: for this plugin, like Slew, if you have audio going through it and you crank the slew clipping ALL the way to 1.0, what you're telling it is 'stop slewing completely, don't budge' which means sample and hold which means you're stuck on a DC voltage. There are reasons why you might do this, for instance if you're in VCV Rack and using it on a control voltage and you want to do sample and hold on that voltage. Don't crank it up to 1.0 on audio signals or you might hurt your speakers if they're DC coupled.This is one of a series of plugins starting with Slew and continuing with GoldenSlew, where they're refinements of a tone I like using for analog emulation. When used for that, you typically want to keep the setting fairly low, less than 0.5 certainly. It's for controlling the digital-ness of the highs without apparently making them quieter: remember this is a clipper, not an EQ, and it'll kick in only on LOUD treble. There will be more explorations of this concept because I'll need a really good test-bed to use for when I start dialing in sounds of actual classic analog consoles: it's not just the maximum restriction of slew (like in the Channel plugins), it's about the sound character as we hit that limit.You can use GoldenSlew on things like drums, final mixes: anywhere you want the effect of extreme loudness, but don't want the treble coming forward and poking at you. Hope you like GoldenSlew!"
+};
+constexpr std::string_view k_tags{
+    "brightness"
+};
+
 template <typename T>
 class GoldenSlew final : public Effect<T>
 {
-    std::string m_name{ "GoldenSlew" };
-
     enum
     {
         prevSampL1,
@@ -48,13 +58,6 @@ class GoldenSlew final : public Effect<T>
     // default stuff
     float A;
 
-    enum params
-    {
-        kParamA = 0,
-        kNumParameters = 1
-
-    };
-
   public:
     GoldenSlew()
     {
@@ -73,10 +76,12 @@ class GoldenSlew final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kNumParameters = 1
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -99,7 +104,29 @@ class GoldenSlew final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "slew";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -208,4 +235,4 @@ class GoldenSlew final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::goldenslew

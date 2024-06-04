@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::chromeoxide {
+
+constexpr std::string_view k_name{ "ChromeOxide" };
+constexpr std::string_view k_short_description{
+    "ChromeOxide is an alternate path to vibey old tape sonics."
+};
+constexpr std::string_view k_long_description{
+    "Chrome Oxide was an experiment, one that didn’t go further than this. It is a dual-band tape emulation, where the lows are a bit saturated but the highs are delayed by a random noise warble that can also be biased to delay them a bit further. My pursuits of tape emulation have always gone toward the ‘BETTER than digital’ direction, where I tried to capture the magic without diving into the audio degradation.But revisiting Chrome Oxide (and re-releasing it, with modern wordlength handling etc and dithering to the floating point output buss) showed me a plugin that excels at some tonalities I didn’t even know about when I made it. For instance, your Boards of Canada type stuff, mulch-core audio where it sounds like it’s coming off an old Walkman or Wollensack? This will not do crazy pitch wobbles or dropouts… but you can instantly, effortlessly get the tone of it. The intensity controls a noise effect that is FM, frequency modulating the highs against the lows. Bias further delays the highs, and this sculpts the phase aberrations of the output and the flavor of roll-off… so, without ever getting aggressive or obvious, you can just dial-a-mulch and go as fuzzy and old-sounding as you like, but musically. It is subtle enough to use on anything and aggressive enough to completely change the mood of a track.And now you can have it. Mulch away! You don’t have to obliterate a track to get into the vibe you crave. (and of course some people hate this sort of thing: if you doubly hate this one, I’ll know I’ve done it right :D )"
+};
+constexpr std::string_view k_tags{
+    "lo-fi"
+};
+
 template <typename T>
 class ChromeOxide final : public Effect<T>
 {
-    std::string m_name{ "ChromeOxide" };
-
     double iirSampleAL;
     double iirSampleBL;
     double iirSampleCL;
@@ -30,14 +40,6 @@ class ChromeOxide final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamiirSampleAL = 0,
-        kParamiirSampleBL = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     ChromeOxide()
@@ -72,10 +74,13 @@ class ChromeOxide final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamiirSampleAL = 0,
+        kParamiirSampleBL = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -100,7 +105,31 @@ class ChromeOxide final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamiirSampleAL: return 0.0;
+            case kParamiirSampleBL: return 0.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamiirSampleAL: return "intense";
+            case kParamiirSampleBL: return "bias";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -314,4 +343,4 @@ class ChromeOxide final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::chromeoxide

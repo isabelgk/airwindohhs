@@ -2,12 +2,22 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs {
+namespace airwindohhs::mackity {
+
+constexpr std::string_view k_name{ "Mackity" };
+constexpr std::string_view k_short_description{
+    "Mackity is an emulation of the input stage of a vintage Mackie 1202!"
+};
+constexpr std::string_view k_long_description{
+    "Mackie 1202 (pre-VLZ) input stage.Found and bought one, learned through using it just how different it was from anything I’d done before, resolved to capture the madness.This is what you get when you run stuff into the inputs of the original Mackie 1202… and then, plug halfway into the insert points on the back of the unit. This time it’s not about modeling the two-band EQ, or any of that. This time it’s the refined essence of Mackie slam.I might not have it so perfect that it’ll cancel out with a phase inverted recording out of the real physical machine… though it’s close… but on my word as Chris from Airwindows, through my choices and techniques, Mackity gets the vibe pretty close to perfect. It won’t generate noise like it’s real cheap op-amps but it’ll give you the same spongy slam and gleaming brain-fry overload of the purely analog machine. This is partly because it’s not overprocessing to lock in all the little EQ-matching things: it’s basic simple algorithms mimicking a basic simple circuit and there’s an intensity that comes through which you don’t get by fussing over all the details. It sounds big and raw and warm and it takes in audio in a characteristic way… really really old Mackie tiny mixer, the kind that can’t really do nice things but turns electronic music into a wall of roaring shrapnel.If you’re a classical recordist, or a fan of, you know, GOOD equipment, this means nothing to you. And that’s fine. Some weapons are best kept secret. But if you’re a DnB head or various other underground recordist type, I doubt I need to say more.So I won’t. Have fun!"
+};
+constexpr std::string_view k_tags{
+    "distortion"
+};
+
 template <typename T>
 class Mackity final : public Effect<T>
 {
-    std::string m_name{ "Mackity" };
-
     double iirSampleAL;
     double iirSampleBL;
     double iirSampleAR;
@@ -19,14 +29,6 @@ class Mackity final : public Effect<T>
     // default stuff
     float A;
     float B;
-
-    enum params
-    {
-        kParamA = 0,
-        kParamB = 1,
-        kNumParameters = 2
-
-    };
 
   public:
     Mackity()
@@ -52,10 +54,13 @@ class Mackity final : public Effect<T>
         // this is reset: values being initialized only once. Startup values, whatever they are.
     }
 
-    constexpr std::string_view name()
+    enum params
     {
-        return m_name;
-    }
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
+
+    };
 
     void set_parameter_value(int index, float value)
     {
@@ -80,7 +85,31 @@ class Mackity final : public Effect<T>
         return 0.0;
     }
 
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1;
+            case kParamB: return 1.0;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
     constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "in trim";
+            case kParamB: return "out pad";
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
     {
         switch (static_cast<params>(index))
         {
@@ -243,4 +272,4 @@ class Mackity final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs
+} // namespace airwindohhs::mackity
