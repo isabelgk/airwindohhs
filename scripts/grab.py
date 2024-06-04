@@ -1,19 +1,8 @@
-import argparse
 import os.path
 from pathlib import Path
 
 
-def _arg_parser():
-    parser = argparse.ArgumentParser(description="Grab an airwindows plugin source")
-    parser.add_argument("srcdir", type=str, help="The path to the directory containing the main airwindows plugin code")
-    parser.add_argument("category", type=str, help="The plugin category")
-    parser.add_argument("dstdir", type=str, help="The path to the include/ directory")
-    parser.add_argument("template_header", type=str, help="The header template path")
-    args = parser.parse_args()
-    return args
-
-
-def _check_args(args):
+def check_args(args):
     if args["srcdir"]:
         srcdir = Path(args["srcdir"])
         if not srcdir.is_dir():
@@ -38,7 +27,7 @@ def _check_args(args):
     return args
 
 
-def _split_category(s: str):
+def split_category(s: str):
     category = s.split(":")[0].strip().lower().replace(" ", "-")
     elements = s.split(":")[1].split(",")
     for i in range(len(elements)):
@@ -57,13 +46,13 @@ def get_category_lines(filepath: Path):
             if in_categories:
                 stripped = line.strip()
                 if stripped != "":
-                    ls.append(_split_category(stripped))
+                    ls.append(split_category(stripped))
             if line.startswith("# Categories"):
                 in_categories = True
     return ls
 
 
-def _filter_naive(lines):
+def filter_naive(lines):
     result = []
     ignore = {"{\n", "}\n", "\n"}
     for line in lines:
@@ -77,17 +66,17 @@ def _filter_naive(lines):
     return result
 
 
-def _get_name_from_srcpath(srcdir: Path) -> str:
+def get_name_from_srcpath(srcdir: Path) -> str:
     return os.path.basename(srcdir).lower()
 
 
-def _get_path_from_srcpath(srcdir: Path, postfix: str) -> Path:
-    name = _get_name_from_srcpath(srcdir) + postfix
+def get_path_from_srcpath(srcdir: Path, postfix: str) -> Path:
+    name = get_name_from_srcpath(srcdir) + postfix
     return Path(os.path.join(srcdir, name))
 
 
-def _get_proc(srcdir: Path):
-    path = _get_path_from_srcpath(srcdir, "Proc.cpp")
+def get_proc(srcdir: Path):
+    path = get_path_from_srcpath(srcdir, "Proc.cpp")
     with open(path, "r") as f:
         lines = f.readlines()
 
@@ -97,12 +86,12 @@ def _get_proc(srcdir: Path):
         count += 1
         if "processDoubleReplacing(" in line:
             start_index = count + 5  # skipping the input and output part
-    return _filter_naive(lines[start_index:-1].copy())
+    return filter_naive(lines[start_index:-1].copy())
 
 
-def _get_private_vars(srcdir: Path):
+def get_private_vars(srcdir: Path):
     result = []
-    fname = _get_path_from_srcpath(srcdir, ".h")
+    fname = get_path_from_srcpath(srcdir, ".h")
     within = False
 
     with open(fname) as f:
@@ -117,11 +106,11 @@ def _get_private_vars(srcdir: Path):
         if within:
             result.append(line)
 
-    return _filter_naive(result)
+    return filter_naive(result)
 
 
-def _get_initialization(srcdir: Path):
-    fname = _get_path_from_srcpath(srcdir, ".cpp")
+def get_initialization(srcdir: Path):
+    fname = get_path_from_srcpath(srcdir, ".cpp")
     with open(fname) as f:
         lines = f.readlines()
 
@@ -136,11 +125,11 @@ def _get_initialization(srcdir: Path):
             end_index = count - 1
             break
 
-    return _filter_naive(lines[start_index - 2:end_index])
+    return filter_naive(lines[start_index - 2:end_index])
 
 
 def _get_num_params(srcdir: Path):
-    fname = _get_path_from_srcpath(srcdir, ".h")
+    fname = get_path_from_srcpath(srcdir, ".h")
     num_params = 0
     with open(fname) as f:
         lines = f.readlines()
@@ -152,7 +141,7 @@ def _get_num_params(srcdir: Path):
 
 
 def _get_chunk(srcdir: Path, src_postfix: str, num_params: int, match: str):
-    fname = _get_path_from_srcpath(srcdir, src_postfix)
+    fname = get_path_from_srcpath(srcdir, src_postfix)
     chunk = []
     with open(fname) as f:
         lines = f.readlines()
@@ -163,7 +152,7 @@ def _get_chunk(srcdir: Path, src_postfix: str, num_params: int, match: str):
     return chunk
 
 
-def _get_default_param_values(srcdir: Path, num_params: int):
+def get_default_param_values(srcdir: Path, num_params: int):
     chunk = _get_chunk(srcdir, ".cpp", num_params, "AudioEffectX(")
     result = []
     for line in chunk:
@@ -174,17 +163,17 @@ def _get_default_param_values(srcdir: Path, num_params: int):
     return result
 
 
-def _get_param_names(srcdir: Path, num_params: int):
+def get_param_names(srcdir: Path, num_params: int):
     chunk = _get_chunk(srcdir, ".cpp", num_params, "::getParameterName(")
     return [x.split("\"")[1] for x in chunk]
 
 
-def _get_param_labels(srcdir: Path, num_params: int):
+def get_param_labels(srcdir: Path, num_params: int):
     chunk = _get_chunk(srcdir, ".cpp", num_params, "::getParameterLabel(")
     return [x.split("\"")[1] for x in chunk]
 
 
-def _get_param_displays(srcdir: Path, num_params: int):
+def get_param_displays(srcdir: Path, num_params: int):
     chunk = _get_chunk(srcdir, ".cpp", num_params, "::getParameterDisplay(")
     result = []
     for line in chunk:
@@ -200,17 +189,19 @@ def _get_param_displays(srcdir: Path, num_params: int):
     return result
 
 
-def _get_param(srcdir: Path):
+def get_param(srcdir: Path):
     num_params = _get_num_params(srcdir)
-    default_info = _get_default_param_values(srcdir, num_params)
-    param_names = _get_param_names(srcdir, num_params)
-    param_labels = _get_param_labels(srcdir, num_params)
-    param_display = _get_param_displays(srcdir, num_params)
+    default_info = get_default_param_values(srcdir, num_params)
+    param_names = get_param_names(srcdir, num_params)
+    param_labels = get_param_labels(srcdir, num_params)
+    param_display = get_param_displays(srcdir, num_params)
 
     result = {
         "enum": [],
         "set_switch": [],
         "get_switch": [],
+        "get_title_switch": [],
+        "default_switch": [],
         "name_switch": [],
         "label_switch": [],
         "display_switch": [],
@@ -219,6 +210,7 @@ def _get_param(srcdir: Path):
     for i in range(num_params):
         enum_str = default_info[i]["enum_str"]
         variable = default_info[i]["variable"]
+        initial_value = default_info[i]["initial_val"]
 
         set_text = f"case {enum_str}: {variable} = value; break;\n"
         result["set_switch"].append(set_text)
@@ -226,8 +218,14 @@ def _get_param(srcdir: Path):
         get_text = f"case {enum_str}: return {variable};\n"
         result["get_switch"].append(get_text)
 
-        name_text = f"case {enum_str}: return \"{param_names[i]}\";\n"
+        default_text = f"case {enum_str}: return {initial_value};\n"
+        result["default_switch"].append(default_text)
+
+        name_text = f"case {enum_str}: return \"{param_names[i].lower().replace("-", "").replace("/", "")}\";\n"
         result["name_switch"].append(name_text)
+
+        title_text = f"case {enum_str}: return \"{param_names[i]}\";\n"
+        result["get_title_switch"].append(title_text)
 
         label_text = f"case {enum_str}: return \"{param_labels[i]}\";\n"
         result["label_switch"].append(label_text)
@@ -243,69 +241,121 @@ def _get_param(srcdir: Path):
     return result
 
 
-def _parse_sections(srcdir: Path):
+def parse_sections(srcdir: Path):
     return {
-        "params": _get_param(srcdir),
-        "init": _get_initialization(srcdir),
-        "proc": _get_proc(srcdir),
-        "private_vars": _get_private_vars(srcdir),
+        "params": get_param(srcdir),
+        "init": get_initialization(srcdir),
+        "proc": get_proc(srcdir),
+        "private_vars": get_private_vars(srcdir),
     }
 
 
-def main(srcdir: Path, category: str, dstdir: Path, template_header: Path):
+def get_metadata(name: str, info_filepath: Path):
+    result = {
+        "short_description": "",
+        "long_description": ""
+    }
+    with open(info_filepath, "r") as f:
+        lines = f.readlines()
+        found = None
+        for index, line in enumerate(lines):
+            if found is not None:
+                if line[0] == "#":
+                    found = None
+                else:
+                    result["long_description"] += line.strip()
+            m = f"# {name}"
+            if m in line:
+                found = index
+                result["short_description"] = line.replace("#", "").strip()
+
+    return result
+
+
+def populate_template(lines, name, parsed, metadata, category):
+    changed = []
+    for line in lines:
+        if "%%CLASSNAME%%" in line:
+            changed.append(line.replace("%%CLASSNAME%%", name))
+        elif "%%NAMESPACE%%" in line:
+            namespace = str(name).lower()
+            changed.append(line.replace("%%NAMESPACE%%", namespace))
+        elif "%%SHORT_DESCRIPTION%%" in line:
+            changed.append(line.replace("%%SHORT_DESCRIPTION%%", metadata["short_description"]))
+        elif "%%LONG_DESCRIPTION%%" in line:
+            changed.append(line.replace("%%LONG_DESCRIPTION%%", metadata["long_description"]))
+        elif "%%TAGS%%" in line:
+            changed.append(line.replace("%%TAGS%%", category))
+        elif "%%PRIVATEVARS%%" in line:
+            changed.append(line.replace("%%PRIVATEVARS%%", "".join(parsed["private_vars"])))
+        elif "%%INITIALIZATION%%" in line:
+            changed.append(line.replace("%%INITIALIZATION%%", "".join(parsed["init"])))
+        elif "%%PARAM_ENUM%%" in line:
+            changed.append(line.replace("%%PARAM_ENUM%%", "".join(parsed["params"]["enum"])))
+        elif "%%SETPARAMSWITCH%%" in line:
+            changed.append(line.replace("%%SETPARAMSWITCH%%", "".join(parsed["params"]["set_switch"])))
+        elif "%%GETPARAMSWITCH%%" in line:
+            changed.append(line.replace("%%GETPARAMSWITCH%%", "".join(parsed["params"]["get_switch"])))
+        elif "%%GETPARAMTITLESWITCH%%" in line:
+            changed.append(line.replace("%%GETPARAMTITLESWITCH%%", "".join(parsed["params"]["get_title_switch"])))
+        elif "%%GETPARAMDEFAULTSWITCH%%" in line:
+            changed.append(line.replace("%%GETPARAMDEFAULTSWITCH%%", "".join(parsed["params"]["default_switch"])))
+        elif "%%GETPARAMLABELDISPLAY%%" in line:
+            changed.append(line.replace("%%GETPARAMLABELDISPLAY%%", "".join(parsed["params"]["display_switch"])))
+        elif "%%GETPARAMLABELSWITCH%%" in line:
+            changed.append(line.replace("%%GETPARAMLABELSWITCH%%", "".join(parsed["params"]["label_switch"])))
+        elif "%%GETPARAMNAMESWITCH%%" in line:
+            changed.append(line.replace("%%GETPARAMNAMESWITCH%%", "".join(parsed["params"]["name_switch"])))
+        elif "%%PROCESS%%" in line:
+            changed.append(line.replace("%%PROCESS%%", "".join(parsed["proc"])))
+        else:
+            changed.append(line)
+    return changed
+
+
+def write_header(srcdir: Path, category: str, dstdir: Path, scriptdir: Path):
     args = {
         "srcdir": srcdir,
         "category": category,
         "dstdir": dstdir,
-        "template_header": template_header
+        "scriptdir": scriptdir
     }
 
-    args = _check_args(args)
-    parsed = _parse_sections(args["srcdir"])
+    a = check_args(args)
+    parsed = parse_sections(args["srcdir"])
     name = os.path.basename(args["srcdir"])
-    outpath = os.path.join(args["dstdir"], args["category"], str(name).lower() + ".hpp")
+    metadata = get_metadata(name, Path(os.path.join(args["scriptdir"], "airwindopedia.txt")))
+    template_header = os.path.join(args["scriptdir"], "template.hpp")
 
-    changed = []
-    with open(args["template_header"], "r") as f:
+    with open(template_header, "r") as f:
         lines = f.readlines()
-        for line in lines:
-            if "%%CLASSNAME%%" in line:
-                changed.append(line.replace("%%CLASSNAME%%", name))
-            elif "%%PRIVATEVARS%%" in line:
-                changed.append(line.replace("%%PRIVATEVARS%%", "".join(parsed["private_vars"])))
-            elif "%%INITIALIZATION%%" in line:
-                changed.append(line.replace("%%INITIALIZATION%%", "".join(parsed["init"])))
-            elif "%%PARAM_ENUM%%" in line:
-                changed.append(line.replace("%%PARAM_ENUM%%", "".join(parsed["params"]["enum"])))
-            elif "%%SETPARAMSWITCH%%" in line:
-                changed.append(line.replace("%%SETPARAMSWITCH%%", "".join(parsed["params"]["set_switch"])))
-            elif "%%GETPARAMSWITCH%%" in line:
-                changed.append(line.replace("%%GETPARAMSWITCH%%", "".join(parsed["params"]["get_switch"])))
-            elif "%%GETPARAMLABELDISPLAY%%" in line:
-                changed.append(line.replace("%%GETPARAMLABELDISPLAY%%", "".join(parsed["params"]["display_switch"])))
-            elif "%%GETPARAMLABELSWITCH%%" in line:
-                changed.append(line.replace("%%GETPARAMLABELSWITCH%%", "".join(parsed["params"]["label_switch"])))
-            elif "%%GETPARAMNAMESWITCH%%" in line:
-                changed.append(line.replace("%%GETPARAMNAMESWITCH%%", "".join(parsed["params"]["name_switch"])))
-            elif "%%PROCESS%%" in line:
-                changed.append(line.replace("%%PROCESS%%", "".join(parsed["proc"])))
-            else:
-                changed.append(line)
+        text = populate_template(lines, name, parsed, metadata, category)
 
-    with open(outpath, "w") as o:
-        for line in changed:
+    out_path = os.path.join(args["dstdir"], args["category"], str(name).lower() + ".hpp")
+    with open(out_path, "w") as o:
+        for line in text:
             o.write(line)
 
 
+def main(root_dir):
+    dstdir = Path(os.path.join(root_dir, "include"))
+    categories = get_category_lines(Path(os.path.join(root_dir, "scripts", "airwindopedia.txt")))
+
+    # Store airwindows at /tmp
+    assert os.path.exists(os.path.join(root_dir, "tmp"))
+
+    for category, names in categories:
+        for name in names:
+            srcdir = Path(os.path.join(root_dir, "tmp", name))
+            try:
+                write_header(srcdir, category, dstdir, Path(os.path.join(root_dir, "scripts")))
+            except Exception as e:
+                log = os.path.join(root_dir, "log.txt")
+                with open(log, "a") as logfile:
+                    logfile.write(name + "\n")
+                print(f"failed on {e} for {name}")
+
+
 if __name__ == "__main__":
-    args = _arg_parser()
-
-    srcdir = args["srcdir"]
-    category = args["category"]
-    dstdir = args["dstdir"]
-    template_file = args["template_header"]
-
-    try:
-        main(srcdir, category, dstdir, template_file)
-    except Exception as e:
-        print(f"Exception: {e}")
+    path_to_airwindohhs = ""
+    main(path_to_airwindohhs)
