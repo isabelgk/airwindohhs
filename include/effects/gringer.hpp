@@ -129,7 +129,7 @@ class Gringer final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         inbandL[0] = 0.025 / overallscale;
         outbandL[0] = 0.025 / overallscale;
         inbandL[1] = 0.001;

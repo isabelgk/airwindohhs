@@ -231,7 +231,7 @@ class IronOxideClassic2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int cycleEnd = floor(overallscale);
         if (cycleEnd < 1) {
             cycleEnd = 1;
@@ -263,9 +263,9 @@ class IronOxideClassic2 final : public Effect<T>
         // because we're only running that part one sample in two, or three, or four
         fastTaper += 1.0;
         slowTaper += 1.0;
-        biquadA[0] = 24000.0 / getSampleRate();
+        biquadA[0] = 24000.0 / Effect<T>::getSampleRate();
         biquadA[1] = 1.618033988749894848204586;
-        biquadB[0] = 24000.0 / getSampleRate();
+        biquadB[0] = 24000.0 / Effect<T>::getSampleRate();
         biquadB[1] = 0.618033988749894848204586;
         double K = tan(M_PI * biquadA[0]); // lowpass
         double norm = 1.0 / (1.0 + K / biquadA[1] + K * K);

@@ -265,7 +265,7 @@ class Distance3 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double softslew = (A * 100.0) + 0.5;
         softslew *= overallscale;
         double outslew = softslew * (1.0 - (A * 0.333));

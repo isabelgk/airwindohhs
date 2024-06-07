@@ -455,8 +455,8 @@ class MatrixVerb final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
-        biquadC[0] = biquadB[0] = biquadA[0] = ((A * 9000.0) + 1000.0) / getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
+        biquadC[0] = biquadB[0] = biquadA[0] = ((A * 9000.0) + 1000.0) / Effect<T>::getSampleRate();
         biquadA[1] = 1.618033988749894848204586;
         biquadB[1] = 0.618033988749894848204586;
         biquadC[1] = 0.5;

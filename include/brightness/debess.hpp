@@ -265,7 +265,7 @@ class DeBess final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double intensity = pow(A, 5) * (8192 / overallscale);
         double sharpness = B * 40.0;
         if (sharpness < 2) {

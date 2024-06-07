@@ -229,7 +229,7 @@ class FathomFive final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        double EQ = 0.01 + ((pow(C, 4) / getSampleRate()) * 32000.0);
+        double EQ = 0.01 + ((pow(C, 4) / Effect<T>::getSampleRate()) * 32000.0);
         double dcblock = EQ / 320.0;
         double wet = D * 2.0;
         double dry = 2.0 - wet;

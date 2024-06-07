@@ -175,7 +175,7 @@ class Dubly final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double dublyAmount = pow(A, 3) * 0.16;
         double outlyAmount = pow(A, 3) * 0.160618;
         double gain = outlyAmount + 1.0;

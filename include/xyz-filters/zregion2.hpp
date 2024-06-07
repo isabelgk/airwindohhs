@@ -270,37 +270,37 @@ void process(T** inputs, T** outputs, long sampleFrames)
     VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     // begin from XRegion
     double high = B;
     double low = C;
     double mid = (high + low) * 0.5;
     double spread = 1.001 - fabs(high - low);
-    biquad[biq_freq] = (pow(high, 3) * 20000.0) / getSampleRate();
+    biquad[biq_freq] = (pow(high, 3) * 20000.0) / Effect<T>::getSampleRate();
     if (biquad[biq_freq] < 0.00009) {
         biquad[biq_freq] = 0.00009;
     }
     double compensation = sqrt(biquad[biq_freq]) * 6.4 * spread;
     double clipFactor = 0.75 + (biquad[biq_freq] * D * 37.0);
-    biquadA[biq_freq] = (pow((high + mid) * 0.5, 3) * 20000.0) / getSampleRate();
+    biquadA[biq_freq] = (pow((high + mid) * 0.5, 3) * 20000.0) / Effect<T>::getSampleRate();
     if (biquadA[biq_freq] < 0.00009) {
         biquadA[biq_freq] = 0.00009;
     }
     double compensationA = sqrt(biquadA[biq_freq]) * 6.4 * spread;
     double clipFactorA = 0.75 + (biquadA[biq_freq] * D * 37.0);
-    biquadB[biq_freq] = (pow(mid, 3) * 20000.0) / getSampleRate();
+    biquadB[biq_freq] = (pow(mid, 3) * 20000.0) / Effect<T>::getSampleRate();
     if (biquadB[biq_freq] < 0.00009) {
         biquadB[biq_freq] = 0.00009;
     }
     double compensationB = sqrt(biquadB[biq_freq]) * 6.4 * spread;
     double clipFactorB = 0.75 + (biquadB[biq_freq] * D * 37.0);
-    biquadC[biq_freq] = (pow((mid + low) * 0.5, 3) * 20000.0) / getSampleRate();
+    biquadC[biq_freq] = (pow((mid + low) * 0.5, 3) * 20000.0) / Effect<T>::getSampleRate();
     if (biquadC[biq_freq] < 0.00009) {
         biquadC[biq_freq] = 0.00009;
     }
     double compensationC = sqrt(biquadC[biq_freq]) * 6.4 * spread;
     double clipFactorC = 0.75 + (biquadC[biq_freq] * D * 37.0);
-    biquadD[biq_freq] = (pow(low, 3) * 20000.0) / getSampleRate();
+    biquadD[biq_freq] = (pow(low, 3) * 20000.0) / Effect<T>::getSampleRate();
     if (biquadD[biq_freq] < 0.00009) {
         biquadD[biq_freq] = 0.00009;
     }
@@ -373,7 +373,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     overallWetA = overallWetB;
     overallWetB = E;
     double iirAmountA = 0.00069 / overallscale;
-    fixB[fix_freq] = fixA[fix_freq] = 15500.0 / getSampleRate();
+    fixB[fix_freq] = fixA[fix_freq] = 15500.0 / Effect<T>::getSampleRate();
     fixB[fix_reso] = fixA[fix_reso] = 0.935;
     K = tan(M_PI * fixA[fix_freq]); // lowpass
     norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);

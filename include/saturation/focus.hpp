@@ -246,7 +246,7 @@ class Focus final : public Effect<T>
         //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         double boost = pow(10.0, (A * 12.0) / 20.0);
-        figureL[0] = figureR[0] = 3515.775 / getSampleRate(); // fixed frequency, 3.515775k
+        figureL[0] = figureR[0] = 3515.775 / Effect<T>::getSampleRate(); // fixed frequency, 3.515775k
         figureL[1] = figureR[1] = pow(pow(B, 3) * 2, 2) + 0.0001; // resonance
         int mode = (int)(C * 4.999);
         double output = D;

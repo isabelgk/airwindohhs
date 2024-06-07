@@ -173,7 +173,7 @@ class SubTight final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int subStages = pow(B, 2) * 16.0;
         if (subStages < 1) {
             subStages = 1;

@@ -277,7 +277,7 @@ class Pear2 final : public Effect<T>
         VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         freqA = freqB;
         freqB = pow(A, 2);
         if (freqB < 0.0001) {

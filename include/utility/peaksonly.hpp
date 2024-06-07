@@ -142,7 +142,7 @@ class PeaksOnly final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int am = (int)149.0 * overallscale;
         int bm = (int)179.0 * overallscale;
         int cm = (int)191.0 * overallscale;

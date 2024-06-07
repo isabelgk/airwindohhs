@@ -233,7 +233,7 @@ class Floor final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double setting = pow(A, 2);
         double iirAmount = (setting / 4.0) / overallscale;
         double tight = -1.0;

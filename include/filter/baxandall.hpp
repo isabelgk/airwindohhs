@@ -210,14 +210,14 @@ class Baxandall final : public Effect<T>
         T* out2 = outputs[1];
 
         double trebleGain = pow(10.0, ((A * 30.0) - 15.0) / 20.0);
-        double trebleFreq = (4410.0 * trebleGain) / getSampleRate();
+        double trebleFreq = (4410.0 * trebleGain) / Effect<T>::getSampleRate();
         if (trebleFreq > 0.45) {
             trebleFreq = 0.45;
         }
         trebleAL[0] = trebleBL[0] = trebleAR[0] = trebleBR[0] = trebleFreq;
         double bassGain = pow(10.0, ((B * 30.0) - 15.0) / 20.0);
         double bassFreq = pow(10.0, -((B * 30.0) - 15.0) / 20.0);
-        bassFreq = (8820.0 * bassFreq) / getSampleRate();
+        bassFreq = (8820.0 * bassFreq) / Effect<T>::getSampleRate();
         if (bassFreq > 0.45) {
             bassFreq = 0.45;
         }

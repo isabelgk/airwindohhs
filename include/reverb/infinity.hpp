@@ -352,7 +352,7 @@ class Infinity final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        biquadC[0] = biquadB[0] = biquadA[0] = ((pow(A, 2) * 9900.0) + 100.0) / getSampleRate();
+        biquadC[0] = biquadB[0] = biquadA[0] = ((pow(A, 2) * 9900.0) + 100.0) / Effect<T>::getSampleRate();
         biquadA[1] = 0.618033988749894848204586;
         biquadB[1] = (A * 0.5) + 0.118033988749894848204586;
         biquadC[1] = 0.5;

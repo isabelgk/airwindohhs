@@ -1,6 +1,7 @@
 import os.path
 import string
 from pathlib import Path
+import re
 
 
 class GrabError(RuntimeError):
@@ -208,7 +209,10 @@ class Plugin:
         begin_index = first_matching_line_index(lines, "processDoubleReplacing(") + 6
         chunk = lines[begin_index:]
         chunk = naive_line_filter(chunk)
-        return "".join(chunk)
+        result = []
+        for line in chunk:
+            line.replace("getSampleRate", "Effect<T>::getSampleRate()")
+        return "".join(result)
 
     def _init_private_vars(self):
         filepath = Path(os.path.join(self.source_dir, f"{self.title}.h"))

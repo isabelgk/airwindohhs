@@ -532,7 +532,7 @@ class CStrip2 final : public Effect<T>
         double overallscale = 1.0;
         overallscale /= 44100.0;
         double compscale = overallscale;
-        overallscale = getSampleRate();
+        overallscale = Effect<T>::getSampleRate();
         compscale = compscale * overallscale;
         // compscale is the one that's 1 or something like 2.2 for 96K rates
         double fpOld = 0.618033988749894848204586; // golden ratio!

@@ -183,7 +183,7 @@ class Hull final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 96000.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         if (overallscale > 1.0) {
             overallscale = 1.0; // and if you go for 192k, rather than crash
         }

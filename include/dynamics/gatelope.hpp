@@ -261,7 +261,7 @@ class Gatelope final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         // speed settings around release
         double threshold = pow(A, 2);
         // gain settings around threshold

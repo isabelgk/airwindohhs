@@ -218,7 +218,7 @@ class AutoPan final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double drift = (pow(A, 4) * 0.01) / overallscale;
         double offset = 3.141592653589793 + (B * 6.283185307179586);
         double panlaw = 1.0 - pow(C, 2);

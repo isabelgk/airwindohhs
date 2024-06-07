@@ -259,7 +259,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int type = 0;
     if (A > 0.5) {
         type = 1;

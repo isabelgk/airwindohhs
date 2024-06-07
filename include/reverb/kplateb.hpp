@@ -667,7 +667,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int cycleEnd = floor(overallscale);
     if (cycleEnd < 1) {
         cycleEnd = 1;
@@ -679,7 +679,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     if (cycle > cycleEnd - 1) {
         cycle = cycleEnd - 1; // sanity check
     }
-    double downRate = getSampleRate() / cycleEnd;
+    double downRate = Effect<T>::getSampleRate() / cycleEnd;
     // we now shift gears between 44.1k and 48k so our tone is the same, slight changes in delay times
     double inputPad = A;
     double regen = (B * 0.415) + 0.1;

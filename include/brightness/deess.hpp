@@ -249,7 +249,7 @@ class DeEss final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double intensity = pow(A, 5) * (8192 / overallscale);
         double maxdess = 1.0 / pow(10.0, ((B - 1.0) * 48.0) / 20);
         double iirAmount = pow(C, 2) / overallscale;

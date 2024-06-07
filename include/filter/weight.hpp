@@ -177,7 +177,7 @@ class Weight final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double targetFreq = A;
         // gives us a 0-1 value like the VST will be. For the VST, start with 0-1 and
         // have the plugin display the number as 20-120.

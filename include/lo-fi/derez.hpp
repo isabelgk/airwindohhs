@@ -181,7 +181,7 @@ class DeRez final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double targetA = pow(A, 3) + 0.0005;
         if (targetA > 1.0) {
             targetA = 1.0;

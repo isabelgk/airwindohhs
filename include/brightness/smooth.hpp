@@ -231,7 +231,7 @@ class Smooth final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double clamp;
         double chase = pow(A, 2);
         double makeup = (1.0 + (chase * 1.6)) * B;

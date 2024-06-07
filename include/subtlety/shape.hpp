@@ -179,7 +179,7 @@ class Shape final : public Effect<T>
         if (shape < 0) {
             postOffset = asin(offset);
         }
-        double cutoff = 25000.0 / getSampleRate();
+        double cutoff = 25000.0 / Effect<T>::getSampleRate();
         if (cutoff > 0.49) {
             cutoff = 0.49; // don't crash if run at 44.1k
         }

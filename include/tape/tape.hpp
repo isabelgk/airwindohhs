@@ -207,7 +207,7 @@ class Tape final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inputgain = pow(10.0, ((A - 0.5) * 24.0) / 20.0);
         double bumpgain = B * 0.1;
         double HeadBumpFreq = 0.12 / overallscale;

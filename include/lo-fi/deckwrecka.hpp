@@ -261,7 +261,7 @@ class Deckwrecka final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double wreck = pow(A, 2);
         double randyL;
         double randyR;

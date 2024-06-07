@@ -201,7 +201,7 @@ class Isolator final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         bool bypass = (A == 1.0);
         double high = B;
         double low = C; // this gives us shelving, and

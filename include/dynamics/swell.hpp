@@ -199,7 +199,7 @@ class Swell final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double thresholdOn = pow(A, 2) * B;
         double speedOn = (pow(B, 2) * 0.001) / overallscale;
         double thresholdOff = thresholdOn * B;

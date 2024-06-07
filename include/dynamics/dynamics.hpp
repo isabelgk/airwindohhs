@@ -277,7 +277,7 @@ class Dynamics final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         // begin ButterComp
         double inputgain = (pow(A, 5) * 35) + 1.0;
         double divisor = (pow(B, 4) * 0.01) + 0.0005;

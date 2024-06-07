@@ -223,7 +223,7 @@ class Distortion final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        int stages = (int)floor(getSampleRate() / 25000.0);
+        int stages = (int)floor(Effect<T>::getSampleRate() / 25000.0);
         if (stages > 8) {
             stages = 8;
         }

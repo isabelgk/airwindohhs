@@ -179,7 +179,7 @@ class DigitalBlack final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double threshold = (pow(A, 4) / 3) + 0.00018;
         double release = 0.0064 / overallscale;
         double wet = B;

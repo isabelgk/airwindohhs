@@ -254,9 +254,9 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     double inTrim = ((1.0 - pow(1.0 - A, 2)) * 1.0) + 1.0;
-    double cutoff = (B * 25000.0) / getSampleRate();
+    double cutoff = (B * 25000.0) / Effect<T>::getSampleRate();
     if (cutoff > 0.49) {
         cutoff = 0.49; // don't crash if run at 44.1k
     }

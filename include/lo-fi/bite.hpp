@@ -203,7 +203,7 @@ class Bite final : public Effect<T>
 
         double overallscale = 1.3;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double gain = ((A * 2.0) - 1.0) * overallscale;
         double outputgain = B;
         double midA;

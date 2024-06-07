@@ -220,7 +220,7 @@ class Chorus final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double speed = pow(A, 4) * 0.001;
         speed *= overallscale;
         int loopLimit = (int)(totalsamples * 0.499);

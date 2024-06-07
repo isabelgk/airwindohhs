@@ -163,7 +163,7 @@ class Console7Channel final : public Effect<T>
         if (gainchase < 0.0) {
             gainchase = inputgain;
         }
-        biquadA[0] = 20000.0 / getSampleRate();
+        biquadA[0] = 20000.0 / Effect<T>::getSampleRate();
         biquadA[1] = 1.618033988749894848204586;
         double K = tan(M_PI * biquadA[0]); // lowpass
         double norm = 1.0 / (1.0 + K / biquadA[1] + K * K);

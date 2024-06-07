@@ -152,7 +152,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     T* out1 = outputs[0];
     T* out2 = outputs[1];
 
-    fixA[fix_freq] = 21000.0 / getSampleRate();
+    fixA[fix_freq] = 21000.0 / Effect<T>::getSampleRate();
     switch ((VstInt32)(A * 4.999))
     {
         case kA:

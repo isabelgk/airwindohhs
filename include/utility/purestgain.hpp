@@ -175,7 +175,7 @@ class PurestGain final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inputgain = (A * 80.0) - 40.0;
         if (settingchase != inputgain) {
             chasespeed *= 2.0;

@@ -179,7 +179,7 @@ class Tube2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inputPad = A;
         double iterations = 1.0 - B;
         int powerfactor = (9.0 * iterations) + 1;

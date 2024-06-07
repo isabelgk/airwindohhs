@@ -225,7 +225,7 @@ class BiquadTriple final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int type = ceil((A * 3.999) + 0.00001);
         biquadA[0] = ((B * B * B * 0.9999) + 0.0001) * 0.499;
         if (biquadA[0] < 0.0001) {

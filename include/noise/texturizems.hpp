@@ -291,7 +291,7 @@ class TexturizeMS final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double slewAmountM = ((pow(A, 2.0) * 4.0) + 0.71) / overallscale;
         double dynAmountM = pow(B, 2.0);
         double wetM = pow(C, 5);

@@ -368,7 +368,7 @@ class ToVinyl4 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double fusswithscale = 50000; // corrected
         double cutofffreq = ((A * A) * 290.0) + 10.0;
         double resonance = 0.992;

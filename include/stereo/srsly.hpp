@@ -257,7 +257,7 @@ class Srsly final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        double sampleRate = getSampleRate();
+        double sampleRate = Effect<T>::getSampleRate();
         if (sampleRate < 22000) {
             sampleRate = 22000; // keep biquads in range
         }

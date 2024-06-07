@@ -246,7 +246,7 @@ class Ensemble final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double spd = pow(0.4 + (B / 12), 10);
         spd *= overallscale;
         double depth = 0.002 / spd;

@@ -253,9 +253,9 @@ class ElectroHat final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         bool highSample = false;
-        if (getSampleRate() > 64000) {
+        if (Effect<T>::getSampleRate() > 64000) {
             highSample = true;
         }
         // we will go to another dither for 88 and 96K

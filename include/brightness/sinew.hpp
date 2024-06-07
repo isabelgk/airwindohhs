@@ -147,7 +147,7 @@ class Sinew final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double threshSinew = pow((1.0 - A), 4) / overallscale;
         while (--sampleFrames >= 0)
         {

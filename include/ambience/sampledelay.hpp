@@ -223,7 +223,7 @@ class SampleDelay final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double coarse = A * (4410.0 * overallscale);
         double fine = B * 10.0;
         double subsample = C;

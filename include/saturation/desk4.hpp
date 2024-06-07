@@ -287,7 +287,7 @@ class Desk4 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double gain = (pow(A, 2) * 10) + 0.0001;
         double gaintrim = (pow(A, 2) * 2) + 1.0;
         double slewgain = (pow(B, 3) * 40) + 0.0001;

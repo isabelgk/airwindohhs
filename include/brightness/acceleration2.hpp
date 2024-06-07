@@ -188,15 +188,15 @@ class Acceleration2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double intensity = pow(A, 3) * 32;
         double wet = B;
         int spacing = (int)(1.73 * overallscale) + 1;
         if (spacing > 16) {
             spacing = 16;
         }
-        biquadA[0] = (20000.0 * (1.0 - (A * 0.618033988749894848204586))) / getSampleRate();
-        biquadB[0] = 20000.0 / getSampleRate();
+        biquadA[0] = (20000.0 * (1.0 - (A * 0.618033988749894848204586))) / Effect<T>::getSampleRate();
+        biquadB[0] = 20000.0 / Effect<T>::getSampleRate();
         biquadA[1] = 0.7071;
         biquadB[1] = 0.7071;
         double K = tan(M_PI * biquadA[0]);

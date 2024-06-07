@@ -219,7 +219,7 @@ class UnBox final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double input = A * 2.0;
         double unbox = B + 1.0;
         unbox *= unbox; // let's get some more gain into this

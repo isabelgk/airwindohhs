@@ -215,7 +215,7 @@ class Fracture final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double density = A * 4;
         double fracture = (((B * 2.999) + 1) * 3.14159265358979);
         double output = C;

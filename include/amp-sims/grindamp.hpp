@@ -434,7 +434,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int cycleEnd = floor(overallscale);
     if (cycleEnd < 1) {
         cycleEnd = 1;
@@ -447,7 +447,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
         cycle = cycleEnd - 1; // sanity check
     }
     double inputlevel = pow(A, 2);
-    double samplerate = getSampleRate();
+    double samplerate = Effect<T>::getSampleRate();
     double trimEQ = 1.1 - B;
     double toneEQ = trimEQ / 1.2;
     trimEQ /= 50.0;
@@ -457,7 +457,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     double outputlevel = C;
     double wet = D;
     double bassdrive = 1.57079633 * (2.5 - toneEQ);
-    double cutoff = (18000.0 + (B * 1000.0)) / getSampleRate();
+    double cutoff = (18000.0 + (B * 1000.0)) / Effect<T>::getSampleRate();
     if (cutoff > 0.49) {
         cutoff = 0.49; // don't crash if run at 44.1k
     }

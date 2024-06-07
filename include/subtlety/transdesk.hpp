@@ -143,7 +143,7 @@ class TransDesk final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double intensity = 0.02198359;
         double depthA = 3.0;
         int offsetA = (int)(depthA * overallscale);

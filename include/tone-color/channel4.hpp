@@ -185,7 +185,7 @@ class Channel4 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double fpTemp; // this is different from singlereplacing
         double fpOld = 0.618033988749894848204586; // golden ratio!
         double fpNew = 1.0 - fpOld;

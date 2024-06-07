@@ -159,7 +159,7 @@ class ConsoleMCBuss final : public Effect<T>
         VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         gainA = gainB;
         gainB = sqrt(A); // smoothed master fader from Z2 filters
         // this will be applied three times: this is to make the various tone alterations

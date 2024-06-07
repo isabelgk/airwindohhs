@@ -535,7 +535,7 @@ class DubSub final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double driveone = pow(A * 3.0, 2);
         double driveoutput = pow(B, 2);
         double iirAmount = ((C * 0.33) + 0.1) / overallscale;

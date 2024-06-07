@@ -148,7 +148,7 @@ class Interstage final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double firstStage = 0.381966011250105 / overallscale;
         double iirAmount = 0.00295 / overallscale;
         double threshold = 0.381966011250105;

@@ -228,7 +228,7 @@ class Pressure4 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double threshold = 1.0 - (A * 0.95);
         double muMakeupGain = 1.0 / threshold;
         // gain settings around threshold

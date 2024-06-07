@@ -649,7 +649,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int cycleEnd = floor(overallscale);
     if (cycleEnd < 1) {
         cycleEnd = 1;

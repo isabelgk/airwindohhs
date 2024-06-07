@@ -289,14 +289,14 @@ void process(T** inputs, T** outputs, long sampleFrames)
     VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     inTrimA = inTrimB;
     inTrimB = A * 10.0;
     biquad[biq_freq] = pow(B, 3) * 20000.0;
     if (biquad[biq_freq] < 15.0) {
         biquad[biq_freq] = 15.0;
     }
-    biquad[biq_freq] /= getSampleRate();
+    biquad[biq_freq] /= Effect<T>::getSampleRate();
     biquad[biq_reso] = (pow(C, 2) * 15.0) + 0.5571;
     biquad[biq_aA0] = biquad[biq_aB0];
     biquad[biq_aA1] = biquad[biq_aB1];
@@ -319,7 +319,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     outTrimA = outTrimB;
     outTrimB = E;
     double wet = F;
-    fixA[fix_freq] = fixB[fix_freq] = 20000.0 / getSampleRate();
+    fixA[fix_freq] = fixB[fix_freq] = 20000.0 / Effect<T>::getSampleRate();
     fixA[fix_reso] = fixB[fix_reso] = 0.7071; // butterworth Q
     K = tan(M_PI * fixA[fix_freq]);
     norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);

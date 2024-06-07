@@ -383,7 +383,7 @@ class MultiBandDistortion final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double iirAmount = pow(A, 3) / overallscale;
         double gainH = pow(10.0, (B * 48.0) / 20);
         double thresholdH = D;

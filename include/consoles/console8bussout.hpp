@@ -163,13 +163,13 @@ void process(T** inputs, T** outputs, long sampleFrames)
     inTrimB = A * 2.0;
     // 0.5 is unity gain, and we can attenuate to silence or boost slightly over 12dB
     // into softclipping overdrive.
-    if (getSampleRate() > 49000.0) {
+    if (Effect<T>::getSampleRate() > 49000.0) {
         hsr = true;
     }
     else {
         hsr = false;
     }
-    fix[fix_freq] = 24000.0 / getSampleRate();
+    fix[fix_freq] = 24000.0 / Effect<T>::getSampleRate();
     fix[fix_reso] = 0.52110856;
     double K = tan(M_PI * fix[fix_freq]); // lowpass
     double norm = 1.0 / (1.0 + K / fix[fix_reso] + K * K);
@@ -181,7 +181,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     // this is the fixed biquad distributed anti-aliasing filter
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     spacing = floor(overallscale); // should give us working basic scaling, usually 2 or 4
     if (spacing < 1) {
         spacing = 1;

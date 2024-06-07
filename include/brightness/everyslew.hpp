@@ -256,7 +256,7 @@ class EverySlew final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double source = pow(1 - A, 4) / overallscale;
         int stages = (1.0 - B) * 9.99;
         stages *= 5;

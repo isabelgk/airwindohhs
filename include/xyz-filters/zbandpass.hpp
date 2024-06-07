@@ -233,8 +233,8 @@ class ZBandpass final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
-        biquadA[0] = ((pow(B, 4) * 14300.0) / getSampleRate()) + 0.00079;
+        overallscale *= Effect<T>::getSampleRate();
+        biquadA[0] = ((pow(B, 4) * 14300.0) / Effect<T>::getSampleRate()) + 0.00079;
         double clipFactor = 1.0 - ((1.0 - B) * 0.304);
         biquadA[1] = 0.314;
         double K = tan(M_PI * biquadA[0]);
@@ -253,7 +253,7 @@ class ZBandpass final : public Effect<T>
         inTrim *= inTrim;
         double outPad = C * 10.0;
         double iirAmountA = 0.00069 / overallscale;
-        biquadF[0] = biquadE[0] = 15500.0 / getSampleRate();
+        biquadF[0] = biquadE[0] = 15500.0 / Effect<T>::getSampleRate();
         biquadF[1] = biquadE[1] = 0.935;
         K = tan(M_PI * biquadE[0]); // lowpass
         norm = 1.0 / (1.0 + K / biquadE[1] + K * K);

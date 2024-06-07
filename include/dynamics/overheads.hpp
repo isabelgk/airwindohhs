@@ -201,7 +201,7 @@ class Overheads final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double ovhTrim = pow(A, 3);
         ovhTrim += 1.0;
         ovhTrim *= ovhTrim;

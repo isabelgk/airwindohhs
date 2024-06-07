@@ -249,7 +249,7 @@ class Pop final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double highGainOffset = pow(A, 2) * 0.023;
         double threshold = 1.001 - (1.0 - pow(1.0 - A, 5));
         double muMakeupGain = sqrt(1.0 / threshold);

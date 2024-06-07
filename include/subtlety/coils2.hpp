@@ -200,12 +200,12 @@ class Coils2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double distScaling = pow(1.0 - A, 2);
         if (distScaling < 0.0001) {
             distScaling = 0.0001;
         }
-        biquadA[0] = 600.0 / getSampleRate();
+        biquadA[0] = 600.0 / Effect<T>::getSampleRate();
         biquadA[1] = 0.01 + (pow(B, 2) * 0.5);
         double iirAmount = biquadA[1] / overallscale;
         double K = tan(M_PI * biquadA[0]);
@@ -214,7 +214,7 @@ class Coils2 final : public Effect<T>
         biquadA[4] = -biquadA[2];
         biquadA[5] = 2.0 * (K * K - 1.0) * norm;
         biquadA[6] = (1.0 - K / biquadA[1] + K * K) * norm;
-        biquadB[0] = (21890.0 - (biquadA[1] * 890.0)) / getSampleRate();
+        biquadB[0] = (21890.0 - (biquadA[1] * 890.0)) / Effect<T>::getSampleRate();
         biquadB[1] = 0.89;
         K = tan(M_PI * biquadB[0]);
         norm = 1.0 / (1.0 + K / biquadB[1] + K * K);

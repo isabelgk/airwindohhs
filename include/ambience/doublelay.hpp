@@ -327,7 +327,7 @@ class Doublelay final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int cycleEnd = floor(overallscale);
         if (cycleEnd < 1) {
             cycleEnd = 1;
@@ -339,7 +339,7 @@ class Doublelay final : public Effect<T>
         if (cycle > cycleEnd - 1) {
             cycle = cycleEnd - 1; // sanity check
         }
-        double delayTrim = (getSampleRate() / cycleEnd) / 48001.0; // this gives us a time adjustment
+        double delayTrim = (Effect<T>::getSampleRate() / cycleEnd) / 48001.0; // this gives us a time adjustment
         if (delayTrim > 0.99999) {
             delayTrim = 0.99999; // sanity check so we don't smash our delay buffer
         }

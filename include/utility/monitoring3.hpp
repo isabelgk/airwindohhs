@@ -233,7 +233,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     depth = (int)(17.0 * overallscale);
     if (depth < 3) {
         depth = 3;

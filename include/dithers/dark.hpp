@@ -173,7 +173,7 @@ class Dark final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int depth = (int)(17.0 * overallscale);
         if (depth < 3) {
             depth = 3;

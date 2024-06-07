@@ -251,7 +251,7 @@ class OneCornerClip final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inputGain = pow(10.0, (((A * 36.0) - 12.0) / 20.0));
         double posThreshold = B;
         double posTargetL = posThreshold;

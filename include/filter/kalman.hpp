@@ -185,7 +185,7 @@ class Kalman final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double kalman = 1.0 - pow(A, 2);
         double wet = (B * 2.0) - 1.0; // inv-dry-wet for highpass
         double dry = 2.0 - (B * 2.0);

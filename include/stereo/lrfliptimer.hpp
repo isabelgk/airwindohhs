@@ -132,8 +132,8 @@ class LRFlipTimer final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        uint32_t time = (uint32_t)(((A * 9.0) + 1.0) * 60.0 * getSampleRate());
-        uint32_t transition = (uint32_t)(getSampleRate() * 0.1);
+        uint32_t time = (uint32_t)(((A * 9.0) + 1.0) * 60.0 * Effect<T>::getSampleRate());
+        uint32_t transition = (uint32_t)(Effect<T>::getSampleRate() * 0.1);
         // number of minutes * 60 seconds * samples per second
         // transition: tenth of a second crossfade
         while (--sampleFrames >= 0)

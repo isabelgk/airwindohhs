@@ -189,7 +189,7 @@ class Podcast final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double compress = 1.0 + pow(A, 2);
         double wet = B;
         double speed1 = 64.0 / pow(compress, 2);

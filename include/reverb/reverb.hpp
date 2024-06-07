@@ -354,7 +354,7 @@ class Reverb final : public Effect<T>
         delayK = 37 * size;
         delayL = 31 * size;
         delayM = 29 * size;
-        biquadC[0] = biquadB[0] = biquadA[0] = (10000.0 - (big * wet * 3000.0)) / getSampleRate();
+        biquadC[0] = biquadB[0] = biquadA[0] = (10000.0 - (big * wet * 3000.0)) / Effect<T>::getSampleRate();
         biquadA[1] = 1.618033988749894848204586;
         biquadB[1] = 0.618033988749894848204586;
         biquadC[1] = 0.5;

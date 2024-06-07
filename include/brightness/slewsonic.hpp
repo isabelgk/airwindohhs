@@ -184,7 +184,7 @@ class SlewSonic final : public Effect<T>
         T* out2 = outputs[1];
 
         double trim = 2.302585092994045684017991; // natural logarithm of 10
-        double freq = ((A * 20000.0) + 5000.0) / getSampleRate();
+        double freq = ((A * 20000.0) + 5000.0) / Effect<T>::getSampleRate();
         if (freq > 0.499) {
             freq = 0.499;
         }

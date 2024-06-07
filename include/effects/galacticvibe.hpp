@@ -179,7 +179,7 @@ class GalacticVibe final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double drift = pow(A, 3) * 0.001;
         double wet = B;
         int delayM = 256;

@@ -121,7 +121,7 @@ class PurestConsole2Channel final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        biquadA[0] = 30000.0 / getSampleRate();
+        biquadA[0] = 30000.0 / Effect<T>::getSampleRate();
         biquadA[1] = 0.618033988749894848204586;
         double K = tan(M_PI * biquadA[0]); // lowpass
         double norm = 1.0 / (1.0 + K / biquadA[1] + K * K);

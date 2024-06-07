@@ -199,7 +199,7 @@ class Beam final : public Effect<T>
         float sonority = B * 1.618033988749894848204586;
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int depth = (int)(17.0 * overallscale);
         if (depth < 3) {
             depth = 3;

@@ -284,7 +284,7 @@ class PitchNasty final : public Effect<T>
         double note = (int)(A * 24) - 12; // -12 to +12
         double bend = (B * 24.0) - 12.0; // -12 to +12
         double speed = pow(2, note / 12.0) * pow(2, bend / 12.0);
-        double grindRef = (1.0 / 261.6) * getSampleRate(); // samples per Middle C cycle
+        double grindRef = (1.0 / 261.6) * Effect<T>::getSampleRate(); // samples per Middle C cycle
         double grindNote = pow(2, ((int)(C * 72) - 36) / 12.0);
         double width = grindRef / grindNote;
         if (width > 9990) {

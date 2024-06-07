@@ -267,7 +267,7 @@ class Preponderant final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double chase = 0.00005 / overallscale;
         biquadA[0] = pow(A, (3.0 * cbrt(overallscale))) * 0.42;
         if (biquadA[0] < 0.0001) {

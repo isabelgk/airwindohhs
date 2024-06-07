@@ -198,7 +198,7 @@ class Thunder final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double thunder = A * 0.4;
         double threshold = 1.0 - (thunder * 2.0);
         if (threshold < 0.01) {
@@ -208,7 +208,7 @@ class Thunder final : public Effect<T>
         double release = pow((1.28 - thunder), 5) * 32768.0;
         release /= overallscale;
         double fastest = sqrt(release);
-        double EQ = ((0.0275 / getSampleRate()) * 32000.0);
+        double EQ = ((0.0275 / Effect<T>::getSampleRate()) * 32000.0);
         double dcblock = EQ / 300.0;
         double basstrim = (0.01 / EQ) + 1.0;
         // FF parameters also ride off Speed

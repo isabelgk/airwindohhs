@@ -180,7 +180,7 @@ class Slew2 final : public Effect<T>
 
         double overallscale = 2.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double clamp;
         double threshold = pow((1 - A), 4) / overallscale;
         double inputSampleL;

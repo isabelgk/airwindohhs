@@ -201,7 +201,7 @@ class Coils final : public Effect<T>
         if (boost < 0.001) {
             boost = 0.001; // there's a divide, we can't have this be zero
         }
-        figureL[0] = figureR[0] = 600.0 / getSampleRate(); // fixed frequency, 600hz
+        figureL[0] = figureR[0] = 600.0 / Effect<T>::getSampleRate(); // fixed frequency, 600hz
         figureL[1] = figureR[1] = 0.023; // resonance
         double offset = (B * 2.0) - 1.0;
         double sinOffset = sin(offset); // we can cache this, it's expensive

@@ -247,7 +247,7 @@ class BlockParty final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double targetthreshold = 1.01 - (1.0 - pow(1.0 - (A * 0.5), 4));
         double wet = B;
         double voicing = 0.618033988749894848204586;

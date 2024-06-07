@@ -249,7 +249,7 @@ class BitGlitter final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double factor = B + 1.0;
         factor = pow(factor, 7) + 2.0;
         int divvy = (int)(factor * overallscale);

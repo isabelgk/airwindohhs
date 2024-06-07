@@ -195,7 +195,7 @@ class Loud final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double boost = pow(A + 1.0, 5);
         double output = B;
         double wet = C;

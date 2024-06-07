@@ -195,7 +195,7 @@ class NCSeventeen final : public Effect<T>
         double chebyshev;
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double IIRscaleback = 0.0004716;
         double bassScaleback = 0.0002364;
         double trebleScaleback = 0.0005484;

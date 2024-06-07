@@ -474,7 +474,7 @@ class EQ final : public Effect<T>
         double overallscale = 1.0;
         overallscale /= 44100.0;
         double compscale = overallscale;
-        overallscale = getSampleRate();
+        overallscale = Effect<T>::getSampleRate();
         compscale = compscale * overallscale;
         // compscale is the one that's 1 or something like 2.2 for 96K rates
         double inputSampleL;

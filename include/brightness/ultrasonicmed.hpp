@@ -123,13 +123,13 @@ class UltrasonicMed final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        biquadA[0] = 24000.0 / getSampleRate();
-        if (getSampleRate() < 88000.0) {
-            biquadA[0] = 21000.0 / getSampleRate();
+        biquadA[0] = 24000.0 / Effect<T>::getSampleRate();
+        if (Effect<T>::getSampleRate() < 88000.0) {
+            biquadA[0] = 21000.0 / Effect<T>::getSampleRate();
         }
-        biquadB[0] = 22000.0 / getSampleRate();
-        if (getSampleRate() < 88000.0) {
-            biquadB[0] = 20000.0 / getSampleRate();
+        biquadB[0] = 22000.0 / Effect<T>::getSampleRate();
+        if (Effect<T>::getSampleRate() < 88000.0) {
+            biquadB[0] = 20000.0 / Effect<T>::getSampleRate();
         }
         biquadA[1] = 0.70710678;
         biquadB[1] = 0.70710678;

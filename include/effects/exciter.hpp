@@ -169,7 +169,7 @@ class Exciter final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        biquad[0] = ((A * 7000.0) + 8000.0) / getSampleRate();
+        biquad[0] = ((A * 7000.0) + 8000.0) / Effect<T>::getSampleRate();
         biquad[1] = A + B + 0.7071;
         // tighter resonance as frequency and boost increases
         double boost = pow(B, 2.0) * 16.0;

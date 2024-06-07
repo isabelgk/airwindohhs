@@ -204,7 +204,7 @@ class PurestFade final : public Effect<T>
         if (fadeSpeed < 0.0027) {
             fadeSpeed = 0.0027; // minimum fade speed
         }
-        fadeSpeed = ((getSampleRate() * 0.004) / fadeSpeed);
+        fadeSpeed = ((Effect<T>::getSampleRate() * 0.004) / fadeSpeed);
         // this will tend to be much slower than PurestGain, and also adapt to sample rates
         double outputgain;
         while (--sampleFrames >= 0)

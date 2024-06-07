@@ -192,7 +192,7 @@ class Air3 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double airGain = A * 2.0;
         if (airGain > 1.0) {
             airGain = pow(airGain, 3.0 + sqrt(overallscale));

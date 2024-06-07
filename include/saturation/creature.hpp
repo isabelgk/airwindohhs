@@ -197,7 +197,7 @@ class Creature final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double source = 1.0 - pow(1.0 - A, 5);
         int stages = (pow(B, 2) * 32.0 * sqrt(overallscale)) + 1;
         double wet = (C * 2.0) - 1.0; // inv-dry-wet for highpass

@@ -151,7 +151,7 @@ class Tube final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double gain = 1.0 + (A * 0.2246161992650486);
         // this maxes out at +1.76dB, which is the exact difference between what a triangle/saw wave
         // would be, and a sine (the fullest possible wave at the same peak amplitude). Why do this?

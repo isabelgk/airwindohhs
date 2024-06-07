@@ -131,7 +131,7 @@ class ClipOnly2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int spacing = floor(overallscale); // should give us working basic scaling, usually 2 or 4
         if (spacing < 1) {
             spacing = 1;

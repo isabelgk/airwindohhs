@@ -295,7 +295,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int spacing = floor(overallscale); // should give us working basic scaling, usually 2 or 4
     if (spacing < 1) {
         spacing = 1;
@@ -316,7 +316,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     // µ µ µ µ µ µ µ µ µ µ µ µ is the kitten song o/~
     double outputGain = pow(E * 2.0, 2); // max 4.0 gain
     double wet = F;
-    fixA[fix_freq] = 24000.0 / getSampleRate();
+    fixA[fix_freq] = 24000.0 / Effect<T>::getSampleRate();
     fixA[fix_reso] = 0.7071; // butterworth Q
     double K = tan(M_PI * fixA[fix_freq]);
     double norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);

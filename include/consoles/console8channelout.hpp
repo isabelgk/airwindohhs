@@ -151,13 +151,13 @@ class Console8ChannelOut final : public Effect<T>
         T* out2 = outputs[1];
 
         VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
-        if (getSampleRate() > 49000.0) {
+        if (Effect<T>::getSampleRate() > 49000.0) {
             hsr = true;
         }
         else {
             hsr = false;
         }
-        fix[fix_freq] = 24000.0 / getSampleRate();
+        fix[fix_freq] = 24000.0 / Effect<T>::getSampleRate();
         fix[fix_reso] = 3.51333709;
         double K = tan(M_PI * fix[fix_freq]); // lowpass
         double norm = 1.0 / (1.0 + K / fix[fix_reso] + K * K);

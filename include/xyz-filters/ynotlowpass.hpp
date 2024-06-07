@@ -272,13 +272,13 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     double inTrim = A * 10.0;
     biquad[biq_freq] = pow(B, 3) * 20000.0;
     if (biquad[biq_freq] < 15.0) {
         biquad[biq_freq] = 15.0;
     }
-    biquad[biq_freq] /= getSampleRate();
+    biquad[biq_freq] /= Effect<T>::getSampleRate();
     biquad[biq_reso] = (pow(C, 2) * 15.0) + 0.5571;
     double K = tan(M_PI * biquad[biq_freq]);
     double norm = 1.0 / (1.0 + K / biquad[biq_reso] + K * K);
@@ -292,7 +292,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     // 1.0 == target neutral
     double outTrim = E;
     double wet = F;
-    fixA[fix_freq] = fixB[fix_freq] = 20000.0 / getSampleRate();
+    fixA[fix_freq] = fixB[fix_freq] = 20000.0 / Effect<T>::getSampleRate();
     fixA[fix_reso] = fixB[fix_reso] = 0.7071; // butterworth Q
     K = tan(M_PI * fixA[fix_freq]);
     norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);

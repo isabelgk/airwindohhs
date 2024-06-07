@@ -161,7 +161,7 @@ class Console7Buss final : public Effect<T>
         if (gainchase < 0.0) {
             gainchase = inputgain;
         }
-        biquadB[0] = biquadA[0] = 20000.0 / getSampleRate();
+        biquadB[0] = biquadA[0] = 20000.0 / Effect<T>::getSampleRate();
         biquadA[1] = 0.618033988749894848204586;
         biquadB[1] = 0.5;
         double K = tan(M_PI * biquadA[0]); // lowpass

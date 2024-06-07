@@ -167,7 +167,7 @@ class NodeDither final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int offsetA = (int)((A * 100) * overallscale);
         if (offsetA < 1) {
             offsetA = 1;

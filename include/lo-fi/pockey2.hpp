@@ -205,7 +205,7 @@ class Pockey2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int freq = floor(pow(A, 3) * 32.0 * overallscale);
         // dividing of derez must always be integer values now: no freq grinding
         double rez = 4 + (B * 12.0);

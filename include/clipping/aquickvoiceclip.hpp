@@ -239,7 +239,7 @@ class AQuickVoiceClip final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double softness = 0.484416;
         double hardness = 1.0 - softness;
         double iirAmount = ((pow(A, 3) * 2070) + 30) / 8000.0;

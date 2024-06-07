@@ -267,7 +267,7 @@ class Monitoring final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int processing = (VstInt32)(A * 16.999);
         int am = (int)149.0 * overallscale;
         int bm = (int)179.0 * overallscale;

@@ -181,13 +181,13 @@ class Mackity final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inTrim = A * 10.0;
         double outPad = B;
         inTrim *= inTrim;
         double iirAmountA = 0.001860867 / overallscale;
         double iirAmountB = 0.000287496 / overallscale;
-        biquadB[0] = biquadA[0] = 19160.0 / getSampleRate();
+        biquadB[0] = biquadA[0] = 19160.0 / Effect<T>::getSampleRate();
         biquadA[1] = 0.431684981684982;
         biquadB[1] = 1.1582298;
         double K = tan(M_PI * biquadA[0]); // lowpass

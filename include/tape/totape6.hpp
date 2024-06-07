@@ -318,7 +318,7 @@ class ToTape6 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inputgain = pow(10.0, ((A - 0.5) * 24.0) / 20.0);
         double SoftenControl = pow(B, 2);
         double RollAmount = (1.0 - (SoftenControl * 0.45)) / overallscale;

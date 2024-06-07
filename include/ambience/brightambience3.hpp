@@ -240,7 +240,7 @@ class BrightAmbience3 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int cycleEnd = floor(overallscale);
         if (cycleEnd < 1) {
             cycleEnd = 1;
@@ -261,7 +261,7 @@ class BrightAmbience3 final : public Effect<T>
         double wet = D;
         //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
-        figureL[0] = figureR[0] = 1000.0 / getSampleRate(); // fixed frequency, 3.515775k
+        figureL[0] = figureR[0] = 1000.0 / Effect<T>::getSampleRate(); // fixed frequency, 3.515775k
         figureL[1] = figureR[1] = pow(length * 0.037 * feedbackAmount, 2) + 0.01; // resonance
         double K = tan(M_PI * figureR[0]);
         double norm = 1.0 / (1.0 + K / figureR[1] + K * K);

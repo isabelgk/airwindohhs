@@ -201,7 +201,7 @@ class Highpass final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double iirAmount = pow(A, 3) / overallscale;
         double tight = (B * 2.0) - 1.0;
         double wet = C;

@@ -269,7 +269,7 @@ class OrbitKick final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double drop = 1.0 + (A * (0.001 / overallscale)); // more is briefer bass
         double zone = B * 0.01; // the max exponentiality of the falloff
         double start = C; // higher attack

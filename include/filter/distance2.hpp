@@ -275,7 +275,7 @@ class Distance2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         thresholdA = 0.618033988749894 / overallscale;
         thresholdB = 0.679837387624884 / overallscale;
         thresholdC = 0.747821126387373 / overallscale;

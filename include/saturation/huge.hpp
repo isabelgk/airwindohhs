@@ -197,7 +197,7 @@ class Huge final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double huge = A;
         double threshold = (B * 0.05) + 0.05;
         double attack = (threshold * 8.0) / overallscale;

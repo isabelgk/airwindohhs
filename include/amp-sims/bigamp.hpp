@@ -324,7 +324,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     double wet = D;
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int cycleEnd = floor(overallscale);
     if (cycleEnd < 1) {
         cycleEnd = 1;
@@ -338,7 +338,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     }
     double bleed = outputlevel / 16.0;
     double inputlevel = bassfill * 3.0;
-    double samplerate = getSampleRate();
+    double samplerate = Effect<T>::getSampleRate();
     double EQ = (B / samplerate) * 22050.0;
     double BEQ = (bleed / samplerate) * 22050.0;
     int diagonal = (int)(0.000861678 * samplerate);
@@ -348,7 +348,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     int side = (int)(diagonal / 1.4142135623730951);
     int down = (side + diagonal) / 2;
     // now we've got down, side and diagonal as offsets and we also use three successive samples upfront
-    double cutoff = (15000.0 + (B * 10000.0)) / getSampleRate();
+    double cutoff = (15000.0 + (B * 10000.0)) / Effect<T>::getSampleRate();
     if (cutoff > 0.49) {
         cutoff = 0.49; // don't crash if run at 44.1k
     }

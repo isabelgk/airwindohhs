@@ -226,7 +226,7 @@ class XLowpass final : public Effect<T>
         T* out2 = outputs[1];
 
         double gain = pow(A + 0.5, 4);
-        biquadA[0] = (pow(B, 2) * 20000.0) / getSampleRate();
+        biquadA[0] = (pow(B, 2) * 20000.0) / Effect<T>::getSampleRate();
         if (biquadA[0] < 0.001) {
             biquadA[0] = 0.001;
         }

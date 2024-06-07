@@ -157,7 +157,7 @@ class Flutter final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double depth = pow(A, 2) * overallscale * 70;
         double fluttertrim = (0.0024 * pow(A, 2)) / overallscale;
         while (--sampleFrames >= 0)

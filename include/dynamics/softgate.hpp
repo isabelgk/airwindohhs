@@ -201,7 +201,7 @@ class SoftGate final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double threshold = pow(A, 6);
         double recovery = pow((B * 0.5), 6);
         recovery /= overallscale;

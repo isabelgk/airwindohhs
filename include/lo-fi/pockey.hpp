@@ -220,7 +220,7 @@ class Pockey final : public Effect<T>
         VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double freqMin = 0.08 / overallscale;
         freqA = freqB;
         freqB = (pow(1.0 - A, 3) * (0.618033988749894848204586 - freqMin)) + freqMin;

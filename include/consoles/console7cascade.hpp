@@ -167,7 +167,7 @@ class Console7Cascade final : public Effect<T>
         if (gainchase < 0.0) {
             gainchase = inputgain;
         }
-        biquadE[0] = biquadD[0] = biquadC[0] = biquadB[0] = biquadA[0] = 20000.0 / getSampleRate();
+        biquadE[0] = biquadD[0] = biquadC[0] = biquadB[0] = biquadA[0] = 20000.0 / Effect<T>::getSampleRate();
         biquadA[1] = 3.19622661; // tenth order Butterworth out of five biquads
         biquadB[1] = 1.10134463;
         biquadC[1] = 0.70710678;

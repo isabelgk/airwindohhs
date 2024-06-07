@@ -327,13 +327,13 @@ void process(T** inputs, T** outputs, long sampleFrames)
     T* out2 = outputs[1];
 
     double inputlevel = A * 6.0;
-    double EQ = (B / getSampleRate()) * 22050;
+    double EQ = (B / Effect<T>::getSampleRate()) * 22050;
     double basstrim = B;
     double outputlevel = C;
     double wet = D;
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int cycleEnd = floor(overallscale);
     if (cycleEnd < 1) {
         cycleEnd = 1;
@@ -346,7 +346,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
         cycle = cycleEnd - 1; // sanity check
     }
     double skewlevel = pow(basstrim, 2) * outputlevel;
-    double cutoff = (15000.0 + (B * 10000.0)) / getSampleRate();
+    double cutoff = (15000.0 + (B * 10000.0)) / Effect<T>::getSampleRate();
     if (cutoff > 0.49) {
         cutoff = 0.49; // don't crash if run at 44.1k
     }

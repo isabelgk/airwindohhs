@@ -217,7 +217,7 @@ class IronOxideClassic final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inputgain = pow(10.0, ((A * 36.0) - 18.0) / 20.0);
         double outputgain = pow(10.0, ((C * 36.0) - 18.0) / 20.0);
         double ips = (((B * B) * (B * B) * 148.5) + 1.5) * 1.1;

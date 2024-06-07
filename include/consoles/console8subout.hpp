@@ -155,13 +155,13 @@ class Console8SubOut final : public Effect<T>
         inTrimB = A * 2.0;
         // 0.5 is unity gain, and we can attenuate to silence or boost slightly over 12dB
         // into softclipping overdrive.
-        if (getSampleRate() > 49000.0) {
+        if (Effect<T>::getSampleRate() > 49000.0) {
             hsr = true;
         }
         else {
             hsr = false;
         }
-        fix[fix_freq] = 24000.0 / getSampleRate();
+        fix[fix_freq] = 24000.0 / Effect<T>::getSampleRate();
         fix[fix_reso] = 1.20361562;
         double K = tan(M_PI * fix[fix_freq]); // lowpass
         double norm = 1.0 / (1.0 + K / fix[fix_reso] + K * K);

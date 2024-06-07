@@ -205,7 +205,7 @@ class PodcastDeluxe final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int allpasstemp;
         double outallpass = 0.618033988749894848204586;
         double compress = 1.0 + pow(A * 0.8, 2);

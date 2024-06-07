@@ -328,7 +328,7 @@ class Ditherbox final : public Effect<T>
         int dtype = (int)(A * 24.999) + 1; // +1 for Reaper bug workaround
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double iirAmount = 2250 / 44100.0;
         double gaintarget = 1.42;
         double gain;

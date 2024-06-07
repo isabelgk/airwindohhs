@@ -135,7 +135,7 @@ class Desk final : public Effect<T>
         double balanceB = 0.0001;
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         slewgain *= overallscale;
         prevslew *= overallscale;
         balanceB /= overallscale;

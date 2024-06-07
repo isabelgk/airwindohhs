@@ -253,7 +253,7 @@ class Spiral2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double gain = pow(A * 2.0, 2.0);
         double iirAmount = pow(B, 3.0) / overallscale;
         double presence = C;

@@ -311,7 +311,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     T* out2 = outputs[1];
 
     double inputlevel = A * 3.0;
-    double samplerate = getSampleRate();
+    double samplerate = Effect<T>::getSampleRate();
     double EQ = (B / samplerate) * 22050.0;
     double basstrim = B;
     double outputlevel = C;
@@ -338,7 +338,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     }
     int down = side + 1;
     inputlevel = (inputlevel + (inputlevel * basstrim)) / 2.0;
-    double cutoff = (15000.0 + (B * 10000.0)) / getSampleRate();
+    double cutoff = (15000.0 + (B * 10000.0)) / Effect<T>::getSampleRate();
     if (cutoff > 0.49) {
         cutoff = 0.49; // don't crash if run at 44.1k
     }

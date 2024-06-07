@@ -271,7 +271,7 @@ class Biquad2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         int type = ceil((A * 3.999) + 0.00001);
         double average = B * B;
         double frequencytarget = average * 0.39; // biquad[0], goes to 1.0

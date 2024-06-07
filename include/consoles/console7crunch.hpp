@@ -167,7 +167,7 @@ class Console7Crunch final : public Effect<T>
         if (gainchase < 0.0) {
             gainchase = inputgain;
         }
-        biquadE[0] = biquadD[0] = biquadC[0] = biquadB[0] = biquadA[0] = 20000.0 / getSampleRate();
+        biquadE[0] = biquadD[0] = biquadC[0] = biquadB[0] = biquadA[0] = 20000.0 / Effect<T>::getSampleRate();
         biquadA[1] = 0.50623256;
         biquadB[1] = 0.56116312;
         biquadC[1] = 0.70710678;

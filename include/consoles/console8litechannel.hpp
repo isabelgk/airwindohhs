@@ -165,7 +165,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     T* out2 = outputs[1];
 
     VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
-    double iirAmountA = 12.66 / getSampleRate();
+    double iirAmountA = 12.66 / Effect<T>::getSampleRate();
     // this is our distributed unusual highpass, which is
     // adding subtle harmonics to the really deep stuff to define it
     if (fabs(iirAL) < 1.18e-37) {
@@ -181,13 +181,13 @@ void process(T** inputs, T** outputs, long sampleFrames)
         iirBR = 0.0;
     }
     // catch denormals early and only check once per buffer
-    if (getSampleRate() > 49000.0) {
+    if (Effect<T>::getSampleRate() > 49000.0) {
         hsr = true;
     }
     else {
         hsr = false;
     }
-    fix[fix_freq] = 24000.0 / getSampleRate();
+    fix[fix_freq] = 24000.0 / Effect<T>::getSampleRate();
     fix[fix_reso] = 2.24697960;
     double K = tan(M_PI * fix[fix_freq]); // lowpass
     double norm = 1.0 / (1.0 + K / fix[fix_reso] + K * K);
@@ -201,7 +201,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     inTrimB = A * 2.0;
     // 0.5 is unity gain, and we can attenuate to silence or boost slightly over 12dB
     // into softclipping overdrive.
-    fixB[fix_freq] = 24000.0 / getSampleRate();
+    fixB[fix_freq] = 24000.0 / Effect<T>::getSampleRate();
     fixB[fix_reso] = 0.80193774;
     K = tan(M_PI * fixB[fix_freq]); // lowpass
     norm = 1.0 / (1.0 + K / fixB[fix_reso] + K * K);
@@ -213,7 +213,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     // this is the fixed biquad distributed anti-aliasing filter
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     cycleEnd = floor(overallscale);
     if (cycleEnd < 1) {
         cycleEnd = 1;

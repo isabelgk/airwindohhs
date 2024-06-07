@@ -245,7 +245,7 @@ class DeRez2 final : public Effect<T>
         double wet = D;
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         targetA /= overallscale;
         while (--sampleFrames >= 0)
         {

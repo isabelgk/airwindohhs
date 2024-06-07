@@ -233,8 +233,8 @@ class ZNotch final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
-        biquadA[0] = ((pow(B, 3) * 4700.0) / getSampleRate()) + 0.0009963;
+        overallscale *= Effect<T>::getSampleRate();
+        biquadA[0] = ((pow(B, 3) * 4700.0) / Effect<T>::getSampleRate()) + 0.0009963;
         double clipFactor = 0.91 - ((1.0 - B) * 0.15);
         biquadA[1] = 0.618033988749894848204586;
         double K = tan(M_PI * biquadA[0]);
@@ -253,7 +253,7 @@ class ZNotch final : public Effect<T>
         inTrim *= inTrim;
         double outPad = C * 10.0;
         double iirAmountA = 0.00069 / overallscale;
-        biquadF[0] = biquadE[0] = 15500.0 / getSampleRate();
+        biquadF[0] = biquadE[0] = 15500.0 / Effect<T>::getSampleRate();
         biquadF[1] = biquadE[1] = 0.935;
         K = tan(M_PI * biquadE[0]); // lowpass
         norm = 1.0 / (1.0 + K / biquadE[1] + K * K);

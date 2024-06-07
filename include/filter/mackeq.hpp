@@ -273,7 +273,7 @@ class MackEQ final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inTrim = A * 10.0;
         inTrim *= inTrim;
         double gainHigh = pow(B, 2) * 4.0;
@@ -286,7 +286,7 @@ class MackEQ final : public Effect<T>
         double iirAmountB = 0.000287496 / overallscale;
         double iirBassMid = 0.159 / overallscale;
         double iirMidHigh = 0.236 / overallscale;
-        biquadD[0] = biquadC[0] = biquadB[0] = biquadA[0] = 19160.0 / getSampleRate();
+        biquadD[0] = biquadC[0] = biquadB[0] = biquadA[0] = 19160.0 / Effect<T>::getSampleRate();
         biquadA[1] = 0.431684981684982;
         biquadB[1] = 1.1582298;
         biquadC[1] = 0.657027382751269;

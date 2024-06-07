@@ -259,37 +259,37 @@ class ZRegion final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         // begin from XRegion
         double high = B;
         double low = C;
         double mid = (high + low) * 0.5;
         double spread = 1.001 - fabs(high - low);
-        biquad[0] = (pow(high, 3) * 20000.0) / getSampleRate();
+        biquad[0] = (pow(high, 3) * 20000.0) / Effect<T>::getSampleRate();
         if (biquad[0] < 0.00009) {
             biquad[0] = 0.00009;
         }
         double compensation = sqrt(biquad[0]) * 6.4 * spread;
         double clipFactor = 0.75 + (biquad[0] * D * 37.0);
-        biquadA[0] = (pow((high + mid) * 0.5, 3) * 20000.0) / getSampleRate();
+        biquadA[0] = (pow((high + mid) * 0.5, 3) * 20000.0) / Effect<T>::getSampleRate();
         if (biquadA[0] < 0.00009) {
             biquadA[0] = 0.00009;
         }
         double compensationA = sqrt(biquadA[0]) * 6.4 * spread;
         double clipFactorA = 0.75 + (biquadA[0] * D * 37.0);
-        biquadB[0] = (pow(mid, 3) * 20000.0) / getSampleRate();
+        biquadB[0] = (pow(mid, 3) * 20000.0) / Effect<T>::getSampleRate();
         if (biquadB[0] < 0.00009) {
             biquadB[0] = 0.00009;
         }
         double compensationB = sqrt(biquadB[0]) * 6.4 * spread;
         double clipFactorB = 0.75 + (biquadB[0] * D * 37.0);
-        biquadC[0] = (pow((mid + low) * 0.5, 3) * 20000.0) / getSampleRate();
+        biquadC[0] = (pow((mid + low) * 0.5, 3) * 20000.0) / Effect<T>::getSampleRate();
         if (biquadC[0] < 0.00009) {
             biquadC[0] = 0.00009;
         }
         double compensationC = sqrt(biquadC[0]) * 6.4 * spread;
         double clipFactorC = 0.75 + (biquadC[0] * D * 37.0);
-        biquadD[0] = (pow(low, 3) * 20000.0) / getSampleRate();
+        biquadD[0] = (pow(low, 3) * 20000.0) / Effect<T>::getSampleRate();
         if (biquadD[0] < 0.00009) {
             biquadD[0] = 0.00009;
         }
@@ -330,7 +330,7 @@ class ZRegion final : public Effect<T>
         inTrim *= inTrim;
         inTrim *= inTrim;
         double iirAmountA = 0.00069 / overallscale;
-        biquadF[0] = biquadE[0] = 15500.0 / getSampleRate();
+        biquadF[0] = biquadE[0] = 15500.0 / Effect<T>::getSampleRate();
         biquadF[1] = biquadE[1] = 0.935;
         K = tan(M_PI * biquadE[0]); // lowpass
         norm = 1.0 / (1.0 + K / biquadE[1] + K * K);

@@ -285,7 +285,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
 
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
+    overallscale *= Effect<T>::getSampleRate();
     int cycleEnd = floor(overallscale);
     if (cycleEnd < 1) {
         cycleEnd = 1;
@@ -301,10 +301,10 @@ void process(T** inputs, T** outputs, long sampleFrames)
     double inputlevelH = inputlevelL * 4.0;
     double basstrimH = (B * 0.6) + 0.2;
     double basstrimL = basstrimH * 0.618;
-    double EQL = (basstrimL / getSampleRate()) * 22050.0;
-    double EQH = (basstrimH / getSampleRate()) * 22050.0;
-    double BEQ = (0.0625 / getSampleRate()) * 22050.0;
-    int diagonal = (int)(0.000861678 * getSampleRate());
+    double EQL = (basstrimL / Effect<T>::getSampleRate()) * 22050.0;
+    double EQH = (basstrimH / Effect<T>::getSampleRate()) * 22050.0;
+    double BEQ = (0.0625 / Effect<T>::getSampleRate()) * 22050.0;
+    int diagonal = (int)(0.000861678 * Effect<T>::getSampleRate());
     if (diagonal > 127) {
         diagonal = 127;
     }
@@ -312,7 +312,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     int down = (side + diagonal) / 2;
     // now we've got down, side and diagonal as offsets and we also use three successive samples upfront
     double skewlevel = pow(basstrimH, 2);
-    double cutoff = (15000.0 + (basstrimH * 10000.0)) / getSampleRate();
+    double cutoff = (15000.0 + (basstrimH * 10000.0)) / Effect<T>::getSampleRate();
     if (cutoff > 0.49) {
         cutoff = 0.49; // don't crash if run at 44.1k
     }

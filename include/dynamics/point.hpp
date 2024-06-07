@@ -209,7 +209,7 @@ class Point final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double gaintrim = pow(10.0, ((A * 24.0) - 12.0) / 20);
         double nibDiv = 1 / pow(C + 0.2, 7);
         nibDiv /= overallscale;

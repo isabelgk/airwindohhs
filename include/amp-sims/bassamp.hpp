@@ -447,7 +447,7 @@ class BassAmp final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double contHigh = A;
         double dry = B;
         double contDub = C * 1.3;

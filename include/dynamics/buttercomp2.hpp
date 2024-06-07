@@ -221,7 +221,7 @@ class ButterComp2 final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double inputgain = pow(10.0, (A * 14.0) / 20.0);
         double compfactor = 0.012 * (A / 135.0);
         double output = B * 2.0;

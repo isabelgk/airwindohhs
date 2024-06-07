@@ -247,8 +247,8 @@ void process(T** inputs, T** outputs, long sampleFrames)
     VstInt32 inFramesToProcess = sampleFrames; // vst doesn't give us this as a separate variable so we'll make it
     double overallscale = 1.0;
     overallscale /= 44100.0;
-    overallscale *= getSampleRate();
-    biquadA[biq_freq] = ((pow(B, 3) * 4700.0) / getSampleRate()) + 0.0009963;
+    overallscale *= Effect<T>::getSampleRate();
+    biquadA[biq_freq] = ((pow(B, 3) * 4700.0) / Effect<T>::getSampleRate()) + 0.0009963;
     double clipFactor = 0.91 - ((1.0 - B) * 0.15);
     biquadA[biq_reso] = 0.618033988749894848204586;
     biquadA[biq_aA0] = biquadA[biq_aB0];
@@ -275,7 +275,7 @@ void process(T** inputs, T** outputs, long sampleFrames)
     wetA = wetB;
     wetB = pow(D, 2);
     double iirAmountA = 0.00069 / overallscale;
-    fixA[fix_freq] = fixB[fix_freq] = 15500.0 / getSampleRate();
+    fixA[fix_freq] = fixB[fix_freq] = 15500.0 / Effect<T>::getSampleRate();
     fixA[fix_reso] = fixB[fix_reso] = 0.935;
     K = tan(M_PI * fixB[fix_freq]); // lowpass
     norm = 1.0 / (1.0 + K / fixB[fix_reso] + K * K);

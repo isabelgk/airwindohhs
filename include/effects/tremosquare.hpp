@@ -177,7 +177,7 @@ class TremoSquare final : public Effect<T>
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= getSampleRate();
+        overallscale *= Effect<T>::getSampleRate();
         double increment = pow(A, 4) / (50.0 * overallscale);
         double wet = B;
         while (--sampleFrames >= 0)
