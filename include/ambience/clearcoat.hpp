@@ -15,6 +15,23 @@ constexpr std::string_view k_tags{
     "ambience"
 };
 
+const int kshortA = 350;
+const int kshortB = 1710;
+const int kshortC = 1610;
+const int kshortD = 835;
+const int kshortE = 700;
+const int kshortF = 1260;
+const int kshortG = 1110;
+const int kshortH = 1768;
+const int kshortI = 280;
+const int kshortJ = 2645;
+const int kshortK = 1410;
+const int kshortL = 1175;
+const int kshortM = 12;
+const int kshortN = 3110;
+const int kshortO = 120;
+const int kshortP = 2370;
+
 template <typename T>
 class ClearCoat final : public Effect<T>
 {

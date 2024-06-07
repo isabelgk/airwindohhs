@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+typedef int VstInt32;
+
 template <typename T>
 class Effect
 {
