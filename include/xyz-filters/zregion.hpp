@@ -6,10 +6,10 @@ namespace airwindohhs::zregion {
 
 constexpr std::string_view k_name{ "ZRegion" };
 constexpr std::string_view k_short_description{
-    "ZRegion2 is an Emu e6400 style Airwindows Region filter, with coefficient smoothing."
+    "ZRegion is an Emu e6400 style Airwindows Region filter."
 };
 constexpr std::string_view k_long_description{
-    "Here's one I might be needing in future, so I'm putting it out for everybody to have!The Airwindows Z series filters are kinds of digital filtering, with sampler hardware emulation put on 'em for added color and vividness, plus a staggering capacity for gain (folks using the original samplers often internally distorted sound with gain boosts in order to get maximum color out of the Emu filters).But what if there's a filter type that didn't even exist on the original device?ZRegion is that filter. The original Airwindows Region wasn't written in the context of an Emu Z emulation, more like just experimentation. It uses the cascading filter stages and distortions in an interesting way: you're using bandpass filters and distorting them, but Region lets you stagger the bandpass frequencies so that you're successively distorting through series of different filters. A bit hard to explain, but it lets you distort on midrangey frequencies and soften into the bass, or start out with bass clipping and then exaggerate that effect with higher frequencies.The reason I might be needing this one is, I can get pretty killer bass tones using it. I'll set the first filter higher for midrange articulation, set the last filter very low for heavy bass mojo, and it's instantly a bass-amp type of sound. And if I intend to leave the setting as a fixed setting, ZRegion will give me that with the same flavor as my other Z filters.But if I want to automate or move the controls as part of the mix…ZRegion2 comes out at the same time as ZRegion, but note that I'm still putting out ZRegion. This is because ZRegion will always run at lower CPU than ZRegion2, because the first plugin doesn't do coefficient smoothing. It's for if you have a fixed tone setting to use, OR if you want to have a slight glitchy/zipper-noise quality on some audio and you're moving the controls.If you're going for automation, the Z2 filters are the ones that interpolate the coefficients across the sample buffer, meaning they'll make control changes smooth. No crackling! This eats more CPU, but a lot of the fun with these filters comes from actively manipulating them. The original sampler never had a Region filter type, but now you can make believe it did, and produce aggressive and textural bandpass-y effects across a broader range than the original sampler's ZBandpass. Hope you like it!This concludes the AirwindowsPedia. Expect this file to be expanded as new plugins come in. Might end up needing one of these for the Free Studio sample instruments, eventually…-chris"
+    "Here's one I might be needing in future, so I'm putting it out for everybody to have!The Airwindows Z series filters are kinds of digital filtering, with sampler hardware emulation put on 'em for added color and vividness, plus a staggering capacity for gain (folks using the original samplers often internally distorted sound with gain boosts in order to get maximum color out of the Emu filters).But what if there's a filter type that didn't even exist on the original device?ZRegion is that filter. The original Airwindows Region wasn't written in the context of an Emu Z emulation, more like just experimentation. It uses the cascading filter stages and distortions in an interesting way: you're using bandpass filters and distorting them, but Region lets you stagger the bandpass frequencies so that you're successively distorting through series of different filters. A bit hard to explain, but it lets you distort on midrangey frequencies and soften into the bass, or start out with bass clipping and then exaggerate that effect with higher frequencies.The reason I might be needing this one is, I can get pretty killer bass tones using it. I'll set the first filter higher for midrange articulation, set the last filter very low for heavy bass mojo, and it's instantly a bass-amp type of sound. And if I intend to leave the setting as a fixed setting, ZRegion will give me that with the same flavor as my other Z filters.But if I want to automate or move the controls as part of the mix…"
 };
 constexpr std::string_view k_tags{
     "xyz-filters"
@@ -74,18 +74,27 @@ class ZRegion final : public Effect<T>
         kParamD = 3,
         kParamE = 4,
         kNumParameters = 5
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
 
             default: break;
         }
@@ -95,11 +104,21 @@ class ZRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
 
             default: break;
         }
@@ -110,11 +129,21 @@ class ZRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.1;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
-            case kParamE: return 1.0;
+        kParamA:
+            return 0.1;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -125,11 +154,21 @@ class ZRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "input";
-            case kParamB: return "first";
-            case kParamC: return "last";
-            case kParamD: return "poles";
-            case kParamE: return "drywet";
+        kParamA:
+            return "input";
+            break;
+        kParamB:
+            return "first";
+            break;
+        kParamC:
+            return "last";
+            break;
+        kParamD:
+            return "poles";
+            break;
+        kParamE:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -140,11 +179,21 @@ class ZRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Input";
-            case kParamB: return "First";
-            case kParamC: return "Last";
-            case kParamD: return "Poles";
-            case kParamE: return "Dry/Wet";
+        kParamA:
+            return "Input";
+            break;
+        kParamB:
+            return "First";
+            break;
+        kParamC:
+            return "Last";
+            break;
+        kParamD:
+            return "Poles";
+            break;
+        kParamE:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -155,11 +204,21 @@ class ZRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
-            case kParamE: return std::to_string(E);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
 
             default: break;
         }
@@ -170,11 +229,23 @@ class ZRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

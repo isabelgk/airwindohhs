@@ -6,10 +6,10 @@ namespace airwindohhs::acceleration {
 
 constexpr std::string_view k_name{ "Acceleration" };
 constexpr std::string_view k_short_description{
-    "Acceleration2 is Acceleration, better! Updated for high sample rate and more extreme effect."
+    "Acceleration is an acceleration limiter that tames edge, leaves brightness."
 };
 constexpr std::string_view k_long_description{
-    "As requested, I’ve made a dedicated acceleration limiter, like the one in ToVinyl4. You don’t have to mess with Groove Wear, or highpass anything: as a result, this ends up being the ‘high end’ acceleration limiter, mastering grade and useful in situations where ToVinyl might be overkill (ToVinyl was made in an era where I still had to make ‘amazing marketable plugins with lots of features so people would pay $50 quickly before it got all pirated etc’)Ah, I remember those days ;PBut now, it’s different because Acceleration is free! AU, Mac and PC VST (stay tuned for a surprise on that front) and if you can’t pay, go ahead and use it anyway. If you can, please do because I think the usefulness of me doing this work will become increasingly obvious, and the usefulness of me opensourcing plugin code has also become increasingly obvious. And it’s brought you Acceleration, here and now.The reason to be excited about that is, Acceleration’s not a simple filter. It pretty much targets exactly the digital behavior that creates Gibb effect overshoots (the reason you often have to pad heavily limited material down to stop it being crackly and glare-y) and would probably work very well as literally an acceleration limiter for record cutting heads. But, in a largely digital world, it might be even more useful because you can feed it any old ITB mix, any weird edgy source material, and it’ll clean up the nasty digital brightness while not sounding like it’s doing anything. Check the video (it should be relatively obvious if you’ve got half decent tweeters) and try it out. The key is to not try and get the apparent volume of the highs to be less: instead, you’re going after the character, or the presentation. If highs seem to be coming forward with nasty spikey extra energy, Acceleration will fix that tonal problem without altering the basic mix balance.Acceleration2 is an updated version of my high-frequency limiter, Acceleration. It’s like a brightness control that doesn’t really take away apparent brightness, just glues it really hard. Acceleration limiting is what you’d use mastering to vinyl, to avoid burning out the cutting head: it will get you a nice retro tone without obviously coloring things. It is not an ’emulation’ of any specific gear: real mastering engineers are not looking for ’emulation of Neumann sound’ or anything like that, they’re looking to get the functionality of this in the most colorless way.It’s been updated to work exactly the same at all sample rates (the previous one had issues adapting to them) and now has more intense depth of effect: if you crank it up you can make things real soft and dull. Don’t do that :) the purpose is not to do what you could do with an EQ, the purpose is to glue things and take the edge off the super-highs without harming the sparkle and air of the recording. Acceleration2 can do that real well: you might even find it useful if you’re doing very digital mixes and avoiding my other stuff like Console7. If you put this on the mix buss of an otherwise super-digital mix, you can make the highs prettier without making them any darker or duller. Do that by applying only small amounts of the Limit control."
+    "As requested, I’ve made a dedicated acceleration limiter, like the one in ToVinyl4. You don’t have to mess with Groove Wear, or highpass anything: as a result, this ends up being the ‘high end’ acceleration limiter, mastering grade and useful in situations where ToVinyl might be overkill (ToVinyl was made in an era where I still had to make ‘amazing marketable plugins with lots of features so people would pay $50 quickly before it got all pirated etc’)Ah, I remember those days ;PBut now, it’s different because Acceleration is free! AU, Mac and PC VST (stay tuned for a surprise on that front) and if you can’t pay, go ahead and use it anyway. If you can, please do because I think the usefulness of me doing this work will become increasingly obvious, and the usefulness of me opensourcing plugin code has also become increasingly obvious. And it’s brought you Acceleration, here and now.The reason to be excited about that is, Acceleration’s not a simple filter. It pretty much targets exactly the digital behavior that creates Gibb effect overshoots (the reason you often have to pad heavily limited material down to stop it being crackly and glare-y) and would probably work very well as literally an acceleration limiter for record cutting heads. But, in a largely digital world, it might be even more useful because you can feed it any old ITB mix, any weird edgy source material, and it’ll clean up the nasty digital brightness while not sounding like it’s doing anything. Check the video (it should be relatively obvious if you’ve got half decent tweeters) and try it out. The key is to not try and get the apparent volume of the highs to be less: instead, you’re going after the character, or the presentation. If highs seem to be coming forward with nasty spikey extra energy, Acceleration will fix that tonal problem without altering the basic mix balance."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -73,15 +73,18 @@ class Acceleration final : public Effect<T>
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -91,8 +94,12 @@ class Acceleration final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -103,8 +110,12 @@ class Acceleration final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.32;
-            case kParamB: return 1.0;
+        kParamA:
+            return 0.32;
+            break;
+        kParamB:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -115,8 +126,12 @@ class Acceleration final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "limit";
-            case kParamB: return "drywet";
+        kParamA:
+            return "limit";
+            break;
+        kParamB:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -127,8 +142,12 @@ class Acceleration final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Limit";
-            case kParamB: return "Dry/Wet";
+        kParamA:
+            return "Limit";
+            break;
+        kParamB:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -139,8 +158,12 @@ class Acceleration final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -151,8 +174,14 @@ class Acceleration final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -269,5 +298,7 @@ class Acceleration final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::acceleration

@@ -6,3 +6,5 @@ tmp/
 /tools/target/
 
 .env
+/airwindows
+/dist

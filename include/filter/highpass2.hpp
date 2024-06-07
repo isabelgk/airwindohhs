@@ -85,17 +85,24 @@ class Highpass2 final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -105,10 +112,18 @@ class Highpass2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -119,10 +134,18 @@ class Highpass2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
-            case kParamB: return 0.5;
-            case kParamC: return 0.25;
-            case kParamD: return 1.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.25;
+            break;
+        kParamD:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -133,10 +156,18 @@ class Highpass2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "hipass";
-            case kParamB: return "lstite";
-            case kParamC: return "poles";
-            case kParamD: return "drywet";
+        kParamA:
+            return "hipass";
+            break;
+        kParamB:
+            return "ls/tite";
+            break;
+        kParamC:
+            return "poles";
+            break;
+        kParamD:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -147,10 +178,18 @@ class Highpass2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Hipass";
-            case kParamB: return "Ls/Tite";
-            case kParamC: return "Poles";
-            case kParamD: return "Dry/Wet";
+        kParamA:
+            return "Hipass";
+            break;
+        kParamB:
+            return "Ls/Tite";
+            break;
+        kParamC:
+            return "Poles";
+            break;
+        kParamD:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -161,10 +200,18 @@ class Highpass2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string((B * 2.0) - 1.0);
-            case kParamC: return std::to_string(C * 4.0);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -175,10 +222,20 @@ class Highpass2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

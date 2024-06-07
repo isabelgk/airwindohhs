@@ -6,10 +6,10 @@ namespace airwindohhs::capacitor {
 
 constexpr std::string_view k_name{ "Capacitor" };
 constexpr std::string_view k_short_description{
-    "Capacitor2 is Capacitor with extra analog modeling and mojo."
+    "Capacitor is a lowpass/highpass filter of a new type."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes half the fun is just inventing :)People say all filter plugins are just biquads with different GUIs. It’s not true… or at least it’s not true at Airwindows. (actually I have to see what I can get out of biquads: I generally don’t even use ’em at all)This is a new filter. When I say new, I mean that you don’t have it. I can demonstrate that, because due to the way it works it has a little characteristic response quirk at 1/3 the sampling rate: nothing that hurts the sound, just an odd little notch under some circumstances.Because it’s a typically Airwindowsy, not-normal EQ algorithm, nobody has tried it, and because of the little quirk, if anybody did try it they knew they had to reject it, because it wasn’t perfect. It had a quirk! And even if they experimented, they probably weren’t that invested in concepts like the sequence of operations on stuff that, in theory, could be done in any order. Why care so much about the implementation details of an idea that had a quirk anyhow and was therefore useless?More fools they :)Because musically, this filter has tone for DAYS.There’s almost an analog-synth-like effect to it: though it doesn’t accentuate the rolloff point, it behaves almost like a DJ ‘isolator’ in the obviousness of its filtering. It has a highpass, a lowpass, and dry/wet, and the high and lowpass are melded into each other as part of the algorithm to get the sound more fluid. It’s also got new experiments in rejecting zipper noise and clicks, because I’m figuring people will want to automate this one. But, even though it’ll work for crazy effects and ‘isolator’ madness, the fullness of the tone will also let you use it in mastering: if you need to tighten bass or roll off just a hint of brightness, you’ll pay no penalty in the body of the music. And the dry/wet is there to let you treat it as a shelf… or to create a presence boost by isolating an area of interest, and then leaving it mostly dry with a hint of the clarified zone.I’m thrilled with this filter, and nobody else has it: nobody else would be allowed to do this one, because it has a quirk at 1/3 the sampling rate, and typical commercial developers are not allowed DSP quirks. But, since I’m supported by Patreon, I am.Didn’t see this coming!My researches led me to a webpage by the electronics company Murata, and an observation: for a particular line of capacitors they make, namely high dielectric ceramic caps made of barium titanate, there’s a concern. The capacitance drops sharply if you put the capacitor under voltage pressure. How much? As much as 50% for a little over six volts. It’s pretty linear. Thing is, the signal is ALSO a voltage. What if it tended to modulate the cutoff? As part of analog modeling?I have plugins, the old Lowpass and Highpass, which frequency-modulate the cutoff based on the input signal. But they did it symmetrically… what about doing it the way the real-world capacitor would do it? What would you get, in the event that other capacitors had some of this behavior? It seemed like you might get a lot of even harmonics, and people tend to like that. Why not give it a try?And that’s how something interesting got discovered.Capacitor2 is Capacitor, already a popular plugin, but with this analog modeling built in. There’s a ‘NonLin’ control that lets you crank up the distortedness from very minimal, to quite extreme. It’s sensitive to input level (naturally) so that’s another reason to have it on a control.And what you get is INTENSE analog coloration, and something unexpected: it emphasizes transients and brings out the articulateness of sounds in a really distinctive way. You may not have heard anything quite like this… or if you’ve been using analog gear, maybe you’re used to hearing it. I really didn’t plan for the result I got: if real-world caps have any of this behavior, it explains a lot. Literally all that’s happening is modulating the cutoff frequency of the rather Airwindows-y Capacitor algorithm. There’s no dynamics processing in there at all, but the result is incredibly dynamic. (you can even use it to boost narrow bandpasses for effect!)"
+    "Sometimes half the fun is just inventing :)People say all filter plugins are just biquads with different GUIs. It’s not true… or at least it’s not true at Airwindows. (actually I have to see what I can get out of biquads: I generally don’t even use ’em at all)This is a new filter. When I say new, I mean that you don’t have it. I can demonstrate that, because due to the way it works it has a little characteristic response quirk at 1/3 the sampling rate: nothing that hurts the sound, just an odd little notch under some circumstances.Because it’s a typically Airwindowsy, not-normal EQ algorithm, nobody has tried it, and because of the little quirk, if anybody did try it they knew they had to reject it, because it wasn’t perfect. It had a quirk! And even if they experimented, they probably weren’t that invested in concepts like the sequence of operations on stuff that, in theory, could be done in any order. Why care so much about the implementation details of an idea that had a quirk anyhow and was therefore useless?More fools they :)Because musically, this filter has tone for DAYS.There’s almost an analog-synth-like effect to it: though it doesn’t accentuate the rolloff point, it behaves almost like a DJ ‘isolator’ in the obviousness of its filtering. It has a highpass, a lowpass, and dry/wet, and the high and lowpass are melded into each other as part of the algorithm to get the sound more fluid. It’s also got new experiments in rejecting zipper noise and clicks, because I’m figuring people will want to automate this one. But, even though it’ll work for crazy effects and ‘isolator’ madness, the fullness of the tone will also let you use it in mastering: if you need to tighten bass or roll off just a hint of brightness, you’ll pay no penalty in the body of the music. And the dry/wet is there to let you treat it as a shelf… or to create a presence boost by isolating an area of interest, and then leaving it mostly dry with a hint of the clarified zone.I’m thrilled with this filter, and nobody else has it: nobody else would be allowed to do this one, because it has a quirk at 1/3 the sampling rate, and typical commercial developers are not allowed DSP quirks. But, since I’m supported by Patreon, I am."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -116,16 +116,21 @@ class Capacitor final : public Effect<T>
         kParamB = 1,
         kParamC = 2,
         kNumParameters = 3
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
 
             default: break;
         }
@@ -135,9 +140,15 @@ class Capacitor final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
 
             default: break;
         }
@@ -148,9 +159,15 @@ class Capacitor final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 1.0;
-            case kParamB: return 0.0;
-            case kParamC: return 1.0;
+        kParamA:
+            return 1.0;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -161,9 +178,15 @@ class Capacitor final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "lowpass";
-            case kParamB: return "highpass";
-            case kParamC: return "drywet";
+        kParamA:
+            return "lowpass";
+            break;
+        kParamB:
+            return "highpass";
+            break;
+        kParamC:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -174,9 +197,15 @@ class Capacitor final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Lowpass";
-            case kParamB: return "Highpass";
-            case kParamC: return "Dry/Wet";
+        kParamA:
+            return "Lowpass";
+            break;
+        kParamB:
+            return "Highpass";
+            break;
+        kParamC:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -187,9 +216,15 @@ class Capacitor final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
 
             default: break;
         }
@@ -200,9 +235,17 @@ class Capacitor final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return " ";
-            case kParamB: return " ";
-            case kParamC: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+        kParamC:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -437,5 +480,7 @@ class Capacitor final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::capacitor

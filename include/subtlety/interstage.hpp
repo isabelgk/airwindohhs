@@ -68,7 +68,6 @@ class Interstage final : public Effect<T>
     enum params
     {
         kNumParameters = 0
-
     };
 
     void set_parameter_value(int index, float value)
@@ -134,6 +133,8 @@ class Interstage final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
+
+            default: break;
         }
         return {};
     }

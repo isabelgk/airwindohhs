@@ -199,24 +199,31 @@ class ToVinyl4 final : public Effect<T>
 
     enum params
     {
-        kParamfor(int count = 0,
-kParamaMid[count] = 1,
-kParambMid[count] = 2,
-kParamfMid[count] = 3,
-kNumParameters = 4
-
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: for(int count = value; break;
-case kParamaMid[count]: aMid[count] = value; break;
-case kParambMid[count]: bMid[count] = value; break;
-case kParamfMid[count]: fMid[count] = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -224,12 +231,20 @@ case kParamfMid[count]: fMid[count] = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return for(int count;
-case kParamaMid[count]: return aMid[count];
-case kParambMid[count]: return bMid[count];
-case kParamfMid[count]: return fMid[count];
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -238,12 +253,20 @@ case kParamfMid[count]: return fMid[count];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return 0;
-        case kParamaMid[count]: return 0.0;
-        case kParambMid[count]: return 0.0;
-        case kParamfMid[count]: return 0.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 0.0;
+            break;
+        kParamD:
+            return 0.0;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -252,12 +275,20 @@ case kParamfMid[count]: return fMid[count];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "mid hip";
-        case kParamaMid[count]: return "sidehip";
-        case kParambMid[count]: return "h limit";
-        case kParamfMid[count]: return "gv wear";
+        kParamA:
+            return "mid hip";
+            break;
+        kParamB:
+            return "sidehip";
+            break;
+        kParamC:
+            return "h limit";
+            break;
+        kParamD:
+            return "gv wear";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -266,12 +297,20 @@ case kParamfMid[count]: return fMid[count];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "Mid HiP";
-        case kParamaMid[count]: return "SideHiP";
-        case kParambMid[count]: return "H Limit";
-        case kParamfMid[count]: return "Gv Wear";
+        kParamA:
+            return "Mid HiP";
+            break;
+        kParamB:
+            return "SideHiP";
+            break;
+        kParamC:
+            return "H Limit";
+            break;
+        kParamD:
+            return "Gv Wear";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -280,12 +319,20 @@ case kParamfMid[count]: return fMid[count];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return std::to_string((A*A)*290.0)+10.0);
-        case kParamaMid[count]: return std::to_string((B*B)*290.0)+10.0);
-        case kParambMid[count]: return std::to_string(C);
-        case kParamfMid[count]: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -294,10 +341,20 @@ case kParamfMid[count]: return fMid[count];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "hz";
-        case kParamaMid[count]: return "hz";
-        case kParambMid[count]: return "";
-        case kParamfMid[count]: return "";
+        kParamA:
+            return "hz";
+            break;
+        kParamB:
+            return "hz";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -938,5 +995,7 @@ case kParamfMid[count]: return fMid[count];
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::tovinyl4

@@ -49,7 +49,6 @@ class ClipSoftly final : public Effect<T>
     enum params
     {
         kNumParameters = 0
-
     };
 
     void set_parameter_value(int index, float value)
@@ -115,6 +114,8 @@ class ClipSoftly final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
+
+            default: break;
         }
         return {};
     }

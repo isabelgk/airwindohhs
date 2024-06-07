@@ -130,22 +130,27 @@ class TripleSpread final : public Effect<T>
 
     enum params
     {
-        kParamfor (int count = 0,
-kParamfor (int count = 1,
-kParamoffsetL[count] = 2,
-kNumParameters = 3
-
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kNumParameters = 3
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int count: for (int count = value; break;
-case kParamfor (int count: for (int count = value; break;
-case kParamoffsetL[count]: offsetL[count] = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -153,11 +158,17 @@ case kParamoffsetL[count]: offsetL[count] = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int count: return for (int count;
-case kParamfor (int count: return for (int count;
-case kParamoffsetL[count]: return offsetL[count];
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -166,11 +177,17 @@ case kParamoffsetL[count]: return offsetL[count];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int count: return 0;
-case kParamfor (int count: return 0;
-case kParamoffsetL[count]: return 0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
 
-default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -179,11 +196,17 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int count: return "spread";
-case kParamfor (int count: return "tighten";
-case kParamoffsetL[count]: return "drywet";
+        kParamA:
+            return "spread";
+            break;
+        kParamB:
+            return "tighten";
+            break;
+        kParamC:
+            return "dry/wet";
+            break;
 
-default: break;
+            default: break;
         }
         return {};
     }
@@ -192,11 +215,17 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int count: return "Spread";
-case kParamfor (int count: return "Tighten";
-case kParamoffsetL[count]: return "Dry/Wet";
+        kParamA:
+            return "Spread";
+            break;
+        kParamB:
+            return "Tighten";
+            break;
+        kParamC:
+            return "Dry/Wet";
+            break;
 
-default: break;
+            default: break;
         }
         return {};
     }
@@ -205,11 +234,17 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int count: return std::to_string((A*2.0)-1.0);
-case kParamfor (int count: return std::to_string(B);
-case kParamoffsetL[count]: return std::to_string(C);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
 
-default: break;
+            default: break;
         }
         return {};
     }
@@ -218,9 +253,17 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int count: return "";
-case kParamfor (int count: return "";
-case kParamoffsetL[count]: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

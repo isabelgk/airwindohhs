@@ -68,26 +68,35 @@ class Srsly2 final : public Effect<T>
 
     enum params
     {
-        kParamfor (int x = 0,
-kParambiquadM2[x] = 1,
-kParambiquadM7[x] = 2,
-kParambiquadM10[x] = 3,
-kParambiquadL3[x] = 4,
-kNumParameters = 5
-
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: for (int x = value; break;
-case kParambiquadM2[x]: biquadM2[x] = value; break;
-case kParambiquadM7[x]: biquadM7[x] = value; break;
-case kParambiquadM10[x]: biquadM10[x] = value; break;
-case kParambiquadL3[x]: biquadL3[x] = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -95,13 +104,23 @@ case kParambiquadL3[x]: biquadL3[x] = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return for (int x;
-case kParambiquadM2[x]: return biquadM2[x];
-case kParambiquadM7[x]: return biquadM7[x];
-case kParambiquadM10[x]: return biquadM10[x];
-case kParambiquadL3[x]: return biquadL3[x];
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -110,13 +129,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return 0;
-        case kParambiquadM2[x]: return 0.0;
-        case kParambiquadM7[x]: return 0.0;
-        case kParambiquadM10[x]: return 0.0;
-        case kParambiquadL3[x]: return 0.0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 1.0;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 1.0;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -125,13 +154,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "center";
-        case kParambiquadM2[x]: return "space";
-        case kParambiquadM7[x]: return "level";
-        case kParambiquadM10[x]: return "q";
-        case kParambiquadL3[x]: return "drywet";
+        kParamA:
+            return "center";
+            break;
+        kParamB:
+            return "space";
+            break;
+        kParamC:
+            return "level";
+            break;
+        kParamD:
+            return "q";
+            break;
+        kParamE:
+            return "dry/wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -140,13 +179,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "Center";
-        case kParambiquadM2[x]: return "Space";
-        case kParambiquadM7[x]: return "Level";
-        case kParambiquadM10[x]: return "Q";
-        case kParambiquadL3[x]: return "Dry/Wet";
+        kParamA:
+            return "Center";
+            break;
+        kParamB:
+            return "Space";
+            break;
+        kParamC:
+            return "Level";
+            break;
+        kParamD:
+            return "Q";
+            break;
+        kParamE:
+            return "Dry/Wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -155,13 +204,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return std::to_string(A);
-        case kParambiquadM2[x]: return std::to_string(B);
-        case kParambiquadM7[x]: return std::to_string(C);
-        case kParambiquadM10[x]: return std::to_string(D);
-        case kParambiquadL3[x]: return std::to_string(E);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -170,11 +229,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "";
-        case kParambiquadM2[x]: return "";
-        case kParambiquadM7[x]: return "";
-        case kParambiquadM10[x]: return "";
-        case kParambiquadL3[x]: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

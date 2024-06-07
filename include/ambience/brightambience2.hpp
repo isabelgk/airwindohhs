@@ -58,24 +58,31 @@ class BrightAmbience2 final : public Effect<T>
 
     enum params
     {
-        kParamfor(int count = 0,
-kParamfeedbackA = 1,
-kParamgcount = 2,
-kParamA = 3,
-kNumParameters = 4
-
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: for(int count = value; break;
-case kParamfeedbackA: feedbackA = value; break;
-case kParamgcount: gcount = value; break;
-case kParamA: A = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -83,12 +90,20 @@ case kParamA: A = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return for(int count;
-case kParamfeedbackA: return feedbackA;
-case kParamgcount: return gcount;
-case kParamA: return A;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -97,12 +112,20 @@ case kParamA: return A;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return 0;
-        case kParamfeedbackA: return feedbackB;
-        case kParamgcount: return 0;
-        case kParamA: return 0.2;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 0.0;
+            break;
+        kParamD:
+            return 0.5;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -111,12 +134,20 @@ case kParamA: return A;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "start";
-        case kParamfeedbackA: return "length";
-        case kParamgcount: return "feedbck";
-        case kParamA: return "drywet";
+        kParamA:
+            return "start";
+            break;
+        kParamB:
+            return "length";
+            break;
+        kParamC:
+            return "feedbck";
+            break;
+        kParamD:
+            return "dry/wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -125,12 +156,20 @@ case kParamA: return A;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "Start";
-        case kParamfeedbackA: return "Length";
-        case kParamgcount: return "Feedbck";
-        case kParamA: return "Dry/Wet";
+        kParamA:
+            return "Start";
+            break;
+        kParamB:
+            return "Length";
+            break;
+        kParamC:
+            return "Feedbck";
+            break;
+        kParamD:
+            return "Dry/Wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -139,12 +178,20 @@ case kParamA: return A;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return std::to_string(A);
-        case kParamfeedbackA: return std::to_string(B);
-        case kParamgcount: return std::to_string(C);
-        case kParamA: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -153,10 +200,20 @@ case kParamA: return A;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "";
-        case kParamfeedbackA: return "";
-        case kParamgcount: return "";
-        case kParamA: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

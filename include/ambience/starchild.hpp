@@ -6,10 +6,10 @@ namespace airwindohhs::starchild {
 
 constexpr std::string_view k_name{ "StarChild" };
 constexpr std::string_view k_short_description{
-    "StarChild2 is a weird digital ambience/echo plugin adapted to high sample rates."
+    "StarChild is a weird digital ambience/echo plugin."
 };
 constexpr std::string_view k_long_description{
-    "For all that we try to make plugins have natural, acoustic or electric, retro vibe qualities, sometimes there’s a thing which breaks the rules by creating a distinctive voice that has nothing to do with naturalness. I’ve got an old Alesis reverb like that: very primitive, but deep as anything. There have always been odd little boxes with a style all their own, like the Delta Labs Effectron, which is low-fi but uses delta-sigma modulation like an SACD (but much more crudely!)In that spirit, here’s StarChild. The inspiration came from the old Ursa Major Space Station. That said, StarChild sounds nothing like a Space Station, but it does sound like it’s out of this world. Like Space Station, it produces series of echo taps which aren’t perfectly regular. Space Station has little rhythms that it does, while StarChild works on prime number sequences: that produces a sputtery sort of delay line in which it won’t reinforce any one frequency.What you get is a curious delay/ambience effect, in stereo (it’ll widen stuff that’s only in the middle). It can work kind of like a natural ambience that’s a room in a horrible shape, or you can crank out the duration and get weird stretched textures with a variety of granularity. It’s an odd little plugin: didn’t sell that well in its earlier incarnation, yet this revised newer form is hotly anticipated: a bunch of people really started wanting it when Kagi (my payment processor) went out of business and suddenly it couldn’t be sold.For all that we try to make plugins have natural, acoustic or electric, retro vibe qualities, sometimes there’s a thing which breaks the rules by creating a distinctive voice that has nothing to do with naturalness. I’ve got an old Alesis reverb like that: very primitive, but deep as anything. There have always been odd little boxes with a style all their own, like the Delta Labs Effectron, which is low-fi but uses delta-sigma modulation like an SACD (but much more crudely!)In that spirit, here’s StarChild. The inspiration came from the old Ursa Major Space Station. That said, StarChild sounds nothing like a Space Station, but it does sound like it’s out of this world. Like Space Station, it produces series of echo taps which aren’t perfectly regular. Space Station has little rhythms that it does, while StarChild works on prime number sequences: that produces a sputtery sort of delay line in which it won’t reinforce any one frequency.What you get is a curious delay/ambience effect, in stereo (it’ll widen stuff that’s only in the middle). It can work kind of like a natural ambience that’s a room in a horrible shape, or you can crank out the duration and get weird stretched textures with a variety of granularity. It’s an odd little plugin: didn’t sell that well in its earlier incarnation, yet this revised newer form is hotly anticipated: a bunch of people really started wanting it when Kagi (my payment processor) went out of business and suddenly it couldn’t be sold.Now, years later, this is a version of it that's savvy to sample rates. It's undersampled so you can run at 96k or even 192k while getting the same delay times, the same sounds, and at more or less the same CPU load of the 44.1/48k version. It's been a while since we've seen this plugin, and rightfully so: it sounds really weird and bad! But that's exactly why you can make distinctive noises with it, and who's to say you don't want to sneak an ear-catching sound in there?"
+    "For all that we try to make plugins have natural, acoustic or electric, retro vibe qualities, sometimes there’s a thing which breaks the rules by creating a distinctive voice that has nothing to do with naturalness. I’ve got an old Alesis reverb like that: very primitive, but deep as anything. There have always been odd little boxes with a style all their own, like the Delta Labs Effectron, which is low-fi but uses delta-sigma modulation like an SACD (but much more crudely!)In that spirit, here’s StarChild. The inspiration came from the old Ursa Major Space Station. That said, StarChild sounds nothing like a Space Station, but it does sound like it’s out of this world. Like Space Station, it produces series of echo taps which aren’t perfectly regular. Space Station has little rhythms that it does, while StarChild works on prime number sequences: that produces a sputtery sort of delay line in which it won’t reinforce any one frequency.What you get is a curious delay/ambience effect, in stereo (it’ll widen stuff that’s only in the middle). It can work kind of like a natural ambience that’s a room in a horrible shape, or you can crank out the duration and get weird stretched textures with a variety of granularity. It’s an odd little plugin: didn’t sell that well in its earlier incarnation, yet this revised newer form is hotly anticipated: a bunch of people really started wanting it when Kagi (my payment processor) went out of business and suddenly it couldn’t be sold."
 };
 constexpr std::string_view k_tags{
     "ambience"
@@ -274,16 +274,21 @@ class StarChild final : public Effect<T>
         kParamB = 1,
         kParamC = 2,
         kNumParameters = 3
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
 
             default: break;
         }
@@ -293,9 +298,15 @@ class StarChild final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
 
             default: break;
         }
@@ -306,9 +317,15 @@ class StarChild final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 1.0;
-            case kParamB: return 0.7;
-            case kParamC: return 0.2;
+        kParamA:
+            return 1.0;
+            break;
+        kParamB:
+            return 0.7;
+            break;
+        kParamC:
+            return 0.2;
+            break;
 
             default: break;
         }
@@ -319,9 +336,15 @@ class StarChild final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "sustain";
-            case kParamB: return "grain";
-            case kParamC: return "drywet";
+        kParamA:
+            return "sustain";
+            break;
+        kParamB:
+            return "grain";
+            break;
+        kParamC:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -332,9 +355,15 @@ class StarChild final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Sustain";
-            case kParamB: return "Grain";
-            case kParamC: return "Dry/Wet";
+        kParamA:
+            return "Sustain";
+            break;
+        kParamB:
+            return "Grain";
+            break;
+        kParamC:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -345,9 +374,15 @@ class StarChild final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
 
             default: break;
         }
@@ -358,9 +393,17 @@ class StarChild final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -801,5 +844,7 @@ class StarChild final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::starchild

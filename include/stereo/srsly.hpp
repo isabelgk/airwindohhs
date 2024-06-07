@@ -6,10 +6,10 @@ namespace airwindohhs::srsly {
 
 constexpr std::string_view k_name{ "Srsly" };
 constexpr std::string_view k_short_description{
-    "Srsly2 is a revisit of Srsly, to make the stereo widening more extreme."
+    "Srsly is a psychoacoustic stereo processor."
 };
 constexpr std::string_view k_long_description{
-    "People get really excited sometimes, so here’s a failure :)Srsly is meant to do what a Hughes SRS processor does. That’s an obscure stereo widener actually made by Howard “Spruce Goose” Hughes’ company. I tackled it because a musician I love, Chad Clark, needs one ‘cos his is broken and not in proper working order. Hence, the need for somebody to try and do a plugin version. So I tried, with some pictures out of Popular Mechanics and a single cruddy youtube video to be my guide (this thing is OBSCURE) and I have not succeeded. Whatever the real one sounds like, this ain’t it.But it does a thing, and I’ve added a Q control to help get it to do useful things since I can’t tell what’s right or wrong for this stuff, and this is as far as I can carry it right now. The source is MIT licensed for anyone else who’d like to pick up where I left off, and quite a bit of basic information is shown in the curves of that Popular Mechanics article about the thing, and it is kinda neat: accentuate comb-filtery effects you get from the shapes of your own ears. It does do a thing, that’s not like any other stereo effect I know of. And I ought to be able to use some of the tech from this to do subtle stereo-field enhancements in future versions of Console, stuff like that. You can refine it down to basic concepts and apply those.(followup: this remains useful for more subtle stereo spatiality things)“You call that a wide? Now THIS is a wide!”A little while ago, I put out a plugin that reverse engineered the famous Hughes SRS stereo widener, from pictures in an old Popular Mechanics article. By applying a set of narrow little EQ boosts and cuts to stereo, mid and side channels, you could make a sort of holographic effect. Srsly still exists, just as it was, for use tweaking out more natural stereo imagery.But the rabbit hole goes a bit deeper than just that…Srsly was by request of my friend Chad whose Hughes SRS wasn’t working properly, and who wanted a plugin version that didn’t hum. I didn’t have one of my own, so it was largely guesswork. Thing is, somewhere in there I got my hands on one (thanks Patreon! Between that and getting a real Mackie 1202 to play with, it turns out it’s useful for me to get actual gear relevant to my plugin interests, especially when I’m not getting the plugin right at first)And before I used it myself, I didn’t really ‘get it’, but then I started putting it on reverb returns, and quickly got very fond of a certain ultra-wide reverb field.And then I got more heavily into mixing in the box (and not with my hardware stuff) after Console7 came out… and discovered that my ITB reverbs did NOT do that kind of wide, and tried out my original Srsly… and had the same problem Chad ran into. It just didn’t do what the hardware box did. But I wasn’t done… so I started running stuff into the real hardware box, and just fooling around with the specific audio I’d begun to use, and rapidly worked out what was happening. My original Srsly left out a lot. It was more ‘audiophile’, more subtle, would fit in with more accurate recordings, but the real deal hardware device could be pushed WAY farther.…in a way that I could interpret. And coding ensued…Meet Srsly2. I’ve intentionally not tried super hard to exactly duplicate what is, after all, an unobtainable original hardware box by Howard Hughes’ company. Variations of this are still being licensed for use in car stereos and things, and I intentionally make no claim that I’m duplicating someone else’s property.But. But. BUT. What I was asked for, was to accomplish a particular effect, where the stereo wideness could be made crazy exaggerated. And I was able to interpret what a real hardware box (not original, though) was doing. And I continued to modify Srsly until, with Srsly2, you can now dial it in to do very similar crazy and unreasonable things… and that’s probably close enough for a free and open source plugin modeling an ancient hardware device that can’t really be found anymore. You’ll find the controls ought to work as you’d expect them to, and you may find as I did that leaving the Center control alone and cranking up the Space control just right, can get you into a wild and somewhat boosted and hyped zone that makes the most of your spectacular stereo content, in much the same way the original, obscure, Hughes box did.That’s my hope, anyhow. Hope you like it! I know I’ll be using it on stuff."
+    "People get really excited sometimes, so here’s a failure :)Srsly is meant to do what a Hughes SRS processor does. That’s an obscure stereo widener actually made by Howard “Spruce Goose” Hughes’ company. I tackled it because a musician I love, Chad Clark, needs one ‘cos his is broken and not in proper working order. Hence, the need for somebody to try and do a plugin version. So I tried, with some pictures out of Popular Mechanics and a single cruddy youtube video to be my guide (this thing is OBSCURE) and I have not succeeded. Whatever the real one sounds like, this ain’t it.But it does a thing, and I’ve added a Q control to help get it to do useful things since I can’t tell what’s right or wrong for this stuff, and this is as far as I can carry it right now. The source is MIT licensed for anyone else who’d like to pick up where I left off, and quite a bit of basic information is shown in the curves of that Popular Mechanics article about the thing, and it is kinda neat: accentuate comb-filtery effects you get from the shapes of your own ears. It does do a thing, that’s not like any other stereo effect I know of. And I ought to be able to use some of the tech from this to do subtle stereo-field enhancements in future versions of Console, stuff like that. You can refine it down to basic concepts and apply those.(followup: this remains useful for more subtle stereo spatiality things)"
 };
 constexpr std::string_view k_tags{
     "stereo"
@@ -68,26 +68,35 @@ class Srsly final : public Effect<T>
 
     enum params
     {
-        kParamfor (int x = 0,
-kParambiquadM2[x] = 1,
-kParambiquadM7[x] = 2,
-kParambiquadM10[x] = 3,
-kParambiquadL3[x] = 4,
-kNumParameters = 5
-
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: for (int x = value; break;
-case kParambiquadM2[x]: biquadM2[x] = value; break;
-case kParambiquadM7[x]: biquadM7[x] = value; break;
-case kParambiquadM10[x]: biquadM10[x] = value; break;
-case kParambiquadL3[x]: biquadL3[x] = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -95,13 +104,23 @@ case kParambiquadL3[x]: biquadL3[x] = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return for (int x;
-case kParambiquadM2[x]: return biquadM2[x];
-case kParambiquadM7[x]: return biquadM7[x];
-case kParambiquadM10[x]: return biquadM10[x];
-case kParambiquadL3[x]: return biquadL3[x];
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -110,13 +129,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return 0;
-        case kParambiquadM2[x]: return 0.0;
-        case kParambiquadM7[x]: return 0.0;
-        case kParambiquadM10[x]: return 0.0;
-        case kParambiquadL3[x]: return 0.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 1.0;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 1.0;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -125,13 +154,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "center";
-        case kParambiquadM2[x]: return "space";
-        case kParambiquadM7[x]: return "level";
-        case kParambiquadM10[x]: return "q";
-        case kParambiquadL3[x]: return "drywet";
+        kParamA:
+            return "center";
+            break;
+        kParamB:
+            return "space";
+            break;
+        kParamC:
+            return "level";
+            break;
+        kParamD:
+            return "q";
+            break;
+        kParamE:
+            return "dry/wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -140,13 +179,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "Center";
-        case kParambiquadM2[x]: return "Space";
-        case kParambiquadM7[x]: return "Level";
-        case kParambiquadM10[x]: return "Q";
-        case kParambiquadL3[x]: return "Dry/Wet";
+        kParamA:
+            return "Center";
+            break;
+        kParamB:
+            return "Space";
+            break;
+        kParamC:
+            return "Level";
+            break;
+        kParamD:
+            return "Q";
+            break;
+        kParamE:
+            return "Dry/Wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -155,13 +204,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return std::to_string(A);
-        case kParambiquadM2[x]: return std::to_string(B);
-        case kParambiquadM7[x]: return std::to_string(C);
-        case kParambiquadM10[x]: return std::to_string(D);
-        case kParambiquadL3[x]: return std::to_string(E);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -170,11 +229,23 @@ case kParambiquadL3[x]: return biquadL3[x];
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "";
-        case kParambiquadM2[x]: return "";
-        case kParambiquadM7[x]: return "";
-        case kParambiquadM10[x]: return "";
-        case kParambiquadL3[x]: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

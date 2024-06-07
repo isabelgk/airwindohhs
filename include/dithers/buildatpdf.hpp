@@ -70,23 +70,42 @@ class BuildATPDF final : public Effect<T>
         kParamI = 8,
         kParamJ = 9,
         kNumParameters = 10
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
-            case kParamF: F = value; break;
-            case kParamG: G = value; break;
-            case kParamH: H = value; break;
-            case kParamI: I = value; break;
-            case kParamJ: J = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
+        kParamF:
+            F = value;
+            break;
+        kParamG:
+            G = value;
+            break;
+        kParamH:
+            H = value;
+            break;
+        kParamI:
+            I = value;
+            break;
+        kParamJ:
+            J = value;
+            break;
 
             default: break;
         }
@@ -96,16 +115,36 @@ class BuildATPDF final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
-            case kParamF: return F;
-            case kParamG: return G;
-            case kParamH: return H;
-            case kParamI: return I;
-            case kParamJ: return J;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
+        kParamF:
+            return F;
+            break;
+        kParamG:
+            return G;
+            break;
+        kParamH:
+            return H;
+            break;
+        kParamI:
+            return I;
+            break;
+        kParamJ:
+            return J;
+            break;
 
             default: break;
         }
@@ -116,16 +155,36 @@ class BuildATPDF final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
-            case kParamE: return 0.5;
-            case kParamF: return 0.5;
-            case kParamG: return 0.5;
-            case kParamH: return 0.5;
-            case kParamI: return 0.5;
-            case kParamJ: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 0.5;
+            break;
+        kParamF:
+            return 0.5;
+            break;
+        kParamG:
+            return 0.5;
+            break;
+        kParamH:
+            return 0.5;
+            break;
+        kParamI:
+            return 0.5;
+            break;
+        kParamJ:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -136,16 +195,36 @@ class BuildATPDF final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "first";
-            case kParamB: return "second";
-            case kParamC: return "third";
-            case kParamD: return "fourth";
-            case kParamE: return "fifth";
-            case kParamF: return "sixth";
-            case kParamG: return "seventh";
-            case kParamH: return "eighth";
-            case kParamI: return "ninth";
-            case kParamJ: return "tenth";
+        kParamA:
+            return "first";
+            break;
+        kParamB:
+            return "second";
+            break;
+        kParamC:
+            return "third";
+            break;
+        kParamD:
+            return "fourth";
+            break;
+        kParamE:
+            return "fifth";
+            break;
+        kParamF:
+            return "sixth";
+            break;
+        kParamG:
+            return "seventh";
+            break;
+        kParamH:
+            return "eighth";
+            break;
+        kParamI:
+            return "ninth";
+            break;
+        kParamJ:
+            return "tenth";
+            break;
 
             default: break;
         }
@@ -156,16 +235,36 @@ class BuildATPDF final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "First";
-            case kParamB: return "Second";
-            case kParamC: return "Third";
-            case kParamD: return "Fourth";
-            case kParamE: return "Fifth";
-            case kParamF: return "Sixth";
-            case kParamG: return "Seventh";
-            case kParamH: return "Eighth";
-            case kParamI: return "Ninth";
-            case kParamJ: return "Tenth";
+        kParamA:
+            return "First";
+            break;
+        kParamB:
+            return "Second";
+            break;
+        kParamC:
+            return "Third";
+            break;
+        kParamD:
+            return "Fourth";
+            break;
+        kParamE:
+            return "Fifth";
+            break;
+        kParamF:
+            return "Sixth";
+            break;
+        kParamG:
+            return "Seventh";
+            break;
+        kParamH:
+            return "Eighth";
+            break;
+        kParamI:
+            return "Ninth";
+            break;
+        kParamJ:
+            return "Tenth";
+            break;
 
             default: break;
         }
@@ -176,16 +275,36 @@ class BuildATPDF final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 2) - 1);
-            case kParamB: return std::to_string((B * 2) - 1);
-            case kParamC: return std::to_string((C * 2) - 1);
-            case kParamD: return std::to_string((D * 2) - 1);
-            case kParamE: return std::to_string((E * 2) - 1);
-            case kParamF: return std::to_string((F * 2) - 1);
-            case kParamG: return std::to_string((G * 2) - 1);
-            case kParamH: return std::to_string((H * 2) - 1);
-            case kParamI: return std::to_string((I * 2) - 1);
-            case kParamJ: return std::to_string((J * 2) - 1);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
+        kParamF:
+            return std::to_string(F);
+            break;
+        kParamG:
+            return std::to_string(G);
+            break;
+        kParamH:
+            return std::to_string(H);
+            break;
+        kParamI:
+            return std::to_string(I);
+            break;
+        kParamJ:
+            return std::to_string(J);
+            break;
 
             default: break;
         }
@@ -196,16 +315,38 @@ class BuildATPDF final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return " ";
-            case kParamB: return " ";
-            case kParamC: return " ";
-            case kParamD: return " ";
-            case kParamE: return " ";
-            case kParamF: return " ";
-            case kParamG: return " ";
-            case kParamH: return " ";
-            case kParamI: return " ";
-            case kParamJ: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+        kParamC:
+            return " ";
+            break;
+        kParamD:
+            return " ";
+            break;
+        kParamE:
+            return " ";
+            break;
+        kParamF:
+            return " ";
+            break;
+        kParamG:
+            return " ";
+            break;
+        kParamH:
+            return " ";
+            break;
+        kParamI:
+            return " ";
+            break;
+        kParamJ:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -304,5 +445,7 @@ class BuildATPDF final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::buildatpdf

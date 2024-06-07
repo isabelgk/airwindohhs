@@ -6,10 +6,10 @@ namespace airwindohhs::chorus {
 
 constexpr std::string_view k_name{ "Chorus" };
 constexpr std::string_view k_short_description{
-    "ChorusEnsemble is a more complex, multi-tap mono chorus."
+    "Chorus is a mono chorus, also works as a vibrato."
 };
 constexpr std::string_view k_long_description{
-    "Here’s the start of some modulation plugins: Chorus will give you a nice basic mono chorusing effect, sweeping one moving delay tap against the dry signal. What makes it unusual is a pile of odd Airwindows things to adjust it this way and that.The sweep is done with a peculiar Airwindows interpolation which both applies a bit of an averaging function, and also a subtle lift to highs to compensate for that. The idea is to have the moving part be totally fluid, analog-like, even though it’s digital.To drive that, there’s a treble boost going into this smoothing delay tap, and it’s based on the Airwindows Energy algorithms: that means this plugin interacts with the raw sample rate in two different ways. It’s designed to make it so, whatever the sample rate, the sounds project through to the most extreme highs without edge or dullness. That means Chorus won’t sound exactly the same at 44.1K, 96K and so on: it will try to deliver the most finely tuned treble for each sample rate, whatever that is, and the tonality might be different. Also, since it’s running a delay buffer, it’s giving you full use of the buffer at all times: the broader settings might be more useful at high sample rates.In general, this should be pretty approachable. Hope you like the tone: there’s more where that came from.Here we can fill out the Airwindows palette of modulation plugins a bit… like Chorus, this is using my special slightly dark interpolation with a little pre-sparkle to get an adaptable, rich chorusing effect. But ChorusEnsemble uses a bank of chorus taps to get a more complex, textured sound that’s farther from the original. You can set it wrongly, so don’t assume all the settings are appropriate: that said, a little care should give you nice lush chorusing that’ll work great on pads and backgrounds. The reason I allow for the ‘ugly’ settings is, who’s to say you might not have a use for them, and if you find that use you’ll have a tonal element that other people don’t have on tap (generally, it’s so hard to sell plugins that can sound wrong and broken that people will tend to shun that and limit you to ‘nice’)."
+    "Here’s the start of some modulation plugins: Chorus will give you a nice basic mono chorusing effect, sweeping one moving delay tap against the dry signal. What makes it unusual is a pile of odd Airwindows things to adjust it this way and that.The sweep is done with a peculiar Airwindows interpolation which both applies a bit of an averaging function, and also a subtle lift to highs to compensate for that. The idea is to have the moving part be totally fluid, analog-like, even though it’s digital.To drive that, there’s a treble boost going into this smoothing delay tap, and it’s based on the Airwindows Energy algorithms: that means this plugin interacts with the raw sample rate in two different ways. It’s designed to make it so, whatever the sample rate, the sounds project through to the most extreme highs without edge or dullness. That means Chorus won’t sound exactly the same at 44.1K, 96K and so on: it will try to deliver the most finely tuned treble for each sample rate, whatever that is, and the tonality might be different. Also, since it’s running a delay buffer, it’s giving you full use of the buffer at all times: the broader settings might be more useful at high sample rates.In general, this should be pretty approachable. Hope you like the tone: there’s more where that came from."
 };
 constexpr std::string_view k_tags{
     "ambience"
@@ -77,16 +77,21 @@ class Chorus final : public Effect<T>
         kParamB = 1,
         kParamC = 2,
         kNumParameters = 3
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
 
             default: break;
         }
@@ -96,9 +101,15 @@ class Chorus final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
 
             default: break;
         }
@@ -109,9 +120,15 @@ class Chorus final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -122,9 +139,15 @@ class Chorus final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "speed";
-            case kParamB: return "range";
-            case kParamC: return "drywet";
+        kParamA:
+            return "speed";
+            break;
+        kParamB:
+            return "range";
+            break;
+        kParamC:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -135,9 +158,15 @@ class Chorus final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Speed";
-            case kParamB: return "Range";
-            case kParamC: return "Dry/Wet";
+        kParamA:
+            return "Speed";
+            break;
+        kParamB:
+            return "Range";
+            break;
+        kParamC:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -148,9 +177,15 @@ class Chorus final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
 
             default: break;
         }
@@ -161,9 +196,17 @@ class Chorus final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return " ";
-            case kParamB: return " ";
-            case kParamC: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+        kParamC:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -288,5 +331,7 @@ class Chorus final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::chorus

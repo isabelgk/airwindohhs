@@ -6,10 +6,10 @@ namespace airwindohhs::fracture {
 
 constexpr std::string_view k_name{ "Fracture" };
 constexpr std::string_view k_short_description{
-    "Fracture2 is a wavefolder that allows more extreme disruption."
+    "Fracture is a frequency multiplier/waveshaper with a soft disruption to the sound."
 };
 constexpr std::string_view k_long_description{
-    "Fracture is straight up a West Coast wavefolder, in a plugin. My original description doesn't help explain that too much: it is a sine-based distortion that wraps around and lets you set a maximum 'fold' which becomes a hard clip. Boost into it with Drive to do more intense wavefolding, and increase Fracture to allow you to fold more times before it just clips. This also allows you to clip either at full crank, or at silence (for a different effect). Original post was simply this:Hi! Merry Xmas to Xmas-ers. Here’s a truly freaky little wave-shaper. It’s of interest to distortion fanciers, those who make wubs and things, and anybody who might like the digital equivalent of an insane boutique stompbox that doesn’t sound like anything else.Fracture2 is straight up a West Coast wavefolder, in a plugin. You've got Drive, Fracture, Threshold, Output and Dry/Wet controls. Drive is basically overdrive like in Mackity, and you can get unity gain at a setting of 0.1, and Output and Dry/Wet are what you'd expect.Fracture makes the signal go exponential before folding. What this means is, if it's at zero you'll get a simple wavefold. With a sine, that'll create a distinct overtone (stronger than the original Fracture) which will slow down as it nears the top, then reverse. As you increase Fracture, the pitch of the wavefold increases because the wave you feed in will start folding faster and faster the more it folds: it will also open up the unfolded part of the wave, making it more dynamic. On non-tonal sounds, this makes the effect dryer and punchier and more aggressive.Threshold is by request from a fan who asked in Youtube comments, and whom I've got some things in common with. The idea is basically, can you make the folding part only take up a certain amount of space, like back to the zero point but not past? Turns out you can! And what this does is, it lets you have a volume control on the fold part. So, at zero threshold, you have a soft clip (or, with Fracture, a weird expando-clip like High Impact). As you increase it, the wavefold comes out of the clipping, expanding down (or up) from the flat-top of the wave, with 0.5 going to the center of the waveform and 1.0 doing a full-amplitude wavefold.Because this effect lends itself to the Rack port of my plugins (where you can feed audio rates into any controls), all the controls except Fracture are smoothed for better automation. I don't do this all the time, but it just seems to be the kind of effect where you might be sending sine waves into it (revealing zipper noises) and then modulating it like crazy, so it's using the same smoothing that's in the Z2-series filters.Hope you like it!"
+    "Fracture is straight up a West Coast wavefolder, in a plugin. My original description doesn't help explain that too much: it is a sine-based distortion that wraps around and lets you set a maximum 'fold' which becomes a hard clip. Boost into it with Drive to do more intense wavefolding, and increase Fracture to allow you to fold more times before it just clips. This also allows you to clip either at full crank, or at silence (for a different effect). Original post was simply this:Hi! Merry Xmas to Xmas-ers. Here’s a truly freaky little wave-shaper. It’s of interest to distortion fanciers, those who make wubs and things, and anybody who might like the digital equivalent of an insane boutique stompbox that doesn’t sound like anything else."
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -51,17 +51,24 @@ class Fracture final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -71,10 +78,18 @@ class Fracture final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -85,10 +100,18 @@ class Fracture final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.25;
-            case kParamB: return 0.5;
-            case kParamC: return 1.0;
-            case kParamD: return 1.0;
+        kParamA:
+            return 0.25;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 1.0;
+            break;
+        kParamD:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -99,10 +122,18 @@ class Fracture final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "drive";
-            case kParamB: return "fracture";
-            case kParamC: return "out lvl";
-            case kParamD: return "drywet";
+        kParamA:
+            return "drive";
+            break;
+        kParamB:
+            return "fracture";
+            break;
+        kParamC:
+            return "out lvl";
+            break;
+        kParamD:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -113,10 +144,18 @@ class Fracture final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Drive";
-            case kParamB: return "Fracture";
-            case kParamC: return "Out Lvl";
-            case kParamD: return "Dry/Wet";
+        kParamA:
+            return "Drive";
+            break;
+        kParamB:
+            return "Fracture";
+            break;
+        kParamC:
+            return "Out Lvl";
+            break;
+        kParamD:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -127,10 +166,18 @@ class Fracture final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 4));
-            case kParamB: return std::to_string((B * 2.999) + 1);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -141,10 +188,20 @@ class Fracture final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return " ";
-            case kParamB: return " ";
-            case kParamC: return "dB";
-            case kParamD: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+        kParamC:
+            return "dB";
+            break;
+        kParamD:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -234,5 +291,7 @@ class Fracture final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::fracture

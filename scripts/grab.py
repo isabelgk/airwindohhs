@@ -1,58 +1,35 @@
 import os.path
+import string
 from pathlib import Path
 
 
-def check_args(args):
-    if args["srcdir"]:
-        srcdir = Path(args["srcdir"])
-        if not srcdir.is_dir():
-            raise RuntimeError("srcdir must exist")
-    else:
-        raise RuntimeError("srcdir must exist")
-
-    dstdir = Path(args["dstdir"])
-    if not os.path.exists(dstdir):
-        os.mkdir(dstdir)
-
-    category_dir = Path(os.path.join(dstdir, args["category"]))
-    if category_dir.exists():
-        output_filepath = Path(os.path.join(category_dir, os.path.basename(srcdir).lower() + ".hpp"))
-        if output_filepath.exists():
-            pass
-        else:
-            output_filepath.touch()
-    else:
-        os.mkdir(category_dir)
-
-    return args
+class GrabError(RuntimeError):
+    pass
 
 
-def split_category(s: str):
-    category = s.split(":")[0].strip().lower().replace(" ", "-")
-    elements = s.split(":")[1].split(",")
-    for i in range(len(elements)):
-        new_elem = elements[i].strip()
-        elements[i] = new_elem
-    return category, elements
+def first_matching_line_index(lines: list[str], match: str, line_rstrip=None) -> int:
+    for index, line in enumerate(lines):
+        if line_rstrip:
+            line = line.rstrip()
+        if match in line:
+            return index
+    raise GrabError(f"Could not find {match} in lines")
 
 
-def get_category_lines(filepath: Path):
-    ls = []
-    with open(filepath, "r") as f:
-        in_categories = False
-        for line in f.readlines():
-            if line.startswith("#####"):
-                in_categories = False
-            if in_categories:
-                stripped = line.strip()
-                if stripped != "":
-                    ls.append(split_category(stripped))
-            if line.startswith("# Categories"):
-                in_categories = True
-    return ls
+def next_matching_line_index(lines: list[str], offset: int, match: str) -> int:
+    return first_matching_line_index(lines[offset:], match) + offset
 
 
-def filter_naive(lines):
+def matching_line(lines: list[str], match: str, line_rstrip=None, offset: int = 0) -> str:
+    for line in lines[offset:]:
+        if line_rstrip:
+            line = line.rstrip()
+        if match in line:
+            return line
+    raise GrabError(f"Could not find {match} in lines")
+
+
+def naive_line_filter(lines: list[str]) -> list[str]:
     result = []
     ignore = {"{\n", "}\n", "\n"}
     for line in lines:
@@ -62,300 +39,382 @@ def filter_naive(lines):
                 and "_programName" not in line \
                 and line.strip() != "":
             result.append(line)
-
     return result
 
 
-def get_name_from_srcpath(srcdir: Path) -> str:
-    return os.path.basename(srcdir).lower()
+def make_missing_directory(path: Path):
+    if not path.exists():
+        os.mkdir(path)
 
 
-def get_path_from_srcpath(srcdir: Path, postfix: str) -> Path:
-    name = get_name_from_srcpath(srcdir) + postfix
-    return Path(os.path.join(srcdir, name))
+def num_to_alpha(num: int) -> str:
+    return str(chr(65 + num))
 
 
-def get_proc(srcdir: Path):
-    path = get_path_from_srcpath(srcdir, "Proc.cpp")
-    with open(path, "r") as f:
-        lines = f.readlines()
-
-    count = 0
-    start_index = 0
-    for line in lines:
-        count += 1
-        if "processDoubleReplacing(" in line:
-            start_index = count + 5  # skipping the input and output part
-    return filter_naive(lines[start_index:-1].copy())
+def warning(plugin: str, error: str):
+    print(f"{plugin} (warning): {error}")
 
 
-def get_private_vars(srcdir: Path):
-    result = []
-    fname = get_path_from_srcpath(srcdir, ".h")
-    within = False
+class Parameter:
+    """A parameter represents a VST parameter, a variable that can change how the plugin does the processing"""
 
-    with open(fname) as f:
-        lines = f.readlines()
+    variable: str
+    """A variable name, usually a capital letter"""
+    enum_name: str
+    """An enum name, usually something like kParamA"""
+    title: str
+    """The title-case version of the parameter name"""
+    slug: str
+    """The slug-ified version of the parameter name"""
+    default_value: float
+    """The default parameter value"""
+    label: str
+    """The parameter label, often the units of the parameter"""
+    display: str
+    """The parameter display is an expression that usually maps the internal parameter value
+    to a value to show the user"""
 
-    for line in lines:
-        if "private:" in line:
-            within = True
-        if "};" == line.rstrip():
-            within = False
+    _source_code: list[str]
+    """The .cpp source code to parse for info about parameters"""
 
-        if within:
-            result.append(line)
+    def __init__(self, variable: str, source_dir: Path):
+        self._source_code = self._get_source(source_dir)
+        self._plugin = os.path.basename(source_dir)
+        self.variable = variable
+        self.enum_name = f"kParam{variable}"
+        self.title = self._title()
+        self.slug = self._slug()
+        self.default_value = self._default_value()
+        self.label = self._label()
+        self.display = self._display()
 
-    return filter_naive(result)
+    @staticmethod
+    def _get_source(source_dir):
+        name = os.path.basename(source_dir)
+        filepath = Path(os.path.join(source_dir, f"{name}.cpp"))
+        with open(filepath, "r") as f:
+            lines = f.readlines()
+        return lines
 
-
-def get_initialization(srcdir: Path):
-    fname = get_path_from_srcpath(srcdir, ".cpp")
-    with open(fname) as f:
-        lines = f.readlines()
-
-    start_index = 0
-    end_index = 0
-    count = 0
-    for line in lines:
-        count += 1
-        if "AudioEffectX(" in line:
-            start_index = count + 2
-        if "_canDo.insert(" in line:
-            end_index = count - 1
-            break
-
-    return filter_naive(lines[start_index - 2:end_index])
-
-
-def _get_num_params(srcdir: Path):
-    fname = get_path_from_srcpath(srcdir, ".h")
-    num_params = 0
-    with open(fname) as f:
-        lines = f.readlines()
-        for line in lines:
-            if "kNumParameters" in line:
-                num_params = int(line.split(" ")[-1])
-
-    return num_params
-
-
-def _get_chunk(srcdir: Path, src_postfix: str, num_params: int, match: str):
-    fname = get_path_from_srcpath(srcdir, src_postfix)
-    chunk = []
-    with open(fname) as f:
-        lines = f.readlines()
-        for index, line in enumerate(lines):
-            if match in line:
-                i = index + 2
-                chunk = lines[i:i + num_params]
-    return chunk
-
-
-def get_default_param_values(srcdir: Path, num_params: int):
-    chunk = _get_chunk(srcdir, ".cpp", num_params, "AudioEffectX(")
-    result = []
-    for line in chunk:
-        initializer = line.split("=")
-        var = initializer[0].strip()
-        val = initializer[1].split(";")[0].strip()
-        result.append({"variable": var, "initial_val": val, "enum_str": f"kParam{var}"})
-    return result
-
-
-def get_param_names(srcdir: Path, num_params: int):
-    chunk = _get_chunk(srcdir, ".cpp", num_params, "::getParameterName(")
-    return [x.split("\"")[1] for x in chunk]
-
-
-def get_param_labels(srcdir: Path, num_params: int):
-    chunk = _get_chunk(srcdir, ".cpp", num_params, "::getParameterLabel(")
-    return [x.split("\"")[1] for x in chunk]
-
-
-def get_param_displays(srcdir: Path, num_params: int):
-    chunk = _get_chunk(srcdir, ".cpp", num_params, "::getParameterDisplay(")
-    result = []
-    for line in chunk:
-        sp = line.split("(")[1]
-        if len(sp) > 1:
-            result.append(sp.split(", text")[0])
-        elif "text" in line:
-            temp = line.split("(")[-1].split(", text")[0]
-            if ")" in temp and "(" not in temp:
-                result.append(f"({temp}")
-            else:
-                result.append(temp)
-    return result
-
-
-def get_param(srcdir: Path):
-    num_params = _get_num_params(srcdir)
-    default_info = get_default_param_values(srcdir, num_params)
-    param_names = get_param_names(srcdir, num_params)
-    param_labels = get_param_labels(srcdir, num_params)
-    param_display = get_param_displays(srcdir, num_params)
-
-    result = {
-        "enum": [],
-        "set_switch": [],
-        "get_switch": [],
-        "get_title_switch": [],
-        "default_switch": [],
-        "name_switch": [],
-        "label_switch": [],
-        "display_switch": [],
-    }
-
-    for i in range(num_params):
-        enum_str = default_info[i]["enum_str"]
-        variable = default_info[i]["variable"]
-        initial_value = default_info[i]["initial_val"]
-
-        set_text = f"case {enum_str}: {variable} = value; break;\n"
-        result["set_switch"].append(set_text)
-
-        get_text = f"case {enum_str}: return {variable};\n"
-        result["get_switch"].append(get_text)
-
-        default_text = f"case {enum_str}: return {initial_value};\n"
-        result["default_switch"].append(default_text)
-
-        name_text = f"case {enum_str}: return \"{param_names[i].lower().replace("-", "").replace("/", "")}\";\n"
-        result["name_switch"].append(name_text)
-
-        title_text = f"case {enum_str}: return \"{param_names[i]}\";\n"
-        result["get_title_switch"].append(title_text)
-
-        label_text = f"case {enum_str}: return \"{param_labels[i]}\";\n"
-        result["label_switch"].append(label_text)
-
-        display_text = f"case {enum_str}: return std::to_string({param_display[i]});\n"
-        result["display_switch"].append(display_text)
-
-        enum_text = f"{enum_str} = {i},\n"
-        result["enum"].append(enum_text)
-
-    result["enum"].append(f"kNumParameters = {num_params}\n")
-
-    return result
-
-
-def parse_sections(srcdir: Path):
-    return {
-        "params": get_param(srcdir),
-        "init": get_initialization(srcdir),
-        "proc": get_proc(srcdir),
-        "private_vars": get_private_vars(srcdir),
-    }
-
-
-def get_metadata(name: str, info_filepath: Path):
-    result = {
-        "short_description": "",
-        "long_description": ""
-    }
-    with open(info_filepath, "r") as f:
-        lines = f.readlines()
-        found = None
-        for index, line in enumerate(lines):
-            if found is not None:
-                if line[0] == "#":
-                    found = None
-                else:
-                    result["long_description"] += line.strip()
-            m = f"# {name}"
-            if m in line:
-                found = index
-                result["short_description"] = line.replace("#", "").strip()
-
-    return result
-
-
-def populate_template(lines, name, parsed, metadata, category):
-    changed = []
-    for line in lines:
-        if "%%CLASSNAME%%" in line:
-            changed.append(line.replace("%%CLASSNAME%%", name))
-        elif "%%NAMESPACE%%" in line:
-            namespace = str(name).lower()
-            changed.append(line.replace("%%NAMESPACE%%", namespace))
-        elif "%%SHORT_DESCRIPTION%%" in line:
-            changed.append(line.replace("%%SHORT_DESCRIPTION%%", metadata["short_description"]))
-        elif "%%LONG_DESCRIPTION%%" in line:
-            changed.append(line.replace("%%LONG_DESCRIPTION%%", metadata["long_description"]))
-        elif "%%TAGS%%" in line:
-            changed.append(line.replace("%%TAGS%%", category))
-        elif "%%PRIVATEVARS%%" in line:
-            changed.append(line.replace("%%PRIVATEVARS%%", "".join(parsed["private_vars"])))
-        elif "%%INITIALIZATION%%" in line:
-            changed.append(line.replace("%%INITIALIZATION%%", "".join(parsed["init"])))
-        elif "%%PARAM_ENUM%%" in line:
-            changed.append(line.replace("%%PARAM_ENUM%%", "".join(parsed["params"]["enum"])))
-        elif "%%SETPARAMSWITCH%%" in line:
-            changed.append(line.replace("%%SETPARAMSWITCH%%", "".join(parsed["params"]["set_switch"])))
-        elif "%%GETPARAMSWITCH%%" in line:
-            changed.append(line.replace("%%GETPARAMSWITCH%%", "".join(parsed["params"]["get_switch"])))
-        elif "%%GETPARAMTITLESWITCH%%" in line:
-            changed.append(line.replace("%%GETPARAMTITLESWITCH%%", "".join(parsed["params"]["get_title_switch"])))
-        elif "%%GETPARAMDEFAULTSWITCH%%" in line:
-            changed.append(line.replace("%%GETPARAMDEFAULTSWITCH%%", "".join(parsed["params"]["default_switch"])))
-        elif "%%GETPARAMLABELDISPLAY%%" in line:
-            changed.append(line.replace("%%GETPARAMLABELDISPLAY%%", "".join(parsed["params"]["display_switch"])))
-        elif "%%GETPARAMLABELSWITCH%%" in line:
-            changed.append(line.replace("%%GETPARAMLABELSWITCH%%", "".join(parsed["params"]["label_switch"])))
-        elif "%%GETPARAMNAMESWITCH%%" in line:
-            changed.append(line.replace("%%GETPARAMNAMESWITCH%%", "".join(parsed["params"]["name_switch"])))
-        elif "%%PROCESS%%" in line:
-            changed.append(line.replace("%%PROCESS%%", "".join(parsed["proc"])))
+    def _title(self):
+        fn_index = first_matching_line_index(self._source_code, "::getParameterName")
+        param_index = next_matching_line_index(self._source_code, fn_index, self.enum_name)
+        line = self._source_code[param_index]
+        tokens = line.split("\"")
+        if len(tokens) != 3:
+            warning(self._plugin, "Could not find parameter name; using a default instead")
+            return f"{self.variable}"
         else:
-            changed.append(line)
-    return changed
+            return tokens[1]
+
+    def _slug(self):
+        to_strip = {"-", "/", ""}
+        slug = self.title.lower()
+        for elem in to_strip:
+            slug.replace(elem, "")
+        return slug
+
+    def _default_value(self):
+        fn_index = first_matching_line_index(self._source_code, "AudioEffectX(")
+        line = matching_line(self._source_code, f"{self.variable} = ", offset=fn_index + 1)
+        token = line.split("= ")[1]  # we know there is "= " in the string already
+        token = token.split(";")[0]
+        try:
+            val = float(token)
+            return val
+        except ValueError as e:
+            warning(self._plugin, f"Could not find default float value in `{line.strip()}` -- using 0.0")
+            return 0.0
+
+    def _label(self):
+        fn_index = first_matching_line_index(self._source_code, "::getParameterLabel")
+        line = matching_line(self._source_code, self.enum_name, offset=fn_index + 1)
+        try:
+            label = line.split("\"")[1]
+            return label
+        except IndexError as e:
+            warning(self._plugin, f"Could not find parameter label in `{line.strip()}` -- using empty string")
+            return ""
+
+    def _display(self):
+        fn_index = first_matching_line_index(self._source_code, "::getParameterDisplay")
+        line = matching_line(self._source_code, self.enum_name, offset=fn_index + 1)
+        if self.variable not in line:
+            return self.variable
+        try:
+            # this is pretty gross, but good enough for now
+            sp = line.split("(")[1]
+            if len(sp) > 1:
+                return sp.split(", text")[0]
+            elif "text" in line:
+                temp = line.split("(")[-1].split(", text")[0]
+                if ")" in temp and "(" not in temp:
+                    return f"({temp}"
+                else:
+                    return temp
+        except IndexError as e:
+            warning(self._plugin, f"Could not get display in `{line.strip}` -- using {self.variable}")
+            return self.variable
 
 
-def write_header(srcdir: Path, category: str, dstdir: Path, scriptdir: Path):
-    args = {
-        "srcdir": srcdir,
-        "category": category,
-        "dstdir": dstdir,
-        "scriptdir": scriptdir
-    }
+class Plugin:
+    source_dir: Path
+    output_path: Path
 
-    a = check_args(args)
-    parsed = parse_sections(args["srcdir"])
-    name = os.path.basename(args["srcdir"])
-    metadata = get_metadata(name, Path(os.path.join(args["scriptdir"], "airwindopedia.txt")))
-    template_header = os.path.join(args["scriptdir"], "template.hpp")
+    title: str
+    slug: str
+    category: str
 
-    with open(template_header, "r") as f:
-        lines = f.readlines()
-        text = populate_template(lines, name, parsed, metadata, category)
+    short_description: str
+    long_description: str
 
-    out_path = os.path.join(args["dstdir"], args["category"], str(name).lower() + ".hpp")
-    with open(out_path, "w") as o:
-        for line in text:
-            o.write(line)
+    initialization_code: str
+    private_vars: str
+    processing_code: str
+    parameters: dict[str, Parameter]
+
+    def __init__(self, project_root: Path, title: str, category: str):
+        self.project_root = project_root
+        self.title = title.replace(" ", "")
+        self.slug = self.title.lower()
+        self.category = category
+        self.short_description, self.long_description = self._init_descriptions()
+
+        self.source_dir = Path(os.path.join(project_root, "airwindows", self.title))
+        self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
+
+        self.initialization_code = self._init_initialization_code()
+        self.processing_code = self._init_processing_code()
+        self.private_vars = self._init_private_vars()
+        self.parameters = self._init_parameters()
+
+    def _init_initialization_code(self):
+        filepath = Path(os.path.join(self.source_dir, f"{self.title}.cpp"))
+        with open(filepath) as f:
+            lines = f.readlines()
+
+        begin_index = first_matching_line_index(lines, "AudioEffectX(") + 1
+        end_index = first_matching_line_index(lines, "_canDo.insert(")
+        chunk = lines[begin_index:end_index]
+        chunk = naive_line_filter(chunk)
+        return "".join(chunk)
+
+    def _init_processing_code(self):
+        filepath = Path(os.path.join(self.source_dir, f"{self.title}Proc.cpp"))
+        with open(filepath, "r") as f:
+            lines = f.readlines()
+
+        # skip input and output pointers
+        begin_index = first_matching_line_index(lines, "processDoubleReplacing(") + 6
+        chunk = lines[begin_index:]
+        chunk = naive_line_filter(chunk)
+        return "".join(chunk)
+
+    def _init_private_vars(self):
+        filepath = Path(os.path.join(self.source_dir, f"{self.title}.h"))
+        with open(filepath, "r") as f:
+            lines = f.readlines()
+
+        begin_index = first_matching_line_index(lines, "private:") + 1
+        end_index = first_matching_line_index(lines[begin_index:], "};", line_rstrip=True) + begin_index
+        chunk = lines[begin_index:end_index]
+        chunk = naive_line_filter(chunk)
+        return "".join(chunk)
+
+    def _init_parameters(self):
+        filepath = Path(os.path.join(self.source_dir, f"{self.title}.h"))
+        with open(filepath, "r") as f:
+            lines = f.readlines()
+
+        begin_index = first_matching_line_index(lines, "kNumParameters")
+        num_parameters = int(lines[begin_index].split("kNumParameters = ")[1])
+        result = dict()
+        for i in range(num_parameters):
+            variable = num_to_alpha(i)
+            result[variable] = Parameter(variable, self.source_dir)
+        return result
+
+    def _init_descriptions(self):
+        filepath = Path(os.path.join(self.project_root, "scripts", "res", "airwindopedia.txt"))
+        with open(filepath, "r") as f:
+            lines = f.readlines()
+
+        try:
+            begin_index = first_matching_line_index(lines, f"# {self.title}")
+            next_index = next_matching_line_index(lines, begin_index + 1, "# ")
+            short_description = lines[begin_index].replace("#", "").strip()
+
+            chunk = lines[begin_index + 1:next_index]
+            chunk = [line.replace("\n", "") for line in chunk]
+            long_description = "".join(naive_line_filter(chunk))
+            return short_description, long_description
+        except RuntimeError as e:
+            warning(self.title, "could not find descriptions; using empty strings")
+            return "", ""
+
+    def _to_dict(self) -> dict:
+        d = {
+            "namespace": self.slug,
+            "short_description": self.short_description,
+            "long_description": self.long_description,
+            "tags": self.category,
+            "class_name": self.title,
+            "private_variables": self.private_vars,
+            "initialization": self.initialization_code,
+            "process": self.processing_code,
+            # param-specific:
+            "param_enum": self._param_enum(),
+            "set_parameter_value_switch": self._param_set_value_switch(),
+            "get_parameter_value_switch": self._param_get_value_switch(),
+            "get_parameter_default_switch": self._param_default_switch(),
+            "get_parameter_name_switch": self._param_name_switch(),
+            "get_parameter_title_switch": self._param_title_switch(),
+            "get_parameter_display_switch": self._parameter_display_switch(),
+            "get_parameter_label_switch": self._parameter_label_switch(),
+        }
+        return d
+
+    def _param_enum(self) -> str:
+        lines = []
+        for index, param in enumerate(self.parameters.values()):
+            line = f"{param.enum_name} = {index},\n"
+            lines.append(line)
+        lines.append(f"kNumParameters = {len(self.parameters)}")
+        return "".join(lines)
+
+    def _param_set_value_switch(self) -> str:
+        lines = []
+        for index, param in self.parameters.items():
+            line = f"{param.enum_name}: {param.variable} = value; break;\n"
+            lines.append(line)
+        return "".join(lines)
+
+    def _param_get_value_switch(self) -> str:
+        lines = []
+        for index, param in self.parameters.items():
+            line = f"{param.enum_name}: return {param.variable}; break;\n"
+            lines.append(line)
+        return "".join(lines)
+
+    def _param_default_switch(self) -> str:
+        lines = []
+        for index, param in self.parameters.items():
+            line = f"{param.enum_name}: return {param.default_value}; break;\n"
+            lines.append(line)
+        return "".join(lines)
+
+    def _param_name_switch(self) -> str:
+        lines = []
+        for index, param in self.parameters.items():
+            line = f"{param.enum_name}: return \"{param.slug}\"; break;\n"
+            lines.append(line)
+        return "".join(lines)
+
+    def _param_title_switch(self) -> str:
+        lines = []
+        for index, param in self.parameters.items():
+            line = f"{param.enum_name}: return \"{param.title}\"; break;\n"
+            lines.append(line)
+        return "".join(lines)
+
+    def _parameter_display_switch(self) -> str:
+        lines = []
+        for index, param in self.parameters.items():
+            line = f"{param.enum_name}: return std::to_string({param.variable}); break;\n"
+            lines.append(line)
+        return "".join(lines)
+
+    def _parameter_label_switch(self) -> str:
+        lines = []
+        for index, param in self.parameters.items():
+            line = f"{param.enum_name}: return \"{param.label}\"; break;\n"
+            lines.append(line)
+        return "".join(lines)
+
+    def write(self, project_root: Path, template_header: Path):
+        with open(template_header, "r") as f:
+            template = f.read()
+        template = string.Template(template)
+
+        try:
+            filled_template = template.substitute(self._to_dict())
+        except KeyError:
+            raise GrabError("Could not substitute template")
+
+        make_missing_directory(Path(os.path.join(project_root, "include")))
+        make_missing_directory(Path(os.path.join(project_root, "include", self.category)))
+
+        output_path = Path(os.path.join(project_root, "include", self.category, f"{self.slug}.hpp"))
+        with open(output_path, "w") as f:
+            f.write(filled_template)
+
+
+class Grabber:
+    _project_root: Path
+    _airwindopedia_path: Path
+    _template_header_path: Path
+    _categories: dict[str, str]
+    _categories_transpose: dict[str, list[str]]
+
+    def __init__(self, project_root: Path):
+        self._project_root = project_root
+        airwindows_root = os.path.join(project_root, "airwindows")
+        if not os.path.exists(airwindows_root) or not os.path.exists(os.path.join(airwindows_root, "Aura")):
+            raise FileNotFoundError("Please add a copy of the airwindows source code to the root of this repo with "
+                                    "the plugin source code as subdirectories")
+
+        self._airwindopedia_path = Path(os.path.join(self._project_root, "scripts", "res", "airwindopedia.txt"))
+        self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
+        self._categories, self._categories_transpose = self._init_categories()
+        self._init_plugins()
+
+    def _init_categories(self) -> (dict[str, list[str]], dict[str, str]):
+        with open(self._airwindopedia_path, "r") as f:
+            lines = f.readlines()
+
+        categories = dict()
+        categories_transpose = dict()
+        in_categories = False
+        for line in lines:
+            if line.startswith("#####"):
+                in_categories = False
+            if in_categories:
+                stripped = line.strip()
+                if stripped != "":
+                    category, elements = self._split_category(stripped)
+                    for element in elements:
+                        categories[element] = category
+                    if category in categories_transpose.keys():
+                        categories_transpose[category] += elements
+                    else:
+                        categories_transpose[category] = elements
+            if line.startswith("# Categories"):
+                in_categories = True
+        return categories, categories_transpose
+
+    @staticmethod
+    def _split_category(s: str):
+        category = s.split(":")[0].strip().lower().replace(" ", "-")
+        elements = s.split(":")[1].split(",")
+        for i in range(len(elements)):
+            new_elem = elements[i].strip()
+            elements[i] = new_elem
+        return category, elements
+
+    def _init_plugins(self):
+        for plugin, category in self._categories.items():
+            try:
+                print(f"Writing {plugin} =====")
+                plug = Plugin(self._project_root, plugin, category)
+                plug.write(self._project_root, self._template_header_path)
+            except GrabError as e:
+                print(f">>> Failure... {e}\n")
 
 
 def main(root_dir):
-    dstdir = Path(os.path.join(root_dir, "include"))
-    categories = get_category_lines(Path(os.path.join(root_dir, "scripts", "airwindopedia.txt")))
-
-    # Store airwindows at /tmp
-    assert os.path.exists(os.path.join(root_dir, "tmp"))
-
-    for category, names in categories:
-        for name in names:
-            srcdir = Path(os.path.join(root_dir, "tmp", name))
-            try:
-                write_header(srcdir, category, dstdir, Path(os.path.join(root_dir, "scripts")))
-            except Exception as e:
-                log = os.path.join(root_dir, "log.txt")
-                with open(log, "a") as logfile:
-                    logfile.write(name + "\n")
-                print(f"failed on {e} for {name}")
+    grabber = Grabber(Path(root_dir))
 
 
 if __name__ == "__main__":
-    path_to_airwindohhs = ""
+    path_to_airwindohhs = "/Users/igk/code/c74/airfx/source/airwindohhs"
     main(path_to_airwindohhs)

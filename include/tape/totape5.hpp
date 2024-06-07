@@ -211,19 +211,30 @@ class ToTape5 final : public Effect<T>
         kParamE = 4,
         kParamF = 5,
         kNumParameters = 6
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
-            case kParamF: F = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
+        kParamF:
+            F = value;
+            break;
 
             default: break;
         }
@@ -233,12 +244,24 @@ class ToTape5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
-            case kParamF: return F;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
+        kParamF:
+            return F;
+            break;
 
             default: break;
         }
@@ -249,12 +272,24 @@ class ToTape5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.25;
-            case kParamB: return 0.0;
-            case kParamC: return 0.0;
-            case kParamD: return 0.0;
-            case kParamE: return 1.0;
-            case kParamF: return 1.0;
+        kParamA:
+            return 0.25;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 0.0;
+            break;
+        kParamD:
+            return 0.0;
+            break;
+        kParamE:
+            return 1.0;
+            break;
+        kParamF:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -265,12 +300,24 @@ class ToTape5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "louder";
-            case kParamB: return "softer";
-            case kParamC: return "fatter";
-            case kParamD: return "flutter";
-            case kParamE: return "output";
-            case kParamF: return "drywet";
+        kParamA:
+            return "louder";
+            break;
+        kParamB:
+            return "softer";
+            break;
+        kParamC:
+            return "fatter";
+            break;
+        kParamD:
+            return "flutter";
+            break;
+        kParamE:
+            return "output";
+            break;
+        kParamF:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -281,12 +328,24 @@ class ToTape5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Louder";
-            case kParamB: return "Softer";
-            case kParamC: return "Fatter";
-            case kParamD: return "Flutter";
-            case kParamE: return "Output";
-            case kParamF: return "Dry/Wet";
+        kParamA:
+            return "Louder";
+            break;
+        kParamB:
+            return "Softer";
+            break;
+        kParamC:
+            return "Fatter";
+            break;
+        kParamD:
+            return "Flutter";
+            break;
+        kParamE:
+            return "Output";
+            break;
+        kParamF:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -297,12 +356,24 @@ class ToTape5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
-            case kParamE: return std::to_string(E);
-            case kParamF: return std::to_string(F);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
+        kParamF:
+            return std::to_string(F);
+            break;
 
             default: break;
         }
@@ -313,12 +384,26 @@ class ToTape5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
-            case kParamF: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+        kParamF:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -763,5 +848,7 @@ class ToTape5 final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::totape5

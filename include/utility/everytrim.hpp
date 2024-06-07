@@ -54,18 +54,27 @@ class EveryTrim final : public Effect<T>
         kParamD = 3,
         kParamE = 4,
         kNumParameters = 5
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
 
             default: break;
         }
@@ -75,11 +84,21 @@ class EveryTrim final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
 
             default: break;
         }
@@ -90,11 +109,21 @@ class EveryTrim final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
-            case kParamE: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -105,11 +134,21 @@ class EveryTrim final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "left";
-            case kParamB: return "right";
-            case kParamC: return "mid";
-            case kParamD: return "side";
-            case kParamE: return "master";
+        kParamA:
+            return "left";
+            break;
+        kParamB:
+            return "right";
+            break;
+        kParamC:
+            return "mid";
+            break;
+        kParamD:
+            return "side";
+            break;
+        kParamE:
+            return "master";
+            break;
 
             default: break;
         }
@@ -120,11 +159,21 @@ class EveryTrim final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Left";
-            case kParamB: return "Right";
-            case kParamC: return "Mid";
-            case kParamD: return "Side";
-            case kParamE: return "Master";
+        kParamA:
+            return "Left";
+            break;
+        kParamB:
+            return "Right";
+            break;
+        kParamC:
+            return "Mid";
+            break;
+        kParamD:
+            return "Side";
+            break;
+        kParamE:
+            return "Master";
+            break;
 
             default: break;
         }
@@ -135,11 +184,21 @@ class EveryTrim final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 24.0) - 12.0);
-            case kParamB: return std::to_string((B * 24.0) - 12.0);
-            case kParamC: return std::to_string((C * 24.0) - 12.0);
-            case kParamD: return std::to_string((D * 24.0) - 12.0);
-            case kParamE: return std::to_string((E * 24.0) - 12.0);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
 
             default: break;
         }
@@ -150,11 +209,23 @@ class EveryTrim final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "dB";
-            case kParamB: return "dB";
-            case kParamC: return "dB";
-            case kParamD: return "dB";
-            case kParamE: return "dB";
+        kParamA:
+            return "dB";
+            break;
+        kParamB:
+            return "dB";
+            break;
+        kParamC:
+            return "dB";
+            break;
+        kParamD:
+            return "dB";
+            break;
+        kParamE:
+            return "dB";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -214,5 +285,7 @@ class EveryTrim final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::everytrim

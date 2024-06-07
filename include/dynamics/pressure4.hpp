@@ -64,17 +64,24 @@ class Pressure4 final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -84,10 +91,18 @@ class Pressure4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -98,10 +113,18 @@ class Pressure4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
-            case kParamB: return 0.2;
-            case kParamC: return 1.0;
-            case kParamD: return 1.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.2;
+            break;
+        kParamC:
+            return 1.0;
+            break;
+        kParamD:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -112,10 +135,18 @@ class Pressure4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "pressure";
-            case kParamB: return "speed";
-            case kParamC: return "mewiness";
-            case kParamD: return "output gain";
+        kParamA:
+            return "pressure";
+            break;
+        kParamB:
+            return "speed";
+            break;
+        kParamC:
+            return "mewiness";
+            break;
+        kParamD:
+            return "output gain";
+            break;
 
             default: break;
         }
@@ -126,10 +157,18 @@ class Pressure4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Pressure";
-            case kParamB: return "Speed";
-            case kParamC: return "Mewiness";
-            case kParamD: return "Output Gain";
+        kParamA:
+            return "Pressure";
+            break;
+        kParamB:
+            return "Speed";
+            break;
+        kParamC:
+            return "Mewiness";
+            break;
+        kParamD:
+            return "Output Gain";
+            break;
 
             default: break;
         }
@@ -140,10 +179,18 @@ class Pressure4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string((C * 2.0) - 1.0);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -154,10 +201,20 @@ class Pressure4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return " ";
-            case kParamB: return " ";
-            case kParamC: return " ";
-            case kParamD: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+        kParamC:
+            return " ";
+            break;
+        kParamD:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -351,5 +408,7 @@ class Pressure4 final : public Effect<T>
             *outputR++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::pressure4

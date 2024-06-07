@@ -6,10 +6,10 @@ namespace airwindohhs::distance {
 
 constexpr std::string_view k_name{ "Distance" };
 constexpr std::string_view k_short_description{
-    "Distance3 combines the best parts of Distance and Discontinuity."
+    "Distance is a sound design or reverb far-away-izer."
 };
 constexpr std::string_view k_long_description{
-    "Here’s another utility plugin: Distance is specifically set up to mimic through-air high frequency attenuation. It’s from my initial wave of Airwindows plugins, come to VST and with a new twist: though in the video it’s a one-knobber, when you download it you’ll find that it’s got a Dry/Wet control, just to expand the things you can do with it. That’s new! I try to listen to people, even when it’s tempting to make it a super-dedicated one-trick pony.As you can see from how it behaves, Distance is a lot more complicated than just running a shelf. For that reason, I suggest this plugin for sound design and creative mixing purposes. Don’t try to use it for mastering or 2-buss, I feel it’s too intensely colored. However, for creative use it’s exactly what it says on the tin! Stick it on anything that’s supposed to ‘read’ sonically like it’s super far away, and you’ll be able to hear for miles and miles. Works on anything from pads to thunder to basses to reverb returns (I suggest using it on reverb returns rather than sends: it will be able to add thunder and size to the output of the reverb algorithm)As requested, this is the unholy hybrid of Distance and Atmosphere. This one doesn’t work like a Console5 system, it’s strictly ‘put it on and get a sound’, but I wasn’t expecting how cool it would be. Turns out this thing is completely absurdly good at taking tracks like drums, and making them huge and pounding and stage-like, without even the use of reverb or compression.The beginning of the video’s about using Distance2 as a loudenator, though I think using it on a full mix is overkill (maybe you want SOME elements to be up front and present). Bear in mind that you can keep the Atmosphere control set very low and still get an effect: the equivalent to the Atmosphere mixing system is to have it incredibly low, like 0.1 or less. The more you push it, the more nasty it’ll get, because that algorithm alone is NOT enough to make a distance sound. It’s not doing any of the high frequency attenuation you’d get, so technically the sound of high Atmosphere settings is the sound of extreme loudness rupturing the air and your eardrums: pushed hard, it’s unrecognizable as any natural sound. You wouldn’t survive exposure to a sound so loud that it broke the air like that.But when you also include the Darken control, that’s when things start sounding realistic again. This is one of those plugins where I could have built these into a single control to deliver good-sounding results no matter what setting you used… and where I chose to give you access to the wrongest possible settings because people NEED to break rules sometimes. Somebody out there is going to be able to get a great sound by taking the right source, and obliterating it with extreme Distance2 settings, and who am I to stand in the way? And you can also apply a dry/wet that will conceal the wreckage: surprisingly small amounts of dry signal will mask the amount of distortion going on.And the reason I’m able to put out a plugin where I KNOW that some people will set it wrongly and then hate it, is my Patreon. The thing about Patreon is that when it works, I’m completely protected from having to make things market friendly. Market friendly is a curse: it makes you do only predictable things that most people would like, and it punishes you if you want to do something unpopular, or if you want to take something great and widen the range until people get into trouble with it. It’s safer to give people presets that are known to behave on all source audio, that always sound nice. It’s safer to give people a pile of mulch than a chainsaw.Patreon lets me give you the chainsaw :D now, whether you do damage with it is your own affair. But I think once you strap it across some buss with drums or guitars or whatever, and fire it up, you’ll like chainsaws too. Just remember to dial it back when you need it not to be distractingly obnoxious. Or not: hey, it IS a distinct new distortion voice, with a whole new approach to slew clipping not previously available. Darken it or not, as it pleases you. Have fun.By request from my livestreams, let's jump right back into the Discontinuity thing, but this time combined with a much older plugin: the original Distance!This is a kind of plugin meant to darken the sound and make stuff sound really far away. Originally, I was thinking something that could take all the highs out and accentuate rumble, like turning a sound into the thunder version of itself. And so the first Distance worked basically as an EQ: three stacked stages of processing that combined to make stuff huge, kind of like my monitoring plugin SubsOnly.Thing is, that doesn't have any nonlinearities to speak of in it, not the kind that happen in the real world over that much air. And at the time I was working on a Console version called Atmosphere, and thought I had a handle on bringing in that kind of nonlinearity. And so the next one was Distance2… but it lost some of the purity and depth of Distance, but didn't sound quite the way I wanted. It was the best I could do at the time, and is still there if you're interested in different sorts of darken/distort.And then I brought in Discontinuity and was working on it in livestreams and someone mentioned, what if it was part of Distance? And the interesting thing is that Discontinuity also gets its sound from… three stages of processing, stacked. (as in, not side-by-side but in series, one after the other.)Anytime you look at a situation like that, you can think to yourself: well, I could run these two plugins on after the other, but what if I interleaved the stages? One of Distance, one of Discontinuity, another Distance, another Discontinuity, and so on? Surely that would combine the effects in a more interesting way, merge them into a new distinct thing as they work on each other in turn?And so here is Distance3. It goes right back to the tone quality of Distance, but it has all of the 'loud vibe' from Discontinuity, and outperforms either of them if you need the synthesis of both. There's probably lots of uses for this and my hope is that it'll be very easy to find those uses: if a thing has to be convincingly far away and you've already got reverb and ambience taken care of, Distance3 should immediately get you there in the best possible way."
+    "Here’s another utility plugin: Distance is specifically set up to mimic through-air high frequency attenuation. It’s from my initial wave of Airwindows plugins, come to VST and with a new twist: though in the video it’s a one-knobber, when you download it you’ll find that it’s got a Dry/Wet control, just to expand the things you can do with it. That’s new! I try to listen to people, even when it’s tempting to make it a super-dedicated one-trick pony.As you can see from how it behaves, Distance is a lot more complicated than just running a shelf. For that reason, I suggest this plugin for sound design and creative mixing purposes. Don’t try to use it for mastering or 2-buss, I feel it’s too intensely colored. However, for creative use it’s exactly what it says on the tin! Stick it on anything that’s supposed to ‘read’ sonically like it’s super far away, and you’ll be able to hear for miles and miles. Works on anything from pads to thunder to basses to reverb returns (I suggest using it on reverb returns rather than sends: it will be able to add thunder and size to the output of the reverb algorithm)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -59,15 +59,18 @@ class Distance final : public Effect<T>
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -77,8 +80,12 @@ class Distance final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -89,8 +96,12 @@ class Distance final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
-            case kParamB: return 1.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -101,8 +112,12 @@ class Distance final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "distance";
-            case kParamB: return "drywet";
+        kParamA:
+            return "distance";
+            break;
+        kParamB:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -113,8 +128,12 @@ class Distance final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Distance";
-            case kParamB: return "Dry/Wet";
+        kParamA:
+            return "Distance";
+            break;
+        kParamB:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -125,8 +144,12 @@ class Distance final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A * 2.0);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -137,8 +160,14 @@ class Distance final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "miles";
-            case kParamB: return " ";
+        kParamA:
+            return "miles";
+            break;
+        kParamB:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -248,5 +277,7 @@ class Distance final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::distance

@@ -80,26 +80,35 @@ class Biquad2 final : public Effect<T>
 
     enum params
     {
-        kParamfor (int x = 0,
-kParamfor (int x = 1,
-kParamfrequencychase = 2,
-kParamresonancechase = 3,
-kParamoutputchase = 4,
-kNumParameters = 5
-
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kNumParameters = 5
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: for (int x = value; break;
-case kParamfor (int x: for (int x = value; break;
-case kParamfrequencychase: frequencychase = value; break;
-case kParamresonancechase: resonancechase = value; break;
-case kParamoutputchase: outputchase = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -107,13 +116,23 @@ case kParamoutputchase: outputchase = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return for (int x;
-case kParamfor (int x: return for (int x;
-case kParamfrequencychase: return frequencychase;
-case kParamresonancechase: return resonancechase;
-case kParamoutputchase: return outputchase;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -122,13 +141,23 @@ case kParamoutputchase: return outputchase;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return 0;
-case kParamfor (int x: return 0;
-case kParamfrequencychase: return 0.0015;
-case kParamresonancechase: return 0.001;
-case kParamoutputchase: return 1.0;
+        kParamA:
+            return 1.0;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 1.0;
+            break;
+        kParamE:
+            return 1.0;
+            break;
 
-default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -137,13 +166,23 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "type";
-case kParamfor (int x: return "freq";
-case kParamfrequencychase: return "q";
-case kParamresonancechase: return "output";
-case kParamoutputchase: return "invwet";
+        kParamA:
+            return "type";
+            break;
+        kParamB:
+            return "freq";
+            break;
+        kParamC:
+            return "q";
+            break;
+        kParamD:
+            return "output";
+            break;
+        kParamE:
+            return "inv/wet";
+            break;
 
-default: break;
+            default: break;
         }
         return {};
     }
@@ -152,13 +191,23 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "Type";
-case kParamfor (int x: return "Freq";
-case kParamfrequencychase: return "Q";
-case kParamresonancechase: return "Output";
-case kParamoutputchase: return "Inv/Wet";
+        kParamA:
+            return "Type";
+            break;
+        kParamB:
+            return "Freq";
+            break;
+        kParamC:
+            return "Q";
+            break;
+        kParamD:
+            return "Output";
+            break;
+        kParamE:
+            return "Inv/Wet";
+            break;
 
-default: break;
+            default: break;
         }
         return {};
     }
@@ -167,13 +216,23 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return std::to_string((A*3.999)+0.00001));
-case kParamfor (int x: return std::to_string((B*B*0.9999)+0.0001);
-case kParamfrequencychase: return std::to_string((C * C * 49.99) + 0.01);
-case kParamresonancechase: return std::to_string(D);
-case kParamoutputchase: return std::to_string((E * 2.0) - 1.0);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
 
-default: break;
+            default: break;
         }
         return {};
     }
@@ -182,11 +241,23 @@ default: break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "";
-case kParamfor (int x: return "";
-case kParamfrequencychase: return "";
-case kParamresonancechase: return "";
-case kParamoutputchase: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

@@ -138,14 +138,15 @@ class AQuickVoiceClip final : public Effect<T>
     {
         kParamA = 0,
         kNumParameters = 1
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
+        kParamA:
+            A = value;
+            break;
 
             default: break;
         }
@@ -155,7 +156,9 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
+        kParamA:
+            return A;
+            break;
 
             default: break;
         }
@@ -166,7 +169,9 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.42;
+        kParamA:
+            return 0.42;
+            break;
 
             default: break;
         }
@@ -177,7 +182,9 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "highpass";
+        kParamA:
+            return "highpass";
+            break;
 
             default: break;
         }
@@ -188,7 +195,9 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Highpass";
+        kParamA:
+            return "Highpass";
+            break;
 
             default: break;
         }
@@ -199,7 +208,9 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A,3)*2070)+30);
+        kParamA:
+            return std::to_string(A);
+            break;
 
             default: break;
         }
@@ -210,7 +221,11 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "hz";
+        kParamA:
+            return "hz";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -648,5 +663,7 @@ class AQuickVoiceClip final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::aquickvoiceclip

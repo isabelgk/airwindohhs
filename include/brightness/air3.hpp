@@ -53,47 +53,35 @@ class Air3 final : public Effect<T>
         outAR,
         gainAR,
         air_total
-    };
-    double air[air_total];
-    uint32_t fpdL;
-    uint32_t fpdR;
-    // default stuff
-    float A;
-    float B;
 
-  public:
-    Air3()
-    {
-        A = 0.5;
-        B = 0.5;
-        for (int x = 0; x < air_total; x++) {
-            air[x] = 0.0;
-        }
-        fpdL = 1.0;
-        while (fpdL < 16386) {
-            fpdL = rand() * UINT32_MAX;
-        }
-        fpdR = 1.0;
-        while (fpdR < 16386) {
-            fpdR = rand() * UINT32_MAX;
-        }
-        // this is reset: values being initialized only once. Startup values, whatever they are.
-    }
+        public :
+            Air3(){
+                A = 0.5;
+                B = 0.5;
+                for (int x = 0; x < air_total; x++) air[x] = 0.0;
+                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
+                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+                // this is reset: values being initialized only once. Startup values, whatever they are.
+
+            }
 
     enum params
     {
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -103,8 +91,12 @@ class Air3 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -115,8 +107,12 @@ class Air3 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -127,8 +123,12 @@ class Air3 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "air";
-            case kParamB: return "gnd";
+        kParamA:
+            return "air";
+            break;
+        kParamB:
+            return "gnd";
+            break;
 
             default: break;
         }
@@ -139,8 +139,12 @@ class Air3 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Air";
-            case kParamB: return "Gnd";
+        kParamA:
+            return "Air";
+            break;
+        kParamB:
+            return "Gnd";
+            break;
 
             default: break;
         }
@@ -151,8 +155,12 @@ class Air3 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -163,8 +171,14 @@ class Air3 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

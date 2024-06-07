@@ -6,10 +6,10 @@ namespace airwindohhs::podcast {
 
 constexpr std::string_view k_name{ "Podcast" };
 constexpr std::string_view k_short_description{
-    "PodcastDeluxe is a pile of compressors (curve style) and phase rotators."
+    "Podcast is a simpler pile of curve-style compressors with hard clipping."
 };
 constexpr std::string_view k_long_description{
-    "Podcast is the same technique as PodcastDeluxe, multiple compressors that are the precursor to curve and Recurve, but simplified: without the phase rotators, without the full-on attempt to do ‘radio broadcast’ style tricks.This also means Podcast can have a dry/wet control, because there aren’t any phase rotations delaying things. In fact, Podcast runs no latency and can work very well as a ‘glue’ style buss compressor… so long as you don’t want ‘pumping and swelling’ effects, or sidechainy whooshes of level. That’s because Podcast is still in the curve school of compressors and quits changing levels if the input goes silent.It also hard-clips the output, making it a kind of ‘safety compressor’: though it’s not clean like a limiter, it’ll strike a balance between dynamics processor and distortion device. You can use it on drums and things meant to be aggressively smashed, or turn it way down and use it as a clean buss comp.Treat this as another flavor of compressor from Airwindows, and see if it finds uses for you. The greater simplicity of Podcast (much like PodcastDeluxe, heavily updated from the original versions) makes it more adaptable to different purposes, while it remains simple and un-fiddly, delivering its effects with whatever intensity and blend you like. :)PodcastDeluxe is the precursor to curve, along with its counterpart Podcast. Both of them have five curve-like compressors in series (slightly less refined), but PodcastDeluxe has five phase rotators and an ADClip-style output stage. The idea is that it would be radio station style processing. The reason it didn’t show up sooner is that it didn’t really work to my satisfaction. It’s still not perfect, but it’s different! I demonstrate it on house-type music, and on raw drums. It’s not really clean, not really dirty, not really squish-capable thanks to the curve-style compression (even five stages doesn’t give you ‘compression pumping’) but it’ll give a perhaps interesting, definitely processed-sounding effect.Maybe you’ll like it on a mix because you’re not fussy about distorting, maybe you’ll find some useful place for it elsewhere. I think it’s got a knack for high-impact drum busses without distorting them too obviously. At any rate, there’s nothing quite like it. Enjoy!"
+    "Podcast is the same technique as PodcastDeluxe, multiple compressors that are the precursor to curve and Recurve, but simplified: without the phase rotators, without the full-on attempt to do ‘radio broadcast’ style tricks.This also means Podcast can have a dry/wet control, because there aren’t any phase rotations delaying things. In fact, Podcast runs no latency and can work very well as a ‘glue’ style buss compressor… so long as you don’t want ‘pumping and swelling’ effects, or sidechainy whooshes of level. That’s because Podcast is still in the curve school of compressors and quits changing levels if the input goes silent.It also hard-clips the output, making it a kind of ‘safety compressor’: though it’s not clean like a limiter, it’ll strike a balance between dynamics processor and distortion device. You can use it on drums and things meant to be aggressively smashed, or turn it way down and use it as a clean buss comp.Treat this as another flavor of compressor from Airwindows, and see if it finds uses for you. The greater simplicity of Podcast (much like PodcastDeluxe, heavily updated from the original versions) makes it more adaptable to different purposes, while it remains simple and un-fiddly, delivering its effects with whatever intensity and blend you like. :)"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -67,15 +67,18 @@ class Podcast final : public Effect<T>
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -85,8 +88,12 @@ class Podcast final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -97,8 +104,12 @@ class Podcast final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 1.0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -109,8 +120,12 @@ class Podcast final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "boost";
-            case kParamB: return "drywet";
+        kParamA:
+            return "boost";
+            break;
+        kParamB:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -121,8 +136,12 @@ class Podcast final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Boost";
-            case kParamB: return "Dry/Wet";
+        kParamA:
+            return "Boost";
+            break;
+        kParamB:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -133,8 +152,12 @@ class Podcast final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -145,8 +168,14 @@ class Podcast final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

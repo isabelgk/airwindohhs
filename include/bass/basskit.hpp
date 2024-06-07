@@ -141,17 +141,24 @@ class BassKit final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -161,10 +168,18 @@ class BassKit final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -175,10 +190,18 @@ class BassKit final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -189,10 +212,18 @@ class BassKit final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "drive";
-            case kParamB: return "voicing";
-            case kParamC: return "bassout";
-            case kParamD: return "subout";
+        kParamA:
+            return "drive";
+            break;
+        kParamB:
+            return "voicing";
+            break;
+        kParamC:
+            return "bassout";
+            break;
+        kParamD:
+            return "subout";
+            break;
 
             default: break;
         }
@@ -203,10 +234,18 @@ class BassKit final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Drive";
-            case kParamB: return "Voicing";
-            case kParamC: return "BassOut";
-            case kParamD: return "SubOut";
+        kParamA:
+            return "Drive";
+            break;
+        kParamB:
+            return "Voicing";
+            break;
+        kParamC:
+            return "BassOut";
+            break;
+        kParamD:
+            return "SubOut";
+            break;
 
             default: break;
         }
@@ -217,10 +256,18 @@ class BassKit final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string((C * 2.0) - 1.0);
-            case kParamD: return std::to_string((D * 2.0) - 1.0);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -231,10 +278,20 @@ class BassKit final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

@@ -53,15 +53,18 @@ class Average final : public Effect<T>
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -71,8 +74,12 @@ class Average final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -83,8 +90,12 @@ class Average final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
-            case kParamB: return 1.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -95,8 +106,12 @@ class Average final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "average";
-            case kParamB: return "drywet";
+        kParamA:
+            return "average";
+            break;
+        kParamB:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -107,8 +122,12 @@ class Average final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Average";
-            case kParamB: return "Dry/Wet";
+        kParamA:
+            return "Average";
+            break;
+        kParamB:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -119,8 +138,12 @@ class Average final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 9.0) + 1.0);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -131,8 +154,14 @@ class Average final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "taps";
-            case kParamB: return " ";
+        kParamA:
+            return "taps";
+            break;
+        kParamB:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -341,5 +370,7 @@ class Average final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::average

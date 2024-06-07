@@ -6,10 +6,10 @@ namespace airwindohhs::powersag {
 
 constexpr std::string_view k_name{ "PowerSag" };
 constexpr std::string_view k_short_description{
-    "PowerSag2 is my improved circuit-starve plugin, now with inverse effect!"
+    "PowerSag is for emulating power supply limitations in analog modeling."
 };
 constexpr std::string_view k_long_description{
-    "We’re going to explore the early Desk plugins (as free VSTs), so here we’ll start off with one of the underlying principles! PowerSag models the problem of analog power supplies that can’t source enough current to drive the output of the circuit. The circuit doesn’t directly distort, but the more output it’s been making, the less is in reserve. This is part of the Desk line of plugins, but now it’s a distinct component to play with.You get a Depth and Speed control. Dial in the effect by exaggerating Depth and then exploring with Speed: it’ll create a variety of compressey or distortey effects, but since they’re sucking energy out of the body of the sound, it’s a completely different type of distortion from saturation or clipping. Then, return Depth to zero and sneak small amounts of it back in, until the desired effect is reached. You’ll get a more tubey effect with extremely slow Speed, a big-console transistory effect with very quick Speed.The neat thing about PowerSag is that, if you like grunge and distortion, it’s capable of adding some grind to the sound while pulling the channel back in the mix, where traditional distortion and saturation pushes sounds forward. When you balance that with normal overdrive, you can get a lot of energy and character happening without everything becoming too fatiguing and up-front. Balance is good, being able to trim the body of a sound is good: if you like sculpting mixes with distortion and saturation, this might be right up your alley :)This is PowerSag (my circuit-power-supply-starve plugin), but the internals are coded differently for more efficiency on modern CPUs, it gets twice as much maximum effect range (which will help if you’re using it at high sample rates) and it now has an inverse/wet control. That means that you can hear what’s being taken AWAY (which is typically a grungey, gatey effect) and fade into that if it helps you get more meat into some of your sounds."
+    "We’re going to explore the early Desk plugins (as free VSTs), so here we’ll start off with one of the underlying principles! PowerSag models the problem of analog power supplies that can’t source enough current to drive the output of the circuit. The circuit doesn’t directly distort, but the more output it’s been making, the less is in reserve. This is part of the Desk line of plugins, but now it’s a distinct component to play with.You get a Depth and Speed control. Dial in the effect by exaggerating Depth and then exploring with Speed: it’ll create a variety of compressey or distortey effects, but since they’re sucking energy out of the body of the sound, it’s a completely different type of distortion from saturation or clipping. Then, return Depth to zero and sneak small amounts of it back in, until the desired effect is reached. You’ll get a more tubey effect with extremely slow Speed, a big-console transistory effect with very quick Speed.The neat thing about PowerSag is that, if you like grunge and distortion, it’s capable of adding some grind to the sound while pulling the channel back in the mix, where traditional distortion and saturation pushes sounds forward. When you balance that with normal overdrive, you can get a lot of energy and character happening without everything becoming too fatiguing and up-front. Balance is good, being able to trim the body of a sound is good: if you like sculpting mixes with distortion and saturation, this might be right up your alley :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -54,20 +54,23 @@ class PowerSag final : public Effect<T>
 
     enum params
     {
-        kParamfor(int count = 0,
-kParamcontrolL = 1,
-kNumParameters = 2
-
+        kParamA = 0,
+        kParamB = 1,
+        kNumParameters = 2
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: for(int count = value; break;
-case kParamcontrolL: controlL = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -75,10 +78,14 @@ case kParamcontrolL: controlL = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return for(int count;
-case kParamcontrolL: return controlL;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -87,10 +94,14 @@ case kParamcontrolL: return controlL;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return 0;
-        case kParamcontrolL: return 0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.3;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -99,10 +110,14 @@ case kParamcontrolL: return controlL;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "depth";
-        case kParamcontrolL: return "speed";
+        kParamA:
+            return "depth";
+            break;
+        kParamB:
+            return "speed";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -111,10 +126,14 @@ case kParamcontrolL: return controlL;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return "Depth";
-        case kParamcontrolL: return "Speed";
+        kParamA:
+            return "Depth";
+            break;
+        kParamB:
+            return "Speed";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -123,10 +142,14 @@ case kParamcontrolL: return controlL;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return std::to_string(A);
-        case kParamcontrolL: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -135,8 +158,14 @@ case kParamcontrolL: return controlL;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor(int count: return " ";
-        case kParamcontrolL: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -269,5 +298,7 @@ case kParamcontrolL: return controlL;
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::powersag

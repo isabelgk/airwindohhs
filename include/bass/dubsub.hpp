@@ -245,23 +245,42 @@ class DubSub final : public Effect<T>
         kParamI = 8,
         kParamJ = 9,
         kNumParameters = 10
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
-            case kParamF: F = value; break;
-            case kParamG: G = value; break;
-            case kParamH: H = value; break;
-            case kParamI: I = value; break;
-            case kParamJ: J = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
+        kParamF:
+            F = value;
+            break;
+        kParamG:
+            G = value;
+            break;
+        kParamH:
+            H = value;
+            break;
+        kParamI:
+            I = value;
+            break;
+        kParamJ:
+            J = value;
+            break;
 
             default: break;
         }
@@ -271,16 +290,36 @@ class DubSub final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
-            case kParamF: return F;
-            case kParamG: return G;
-            case kParamH: return H;
-            case kParamI: return I;
-            case kParamJ: return J;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
+        kParamF:
+            return F;
+            break;
+        kParamG:
+            return G;
+            break;
+        kParamH:
+            return H;
+            break;
+        kParamI:
+            return I;
+            break;
+        kParamJ:
+            return J;
+            break;
 
             default: break;
         }
@@ -291,16 +330,36 @@ class DubSub final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.9;
-            case kParamB: return 0.5;
-            case kParamC: return 0.74;
-            case kParamD: return 1.0;
-            case kParamE: return 0.95;
-            case kParamF: return 0.5;
-            case kParamG: return 0.2;
-            case kParamH: return 0.2;
-            case kParamI: return 0.5;
-            case kParamJ: return 1.0;
+        kParamA:
+            return 0.9;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.74;
+            break;
+        kParamD:
+            return 1.0;
+            break;
+        kParamE:
+            return 0.95;
+            break;
+        kParamF:
+            return 0.5;
+            break;
+        kParamG:
+            return 0.2;
+            break;
+        kParamH:
+            return 0.2;
+            break;
+        kParamI:
+            return 0.5;
+            break;
+        kParamJ:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -311,16 +370,36 @@ class DubSub final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "tgrind";
-            case kParamB: return "grdout";
-            case kParamC: return "xover";
-            case kParamD: return "bsdrive";
-            case kParamE: return "bsvoice";
-            case kParamF: return "bassout";
-            case kParamG: return "sbdrive";
-            case kParamH: return "sbvoice";
-            case kParamI: return "subout";
-            case kParamJ: return "drywet";
+        kParamA:
+            return "tgrind";
+            break;
+        kParamB:
+            return "grd/out";
+            break;
+        kParamC:
+            return "xover";
+            break;
+        kParamD:
+            return "bsdrive";
+            break;
+        kParamE:
+            return "bsvoice";
+            break;
+        kParamF:
+            return "bassout";
+            break;
+        kParamG:
+            return "sbdrive";
+            break;
+        kParamH:
+            return "sbvoice";
+            break;
+        kParamI:
+            return "subout";
+            break;
+        kParamJ:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -331,16 +410,36 @@ class DubSub final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "TGrind";
-            case kParamB: return "Grd/Out";
-            case kParamC: return "XOver";
-            case kParamD: return "BsDrive";
-            case kParamE: return "BsVoice";
-            case kParamF: return "BassOut";
-            case kParamG: return "SbDrive";
-            case kParamH: return "SbVoice";
-            case kParamI: return "SubOut";
-            case kParamJ: return "Dry/Wet";
+        kParamA:
+            return "TGrind";
+            break;
+        kParamB:
+            return "Grd/Out";
+            break;
+        kParamC:
+            return "XOver";
+            break;
+        kParamD:
+            return "BsDrive";
+            break;
+        kParamE:
+            return "BsVoice";
+            break;
+        kParamF:
+            return "BassOut";
+            break;
+        kParamG:
+            return "SbDrive";
+            break;
+        kParamH:
+            return "SbVoice";
+            break;
+        kParamI:
+            return "SubOut";
+            break;
+        kParamJ:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -351,16 +450,36 @@ class DubSub final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string((B * 2.0) - 1.0);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
-            case kParamE: return std::to_string(E);
-            case kParamF: return std::to_string((F * 2.0) - 1.0);
-            case kParamG: return std::to_string(G);
-            case kParamH: return std::to_string(H);
-            case kParamI: return std::to_string((I * 2.0) - 1.0);
-            case kParamJ: return std::to_string(J);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
+        kParamF:
+            return std::to_string(F);
+            break;
+        kParamG:
+            return std::to_string(G);
+            break;
+        kParamH:
+            return std::to_string(H);
+            break;
+        kParamI:
+            return std::to_string(I);
+            break;
+        kParamJ:
+            return std::to_string(J);
+            break;
 
             default: break;
         }
@@ -371,16 +490,38 @@ class DubSub final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
-            case kParamF: return "";
-            case kParamG: return "";
-            case kParamH: return "";
-            case kParamI: return "";
-            case kParamJ: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+        kParamF:
+            return "";
+            break;
+        kParamG:
+            return "";
+            break;
+        kParamH:
+            return "";
+            break;
+        kParamI:
+            return "";
+            break;
+        kParamJ:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

@@ -74,20 +74,25 @@ class ButterComp2 final : public Effect<T>
 
     enum params
     {
-        kParamcontrolAposL = 0,
-        kParamcontrolAnegL = 1,
-        kParamcontrolBposL = 2,
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
         kNumParameters = 3
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamcontrolAposL: controlAposL = value; break;
-            case kParamcontrolAnegL: controlAnegL = value; break;
-            case kParamcontrolBposL: controlBposL = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
 
             default: break;
         }
@@ -97,9 +102,15 @@ class ButterComp2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamcontrolAposL: return controlAposL;
-            case kParamcontrolAnegL: return controlAnegL;
-            case kParamcontrolBposL: return controlBposL;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
 
             default: break;
         }
@@ -110,9 +121,15 @@ class ButterComp2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamcontrolAposL: return 1.0;
-            case kParamcontrolAnegL: return 1.0;
-            case kParamcontrolBposL: return 1.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -123,9 +140,15 @@ class ButterComp2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamcontrolAposL: return "compress";
-            case kParamcontrolAnegL: return "output";
-            case kParamcontrolBposL: return "drywet";
+        kParamA:
+            return "compress";
+            break;
+        kParamB:
+            return "output";
+            break;
+        kParamC:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -136,9 +159,15 @@ class ButterComp2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamcontrolAposL: return "Compress";
-            case kParamcontrolAnegL: return "Output";
-            case kParamcontrolBposL: return "Dry/Wet";
+        kParamA:
+            return "Compress";
+            break;
+        kParamB:
+            return "Output";
+            break;
+        kParamC:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -149,9 +178,15 @@ class ButterComp2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamcontrolAposL: return std::to_string(A);
-            case kParamcontrolAnegL: return std::to_string(B * 2.0);
-            case kParamcontrolBposL: return std::to_string(C);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
 
             default: break;
         }
@@ -162,9 +197,17 @@ class ButterComp2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamcontrolAposL: return "";
-            case kParamcontrolAnegL: return "";
-            case kParamcontrolBposL: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

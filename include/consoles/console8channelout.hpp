@@ -35,45 +35,31 @@ class Console8ChannelOut final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
-    }; // fixed frequency biquad filter for ultrasonics, stereo
-    double fix[fix_total];
-    uint32_t fpdL;
-    uint32_t fpdR;
-    // default stuff
-    float A;
 
-  public:
-    Console8ChannelOut()
-    {
-        A = 0.5;
-        inTrimA = 0.5;
-        inTrimB = 0.5;
-        for (int x = 0; x < fix_total; x++) {
-            fix[x] = 0.0;
-        }
-        fpdL = 1.0;
-        while (fpdL < 16386) {
-            fpdL = rand() * UINT32_MAX;
-        }
-        fpdR = 1.0;
-        while (fpdR < 16386) {
-            fpdR = rand() * UINT32_MAX;
-        }
-        // this is reset: values being initialized only once. Startup values, whatever they are.
-    }
+        public :
+            Console8ChannelOut(){
+                A = 0.5;
+                inTrimA = 0.5; inTrimB = 0.5;
+                for (int x = 0; x < fix_total; x++) fix[x] = 0.0;
+                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
+                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+                // this is reset: values being initialized only once. Startup values, whatever they are.
+
+            }
 
     enum params
     {
         kParamA = 0,
         kNumParameters = 1
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
+        kParamA:
+            A = value;
+            break;
 
             default: break;
         }
@@ -83,7 +69,9 @@ class Console8ChannelOut final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
+        kParamA:
+            return A;
+            break;
 
             default: break;
         }
@@ -94,7 +82,9 @@ class Console8ChannelOut final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -105,7 +95,9 @@ class Console8ChannelOut final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "fader";
+        kParamA:
+            return "fader";
+            break;
 
             default: break;
         }
@@ -116,7 +108,9 @@ class Console8ChannelOut final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Fader";
+        kParamA:
+            return "Fader";
+            break;
 
             default: break;
         }
@@ -127,7 +121,9 @@ class Console8ChannelOut final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
+        kParamA:
+            return std::to_string(A);
+            break;
 
             default: break;
         }
@@ -138,7 +134,11 @@ class Console8ChannelOut final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
+        kParamA:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

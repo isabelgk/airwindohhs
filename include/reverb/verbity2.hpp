@@ -312,17 +312,24 @@ class Verbity2 final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -332,10 +339,18 @@ class Verbity2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -346,10 +361,18 @@ class Verbity2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 1.0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -360,10 +383,18 @@ class Verbity2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "rmsize";
-            case kParamB: return "sustain";
-            case kParamC: return "mulch";
-            case kParamD: return "wetness";
+        kParamA:
+            return "rmsize";
+            break;
+        kParamB:
+            return "sustain";
+            break;
+        kParamC:
+            return "mulch";
+            break;
+        kParamD:
+            return "wetness";
+            break;
 
             default: break;
         }
@@ -374,10 +405,18 @@ class Verbity2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "RmSize";
-            case kParamB: return "Sustain";
-            case kParamC: return "Mulch";
-            case kParamD: return "Wetness";
+        kParamA:
+            return "RmSize";
+            break;
+        kParamB:
+            return "Sustain";
+            break;
+        kParamC:
+            return "Mulch";
+            break;
+        kParamD:
+            return "Wetness";
+            break;
 
             default: break;
         }
@@ -388,10 +427,18 @@ class Verbity2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -402,10 +449,20 @@ class Verbity2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

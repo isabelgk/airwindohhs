@@ -69,19 +69,30 @@ class ADT final : public Effect<T>
         kParamE = 4,
         kParamF = 5,
         kNumParameters = 6
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
-            case kParamF: F = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
+        kParamF:
+            F = value;
+            break;
 
             default: break;
         }
@@ -91,12 +102,24 @@ class ADT final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
-            case kParamF: return F;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
+        kParamF:
+            return F;
+            break;
 
             default: break;
         }
@@ -107,12 +130,24 @@ class ADT final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
-            case kParamE: return 0.5;
-            case kParamF: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 0.5;
+            break;
+        kParamF:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -123,12 +158,24 @@ class ADT final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "headrm";
-            case kParamB: return "a delay";
-            case kParamC: return "a level";
-            case kParamD: return "b delay";
-            case kParamE: return "b level";
-            case kParamF: return "output";
+        kParamA:
+            return "headrm";
+            break;
+        kParamB:
+            return "a delay";
+            break;
+        kParamC:
+            return "a level";
+            break;
+        kParamD:
+            return "b delay";
+            break;
+        kParamE:
+            return "b level";
+            break;
+        kParamF:
+            return "output";
+            break;
 
             default: break;
         }
@@ -139,12 +186,24 @@ class ADT final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Headrm";
-            case kParamB: return "A Delay";
-            case kParamC: return "A Level";
-            case kParamD: return "B Delay";
-            case kParamE: return "B Level";
-            case kParamF: return "Output";
+        kParamA:
+            return "Headrm";
+            break;
+        kParamB:
+            return "A Delay";
+            break;
+        kParamC:
+            return "A Level";
+            break;
+        kParamD:
+            return "B Delay";
+            break;
+        kParamE:
+            return "B Level";
+            break;
+        kParamF:
+            return "Output";
+            break;
 
             default: break;
         }
@@ -155,12 +214,24 @@ class ADT final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A * 2.0);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string((C * 2.0) - 1.0);
-            case kParamD: return std::to_string(D);
-            case kParamE: return std::to_string((E * 2.0) - 1.0);
-            case kParamF: return std::to_string(F * 2.0);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
+        kParamF:
+            return std::to_string(F);
+            break;
 
             default: break;
         }
@@ -171,12 +242,26 @@ class ADT final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
-            case kParamF: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+        kParamF:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

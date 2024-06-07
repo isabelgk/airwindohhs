@@ -52,16 +52,21 @@ class HighImpact final : public Effect<T>
         kParamB = 1,
         kParamC = 2,
         kNumParameters = 3
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
 
             default: break;
         }
@@ -71,9 +76,15 @@ class HighImpact final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
 
             default: break;
         }
@@ -84,9 +95,15 @@ class HighImpact final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
-            case kParamB: return 0.0;
-            case kParamC: return 0.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 0.0;
+            break;
 
             default: break;
         }
@@ -97,9 +114,15 @@ class HighImpact final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "impact";
-            case kParamB: return "output level";
-            case kParamC: return "drywet";
+        kParamA:
+            return "impact";
+            break;
+        kParamB:
+            return "output level";
+            break;
+        kParamC:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -110,9 +133,15 @@ class HighImpact final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Impact";
-            case kParamB: return "Output Level";
-            case kParamC: return "Dry/Wet";
+        kParamA:
+            return "Impact";
+            break;
+        kParamB:
+            return "Output Level";
+            break;
+        kParamC:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -123,9 +152,15 @@ class HighImpact final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
 
             default: break;
         }
@@ -136,9 +171,17 @@ class HighImpact final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return " ";
-            case kParamB: return " ";
-            case kParamC: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+        kParamC:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -322,5 +365,7 @@ class HighImpact final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::highimpact

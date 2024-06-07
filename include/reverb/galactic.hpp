@@ -6,10 +6,10 @@ namespace airwindohhs::galactic {
 
 constexpr std::string_view k_name{ "Galactic" };
 constexpr std::string_view k_short_description{
-    "GalacticVibe is the stereo vibrato from the original Galactic reverb."
+    "Galactic is a super-reverb designed specially for pads and space ambient."
 };
 constexpr std::string_view k_long_description{
-    "Been working on this for a while on Monday coding-streams! Galactic is an extension of my Verbity reverb, designed for ultimate deep space ambient music. It’s a combination feedback and feedforward reverb designed to make wide stereo verb-spaces out of anything, even mono test tones if you like.It takes in audio (dry/wet control available) and uses the Replace control to determine how much of the new sound coming in should replace the space that’s currently there. Detune shifts the pitch for both channels (in a quadrature pitch shift arrangement that means maximum widening for each sound) and Brightness controls both the brightness going into, and coming out of, the reverb. Replace, Brightness and Detune are designed to be playable on the fly to make your ambient spaces or evolve them. Bigness is the reverb buffers, so you can still alter that but it will make crashing noises when you do (that will then become more infinite spaces).I think this one is really fun! As you can see it fits with my experimental-music aesthetic (didn’t even have to add Srsly2 on the end of it to make it superwide… though of course I could, and so can you). If you’re not quite that abstract, you can still use it on pads for more normal things. Just set Replace to a lot higher, set the Brightness and Bigness appropriately, and use Detune to chorus out your new huge enormous synth pad, or whatever else needs to have an unreasonably huge and wide stereo field. I’m pretty sure this can become your go-to for epic fields of reverb, no matter what’s meant to be causing them.Galactic has been a huge success, no pun intended. It might be the most popular of my first batch of feedforward reverbs, and it's still available, from its banks of 4-wide householder matrix delay lines, to its pitch shift stereo widening.So, why revisit Galactic? What is there to even improve? Well, it's a matter of taste. My newer big reverbs and realistic reverbs go for a bigger reverb matrix with a distinct, more organic texture to it. And I wasn't really satisfied with how you worked with Galactic: I'd imagined a thing where you'd have reverb space going, and then you'd 'paint' in other sound, perhaps with a slider, or just by overloading the existing space with other stuff.And so, here we are. Galactic2. Drive, Sustain, Darken and Wetness. And a tone that owes more to the K series plate reverbs, than Infinity or Verbity. Sustain starts to feed back forever a little ways past two-thirds up, with halfway being long decays, and very short sustain being your kill switch. It'll creep up in gain at full crank, so be careful with that. Drive is how you feed in new audio while it's going, Wetness is probably going to be full crank for most use cases, and Darken goes from totally, scintillatingly bright to mellow and distant-sounding, both as part of the total output of the reverb, and as part of the feedback loop (so if you have bright stuff going, and you Darken, your sustain will start to get darker as it continues, which can add realism).I keep saying it's like the kPlate reverbs, but I checked the code and it's still 4-wide Householder matrixes, like the original. So what makes this so different? Its handling of stereo, is what. Either you'll love or hate it. This is why you should love it. Unlike the original Galactic, this isn't a pair of matched reverbs using pitch bends to stereo-ize them for mono things. Galactic2 is a SINGLE giant stereo reverb that uses all the same delay values, but uses them crossways: one channel accesses the matrix vertically, the other accesses the matrix horizontally. It's 'the same', but all the echoes are arranged differently. These are way harder to come up with but it's what was used on the kPlate reverbs, except those are 5x5 matrixes and this is still a 4x4. There's just a teeny bit of crossmodulation to round it out.What this means is, if you put stuff in the left, it makes a sort of cloud of reverb sound that's also mostly on the left. If you put stuff in on the right, likewise: you'll get 'space' happening mix right.And if you put stuff in mono… you get WIDE center content. The whole texture is wider than what original Galactic can do, without use of chorusing or pitch shifting to widen it. That gives it a completely different character, which is why you've still got original Galactic to use if you want. This is a second bite of the apple. It's about trying to get even deeper into space, and I hope you enjoy it :)GalacticVibe is about taking the code I used to make the Galactic reverb super wide, and breaking it out into a chorus-like effect… at which it turns out to be great!Used in Galactic, it's always full wet. It's a dual vibrato that's 'quadrature', meaning the channels are two different offsets on the same LFO. Except it's not exactly an LFO in the sense of low frequency oscillator, because it's slightly irregular. You don't hear it as being super off, but it's a somewhat organic quality whatever speed you choose.This produces two stereo outputs (even if you're just giving it mono) and the way they modulate is a bit like a miked-up Leslie: the pitch wavers across both channels. But then, if you add dry (which isn't part of Galactic's modulation) that blends against both stereo channels… and you end up with a nice little vibey chorus, with definite Leslie-like qualities, but without any of the speaker emulation and without an accurate pitch modulation on what would be the treble horns (instead, it's something else, a little smoother).So it turns out the modulation inside Galactic (Galactic2 is different) is quite nice just by itself! In particular, it seems very nice giving slow swirly effects, and ramping up to a quicker speed has a really striking 'leslie, but not leslie' quality. A happy accident that is now yours, because this is an open source, free plugin, so enjoy adding this tool to your stereo toolkit.All this is paid for by my Patreon, and the better that does the more I can do with it: as promised, the Bricasti reverb is here. Like I said I am not going to make a clone, but I am certain I can both get some useful k-series reverbs inspired by classic Bricasti patches, and design future reverb algorithms that incorporate more Bricast-isms, just from being able to hear it properly and make use of it in the studio. There's also the new Console versions coming along, currently in study mode as I explore a world of classic vinyl records heard in the fullest fidelity, and develop channel EQs that will go along with the new Console versions.Thanks, and hope you like GalacticVibe!"
+    "Been working on this for a while on Monday coding-streams! Galactic is an extension of my Verbity reverb, designed for ultimate deep space ambient music. It’s a combination feedback and feedforward reverb designed to make wide stereo verb-spaces out of anything, even mono test tones if you like.It takes in audio (dry/wet control available) and uses the Replace control to determine how much of the new sound coming in should replace the space that’s currently there. Detune shifts the pitch for both channels (in a quadrature pitch shift arrangement that means maximum widening for each sound) and Brightness controls both the brightness going into, and coming out of, the reverb. Replace, Brightness and Detune are designed to be playable on the fly to make your ambient spaces or evolve them. Bigness is the reverb buffers, so you can still alter that but it will make crashing noises when you do (that will then become more infinite spaces).I think this one is really fun! As you can see it fits with my experimental-music aesthetic (didn’t even have to add Srsly2 on the end of it to make it superwide… though of course I could, and so can you). If you’re not quite that abstract, you can still use it on pads for more normal things. Just set Replace to a lot higher, set the Brightness and Bigness appropriately, and use Detune to chorus out your new huge enormous synth pad, or whatever else needs to have an unreasonably huge and wide stereo field. I’m pretty sure this can become your go-to for epic fields of reverb, no matter what’s meant to be causing them."
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -198,18 +198,27 @@ class Galactic final : public Effect<T>
         kParamD = 3,
         kParamE = 4,
         kNumParameters = 5
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
 
             default: break;
         }
@@ -219,11 +228,21 @@ class Galactic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
 
             default: break;
         }
@@ -234,11 +253,21 @@ class Galactic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 1.0;
-            case kParamE: return 1.0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 1.0;
+            break;
+        kParamE:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -249,11 +278,21 @@ class Galactic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "replace";
-            case kParamB: return "brightness";
-            case kParamC: return "detune";
-            case kParamD: return "bigness";
-            case kParamE: return "drywet";
+        kParamA:
+            return "replace";
+            break;
+        kParamB:
+            return "brightness";
+            break;
+        kParamC:
+            return "detune";
+            break;
+        kParamD:
+            return "bigness";
+            break;
+        kParamE:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -264,11 +303,21 @@ class Galactic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Replace";
-            case kParamB: return "Brightness";
-            case kParamC: return "Detune";
-            case kParamD: return "Bigness";
-            case kParamE: return "Dry/Wet";
+        kParamA:
+            return "Replace";
+            break;
+        kParamB:
+            return "Brightness";
+            break;
+        kParamC:
+            return "Detune";
+            break;
+        kParamD:
+            return "Bigness";
+            break;
+        kParamE:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -279,11 +328,21 @@ class Galactic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
-            case kParamE: return std::to_string(E);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
 
             default: break;
         }
@@ -294,11 +353,23 @@ class Galactic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

@@ -50,14 +50,15 @@ class Silhouette final : public Effect<T>
     {
         kParamA = 0,
         kNumParameters = 1
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
+        kParamA:
+            A = value;
+            break;
 
             default: break;
         }
@@ -67,7 +68,9 @@ class Silhouette final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
+        kParamA:
+            return A;
+            break;
 
             default: break;
         }
@@ -78,7 +81,9 @@ class Silhouette final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
+        kParamA:
+            return 0.0;
+            break;
 
             default: break;
         }
@@ -89,7 +94,9 @@ class Silhouette final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "drywet";
+        kParamA:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -100,7 +107,9 @@ class Silhouette final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Dry/Wet";
+        kParamA:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -111,7 +120,9 @@ class Silhouette final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
+        kParamA:
+            return std::to_string(A);
+            break;
 
             default: break;
         }
@@ -122,7 +133,11 @@ class Silhouette final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
+        kParamA:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

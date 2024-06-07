@@ -6,10 +6,10 @@ namespace airwindohhs::buttercomp {
 
 constexpr std::string_view k_name{ "ButterComp" };
 constexpr std::string_view k_short_description{
-    "ButterComp2 is improved ButterComp with an output control and sound upgrades."
+    "ButterComp is my softest, smoothest compressor."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes a plugin can be a sort of cult favorite. That’s the story of ButterComp, a compressor of great subtlety that’s no use for quite a few normal compressor tasks… but still has a fervent following. I’ve been begged for the new version of this one (not merely VST, but revamped with all the current Airwindows sophistication and purity) and I’m delighted to bring it, though I think it might puzzle some people. If the stock Logic comp would do as well, this isn’t the plugin for you. But if you’re looking for a certain thing and thought it unattainable in software, this might be your lucky day.Buttercomp, under the hood, is absolutely unique (or unique, until I start working on variations and until other people try to copy it. They’re free to, but it’ll be possible to test that quite easily with special audio files).It’s a bipolar, interleaved compressor (with rather slow attack and release: a version with access to much faster dynamics is available in CStrip). This one’s the original, the cult classic. What is a bipolar, or an interleaved compressor? For the purposes of Buttercomp, it’s four totally independent compressors per channel. Two are sensitive to positive swing, and flip back and forth every sample. Two are sensitive to negative swing, also flipping back and forth every sample. The compression factor’s reconstructed through combining these poles, through the screen of the interleaved compressors switching back and forth at the Nyquist frequency… that mysterious digital frequency that is on the one hand the literal highest frequency that can be encoded, and the lowest frequency that ought to be totally rejected and filtered out.What happens is this: the tone of things gets some added second harmonic, wherever the compression is more strong on one side than the other. High frequencies take on a particular airy openness, since they too get second harmonic, plus individual sample spikes can only affect one out of four compressors: ButterComp deals with all samples only as samples relative to other samples, and doesn’t get thrown off by isolated samples that don’t represent the actual waveform. It’s got a sound, but the sound is hard to define because of its extreme fluidity and purity.If this sounds like your idea of fun, enjoy ButterComp. If you’re looking for the ‘all buttons in’ mode, I’ll get back to the drawing board and probably do something totally different for you. This compressor is not for everybody. Also, if you start slamming it really hard (demonstrated in the video), it’ll volume invert: you can squish it down to become more quiet than the quiet passages, but still it will retain its tone quality. It’s perhaps best used as a particular kind of ‘glue’ compressor, at which it is exceptional… or maybe I should say, it’s unique. Start working with it and you’ll soon work out whether you’re part of the ButterComp cult. Not everybody will be, and it’s only one type of sound… but nothing else can get that sound, and this is why I’ve kept this purest form of the algorithm available.So here’s what happened: in working on the new ButterComp, I found a mistake. Because of a thing C programming lets you do (assign, in an if statement) it turned out the original ButterComp didn’t actually use the interleaved compressors after all. The one in CStrip does, but actual ButterComp (which has its own distinct fans!) doesn’t. It’s strictly a bi-polar compressor: it does each half of the wave different, and blends them.Because of this, I’ve made the source code (also being released) represent what the plugin actually does in practice. It’s a little simplified, and it’s worth paying attention to, for people who like the simplest most minimal form of ButterComp.But, because of this, I get to release ButterComp2 as very much its own thing! I even came up with a subtle tweak: it modifies its release just a touch, slowing it when the signal’s hot. That’s on a sample-by-sample basis… and it’s on the OUTPUT of the compressor. So, this further smoothing effect is subject to the output level control. And the dry/wet. In fact if you had it all dry, the release modification is therefore as if you had it on the input… making it blend not only between positive and negative wave compression, but also between feedback and feed-forward release time modifications :)But really what you need to do is listen to it.With the interleaved compressors fully working AND the bi-polar compression on each, there is indeed the four distinct compressors working in parallel. The whole thing is very gentle (hence the name) but you’ll get a glue and tonal reshaping out of it as it will even out the bulk of the waveform, making it balanced between positive and negative. It’ll also soak up treble detail in a characteristic way, and you’ll really hear the quality of ButterComp2 on ambiences and reverb tails. It’ll float things in space in this holographic way… I thought it made for a significant tonal improvement over the simpler ButterComp."
+    "Sometimes a plugin can be a sort of cult favorite. That’s the story of ButterComp, a compressor of great subtlety that’s no use for quite a few normal compressor tasks… but still has a fervent following. I’ve been begged for the new version of this one (not merely VST, but revamped with all the current Airwindows sophistication and purity) and I’m delighted to bring it, though I think it might puzzle some people. If the stock Logic comp would do as well, this isn’t the plugin for you. But if you’re looking for a certain thing and thought it unattainable in software, this might be your lucky day.Buttercomp, under the hood, is absolutely unique (or unique, until I start working on variations and until other people try to copy it. They’re free to, but it’ll be possible to test that quite easily with special audio files).It’s a bipolar, interleaved compressor (with rather slow attack and release: a version with access to much faster dynamics is available in CStrip). This one’s the original, the cult classic. What is a bipolar, or an interleaved compressor? For the purposes of Buttercomp, it’s four totally independent compressors per channel. Two are sensitive to positive swing, and flip back and forth every sample. Two are sensitive to negative swing, also flipping back and forth every sample. The compression factor’s reconstructed through combining these poles, through the screen of the interleaved compressors switching back and forth at the Nyquist frequency… that mysterious digital frequency that is on the one hand the literal highest frequency that can be encoded, and the lowest frequency that ought to be totally rejected and filtered out.What happens is this: the tone of things gets some added second harmonic, wherever the compression is more strong on one side than the other. High frequencies take on a particular airy openness, since they too get second harmonic, plus individual sample spikes can only affect one out of four compressors: ButterComp deals with all samples only as samples relative to other samples, and doesn’t get thrown off by isolated samples that don’t represent the actual waveform. It’s got a sound, but the sound is hard to define because of its extreme fluidity and purity.If this sounds like your idea of fun, enjoy ButterComp. If you’re looking for the ‘all buttons in’ mode, I’ll get back to the drawing board and probably do something totally different for you. This compressor is not for everybody. Also, if you start slamming it really hard (demonstrated in the video), it’ll volume invert: you can squish it down to become more quiet than the quiet passages, but still it will retain its tone quality. It’s perhaps best used as a particular kind of ‘glue’ compressor, at which it is exceptional… or maybe I should say, it’s unique. Start working with it and you’ll soon work out whether you’re part of the ButterComp cult. Not everybody will be, and it’s only one type of sound… but nothing else can get that sound, and this is why I’ve kept this purest form of the algorithm available."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -69,15 +69,18 @@ class ButterComp final : public Effect<T>
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -87,8 +90,12 @@ class ButterComp final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -99,8 +106,12 @@ class ButterComp final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
-            case kParamB: return 1.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -111,8 +122,12 @@ class ButterComp final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "compress";
-            case kParamB: return "drywet";
+        kParamA:
+            return "compress";
+            break;
+        kParamB:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -123,8 +138,12 @@ class ButterComp final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Compress";
-            case kParamB: return "Dry/Wet";
+        kParamA:
+            return "Compress";
+            break;
+        kParamB:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -135,8 +154,12 @@ class ButterComp final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -147,8 +170,14 @@ class ButterComp final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -311,5 +340,7 @@ class ButterComp final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::buttercomp

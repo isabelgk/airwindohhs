@@ -2,41 +2,41 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs::%%NAMESPACE%%
+namespace airwindohhs::${namespace}
 {
 
-constexpr std::string_view k_name{"%%CLASSNAME%%"};
+constexpr std::string_view k_name{"${class_name}"};
 constexpr std::string_view k_short_description{
-    "%%SHORT_DESCRIPTION%%"
+    "${short_description}"
 };
 constexpr std::string_view k_long_description{
-    "%%LONG_DESCRIPTION%%"
+    "${long_description}"
 };
 constexpr std::string_view k_tags{
-    "%%TAGS%%"
+    "${tags}"
 };
 
 template <typename T>
-class %%CLASSNAME%% final : public Effect<T>
+class $class_name final : public Effect<T>
 {
-%%PRIVATEVARS%%
+$private_variables
 
 public:
-    %%CLASSNAME%%()
+    ${class_name}()
     {
-        %%INITIALIZATION%%
+        $initialization
     }
 
     enum params
     {
-        %%PARAM_ENUM%%
+        $param_enum
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        %%SETPARAMSWITCH%%
+        $set_parameter_value_switch
         default: break;
         }
     }
@@ -45,7 +45,7 @@ public:
     {
         switch(static_cast<params>(index))
         {
-        %%GETPARAMSWITCH%%
+        $get_parameter_value_switch
         default: break;
         }
         return 0.0;
@@ -55,7 +55,7 @@ public:
     {
         switch(static_cast<params>(index))
         {
-        %%GETPARAMDEFAULTSWITCH%%
+        $get_parameter_default_switch
         default: break;
         }
         return 0.0;
@@ -65,7 +65,7 @@ public:
     {
         switch(static_cast<params>(index))
         {
-        %%GETPARAMNAMESWITCH%%
+        $get_parameter_name_switch
         default: break;
         }
         return {};
@@ -75,7 +75,7 @@ public:
     {
         switch(static_cast<params>(index))
         {
-        %%GETPARAMTITLESWITCH%%
+        $get_parameter_title_switch
         default: break;
         }
         return {};
@@ -85,7 +85,7 @@ public:
     {
         switch(static_cast<params>(index))
         {
-        %%GETPARAMLABELDISPLAY%%
+        $get_parameter_display_switch
         default: break;
         }
         return {};
@@ -95,7 +95,8 @@ public:
     {
         switch(static_cast<params>(index))
         {
-        %%GETPARAMLABELSWITCH%%
+        $get_parameter_label_switch
+        default: break;
         }
         return {};
     }
@@ -107,8 +108,8 @@ public:
         T *out1 = outputs[0];
         T *out2 = outputs[1];
 
-        %%PROCESS%%
+        $process
     }
 
 };
-} // namespace airwindohhs::%%NAMESPACE%%
+} // namespace airwindohhs::${namespace}

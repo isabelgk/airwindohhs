@@ -71,43 +71,30 @@ class PlatinumSlew final : public Effect<T>
         invSampR10,
         threshold10,
         gslew_total
-    }; // fixed frequency pear filter for ultrasonics, stereo
-    double gslew[gslew_total]; // probably worth just using a number here
-    uint32_t fpdL;
-    uint32_t fpdR;
-    // default stuff
-    float A;
 
-  public:
-    PlatinumSlew()
-    {
-        A = 0.0;
-        for (int x = 0; x < gslew_total; x++) {
-            gslew[x] = 0.0;
-        }
-        fpdL = 1.0;
-        while (fpdL < 16386) {
-            fpdL = rand() * UINT32_MAX;
-        }
-        fpdR = 1.0;
-        while (fpdR < 16386) {
-            fpdR = rand() * UINT32_MAX;
-        }
-        // this is reset: values being initialized only once. Startup values, whatever they are.
-    }
+        public :
+            PlatinumSlew(){
+                A = 0.0;
+                for (int x = 0; x < gslew_total; x++) gslew[x] = 0.0;
+                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
+                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+                // this is reset: values being initialized only once. Startup values, whatever they are.
+
+            }
 
     enum params
     {
         kParamA = 0,
         kNumParameters = 1
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
+        kParamA:
+            A = value;
+            break;
 
             default: break;
         }
@@ -117,7 +104,9 @@ class PlatinumSlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
+        kParamA:
+            return A;
+            break;
 
             default: break;
         }
@@ -128,7 +117,9 @@ class PlatinumSlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
+        kParamA:
+            return 0.0;
+            break;
 
             default: break;
         }
@@ -139,7 +130,9 @@ class PlatinumSlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "slew";
+        kParamA:
+            return "slew";
+            break;
 
             default: break;
         }
@@ -150,7 +143,9 @@ class PlatinumSlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Slew";
+        kParamA:
+            return "Slew";
+            break;
 
             default: break;
         }
@@ -161,7 +156,9 @@ class PlatinumSlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
+        kParamA:
+            return std::to_string(A);
+            break;
 
             default: break;
         }
@@ -172,7 +169,11 @@ class PlatinumSlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
+        kParamA:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

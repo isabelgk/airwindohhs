@@ -56,75 +56,23 @@ class Stonefire final : public Effect<T>
         outAR,
         gainAR,
         air_total
-    };
-    double air[air_total];
-    enum
-    {
-        prevSampL1,
-        prevSlewL1,
-        accSlewL1,
-        prevSampL2,
-        prevSlewL2,
-        accSlewL2,
-        prevSampL3,
-        prevSlewL3,
-        accSlewL3,
-        kalGainL,
-        kalOutL,
-        prevSampR1,
-        prevSlewR1,
-        accSlewR1,
-        prevSampR2,
-        prevSlewR2,
-        accSlewR2,
-        prevSampR3,
-        prevSlewR3,
-        accSlewR3,
-        kalGainR,
-        kalOutR,
-        kal_total
-    };
-    double kal[kal_total];
-    double trebleGainA;
-    double trebleGainB;
-    double midGainA;
-    double midGainB;
-    double bassGainA;
-    double bassGainB;
-    float A;
-    float B;
-    float C;
-    float D;
 
-  public:
-    Stonefire()
-    {
-        A = 0.5;
-        B = 0.5;
-        C = 0.5;
-        D = 0.5;
-        for (int x = 0; x < air_total; x++) {
-            air[x] = 0.0;
-        }
-        for (int x = 0; x < kal_total; x++) {
-            kal[x] = 0.0;
-        }
-        trebleGainA = 1.0;
-        trebleGainB = 1.0;
-        midGainA = 1.0;
-        midGainB = 1.0;
-        bassGainA = 1.0;
-        bassGainB = 1.0;
-        fpdL = 1.0;
-        while (fpdL < 16386) {
-            fpdL = rand() * UINT32_MAX;
-        }
-        fpdR = 1.0;
-        while (fpdR < 16386) {
-            fpdR = rand() * UINT32_MAX;
-        }
-        // this is reset: values being initialized only once. Startup values, whatever they are.
-    }
+        public :
+            Stonefire(){
+                A = 0.5;
+                B = 0.5;
+                C = 0.5;
+                D = 0.5;
+                for (int x = 0; x < air_total; x++) air[x] = 0.0;
+                for (int x = 0; x < kal_total; x++) kal[x] = 0.0;
+                trebleGainA = 1.0; trebleGainB = 1.0;
+                midGainA = 1.0; midGainB = 1.0;
+                bassGainA = 1.0; bassGainB = 1.0;
+                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
+                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+                // this is reset: values being initialized only once. Startup values, whatever they are.
+
+            }
 
     enum params
     {
@@ -133,17 +81,24 @@ class Stonefire final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -153,10 +108,18 @@ class Stonefire final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -167,10 +130,18 @@ class Stonefire final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -181,10 +152,18 @@ class Stonefire final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "air";
-            case kParamB: return "fire";
-            case kParamC: return "stone";
-            case kParamD: return "range";
+        kParamA:
+            return "air";
+            break;
+        kParamB:
+            return "fire";
+            break;
+        kParamC:
+            return "stone";
+            break;
+        kParamD:
+            return "range";
+            break;
 
             default: break;
         }
@@ -195,10 +174,18 @@ class Stonefire final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Air";
-            case kParamB: return "Fire";
-            case kParamC: return "Stone";
-            case kParamD: return "Range";
+        kParamA:
+            return "Air";
+            break;
+        kParamB:
+            return "Fire";
+            break;
+        kParamC:
+            return "Stone";
+            break;
+        kParamD:
+            return "Range";
+            break;
 
             default: break;
         }
@@ -209,10 +196,18 @@ class Stonefire final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -223,10 +218,20 @@ class Stonefire final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

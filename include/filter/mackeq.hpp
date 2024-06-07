@@ -88,18 +88,27 @@ class MackEQ final : public Effect<T>
         kParamD = 3,
         kParamE = 4,
         kNumParameters = 5
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
 
             default: break;
         }
@@ -109,11 +118,21 @@ class MackEQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
 
             default: break;
         }
@@ -124,11 +143,21 @@ class MackEQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.1;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 1.0;
-            case kParamE: return 1.0;
+        kParamA:
+            return 0.1;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 1.0;
+            break;
+        kParamE:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -139,11 +168,21 @@ class MackEQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "trim";
-            case kParamB: return "hi";
-            case kParamC: return "lo";
-            case kParamD: return "gain";
-            case kParamE: return "drywet";
+        kParamA:
+            return "trim";
+            break;
+        kParamB:
+            return "hi";
+            break;
+        kParamC:
+            return "lo";
+            break;
+        kParamD:
+            return "gain";
+            break;
+        kParamE:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -154,11 +193,21 @@ class MackEQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Trim";
-            case kParamB: return "Hi";
-            case kParamC: return "Lo";
-            case kParamD: return "Gain";
-            case kParamE: return "Dry/Wet";
+        kParamA:
+            return "Trim";
+            break;
+        kParamB:
+            return "Hi";
+            break;
+        kParamC:
+            return "Lo";
+            break;
+        kParamD:
+            return "Gain";
+            break;
+        kParamE:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -169,11 +218,21 @@ class MackEQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
-            case kParamE: return std::to_string(E);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
 
             default: break;
         }
@@ -184,11 +243,23 @@ class MackEQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

@@ -76,18 +76,21 @@ class ChromeOxide final : public Effect<T>
 
     enum params
     {
-        kParamiirSampleAL = 0,
-        kParamiirSampleBL = 1,
+        kParamA = 0,
+        kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamiirSampleAL: iirSampleAL = value; break;
-            case kParamiirSampleBL: iirSampleBL = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -97,8 +100,12 @@ class ChromeOxide final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamiirSampleAL: return iirSampleAL;
-            case kParamiirSampleBL: return iirSampleBL;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -109,8 +116,12 @@ class ChromeOxide final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamiirSampleAL: return 0.0;
-            case kParamiirSampleBL: return 0.0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -121,8 +132,12 @@ class ChromeOxide final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamiirSampleAL: return "intense";
-            case kParamiirSampleBL: return "bias";
+        kParamA:
+            return "intense";
+            break;
+        kParamB:
+            return "bias";
+            break;
 
             default: break;
         }
@@ -133,8 +148,12 @@ class ChromeOxide final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamiirSampleAL: return "Intense";
-            case kParamiirSampleBL: return "Bias";
+        kParamA:
+            return "Intense";
+            break;
+        kParamB:
+            return "Bias";
+            break;
 
             default: break;
         }
@@ -145,8 +164,12 @@ class ChromeOxide final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamiirSampleAL: return std::to_string(A);
-            case kParamiirSampleBL: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -157,8 +180,14 @@ class ChromeOxide final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamiirSampleAL: return "";
-            case kParamiirSampleBL: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

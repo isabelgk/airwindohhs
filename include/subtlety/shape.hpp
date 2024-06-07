@@ -32,44 +32,34 @@ class Shape final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
-    }; // fixed frequency biquad filter for ultrasonics, stereo
-    double fixA[fix_total];
-    uint32_t fpdL;
-    uint32_t fpdR;
-    // default stuff
-    float A;
-    float B;
 
-  public:
-    Shape()
-    {
-        A = 0.5;
-        B = 0.5;
-        fpdL = 1.0;
-        while (fpdL < 16386) {
-            fpdL = rand() * UINT32_MAX;
-        }
-        fpdR = 1.0;
-        while (fpdR < 16386) {
-            fpdR = rand() * UINT32_MAX;
-        }
-        // this is reset: values being initialized only once. Startup values, whatever they are.
-    }
+        public :
+            Shape(){
+                A = 0.5;
+                B = 0.5;
+                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
+                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+                // this is reset: values being initialized only once. Startup values, whatever they are.
+
+            }
 
     enum params
     {
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -79,8 +69,12 @@ class Shape final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -91,8 +85,12 @@ class Shape final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -103,8 +101,12 @@ class Shape final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "shape";
-            case kParamB: return "negpos";
+        kParamA:
+            return "shape";
+            break;
+        kParamB:
+            return "neg/pos";
+            break;
 
             default: break;
         }
@@ -115,8 +117,12 @@ class Shape final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Shape";
-            case kParamB: return "Neg/Pos";
+        kParamA:
+            return "Shape";
+            break;
+        kParamB:
+            return "Neg/Pos";
+            break;
 
             default: break;
         }
@@ -127,8 +133,12 @@ class Shape final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -139,8 +149,14 @@ class Shape final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

@@ -6,10 +6,10 @@ namespace airwindohhs::density {
 
 constexpr std::string_view k_name{ "Density" };
 constexpr std::string_view k_short_description{
-    "Density2 is a different color for Density, some old code I had that people wanted."
+    "Density is a Swiss Army Knife of saturation/antisaturation."
 };
 constexpr std::string_view k_long_description{
-    "This one started a lot! The algorithm used here has echoed through many other Airwindows plugins. It’s literally the smoothest saturation you can have in a plugin: the transfer function’s a sine. This is what’s in Channel, too: there are many ways to adapt such a simple mathematical function.But there’s more! Because Density runs multiple stages, allowing it to bulk up the tone into an overblown, insanely fat and saturated distort-fest. And then you can highpass just the distorted stuff alone, and trim its output gain, and mix it with the unfiltered dry to produce lots of tonal possibilities. And then there’s the spatial positioning factor: saturating stuff this way brings it forward in the mix. You can also isolate midrangey elements and bring them forward using that trick.And then there’s the negative values: if you UNsaturate, you get a thinned out lean tone and it drops back instead of pushing forward. And you can blend that too.Density’s one of the better utility plugins. It’s there to reshape tones in myriad ways, mostly having to do with fatness or thinness, also having to do with upfrontness or recedingness. It can also give articulation to sounds that are murky, or simply produce the hugest fattest roaring wall of grunge you ever heard.So in the absence of somebody coming forth and saying ‘this is on my quadrillion selling hit record’… weirder things have happened, occasionally to me… you should consider this as an alternate tone for Density. It’s been around for a while, but people wanted to see it again: specifically, to see it run on modern machines and in VST and so on. How could I say no? I’ve altered it as little as possible: there were always some weird things about it, but I refactored it to retain EVERYTHING unintentional or unusual. I gave it modern Airwindows handling of denormalized numbers, and it dithers to floating point instead of using the noise shaping to floating point that I used back then. Everything else is just as it was: no ‘fixing’ or making it do what I ‘meant to do’.…this is on somebody's quadrillion selling hit record. I'm still not going to tell you who, or how they used it. <3"
+    "This one started a lot! The algorithm used here has echoed through many other Airwindows plugins. It’s literally the smoothest saturation you can have in a plugin: the transfer function’s a sine. This is what’s in Channel, too: there are many ways to adapt such a simple mathematical function.But there’s more! Because Density runs multiple stages, allowing it to bulk up the tone into an overblown, insanely fat and saturated distort-fest. And then you can highpass just the distorted stuff alone, and trim its output gain, and mix it with the unfiltered dry to produce lots of tonal possibilities. And then there’s the spatial positioning factor: saturating stuff this way brings it forward in the mix. You can also isolate midrangey elements and bring them forward using that trick.And then there’s the negative values: if you UNsaturate, you get a thinned out lean tone and it drops back instead of pushing forward. And you can blend that too.Density’s one of the better utility plugins. It’s there to reshape tones in myriad ways, mostly having to do with fatness or thinness, also having to do with upfrontness or recedingness. It can also give articulation to sounds that are murky, or simply produce the hugest fattest roaring wall of grunge you ever heard."
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -61,17 +61,24 @@ class Density final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -81,10 +88,18 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -95,10 +110,18 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.2;
-            case kParamB: return 0.0;
-            case kParamC: return 1.0;
-            case kParamD: return 1.0;
+        kParamA:
+            return 0.2;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 1.0;
+            break;
+        kParamD:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -109,10 +132,18 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "density";
-            case kParamB: return "highpass";
-            case kParamC: return "out level";
-            case kParamD: return "drywet";
+        kParamA:
+            return "density";
+            break;
+        kParamB:
+            return "highpass";
+            break;
+        kParamC:
+            return "out level";
+            break;
+        kParamD:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -123,10 +154,18 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Density";
-            case kParamB: return "Highpass";
-            case kParamC: return "Out Level";
-            case kParamD: return "Dry/Wet";
+        kParamA:
+            return "Density";
+            break;
+        kParamB:
+            return "Highpass";
+            break;
+        kParamC:
+            return "Out Level";
+            break;
+        kParamD:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -137,10 +176,18 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 5.0) - 1.0);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -151,10 +198,20 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return " ";
-            case kParamB: return " ";
-            case kParamC: return " ";
-            case kParamD: return " ";
+        kParamA:
+            return " ";
+            break;
+        kParamB:
+            return " ";
+            break;
+        kParamC:
+            return " ";
+            break;
+        kParamD:
+            return " ";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -311,5 +368,7 @@ class Density final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::density

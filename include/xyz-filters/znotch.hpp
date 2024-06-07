@@ -6,10 +6,10 @@ namespace airwindohhs::znotch {
 
 constexpr std::string_view k_name{ "ZNotch" };
 constexpr std::string_view k_short_description{
-    "ZNotch2 acts more like the Emu e6400 Ultra phaser in motion, with coefficient interpolation."
+    "ZNotch is a notch filter made to sound and act like the Emu e6400 Phaser."
 };
 constexpr std::string_view k_long_description{
-    "And finally, the fourth filter type (I’m doing basic filters, not trying to compete with real Z-Plane releases), ZNotch!This is made to sound like the Emu Phaser, which has notchlike qualities. At heart it’s an extension of the Airwindows Z series, not anything specifically Emu Z-Plane: I didn’t find a notch specifically in the Emu e6400 Ultra, but I thought the Phaser options were very notchlike, so I went for a take on those. You’ll get constant highs, the ability to notch out quite deep into the bass, and that overdrive that’s on tap in all the Airwindows Z plugins, plus the ability to do all that and then add that color, subtly, to the dry signal (do this by getting your distorted and notched tone just right, setting Poles to zero, turning the output up all the way and then bringing in just enough of the color that you can hear what it’s doing. Adjust to taste)This concludes the DnB-inspired sampler emulation EQs. Hopefully this bank of four Z-plugins will be handy to reach for, in the box, to get those vivid tones and grinds… I suspect I’ll find ’em useful in the place of more ‘normal’ EQs simply because the character of the distortion will be so handy. You don’t have to distort them, but since they take a little overdrive so nicely they’ll serve a purpose in all kinds of slight overdrive, or character adding, situations. And since they’re the Z series, you’ll know where to find them even if you’ve installed ALL the Airwindows plugins (and you can do that… if you dare!)This completes the reboot of my original Z-style filters! These are all based on study of a real hardware Emu e6400 sampler. (If my Patreon does well, I’ll be able to study more interesting hardware gear like I did this one). ZNotch is based on the ‘phaser’ settings, and ZNotch2 brings the coefficient interpolation people longed to have in this filter.Bear in mind, ZNotch also has its place. It’s meant to sound exactly the same (I may possibly have improved the tone a tiny bit with ZNotch2, not sure of that) but the original ZNotch does NOT have coefficient smoothing. That means it started out less than the real hardware filter, ‘not as good yet’, BUT if you’re not modulating the controls, you can get the same tone with a lot less CPU by choosing the Z filter that is not the 2 version. The originals will use less CPU because they’re not recalculating so much every sample, and that means you should probably have both installed if you like this type of filter. I demonstrate ZNotch2 on an electronic kick drum to great effect, and there’s nothing I’m doing there which I couldn’t do with the original ZNotch at lower CPU cost.That said, this one will move more fluidly, and the ‘Phaser’ sound is very special in motion! I hope you like it. We’re starting 2022 with the full DnB arsenal available ITB: Mackity, MackEQ, and the Z-style filters! I hope people have a lot of fun with this."
+    "And finally, the fourth filter type (I’m doing basic filters, not trying to compete with real Z-Plane releases), ZNotch!This is made to sound like the Emu Phaser, which has notchlike qualities. At heart it’s an extension of the Airwindows Z series, not anything specifically Emu Z-Plane: I didn’t find a notch specifically in the Emu e6400 Ultra, but I thought the Phaser options were very notchlike, so I went for a take on those. You’ll get constant highs, the ability to notch out quite deep into the bass, and that overdrive that’s on tap in all the Airwindows Z plugins, plus the ability to do all that and then add that color, subtly, to the dry signal (do this by getting your distorted and notched tone just right, setting Poles to zero, turning the output up all the way and then bringing in just enough of the color that you can hear what it’s doing. Adjust to taste)This concludes the DnB-inspired sampler emulation EQs. Hopefully this bank of four Z-plugins will be handy to reach for, in the box, to get those vivid tones and grinds… I suspect I’ll find ’em useful in the place of more ‘normal’ EQs simply because the character of the distortion will be so handy. You don’t have to distort them, but since they take a little overdrive so nicely they’ll serve a purpose in all kinds of slight overdrive, or character adding, situations. And since they’re the Z series, you’ll know where to find them even if you’ve installed ALL the Airwindows plugins (and you can do that… if you dare!)"
 };
 constexpr std::string_view k_tags{
     "xyz-filters"
@@ -69,17 +69,24 @@ class ZNotch final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -89,10 +96,18 @@ class ZNotch final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -103,10 +118,18 @@ class ZNotch final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.1;
-            case kParamB: return 0.5;
-            case kParamC: return 1.0;
-            case kParamD: return 0.5;
+        kParamA:
+            return 0.1;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 1.0;
+            break;
+        kParamD:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -117,10 +140,18 @@ class ZNotch final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "input";
-            case kParamB: return "freq";
-            case kParamC: return "output";
-            case kParamD: return "poles";
+        kParamA:
+            return "input";
+            break;
+        kParamB:
+            return "freq";
+            break;
+        kParamC:
+            return "output";
+            break;
+        kParamD:
+            return "poles";
+            break;
 
             default: break;
         }
@@ -131,10 +162,18 @@ class ZNotch final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Input";
-            case kParamB: return "Freq";
-            case kParamC: return "Output";
-            case kParamD: return "Poles";
+        kParamA:
+            return "Input";
+            break;
+        kParamB:
+            return "Freq";
+            break;
+        kParamC:
+            return "Output";
+            break;
+        kParamD:
+            return "Poles";
+            break;
 
             default: break;
         }
@@ -145,10 +184,18 @@ class ZNotch final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -159,10 +206,20 @@ class ZNotch final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

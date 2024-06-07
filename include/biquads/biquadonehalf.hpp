@@ -58,24 +58,31 @@ class BiquadOneHalf final : public Effect<T>
 
     enum params
     {
-        kParamfor (int x = 0,
-kParamflip = 1,
-kParamA = 2,
-kParamB = 3,
-kNumParameters = 4
-
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kNumParameters = 4
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: for (int x = value; break;
-case kParamflip: flip = value; break;
-case kParamA: A = value; break;
-case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
-        default: break;
+            default: break;
         }
     }
 
@@ -83,12 +90,20 @@ case kParamB: B = value; break;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return for (int x;
-case kParamflip: return flip;
-case kParamA: return A;
-case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -97,12 +112,20 @@ case kParamB: return B;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return 0;
-        case kParamflip: return false;
-        case kParamA: return 0.0;
-        case kParamB: return 0.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 0.0;
+            break;
+        kParamC:
+            return 0.0;
+            break;
+        kParamD:
+            return 0.0;
+            break;
 
-        default: break;
+            default: break;
         }
         return 0.0;
     }
@@ -111,12 +134,20 @@ case kParamB: return B;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "type";
-        case kParamflip: return "freq";
-        case kParamA: return "q";
-        case kParamB: return "invwet";
+        kParamA:
+            return "type";
+            break;
+        kParamB:
+            return "freq";
+            break;
+        kParamC:
+            return "q";
+            break;
+        kParamD:
+            return "inv/wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -125,12 +156,20 @@ case kParamB: return B;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "Type";
-        case kParamflip: return "Freq";
-        case kParamA: return "Q";
-        case kParamB: return "Inv/Wet";
+        kParamA:
+            return "Type";
+            break;
+        kParamB:
+            return "Freq";
+            break;
+        kParamC:
+            return "Q";
+            break;
+        kParamD:
+            return "Inv/Wet";
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -139,12 +178,20 @@ case kParamB: return B;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return std::to_string((A*3.999)+0.00001));
-        case kParamflip: return std::to_string((B * B * B * 0.9999) + 0.0001);
-        case kParamA: return std::to_string((C * C * C * 29.99) + 0.01);
-        case kParamB: return std::to_string((D * 2.0) - 1.0);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
-        default: break;
+            default: break;
         }
         return {};
     }
@@ -153,10 +200,20 @@ case kParamB: return B;
     {
         switch (static_cast<params>(index))
         {
-        case kParamfor (int x: return "";
-        case kParamflip: return "";
-        case kParamA: return "";
-        case kParamB: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

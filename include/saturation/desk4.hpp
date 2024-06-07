@@ -81,19 +81,30 @@ class Desk4 final : public Effect<T>
         kParamE = 4,
         kParamF = 5,
         kNumParameters = 6
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
-            case kParamF: F = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
+        kParamF:
+            F = value;
+            break;
 
             default: break;
         }
@@ -103,12 +114,24 @@ class Desk4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
-            case kParamF: return F;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
+        kParamF:
+            return F;
+            break;
 
             default: break;
         }
@@ -119,12 +142,24 @@ class Desk4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.27;
-            case kParamB: return 0.18;
-            case kParamC: return 0.26;
-            case kParamD: return 0.54;
-            case kParamE: return 0.84;
-            case kParamF: return 1.0;
+        kParamA:
+            return 0.27;
+            break;
+        kParamB:
+            return 0.18;
+            break;
+        kParamC:
+            return 0.26;
+            break;
+        kParamD:
+            return 0.54;
+            break;
+        kParamE:
+            return 0.84;
+            break;
+        kParamF:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -135,12 +170,24 @@ class Desk4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "overdrive";
-            case kParamB: return "hi choke";
-            case kParamC: return "power sag";
-            case kParamD: return "frequency";
-            case kParamE: return "output trim";
-            case kParamF: return "drywet";
+        kParamA:
+            return "overdrive";
+            break;
+        kParamB:
+            return "hi choke";
+            break;
+        kParamC:
+            return "power sag";
+            break;
+        kParamD:
+            return "frequency";
+            break;
+        kParamE:
+            return "output trim";
+            break;
+        kParamF:
+            return "dry/wet";
+            break;
 
             default: break;
         }
@@ -151,12 +198,24 @@ class Desk4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Overdrive";
-            case kParamB: return "Hi Choke";
-            case kParamC: return "Power Sag";
-            case kParamD: return "Frequency";
-            case kParamE: return "Output Trim";
-            case kParamF: return "Dry/Wet";
+        kParamA:
+            return "Overdrive";
+            break;
+        kParamB:
+            return "Hi Choke";
+            break;
+        kParamC:
+            return "Power Sag";
+            break;
+        kParamD:
+            return "Frequency";
+            break;
+        kParamE:
+            return "Output Trim";
+            break;
+        kParamF:
+            return "Dry/Wet";
+            break;
 
             default: break;
         }
@@ -167,12 +226,24 @@ class Desk4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
-            case kParamE: return std::to_string(E);
-            case kParamF: return std::to_string(F);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
+        kParamF:
+            return std::to_string(F);
+            break;
 
             default: break;
         }
@@ -183,12 +254,26 @@ class Desk4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
-            case kParamF: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+        kParamF:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }
@@ -449,5 +534,7 @@ class Desk4 final : public Effect<T>
             *out2++;
         }
     }
+}
+
 };
 } // namespace airwindohhs::desk4

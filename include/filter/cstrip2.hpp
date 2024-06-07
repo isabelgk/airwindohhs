@@ -241,23 +241,42 @@ class CStrip2 final : public Effect<T>
         kParamI = 8,
         kParamJ = 9,
         kNumParameters = 10
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
-            case kParamF: F = value; break;
-            case kParamG: G = value; break;
-            case kParamH: H = value; break;
-            case kParamI: I = value; break;
-            case kParamJ: J = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
+        kParamF:
+            F = value;
+            break;
+        kParamG:
+            G = value;
+            break;
+        kParamH:
+            H = value;
+            break;
+        kParamI:
+            I = value;
+            break;
+        kParamJ:
+            J = value;
+            break;
 
             default: break;
         }
@@ -267,16 +286,36 @@ class CStrip2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
-            case kParamF: return F;
-            case kParamG: return G;
-            case kParamH: return H;
-            case kParamI: return I;
-            case kParamJ: return J;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
+        kParamF:
+            return F;
+            break;
+        kParamG:
+            return G;
+            break;
+        kParamH:
+            return H;
+            break;
+        kParamI:
+            return I;
+            break;
+        kParamJ:
+            return J;
+            break;
 
             default: break;
         }
@@ -287,16 +326,36 @@ class CStrip2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
-            case kParamE: return 0.5;
-            case kParamF: return 1.0;
-            case kParamG: return 0.0;
-            case kParamH: return 0.0;
-            case kParamI: return 0.0;
-            case kParamJ: return 0.33;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 0.5;
+            break;
+        kParamF:
+            return 1.0;
+            break;
+        kParamG:
+            return 0.0;
+            break;
+        kParamH:
+            return 0.0;
+            break;
+        kParamI:
+            return 0.0;
+            break;
+        kParamJ:
+            return 0.33;
+            break;
 
             default: break;
         }
@@ -307,16 +366,36 @@ class CStrip2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "treble";
-            case kParamB: return "mid";
-            case kParamC: return "bass";
-            case kParamD: return "trebfrq";
-            case kParamE: return "bassfrq";
-            case kParamF: return "lowcap";
-            case kParamG: return "hicap";
-            case kParamH: return "compres";
-            case kParamI: return "compspd";
-            case kParamJ: return "output";
+        kParamA:
+            return "treble";
+            break;
+        kParamB:
+            return "mid";
+            break;
+        kParamC:
+            return "bass";
+            break;
+        kParamD:
+            return "trebfrq";
+            break;
+        kParamE:
+            return "bassfrq";
+            break;
+        kParamF:
+            return "lowcap";
+            break;
+        kParamG:
+            return "hicap";
+            break;
+        kParamH:
+            return "compres";
+            break;
+        kParamI:
+            return "compspd";
+            break;
+        kParamJ:
+            return "output";
+            break;
 
             default: break;
         }
@@ -327,16 +406,36 @@ class CStrip2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Treble";
-            case kParamB: return "Mid";
-            case kParamC: return "Bass";
-            case kParamD: return "TrebFrq";
-            case kParamE: return "BassFrq";
-            case kParamF: return "LowCap";
-            case kParamG: return "HiCap";
-            case kParamH: return "Compres";
-            case kParamI: return "CompSpd";
-            case kParamJ: return "Output";
+        kParamA:
+            return "Treble";
+            break;
+        kParamB:
+            return "Mid";
+            break;
+        kParamC:
+            return "Bass";
+            break;
+        kParamD:
+            return "TrebFrq";
+            break;
+        kParamE:
+            return "BassFrq";
+            break;
+        kParamF:
+            return "LowCap";
+            break;
+        kParamG:
+            return "HiCap";
+            break;
+        kParamH:
+            return "Compres";
+            break;
+        kParamI:
+            return "CompSpd";
+            break;
+        kParamJ:
+            return "Output";
+            break;
 
             default: break;
         }
@@ -347,16 +446,36 @@ class CStrip2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 24.0) - 12.0);
-            case kParamB: return std::to_string((B * 24.0) - 12.0);
-            case kParamC: return std::to_string((C * 24.0) - 12.0);
-            case kParamD: return std::to_string((D * D * 15.0) + 1.0);
-            case kParamE: return std::to_string((E * E * 1570.0) + 30.0);
-            case kParamF: return std::to_string(F);
-            case kParamG: return std::to_string(G);
-            case kParamH: return std::to_string(H);
-            case kParamI: return std::to_string(I);
-            case kParamJ: return std::to_string(J);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
+        kParamF:
+            return std::to_string(F);
+            break;
+        kParamG:
+            return std::to_string(G);
+            break;
+        kParamH:
+            return std::to_string(H);
+            break;
+        kParamI:
+            return std::to_string(I);
+            break;
+        kParamJ:
+            return std::to_string(J);
+            break;
 
             default: break;
         }
@@ -367,16 +486,38 @@ class CStrip2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "dB";
-            case kParamB: return "dB";
-            case kParamC: return "dB";
-            case kParamD: return "Khz";
-            case kParamE: return "hz";
-            case kParamF: return "";
-            case kParamG: return "";
-            case kParamH: return "";
-            case kParamI: return "";
-            case kParamJ: return "";
+        kParamA:
+            return "dB";
+            break;
+        kParamB:
+            return "dB";
+            break;
+        kParamC:
+            return "dB";
+            break;
+        kParamD:
+            return "Khz";
+            break;
+        kParamE:
+            return "hz";
+            break;
+        kParamF:
+            return "";
+            break;
+        kParamG:
+            return "";
+            break;
+        kParamH:
+            return "";
+            break;
+        kParamI:
+            return "";
+            break;
+        kParamJ:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

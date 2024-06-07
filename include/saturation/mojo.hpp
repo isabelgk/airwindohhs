@@ -42,14 +42,15 @@ class Mojo final : public Effect<T>
     {
         kParamA = 0,
         kNumParameters = 1
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
+        kParamA:
+            A = value;
+            break;
 
             default: break;
         }
@@ -59,7 +60,9 @@ class Mojo final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
+        kParamA:
+            return A;
+            break;
 
             default: break;
         }
@@ -70,7 +73,9 @@ class Mojo final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
+        kParamA:
+            return 0.5;
+            break;
 
             default: break;
         }
@@ -81,7 +86,9 @@ class Mojo final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "input";
+        kParamA:
+            return "input";
+            break;
 
             default: break;
         }
@@ -92,7 +99,9 @@ class Mojo final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Input";
+        kParamA:
+            return "Input";
+            break;
 
             default: break;
         }
@@ -103,7 +112,9 @@ class Mojo final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 24.0) - 12.0);
+        kParamA:
+            return std::to_string(A);
+            break;
 
             default: break;
         }
@@ -114,7 +125,11 @@ class Mojo final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "dB";
+        kParamA:
+            return "dB";
+            break;
+
+            default: break;
         }
         return {};
     }

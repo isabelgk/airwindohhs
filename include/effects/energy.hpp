@@ -6,10 +6,10 @@ namespace airwindohhs::energy {
 
 constexpr std::string_view k_name{ "Energy" };
 constexpr std::string_view k_short_description{
-    "Energy2 is electrifying fixed-frequency treble boosts for high sample rate."
+    "Energy is electrifying fixed-frequency treble boosts."
 };
 constexpr std::string_view k_long_description{
-    "In the continuing series of ‘weird algorithms other people can’t give you’, here’s Energy. What’s the matter with Energy that only Airwindows can/will do it? Pretty simple. It’s a bizarre algorithm which acts like half a super-high-Q boost and can’t be tuned in the normal way. It can only work on integer multiples of the sample rate. So the labels only relate to 44.1K, they’re colorfully named rather than specifying frequencies, and at different sample rates any frequency labels would be lies anyhow… and they can’t be tuned, and the Q can’t be altered. Literally all it does is slam huge amounts of super-aggressive treble on.But what a treble it is! Energy accentuates the attack transient like no other high frequency EQ (especially linear phase, and ‘DSP cookbook’ biquad EQs). The principle of operation is totally different. It didn’t catch on because it’s a weird idea to start with, and it’s completely not adaptable to anything. It’s not even that great at cuts, though you can try it for cuts if you like. It’s really just about slamming a bunch of punchy brightness on at 22K, 15K, 11K, 9K and so on: or, Hiss Glitter Rat Fizz Scrape Chug Yowr Snarl, as the labelling goes.The lower ones extend down into high-mids as you’d imagine (at high sample rates they’d work as high-boosts) but that’s another reason I can’t simply label them as frequency controls. These are nasty. They won’t give you clean tidy boosts, not even ‘analog style’ clean tidy boosts. They’re interacting with the sample rate in a nasty way and produce a bunch of extra overtones and skronk so it’s better to leave them as adjectives to avoid even the suggestion that they would give you polite EQ shaping.But if you are looking for brutal, raw electrifying ENERGY I think it’s hard to do better than Energy. The only thing that’s new on this old school super secret weapon, besides denormalization and the noise shaping to the floating point buss and higher resolution internal processing, is the InvDryWet control, which was an obvious call. Since the different sliders can get into strange interactions, since you can play them off against each other, that means you could try to isolate high frequency stuff you don’t want and accentuate it as much as possible… and then, return to dry, and give it just a bit of inverted effect. That’s one way to tame nasty highs (such as from a bad condenser mic). I accept no responsibility if the bad mic, combined with Energy boosts, kills you with treble. That’s kind of Energy’s job :)Energy2 is energy boosts. Mostly treble, but you can also bring out aggression in the high-mids. These are NOT done through usual means. They’re a weird little algorithm that’s tied to the sample rate, and the big deal with Energy2 as an update is that it’s using my undersampling (which I just recently improved) to function as intended at high sample rates: it’s also more CPU-efficient than the original, but otherwise it’s the same (the original Energy might still be preferable for some, for instance if you absolutely must work at 48k and find it works better for you than Energy2 at that rate).When I say energy boosts, what I mean is: this is not a normal EQ. You could not make the Energy2 sound happen by mimicking the frequency curve using a pile of biquad filters, or worse yet phase accurate EQ. It’s an entirely different algorithm, and this is what you get. Energy2 has enormous edge and focus around attack transients, not smearing them with pre-ring or high-Q traditional filtering, even though it produces very steep curves and isolates specific tones. Energy2 also has a definite color in how it adds frequencies: if you’re boosting upper mids with one of the lower sliders, you also get a bunch of highs along with it. Part of the sound. Probably shouldn’t struggle to remove those overtones too hard.You can combine the sliders in weird ways to get very striking tone colors, but I think Energy2 is at its best when you focus on one color at a time, perhaps with a little of another color added or subtracted (less than zero means taking that tone color out: but remember, this is Energy2, it’s never completely tame or predictable). The breakthrough with Energy2 is that it’s designed to run at elevated sample rates, undersamples its boosts, but unlike the original Energy, it mixes that with a NON-undersampled Dry to get best of both worlds: the exact tone colors it ought to have, but against an unaltered, hi-res background. Since Energy’s generally able to get obnoxious levels of boost, the thing to do is get sounds where at least one slider is cranked out as far as it’ll go, and then use Inv/Dry/Wet to use only as much of that added energy as you need.You get high and upper mid boosts, all the way up into the highest of air bands, that are more like they’re part of the original sound and not even added using EQ at all… but complete control over how much of that is added to the fully high-resolution sound at elevated sample rates. (and at CD rates, it works just like the original Energy, but with the CPU enhancement from not processing unused bands, plus the Inv/Dry/Wet is run at a higher word length than before, and uses modern Airwindows dithering to the floating point buss: that’s how old the original Energy was)If I make a special Airwindows 96k mixing kit, like Starter Kit but more for experts adopting my mixing system rather than beginners, Energy2 almost defines what that would be like. It’s a very strong way to get a more Airwindows-y sound. (It’s also a nifty sort of anti-Soothe: nothing will pop out vibey overtones, intensity, and sonority like this plugin)Hope ya like it. It’s one of the special ones. :)"
+    "In the continuing series of ‘weird algorithms other people can’t give you’, here’s Energy. What’s the matter with Energy that only Airwindows can/will do it? Pretty simple. It’s a bizarre algorithm which acts like half a super-high-Q boost and can’t be tuned in the normal way. It can only work on integer multiples of the sample rate. So the labels only relate to 44.1K, they’re colorfully named rather than specifying frequencies, and at different sample rates any frequency labels would be lies anyhow… and they can’t be tuned, and the Q can’t be altered. Literally all it does is slam huge amounts of super-aggressive treble on.But what a treble it is! Energy accentuates the attack transient like no other high frequency EQ (especially linear phase, and ‘DSP cookbook’ biquad EQs). The principle of operation is totally different. It didn’t catch on because it’s a weird idea to start with, and it’s completely not adaptable to anything. It’s not even that great at cuts, though you can try it for cuts if you like. It’s really just about slamming a bunch of punchy brightness on at 22K, 15K, 11K, 9K and so on: or, Hiss Glitter Rat Fizz Scrape Chug Yowr Snarl, as the labelling goes.The lower ones extend down into high-mids as you’d imagine (at high sample rates they’d work as high-boosts) but that’s another reason I can’t simply label them as frequency controls. These are nasty. They won’t give you clean tidy boosts, not even ‘analog style’ clean tidy boosts. They’re interacting with the sample rate in a nasty way and produce a bunch of extra overtones and skronk so it’s better to leave them as adjectives to avoid even the suggestion that they would give you polite EQ shaping.But if you are looking for brutal, raw electrifying ENERGY I think it’s hard to do better than Energy. The only thing that’s new on this old school super secret weapon, besides denormalization and the noise shaping to the floating point buss and higher resolution internal processing, is the InvDryWet control, which was an obvious call. Since the different sliders can get into strange interactions, since you can play them off against each other, that means you could try to isolate high frequency stuff you don’t want and accentuate it as much as possible… and then, return to dry, and give it just a bit of inverted effect. That’s one way to tame nasty highs (such as from a bad condenser mic). I accept no responsibility if the bad mic, combined with Energy boosts, kills you with treble. That’s kind of Energy’s job :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -322,22 +322,39 @@ class Energy final : public Effect<T>
         kParamH = 7,
         kParamI = 8,
         kNumParameters = 9
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-            case kParamE: E = value; break;
-            case kParamF: F = value; break;
-            case kParamG: G = value; break;
-            case kParamH: H = value; break;
-            case kParamI: I = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
+        kParamE:
+            E = value;
+            break;
+        kParamF:
+            F = value;
+            break;
+        kParamG:
+            G = value;
+            break;
+        kParamH:
+            H = value;
+            break;
+        kParamI:
+            I = value;
+            break;
 
             default: break;
         }
@@ -347,15 +364,33 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
-            case kParamE: return E;
-            case kParamF: return F;
-            case kParamG: return G;
-            case kParamH: return H;
-            case kParamI: return I;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
+        kParamE:
+            return E;
+            break;
+        kParamF:
+            return F;
+            break;
+        kParamG:
+            return G;
+            break;
+        kParamH:
+            return H;
+            break;
+        kParamI:
+            return I;
+            break;
 
             default: break;
         }
@@ -366,15 +401,33 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.5;
-            case kParamC: return 0.5;
-            case kParamD: return 0.5;
-            case kParamE: return 0.5;
-            case kParamF: return 0.5;
-            case kParamG: return 0.5;
-            case kParamH: return 0.5;
-            case kParamI: return 1.0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.5;
+            break;
+        kParamC:
+            return 0.5;
+            break;
+        kParamD:
+            return 0.5;
+            break;
+        kParamE:
+            return 0.5;
+            break;
+        kParamF:
+            return 0.5;
+            break;
+        kParamG:
+            return 0.5;
+            break;
+        kParamH:
+            return 0.5;
+            break;
+        kParamI:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -385,15 +438,33 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "hiss";
-            case kParamB: return "glitter";
-            case kParamC: return "rat";
-            case kParamD: return "fizz";
-            case kParamE: return "scrape";
-            case kParamF: return "chug";
-            case kParamG: return "yowr";
-            case kParamH: return "snarl";
-            case kParamI: return "idrwt";
+        kParamA:
+            return "hiss";
+            break;
+        kParamB:
+            return "glitter";
+            break;
+        kParamC:
+            return "rat";
+            break;
+        kParamD:
+            return "fizz";
+            break;
+        kParamE:
+            return "scrape";
+            break;
+        kParamF:
+            return "chug";
+            break;
+        kParamG:
+            return "yowr";
+            break;
+        kParamH:
+            return "snarl";
+            break;
+        kParamI:
+            return "i/dr/wt";
+            break;
 
             default: break;
         }
@@ -404,15 +475,33 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Hiss";
-            case kParamB: return "Glitter";
-            case kParamC: return "Rat";
-            case kParamD: return "Fizz";
-            case kParamE: return "Scrape";
-            case kParamF: return "Chug";
-            case kParamG: return "Yowr";
-            case kParamH: return "Snarl";
-            case kParamI: return "I/Dr/Wt";
+        kParamA:
+            return "Hiss";
+            break;
+        kParamB:
+            return "Glitter";
+            break;
+        kParamC:
+            return "Rat";
+            break;
+        kParamD:
+            return "Fizz";
+            break;
+        kParamE:
+            return "Scrape";
+            break;
+        kParamF:
+            return "Chug";
+            break;
+        kParamG:
+            return "Yowr";
+            break;
+        kParamH:
+            return "Snarl";
+            break;
+        kParamI:
+            return "I/Dr/Wt";
+            break;
 
             default: break;
         }
@@ -423,15 +512,33 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 2.0) - 1.0);
-            case kParamB: return std::to_string((B * 2.0) - 1.0);
-            case kParamC: return std::to_string((C * 2.0) - 1.0);
-            case kParamD: return std::to_string((D * 2.0) - 1.0);
-            case kParamE: return std::to_string((E * 2.0) - 1.0);
-            case kParamF: return std::to_string((F * 2.0) - 1.0);
-            case kParamG: return std::to_string((G * 2.0) - 1.0);
-            case kParamH: return std::to_string((H * 2.0) - 1.0);
-            case kParamI: return std::to_string((I * 2.0) - 1.0);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
+        kParamE:
+            return std::to_string(E);
+            break;
+        kParamF:
+            return std::to_string(F);
+            break;
+        kParamG:
+            return std::to_string(G);
+            break;
+        kParamH:
+            return std::to_string(H);
+            break;
+        kParamI:
+            return std::to_string(I);
+            break;
 
             default: break;
         }
@@ -442,15 +549,35 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
-            case kParamE: return "";
-            case kParamF: return "";
-            case kParamG: return "";
-            case kParamH: return "";
-            case kParamI: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+        kParamE:
+            return "";
+            break;
+        kParamF:
+            return "";
+            break;
+        kParamG:
+            return "";
+            break;
+        kParamH:
+            return "";
+            break;
+        kParamI:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

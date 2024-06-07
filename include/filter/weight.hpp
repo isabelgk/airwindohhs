@@ -55,15 +55,18 @@ class Weight final : public Effect<T>
         kParamA = 0,
         kParamB = 1,
         kNumParameters = 2
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
 
             default: break;
         }
@@ -73,8 +76,12 @@ class Weight final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
 
             default: break;
         }
@@ -85,8 +92,12 @@ class Weight final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.5;
-            case kParamB: return 0.0;
+        kParamA:
+            return 0.5;
+            break;
+        kParamB:
+            return 0.0;
+            break;
 
             default: break;
         }
@@ -97,8 +108,12 @@ class Weight final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "freq";
-            case kParamB: return "weight";
+        kParamA:
+            return "freq";
+            break;
+        kParamB:
+            return "weight";
+            break;
 
             default: break;
         }
@@ -109,8 +124,12 @@ class Weight final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Freq";
-            case kParamB: return "Weight";
+        kParamA:
+            return "Freq";
+            break;
+        kParamB:
+            return "Weight";
+            break;
 
             default: break;
         }
@@ -121,8 +140,12 @@ class Weight final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string((A * 100.0) + 20.0);
-            case kParamB: return std::to_string(B);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
 
             default: break;
         }
@@ -133,8 +156,14 @@ class Weight final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "hz";
-            case kParamB: return "";
+        kParamA:
+            return "hz";
+            break;
+        kParamB:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }

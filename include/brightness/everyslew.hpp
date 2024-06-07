@@ -71,36 +71,19 @@ class EverySlew final : public Effect<T>
         invSampR10,
         threshold10,
         gslew_total
-    }; // fixed frequency pear filter for ultrasonics, stereo
-    double gslew[gslew_total]; // probably worth just using a number here
-    uint32_t fpdL;
-    uint32_t fpdR;
-    // default stuff
-    float A;
-    float B;
-    float C;
-    float D;
 
-  public:
-    EverySlew()
-    {
-        A = 0.0;
-        B = 1.0;
-        C = 0.16;
-        D = 1.0;
-        for (int x = 0; x < gslew_total; x++) {
-            gslew[x] = 0.0;
-        }
-        fpdL = 1.0;
-        while (fpdL < 16386) {
-            fpdL = rand() * UINT32_MAX;
-        }
-        fpdR = 1.0;
-        while (fpdR < 16386) {
-            fpdR = rand() * UINT32_MAX;
-        }
-        // this is reset: values being initialized only once. Startup values, whatever they are.
-    }
+        public :
+            EverySlew(){
+                A = 0.0;
+                B = 1.0;
+                C = 0.16;
+                D = 1.0;
+                for (int x = 0; x < gslew_total; x++) gslew[x] = 0.0;
+                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
+                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+                // this is reset: values being initialized only once. Startup values, whatever they are.
+
+            }
 
     enum params
     {
@@ -109,17 +92,24 @@ class EverySlew final : public Effect<T>
         kParamC = 2,
         kParamD = 3,
         kNumParameters = 4
-
     };
 
     void set_parameter_value(int index, float value)
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
+        kParamA:
+            A = value;
+            break;
+        kParamB:
+            B = value;
+            break;
+        kParamC:
+            C = value;
+            break;
+        kParamD:
+            D = value;
+            break;
 
             default: break;
         }
@@ -129,10 +119,18 @@ class EverySlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A;
-            case kParamB: return B;
-            case kParamC: return C;
-            case kParamD: return D;
+        kParamA:
+            return A;
+            break;
+        kParamB:
+            return B;
+            break;
+        kParamC:
+            return C;
+            break;
+        kParamD:
+            return D;
+            break;
 
             default: break;
         }
@@ -143,10 +141,18 @@ class EverySlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return 0.0;
-            case kParamB: return 1.0;
-            case kParamC: return 0.16;
-            case kParamD: return 1.0;
+        kParamA:
+            return 0.0;
+            break;
+        kParamB:
+            return 1.0;
+            break;
+        kParamC:
+            return 0.16;
+            break;
+        kParamD:
+            return 1.0;
+            break;
 
             default: break;
         }
@@ -157,10 +163,18 @@ class EverySlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "slew";
-            case kParamB: return "depth";
-            case kParamC: return "halo";
-            case kParamD: return "invwet";
+        kParamA:
+            return "slew";
+            break;
+        kParamB:
+            return "depth";
+            break;
+        kParamC:
+            return "halo";
+            break;
+        kParamD:
+            return "inv/wet";
+            break;
 
             default: break;
         }
@@ -171,10 +185,18 @@ class EverySlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "Slew";
-            case kParamB: return "Depth";
-            case kParamC: return "Halo";
-            case kParamD: return "Inv/Wet";
+        kParamA:
+            return "Slew";
+            break;
+        kParamB:
+            return "Depth";
+            break;
+        kParamC:
+            return "Halo";
+            break;
+        kParamD:
+            return "Inv/Wet";
+            break;
 
             default: break;
         }
@@ -185,10 +207,18 @@ class EverySlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A);
-            case kParamB: return std::to_string(B);
-            case kParamC: return std::to_string(C);
-            case kParamD: return std::to_string(D);
+        kParamA:
+            return std::to_string(A);
+            break;
+        kParamB:
+            return std::to_string(B);
+            break;
+        kParamC:
+            return std::to_string(C);
+            break;
+        kParamD:
+            return std::to_string(D);
+            break;
 
             default: break;
         }
@@ -199,10 +229,20 @@ class EverySlew final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return "";
-            case kParamB: return "";
-            case kParamC: return "";
-            case kParamD: return "";
+        kParamA:
+            return "";
+            break;
+        kParamB:
+            return "";
+            break;
+        kParamC:
+            return "";
+            break;
+        kParamD:
+            return "";
+            break;
+
+            default: break;
         }
         return {};
     }
