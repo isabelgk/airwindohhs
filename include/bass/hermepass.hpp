@@ -456,7 +456,6 @@ class Hermepass final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::hermepass
