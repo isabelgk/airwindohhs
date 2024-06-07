@@ -59,9 +59,7 @@ void set_parameter_value(int index, float value)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        A = value;
-        break;
+        case kParamA: A = value; break;
 
         default: break;
     }
@@ -71,9 +69,7 @@ float get_parameter_value(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return A;
-        break;
+        case kParamA: return A; break;
 
         default: break;
     }
@@ -84,9 +80,7 @@ T get_parameter_default(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return 0.5;
-        break;
+        case kParamA: return 0.5; break;
 
         default: break;
     }
@@ -97,9 +91,7 @@ constexpr std::string_view get_parameter_name(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return "q";
-        break;
+        case kParamA: return "q"; break;
 
         default: break;
     }
@@ -110,9 +102,7 @@ constexpr std::string_view get_parameter_title(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return "Q";
-        break;
+        case kParamA: return "Q"; break;
 
         default: break;
     }
@@ -123,9 +113,7 @@ std::string get_parameter_display(int index) const
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return std::to_string(A);
-        break;
+        case kParamA: return std::to_string(A); break;
 
         default: break;
     }
@@ -136,9 +124,7 @@ constexpr std::string_view get_parameter_label(int index) const
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return "";
-        break;
+        case kParamA: return ""; break;
 
         default: break;
     }

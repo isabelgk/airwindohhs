@@ -120,33 +120,15 @@ class MultiBandDistortion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
-        kParamF:
-            F = value;
-            break;
-        kParamG:
-            G = value;
-            break;
-        kParamH:
-            H = value;
-            break;
-        kParamI:
-            I = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+            case kParamF: F = value; break;
+            case kParamG: G = value; break;
+            case kParamH: H = value; break;
+            case kParamI: I = value; break;
 
             default: break;
         }
@@ -156,33 +138,15 @@ class MultiBandDistortion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
-        kParamF:
-            return F;
-            break;
-        kParamG:
-            return G;
-            break;
-        kParamH:
-            return H;
-            break;
-        kParamI:
-            return I;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
+            case kParamF: return F; break;
+            case kParamG: return G; break;
+            case kParamH: return H; break;
+            case kParamI: return I; break;
 
             default: break;
         }
@@ -193,33 +157,15 @@ class MultiBandDistortion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.0;
-            break;
-        kParamC:
-            return 0.0;
-            break;
-        kParamD:
-            return 0.0;
-            break;
-        kParamE:
-            return 0.0;
-            break;
-        kParamF:
-            return 1.0;
-            break;
-        kParamG:
-            return 1.0;
-            break;
-        kParamH:
-            return 1.0;
-            break;
-        kParamI:
-            return 0.75;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.0; break;
+            case kParamC: return 0.0; break;
+            case kParamD: return 0.0; break;
+            case kParamE: return 0.0; break;
+            case kParamF: return 1.0; break;
+            case kParamG: return 1.0; break;
+            case kParamH: return 1.0; break;
+            case kParamI: return 0.75; break;
 
             default: break;
         }
@@ -230,33 +176,15 @@ class MultiBandDistortion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "freqcy";
-            break;
-        kParamB:
-            return "h gain";
-            break;
-        kParamC:
-            return "l gain";
-            break;
-        kParamD:
-            return "h hard";
-            break;
-        kParamE:
-            return "l hard";
-            break;
-        kParamF:
-            return "h mtrx";
-            break;
-        kParamG:
-            return "l mtrx";
-            break;
-        kParamH:
-            return "stable";
-            break;
-        kParamI:
-            return "output";
-            break;
+            case kParamA: return "freqcy"; break;
+            case kParamB: return "h gain"; break;
+            case kParamC: return "l gain"; break;
+            case kParamD: return "h hard"; break;
+            case kParamE: return "l hard"; break;
+            case kParamF: return "h mtrx"; break;
+            case kParamG: return "l mtrx"; break;
+            case kParamH: return "stable"; break;
+            case kParamI: return "output"; break;
 
             default: break;
         }
@@ -267,33 +195,15 @@ class MultiBandDistortion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Freqcy";
-            break;
-        kParamB:
-            return "H Gain";
-            break;
-        kParamC:
-            return "L Gain";
-            break;
-        kParamD:
-            return "H Hard";
-            break;
-        kParamE:
-            return "L Hard";
-            break;
-        kParamF:
-            return "H Mtrx";
-            break;
-        kParamG:
-            return "L Mtrx";
-            break;
-        kParamH:
-            return "Stable";
-            break;
-        kParamI:
-            return "Output";
-            break;
+            case kParamA: return "Freqcy"; break;
+            case kParamB: return "H Gain"; break;
+            case kParamC: return "L Gain"; break;
+            case kParamD: return "H Hard"; break;
+            case kParamE: return "L Hard"; break;
+            case kParamF: return "H Mtrx"; break;
+            case kParamG: return "L Mtrx"; break;
+            case kParamH: return "Stable"; break;
+            case kParamI: return "Output"; break;
 
             default: break;
         }
@@ -304,33 +214,15 @@ class MultiBandDistortion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
-        kParamF:
-            return std::to_string(F);
-            break;
-        kParamG:
-            return std::to_string(G);
-            break;
-        kParamH:
-            return std::to_string(H);
-            break;
-        kParamI:
-            return std::to_string(I);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
+            case kParamF: return std::to_string(F); break;
+            case kParamG: return std::to_string(G); break;
+            case kParamH: return std::to_string(H); break;
+            case kParamI: return std::to_string(I); break;
 
             default: break;
         }
@@ -341,33 +233,15 @@ class MultiBandDistortion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "dB";
-            break;
-        kParamC:
-            return "dB";
-            break;
-        kParamD:
-            return "";
-            break;
-        kParamE:
-            return "";
-            break;
-        kParamF:
-            return "";
-            break;
-        kParamG:
-            return "";
-            break;
-        kParamH:
-            return "";
-            break;
-        kParamI:
-            return "dB";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return "dB"; break;
+            case kParamC: return "dB"; break;
+            case kParamD: return ""; break;
+            case kParamE: return ""; break;
+            case kParamF: return ""; break;
+            case kParamG: return ""; break;
+            case kParamH: return ""; break;
+            case kParamI: return "dB"; break;
 
             default: break;
         }

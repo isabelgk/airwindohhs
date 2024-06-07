@@ -94,15 +94,9 @@ class IronOxideClassic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
 
             default: break;
         }
@@ -112,15 +106,9 @@ class IronOxideClassic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
 
             default: break;
         }
@@ -131,15 +119,9 @@ class IronOxideClassic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.562341325190349;
-            break;
-        kParamC:
-            return 0.5;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.562341325190349; break;
+            case kParamC: return 0.5; break;
 
             default: break;
         }
@@ -150,15 +132,9 @@ class IronOxideClassic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "input trim";
-            break;
-        kParamB:
-            return "tape speed";
-            break;
-        kParamC:
-            return "output trim";
-            break;
+            case kParamA: return "input trim"; break;
+            case kParamB: return "tape speed"; break;
+            case kParamC: return "output trim"; break;
 
             default: break;
         }
@@ -169,15 +145,9 @@ class IronOxideClassic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Input Trim";
-            break;
-        kParamB:
-            return "Tape Speed";
-            break;
-        kParamC:
-            return "Output Trim";
-            break;
+            case kParamA: return "Input Trim"; break;
+            case kParamB: return "Tape Speed"; break;
+            case kParamC: return "Output Trim"; break;
 
             default: break;
         }
@@ -188,15 +158,9 @@ class IronOxideClassic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
 
             default: break;
         }
@@ -207,15 +171,9 @@ class IronOxideClassic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "dB";
-            break;
-        kParamB:
-            return "ips";
-            break;
-        kParamC:
-            return "dB";
-            break;
+            case kParamA: return "dB"; break;
+            case kParamB: return "ips"; break;
+            case kParamC: return "dB"; break;
 
             default: break;
         }

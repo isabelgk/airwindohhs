@@ -64,15 +64,9 @@ class Overheads final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
 
             default: break;
         }
@@ -82,15 +76,9 @@ class Overheads final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
 
             default: break;
         }
@@ -101,15 +89,9 @@ class Overheads final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.0;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 1.0;
-            break;
+            case kParamA: return 0.0; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 1.0; break;
 
             default: break;
         }
@@ -120,15 +102,9 @@ class Overheads final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "compr";
-            break;
-        kParamB:
-            return "sharp";
-            break;
-        kParamC:
-            return "dry/wet";
-            break;
+            case kParamA: return "compr"; break;
+            case kParamB: return "sharp"; break;
+            case kParamC: return "dry/wet"; break;
 
             default: break;
         }
@@ -139,15 +115,9 @@ class Overheads final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Compr";
-            break;
-        kParamB:
-            return "Sharp";
-            break;
-        kParamC:
-            return "Dry/Wet";
-            break;
+            case kParamA: return "Compr"; break;
+            case kParamB: return "Sharp"; break;
+            case kParamC: return "Dry/Wet"; break;
 
             default: break;
         }
@@ -158,15 +128,9 @@ class Overheads final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
 
             default: break;
         }
@@ -177,15 +141,9 @@ class Overheads final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
 
             default: break;
         }

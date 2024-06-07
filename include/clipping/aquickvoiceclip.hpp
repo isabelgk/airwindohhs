@@ -144,9 +144,7 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
+            case kParamA: A = value; break;
 
             default: break;
         }
@@ -156,9 +154,7 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
+            case kParamA: return A; break;
 
             default: break;
         }
@@ -169,9 +165,7 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.42;
-            break;
+            case kParamA: return 0.42; break;
 
             default: break;
         }
@@ -182,9 +176,7 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "highpass";
-            break;
+            case kParamA: return "highpass"; break;
 
             default: break;
         }
@@ -195,9 +187,7 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Highpass";
-            break;
+            case kParamA: return "Highpass"; break;
 
             default: break;
         }
@@ -208,9 +198,7 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
+            case kParamA: return std::to_string(A); break;
 
             default: break;
         }
@@ -221,9 +209,7 @@ class AQuickVoiceClip final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "hz";
-            break;
+            case kParamA: return "hz"; break;
 
             default: break;
         }

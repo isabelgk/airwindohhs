@@ -75,21 +75,11 @@ void set_parameter_value(int index, float value)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        A = value;
-        break;
-    kParamB:
-        B = value;
-        break;
-    kParamC:
-        C = value;
-        break;
-    kParamD:
-        D = value;
-        break;
-    kParamE:
-        E = value;
-        break;
+        case kParamA: A = value; break;
+        case kParamB: B = value; break;
+        case kParamC: C = value; break;
+        case kParamD: D = value; break;
+        case kParamE: E = value; break;
 
         default: break;
     }
@@ -99,21 +89,11 @@ float get_parameter_value(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return A;
-        break;
-    kParamB:
-        return B;
-        break;
-    kParamC:
-        return C;
-        break;
-    kParamD:
-        return D;
-        break;
-    kParamE:
-        return E;
-        break;
+        case kParamA: return A; break;
+        case kParamB: return B; break;
+        case kParamC: return C; break;
+        case kParamD: return D; break;
+        case kParamE: return E; break;
 
         default: break;
     }
@@ -124,21 +104,11 @@ T get_parameter_default(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return 0.1;
-        break;
-    kParamB:
-        return 1.0;
-        break;
-    kParamC:
-        return 0.0;
-        break;
-    kParamD:
-        return 1.0;
-        break;
-    kParamE:
-        return 1.0;
-        break;
+        case kParamA: return 0.1; break;
+        case kParamB: return 1.0; break;
+        case kParamC: return 0.0; break;
+        case kParamD: return 1.0; break;
+        case kParamE: return 1.0; break;
 
         default: break;
     }
@@ -149,21 +119,11 @@ constexpr std::string_view get_parameter_name(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return "gain";
-        break;
-    kParamB:
-        return "lowpass";
-        break;
-    kParamC:
-        return "highpass";
-        break;
-    kParamD:
-        return "output";
-        break;
-    kParamE:
-        return "dry/wet";
-        break;
+        case kParamA: return "gain"; break;
+        case kParamB: return "lowpass"; break;
+        case kParamC: return "highpass"; break;
+        case kParamD: return "output"; break;
+        case kParamE: return "dry/wet"; break;
 
         default: break;
     }
@@ -174,21 +134,11 @@ constexpr std::string_view get_parameter_title(int index)
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return "Gain";
-        break;
-    kParamB:
-        return "Lowpass";
-        break;
-    kParamC:
-        return "Highpass";
-        break;
-    kParamD:
-        return "Output";
-        break;
-    kParamE:
-        return "Dry/Wet";
-        break;
+        case kParamA: return "Gain"; break;
+        case kParamB: return "Lowpass"; break;
+        case kParamC: return "Highpass"; break;
+        case kParamD: return "Output"; break;
+        case kParamE: return "Dry/Wet"; break;
 
         default: break;
     }
@@ -199,21 +149,11 @@ std::string get_parameter_display(int index) const
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return std::to_string(A);
-        break;
-    kParamB:
-        return std::to_string(B);
-        break;
-    kParamC:
-        return std::to_string(C);
-        break;
-    kParamD:
-        return std::to_string(D);
-        break;
-    kParamE:
-        return std::to_string(E);
-        break;
+        case kParamA: return std::to_string(A); break;
+        case kParamB: return std::to_string(B); break;
+        case kParamC: return std::to_string(C); break;
+        case kParamD: return std::to_string(D); break;
+        case kParamE: return std::to_string(E); break;
 
         default: break;
     }
@@ -224,21 +164,11 @@ constexpr std::string_view get_parameter_label(int index) const
 {
     switch (static_cast<params>(index))
     {
-    kParamA:
-        return "";
-        break;
-    kParamB:
-        return "";
-        break;
-    kParamC:
-        return "";
-        break;
-    kParamD:
-        return "";
-        break;
-    kParamE:
-        return "";
-        break;
+        case kParamA: return ""; break;
+        case kParamB: return ""; break;
+        case kParamC: return ""; break;
+        case kParamD: return ""; break;
+        case kParamE: return ""; break;
 
         default: break;
     }

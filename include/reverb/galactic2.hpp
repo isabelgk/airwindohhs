@@ -365,18 +365,10 @@ class Galactic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
 
             default: break;
         }
@@ -386,18 +378,10 @@ class Galactic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
 
             default: break;
         }
@@ -408,18 +392,10 @@ class Galactic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
-        kParamD:
-            return 1.0;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
+            case kParamD: return 1.0; break;
 
             default: break;
         }
@@ -430,18 +406,10 @@ class Galactic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "drive";
-            break;
-        kParamB:
-            return "sustain";
-            break;
-        kParamC:
-            return "darken";
-            break;
-        kParamD:
-            return "wetness";
-            break;
+            case kParamA: return "drive"; break;
+            case kParamB: return "sustain"; break;
+            case kParamC: return "darken"; break;
+            case kParamD: return "wetness"; break;
 
             default: break;
         }
@@ -452,18 +420,10 @@ class Galactic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Drive";
-            break;
-        kParamB:
-            return "Sustain";
-            break;
-        kParamC:
-            return "Darken";
-            break;
-        kParamD:
-            return "Wetness";
-            break;
+            case kParamA: return "Drive"; break;
+            case kParamB: return "Sustain"; break;
+            case kParamC: return "Darken"; break;
+            case kParamD: return "Wetness"; break;
 
             default: break;
         }
@@ -474,18 +434,10 @@ class Galactic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
 
             default: break;
         }
@@ -496,18 +448,10 @@ class Galactic2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
-        kParamD:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
+            case kParamD: return ""; break;
 
             default: break;
         }

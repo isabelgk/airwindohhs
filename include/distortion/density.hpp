@@ -67,18 +67,10 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
 
             default: break;
         }
@@ -88,18 +80,10 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
 
             default: break;
         }
@@ -110,18 +94,10 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.2;
-            break;
-        kParamB:
-            return 0.0;
-            break;
-        kParamC:
-            return 1.0;
-            break;
-        kParamD:
-            return 1.0;
-            break;
+            case kParamA: return 0.2; break;
+            case kParamB: return 0.0; break;
+            case kParamC: return 1.0; break;
+            case kParamD: return 1.0; break;
 
             default: break;
         }
@@ -132,18 +108,10 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "density";
-            break;
-        kParamB:
-            return "highpass";
-            break;
-        kParamC:
-            return "out level";
-            break;
-        kParamD:
-            return "dry/wet";
-            break;
+            case kParamA: return "density"; break;
+            case kParamB: return "highpass"; break;
+            case kParamC: return "out level"; break;
+            case kParamD: return "dry/wet"; break;
 
             default: break;
         }
@@ -154,18 +122,10 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Density";
-            break;
-        kParamB:
-            return "Highpass";
-            break;
-        kParamC:
-            return "Out Level";
-            break;
-        kParamD:
-            return "Dry/Wet";
-            break;
+            case kParamA: return "Density"; break;
+            case kParamB: return "Highpass"; break;
+            case kParamC: return "Out Level"; break;
+            case kParamD: return "Dry/Wet"; break;
 
             default: break;
         }
@@ -176,18 +136,10 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
 
             default: break;
         }
@@ -198,18 +150,10 @@ class Density final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return " ";
-            break;
-        kParamB:
-            return " ";
-            break;
-        kParamC:
-            return " ";
-            break;
-        kParamD:
-            return " ";
-            break;
+            case kParamA: return " "; break;
+            case kParamB: return " "; break;
+            case kParamC: return " "; break;
+            case kParamD: return " "; break;
 
             default: break;
         }

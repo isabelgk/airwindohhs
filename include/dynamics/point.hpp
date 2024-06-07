@@ -72,15 +72,9 @@ class Point final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
 
             default: break;
         }
@@ -90,15 +84,9 @@ class Point final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
 
             default: break;
         }
@@ -109,15 +97,9 @@ class Point final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
 
             default: break;
         }
@@ -128,15 +110,9 @@ class Point final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "input trim";
-            break;
-        kParamB:
-            return "point";
-            break;
-        kParamC:
-            return "reaction speed";
-            break;
+            case kParamA: return "input trim"; break;
+            case kParamB: return "point"; break;
+            case kParamC: return "reaction speed"; break;
 
             default: break;
         }
@@ -147,15 +123,9 @@ class Point final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Input Trim";
-            break;
-        kParamB:
-            return "Point";
-            break;
-        kParamC:
-            return "Reaction Speed";
-            break;
+            case kParamA: return "Input Trim"; break;
+            case kParamB: return "Point"; break;
+            case kParamC: return "Reaction Speed"; break;
 
             default: break;
         }
@@ -166,15 +136,9 @@ class Point final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
 
             default: break;
         }
@@ -185,15 +149,9 @@ class Point final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "dB";
-            break;
-        kParamB:
-            return " ";
-            break;
-        kParamC:
-            return " ";
-            break;
+            case kParamA: return "dB"; break;
+            case kParamB: return " "; break;
+            case kParamC: return " "; break;
 
             default: break;
         }

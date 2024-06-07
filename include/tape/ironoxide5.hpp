@@ -128,27 +128,13 @@ class IronOxide5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
-        kParamF:
-            F = value;
-            break;
-        kParamG:
-            G = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+            case kParamF: F = value; break;
+            case kParamG: G = value; break;
 
             default: break;
         }
@@ -158,27 +144,13 @@ class IronOxide5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
-        kParamF:
-            return F;
-            break;
-        kParamG:
-            return G;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
+            case kParamF: return F; break;
+            case kParamG: return G; break;
 
             default: break;
         }
@@ -189,27 +161,13 @@ class IronOxide5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.562341325190349;
-            break;
-        kParamC:
-            return 0.562341325190349;
-            break;
-        kParamD:
-            return 0.5;
-            break;
-        kParamE:
-            return 0.5;
-            break;
-        kParamF:
-            return 0.5;
-            break;
-        kParamG:
-            return 1.0;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.562341325190349; break;
+            case kParamC: return 0.562341325190349; break;
+            case kParamD: return 0.5; break;
+            case kParamE: return 0.5; break;
+            case kParamF: return 0.5; break;
+            case kParamG: return 1.0; break;
 
             default: break;
         }
@@ -220,27 +178,13 @@ class IronOxide5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "input trim";
-            break;
-        kParamB:
-            return "tape high";
-            break;
-        kParamC:
-            return "tape low";
-            break;
-        kParamD:
-            return "flutter";
-            break;
-        kParamE:
-            return "noise";
-            break;
-        kParamF:
-            return "output trim";
-            break;
-        kParamG:
-            return "inv/dry/wet";
-            break;
+            case kParamA: return "input trim"; break;
+            case kParamB: return "tape high"; break;
+            case kParamC: return "tape low"; break;
+            case kParamD: return "flutter"; break;
+            case kParamE: return "noise"; break;
+            case kParamF: return "output trim"; break;
+            case kParamG: return "inv/dry/wet"; break;
 
             default: break;
         }
@@ -251,27 +195,13 @@ class IronOxide5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Input Trim";
-            break;
-        kParamB:
-            return "Tape High";
-            break;
-        kParamC:
-            return "Tape Low";
-            break;
-        kParamD:
-            return "Flutter";
-            break;
-        kParamE:
-            return "Noise";
-            break;
-        kParamF:
-            return "Output Trim";
-            break;
-        kParamG:
-            return "Inv/Dry/Wet";
-            break;
+            case kParamA: return "Input Trim"; break;
+            case kParamB: return "Tape High"; break;
+            case kParamC: return "Tape Low"; break;
+            case kParamD: return "Flutter"; break;
+            case kParamE: return "Noise"; break;
+            case kParamF: return "Output Trim"; break;
+            case kParamG: return "Inv/Dry/Wet"; break;
 
             default: break;
         }
@@ -282,27 +212,13 @@ class IronOxide5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
-        kParamF:
-            return std::to_string(F);
-            break;
-        kParamG:
-            return std::to_string(G);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
+            case kParamF: return std::to_string(F); break;
+            case kParamG: return std::to_string(G); break;
 
             default: break;
         }
@@ -313,27 +229,13 @@ class IronOxide5 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "dB";
-            break;
-        kParamB:
-            return "ips";
-            break;
-        kParamC:
-            return "ips";
-            break;
-        kParamD:
-            return "";
-            break;
-        kParamE:
-            return "";
-            break;
-        kParamF:
-            return "dB";
-            break;
-        kParamG:
-            return "";
-            break;
+            case kParamA: return "dB"; break;
+            case kParamB: return "ips"; break;
+            case kParamC: return "ips"; break;
+            case kParamD: return ""; break;
+            case kParamE: return ""; break;
+            case kParamF: return "dB"; break;
+            case kParamG: return ""; break;
 
             default: break;
         }

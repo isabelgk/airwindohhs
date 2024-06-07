@@ -204,21 +204,11 @@ class Logical4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
 
             default: break;
         }
@@ -228,21 +218,11 @@ class Logical4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
 
             default: break;
         }
@@ -253,21 +233,11 @@ class Logical4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.2;
-            break;
-        kParamC:
-            return 0.192020202020202;
-            break;
-        kParamD:
-            return 0.5;
-            break;
-        kParamE:
-            return 1.0;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.2; break;
+            case kParamC: return 0.192020202020202; break;
+            case kParamD: return 0.5; break;
+            case kParamE: return 1.0; break;
 
             default: break;
         }
@@ -278,21 +248,11 @@ class Logical4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "threshold";
-            break;
-        kParamB:
-            return "ratio";
-            break;
-        kParamC:
-            return "speed";
-            break;
-        kParamD:
-            return "makeupgn";
-            break;
-        kParamE:
-            return "dry/wet";
-            break;
+            case kParamA: return "threshold"; break;
+            case kParamB: return "ratio"; break;
+            case kParamC: return "speed"; break;
+            case kParamD: return "makeupgn"; break;
+            case kParamE: return "dry/wet"; break;
 
             default: break;
         }
@@ -303,21 +263,11 @@ class Logical4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Threshold";
-            break;
-        kParamB:
-            return "Ratio";
-            break;
-        kParamC:
-            return "Speed";
-            break;
-        kParamD:
-            return "MakeupGn";
-            break;
-        kParamE:
-            return "Dry/Wet";
-            break;
+            case kParamA: return "Threshold"; break;
+            case kParamB: return "Ratio"; break;
+            case kParamC: return "Speed"; break;
+            case kParamD: return "MakeupGn"; break;
+            case kParamE: return "Dry/Wet"; break;
 
             default: break;
         }
@@ -328,21 +278,11 @@ class Logical4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
 
             default: break;
         }
@@ -353,21 +293,11 @@ class Logical4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "dB";
-            break;
-        kParamB:
-            return "/1";
-            break;
-        kParamC:
-            return "ms";
-            break;
-        kParamD:
-            return "dB";
-            break;
-        kParamE:
-            return " ";
-            break;
+            case kParamA: return "dB"; break;
+            case kParamB: return "/1"; break;
+            case kParamC: return "ms"; break;
+            case kParamD: return "dB"; break;
+            case kParamE: return " "; break;
 
             default: break;
         }

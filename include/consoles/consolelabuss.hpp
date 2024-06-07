@@ -61,9 +61,7 @@ class ConsoleLABuss final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
+            case kParamA: A = value; break;
 
             default: break;
         }
@@ -73,9 +71,7 @@ class ConsoleLABuss final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
+            case kParamA: return A; break;
 
             default: break;
         }
@@ -86,9 +82,7 @@ class ConsoleLABuss final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 1.0;
-            break;
+            case kParamA: return 1.0; break;
 
             default: break;
         }
@@ -99,9 +93,7 @@ class ConsoleLABuss final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "master";
-            break;
+            case kParamA: return "master"; break;
 
             default: break;
         }
@@ -112,9 +104,7 @@ class ConsoleLABuss final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Master";
-            break;
+            case kParamA: return "Master"; break;
 
             default: break;
         }
@@ -125,9 +115,7 @@ class ConsoleLABuss final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
+            case kParamA: return std::to_string(A); break;
 
             default: break;
         }
@@ -138,9 +126,7 @@ class ConsoleLABuss final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
+            case kParamA: return ""; break;
 
             default: break;
         }

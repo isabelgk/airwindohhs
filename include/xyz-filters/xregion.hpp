@@ -72,21 +72,11 @@ class XRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
 
             default: break;
         }
@@ -96,21 +86,11 @@ class XRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
 
             default: break;
         }
@@ -121,21 +101,11 @@ class XRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
-        kParamD:
-            return 0.0;
-            break;
-        kParamE:
-            return 1.0;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
+            case kParamD: return 0.0; break;
+            case kParamE: return 1.0; break;
 
             default: break;
         }
@@ -146,21 +116,11 @@ class XRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "gain";
-            break;
-        kParamB:
-            return "first";
-            break;
-        kParamC:
-            return "last";
-            break;
-        kParamD:
-            return "nuke";
-            break;
-        kParamE:
-            return "dry/wet";
-            break;
+            case kParamA: return "gain"; break;
+            case kParamB: return "first"; break;
+            case kParamC: return "last"; break;
+            case kParamD: return "nuke"; break;
+            case kParamE: return "dry/wet"; break;
 
             default: break;
         }
@@ -171,21 +131,11 @@ class XRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Gain";
-            break;
-        kParamB:
-            return "First";
-            break;
-        kParamC:
-            return "Last";
-            break;
-        kParamD:
-            return "Nuke";
-            break;
-        kParamE:
-            return "Dry/Wet";
-            break;
+            case kParamA: return "Gain"; break;
+            case kParamB: return "First"; break;
+            case kParamC: return "Last"; break;
+            case kParamD: return "Nuke"; break;
+            case kParamE: return "Dry/Wet"; break;
 
             default: break;
         }
@@ -196,21 +146,11 @@ class XRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
 
             default: break;
         }
@@ -221,21 +161,11 @@ class XRegion final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
-        kParamD:
-            return "";
-            break;
-        kParamE:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
+            case kParamD: return ""; break;
+            case kParamE: return ""; break;
 
             default: break;
         }

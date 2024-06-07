@@ -35,7 +35,7 @@ class Hype final : public Effect<T>
         }
         double overallscale = 1.0;
         overallscale /= 44100.0;
-        overallscale *= Effect<T>::getSampleRate();
+        overallscale *= getSampleRate();
         cycleEnd = floor(overallscale);
         if (cycleEnd < 1) {
             cycleEnd = 1;

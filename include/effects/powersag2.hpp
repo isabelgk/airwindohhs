@@ -63,12 +63,8 @@ class PowerSag2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
 
             default: break;
         }
@@ -78,12 +74,8 @@ class PowerSag2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
 
             default: break;
         }
@@ -94,12 +86,8 @@ class PowerSag2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.3;
-            break;
-        kParamB:
-            return 0.5;
-            break;
+            case kParamA: return 0.3; break;
+            case kParamB: return 0.5; break;
 
             default: break;
         }
@@ -110,12 +98,8 @@ class PowerSag2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "range";
-            break;
-        kParamB:
-            return "inv/wet";
-            break;
+            case kParamA: return "range"; break;
+            case kParamB: return "inv/wet"; break;
 
             default: break;
         }
@@ -126,12 +110,8 @@ class PowerSag2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Range";
-            break;
-        kParamB:
-            return "Inv/Wet";
-            break;
+            case kParamA: return "Range"; break;
+            case kParamB: return "Inv/Wet"; break;
 
             default: break;
         }
@@ -142,12 +122,8 @@ class PowerSag2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
 
             default: break;
         }
@@ -158,12 +134,8 @@ class PowerSag2 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
 
             default: break;
         }

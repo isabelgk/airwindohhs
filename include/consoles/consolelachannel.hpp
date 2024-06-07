@@ -88,21 +88,11 @@ class ConsoleLAChannel final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
 
             default: break;
         }
@@ -112,21 +102,11 @@ class ConsoleLAChannel final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
 
             default: break;
         }
@@ -137,21 +117,11 @@ class ConsoleLAChannel final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
-        kParamD:
-            return 0.5;
-            break;
-        kParamE:
-            return 0.5;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
+            case kParamD: return 0.5; break;
+            case kParamE: return 0.5; break;
 
             default: break;
         }
@@ -162,21 +132,11 @@ class ConsoleLAChannel final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "treble";
-            break;
-        kParamB:
-            return "mid";
-            break;
-        kParamC:
-            return "bass";
-            break;
-        kParamD:
-            return "pan";
-            break;
-        kParamE:
-            return "fader";
-            break;
+            case kParamA: return "treble"; break;
+            case kParamB: return "mid"; break;
+            case kParamC: return "bass"; break;
+            case kParamD: return "pan"; break;
+            case kParamE: return "fader"; break;
 
             default: break;
         }
@@ -187,21 +147,11 @@ class ConsoleLAChannel final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Treble";
-            break;
-        kParamB:
-            return "Mid";
-            break;
-        kParamC:
-            return "Bass";
-            break;
-        kParamD:
-            return "Pan";
-            break;
-        kParamE:
-            return "Fader";
-            break;
+            case kParamA: return "Treble"; break;
+            case kParamB: return "Mid"; break;
+            case kParamC: return "Bass"; break;
+            case kParamD: return "Pan"; break;
+            case kParamE: return "Fader"; break;
 
             default: break;
         }
@@ -212,21 +162,11 @@ class ConsoleLAChannel final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
 
             default: break;
         }
@@ -237,21 +177,11 @@ class ConsoleLAChannel final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
-        kParamD:
-            return "";
-            break;
-        kParamE:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
+            case kParamD: return ""; break;
+            case kParamE: return ""; break;
 
             default: break;
         }

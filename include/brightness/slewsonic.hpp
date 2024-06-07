@@ -69,12 +69,8 @@ class SlewSonic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
 
             default: break;
         }
@@ -84,12 +80,8 @@ class SlewSonic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
 
             default: break;
         }
@@ -100,12 +92,8 @@ class SlewSonic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.0;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.0; break;
 
             default: break;
         }
@@ -116,12 +104,8 @@ class SlewSonic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "mute";
-            break;
-        kParamB:
-            return "bright";
-            break;
+            case kParamA: return "mute"; break;
+            case kParamB: return "bright"; break;
 
             default: break;
         }
@@ -132,12 +116,8 @@ class SlewSonic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Mute";
-            break;
-        kParamB:
-            return "Bright";
-            break;
+            case kParamA: return "Mute"; break;
+            case kParamB: return "Bright"; break;
 
             default: break;
         }
@@ -148,12 +128,8 @@ class SlewSonic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
 
             default: break;
         }
@@ -164,12 +140,8 @@ class SlewSonic final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "kHz";
-            break;
-        kParamB:
-            return "";
-            break;
+            case kParamA: return "kHz"; break;
+            case kParamB: return ""; break;
 
             default: break;
         }

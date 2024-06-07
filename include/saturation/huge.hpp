@@ -81,12 +81,8 @@ class Huge final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
 
             default: break;
         }
@@ -96,12 +92,8 @@ class Huge final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
 
             default: break;
         }
@@ -112,12 +104,8 @@ class Huge final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.2;
-            break;
-        kParamB:
-            return 0.2;
-            break;
+            case kParamA: return 0.2; break;
+            case kParamB: return 0.2; break;
 
             default: break;
         }
@@ -128,12 +116,8 @@ class Huge final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "huge";
-            break;
-        kParamB:
-            return "nasty";
-            break;
+            case kParamA: return "huge"; break;
+            case kParamB: return "nasty"; break;
 
             default: break;
         }
@@ -144,12 +128,8 @@ class Huge final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Huge";
-            break;
-        kParamB:
-            return "Nasty";
-            break;
+            case kParamA: return "Huge"; break;
+            case kParamB: return "Nasty"; break;
 
             default: break;
         }
@@ -160,12 +140,8 @@ class Huge final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
 
             default: break;
         }
@@ -176,12 +152,8 @@ class Huge final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
 
             default: break;
         }

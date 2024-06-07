@@ -143,24 +143,12 @@ class Air final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
-        kParamF:
-            F = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+            case kParamF: F = value; break;
 
             default: break;
         }
@@ -170,24 +158,12 @@ class Air final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
-        kParamF:
-            return F;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
+            case kParamF: return F; break;
 
             default: break;
         }
@@ -198,24 +174,12 @@ class Air final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.0;
-            break;
-        kParamB:
-            return 0.0;
-            break;
-        kParamC:
-            return 0.5;
-            break;
-        kParamD:
-            return 0.0;
-            break;
-        kParamE:
-            return 1.0;
-            break;
-        kParamF:
-            return 1.0;
-            break;
+            case kParamA: return 0.0; break;
+            case kParamB: return 0.0; break;
+            case kParamC: return 0.5; break;
+            case kParamD: return 0.0; break;
+            case kParamE: return 1.0; break;
+            case kParamF: return 1.0; break;
 
             default: break;
         }
@@ -226,24 +190,12 @@ class Air final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "22k tap";
-            break;
-        kParamB:
-            return "15k tap";
-            break;
-        kParamC:
-            return "11k tap";
-            break;
-        kParamD:
-            return "filters q";
-            break;
-        kParamE:
-            return "output level";
-            break;
-        kParamF:
-            return "dry/wet";
-            break;
+            case kParamA: return "22k tap"; break;
+            case kParamB: return "15k tap"; break;
+            case kParamC: return "11k tap"; break;
+            case kParamD: return "filters q"; break;
+            case kParamE: return "output level"; break;
+            case kParamF: return "dry/wet"; break;
 
             default: break;
         }
@@ -254,24 +206,12 @@ class Air final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "22K tap";
-            break;
-        kParamB:
-            return "15K tap";
-            break;
-        kParamC:
-            return "11K tap";
-            break;
-        kParamD:
-            return "filters Q";
-            break;
-        kParamE:
-            return "Output Level";
-            break;
-        kParamF:
-            return "Dry/Wet";
-            break;
+            case kParamA: return "22K tap"; break;
+            case kParamB: return "15K tap"; break;
+            case kParamC: return "11K tap"; break;
+            case kParamD: return "filters Q"; break;
+            case kParamE: return "Output Level"; break;
+            case kParamF: return "Dry/Wet"; break;
 
             default: break;
         }
@@ -282,24 +222,12 @@ class Air final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
-        kParamF:
-            return std::to_string(F);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
+            case kParamF: return std::to_string(F); break;
 
             default: break;
         }
@@ -310,24 +238,12 @@ class Air final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return " ";
-            break;
-        kParamB:
-            return " ";
-            break;
-        kParamC:
-            return " ";
-            break;
-        kParamD:
-            return " ";
-            break;
-        kParamE:
-            return " ";
-            break;
-        kParamF:
-            return " ";
-            break;
+            case kParamA: return " "; break;
+            case kParamB: return " "; break;
+            case kParamC: return " "; break;
+            case kParamD: return " "; break;
+            case kParamE: return " "; break;
+            case kParamF: return " "; break;
 
             default: break;
         }

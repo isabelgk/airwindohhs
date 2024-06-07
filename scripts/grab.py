@@ -211,7 +211,7 @@ class Plugin:
         chunk = naive_line_filter(chunk)
         result = []
         for line in chunk:
-            line.replace("getSampleRate", "Effect<T>::getSampleRate()")
+            result.append(line.replace("getSampleRate()", "Effect<T>::getSampleRate()"))
         return "".join(result)
 
     def _init_private_vars(self):
@@ -289,49 +289,49 @@ class Plugin:
     def _param_set_value_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"{param.enum_name}: {param.variable} = value; break;\n"
+            line = f"case {param.enum_name}: {param.variable} = value; break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _param_get_value_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"{param.enum_name}: return {param.variable}; break;\n"
+            line = f"case {param.enum_name}: return {param.variable}; break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _param_default_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"{param.enum_name}: return {param.default_value}; break;\n"
+            line = f"case {param.enum_name}: return {param.default_value}; break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _param_name_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"{param.enum_name}: return \"{param.slug}\"; break;\n"
+            line = f"case {param.enum_name}: return \"{param.slug}\"; break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _param_title_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"{param.enum_name}: return \"{param.title}\"; break;\n"
+            line = f"case {param.enum_name}: return \"{param.title}\"; break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _parameter_display_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"{param.enum_name}: return std::to_string({param.variable}); break;\n"
+            line = f"case {param.enum_name}: return std::to_string({param.variable}); break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _parameter_label_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"{param.enum_name}: return \"{param.label}\"; break;\n"
+            line = f"case {param.enum_name}: return \"{param.label}\"; break;\n"
             lines.append(line)
         return "".join(lines)
 

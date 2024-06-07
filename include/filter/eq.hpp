@@ -231,30 +231,14 @@ class EQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
-        kParamF:
-            F = value;
-            break;
-        kParamG:
-            G = value;
-            break;
-        kParamH:
-            H = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+            case kParamF: F = value; break;
+            case kParamG: G = value; break;
+            case kParamH: H = value; break;
 
             default: break;
         }
@@ -264,30 +248,14 @@ class EQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
-        kParamF:
-            return F;
-            break;
-        kParamG:
-            return G;
-            break;
-        kParamH:
-            return H;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
+            case kParamF: return F; break;
+            case kParamG: return G; break;
+            case kParamH: return H; break;
 
             default: break;
         }
@@ -298,30 +266,14 @@ class EQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
-        kParamD:
-            return 1.0;
-            break;
-        kParamE:
-            return 0.4;
-            break;
-        kParamF:
-            return 0.4;
-            break;
-        kParamG:
-            return 0.0;
-            break;
-        kParamH:
-            return 0.5;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
+            case kParamD: return 1.0; break;
+            case kParamE: return 0.4; break;
+            case kParamF: return 0.4; break;
+            case kParamG: return 0.0; break;
+            case kParamH: return 0.5; break;
 
             default: break;
         }
@@ -332,30 +284,14 @@ class EQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "treble";
-            break;
-        kParamB:
-            return "mid";
-            break;
-        kParamC:
-            return "bass";
-            break;
-        kParamD:
-            return "lowpass";
-            break;
-        kParamE:
-            return "trebfrq";
-            break;
-        kParamF:
-            return "bassfrq";
-            break;
-        kParamG:
-            return "hipass";
-            break;
-        kParamH:
-            return "outgain";
-            break;
+            case kParamA: return "treble"; break;
+            case kParamB: return "mid"; break;
+            case kParamC: return "bass"; break;
+            case kParamD: return "lowpass"; break;
+            case kParamE: return "trebfrq"; break;
+            case kParamF: return "bassfrq"; break;
+            case kParamG: return "hipass"; break;
+            case kParamH: return "outgain"; break;
 
             default: break;
         }
@@ -366,30 +302,14 @@ class EQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Treble";
-            break;
-        kParamB:
-            return "Mid";
-            break;
-        kParamC:
-            return "Bass";
-            break;
-        kParamD:
-            return "Lowpass";
-            break;
-        kParamE:
-            return "TrebFrq";
-            break;
-        kParamF:
-            return "BassFrq";
-            break;
-        kParamG:
-            return "Hipass";
-            break;
-        kParamH:
-            return "OutGain";
-            break;
+            case kParamA: return "Treble"; break;
+            case kParamB: return "Mid"; break;
+            case kParamC: return "Bass"; break;
+            case kParamD: return "Lowpass"; break;
+            case kParamE: return "TrebFrq"; break;
+            case kParamF: return "BassFrq"; break;
+            case kParamG: return "Hipass"; break;
+            case kParamH: return "OutGain"; break;
 
             default: break;
         }
@@ -400,30 +320,14 @@ class EQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
-        kParamF:
-            return std::to_string(F);
-            break;
-        kParamG:
-            return std::to_string(G);
-            break;
-        kParamH:
-            return std::to_string(H);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
+            case kParamF: return std::to_string(F); break;
+            case kParamG: return std::to_string(G); break;
+            case kParamH: return std::to_string(H); break;
 
             default: break;
         }
@@ -434,30 +338,14 @@ class EQ final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "dB";
-            break;
-        kParamB:
-            return "dB";
-            break;
-        kParamC:
-            return "dB";
-            break;
-        kParamD:
-            return "Khz";
-            break;
-        kParamE:
-            return "Khz";
-            break;
-        kParamF:
-            return "hz";
-            break;
-        kParamG:
-            return "hz";
-            break;
-        kParamH:
-            return "dB";
-            break;
+            case kParamA: return "dB"; break;
+            case kParamB: return "dB"; break;
+            case kParamC: return "dB"; break;
+            case kParamD: return "Khz"; break;
+            case kParamE: return "Khz"; break;
+            case kParamF: return "hz"; break;
+            case kParamG: return "hz"; break;
+            case kParamH: return "dB"; break;
 
             default: break;
         }

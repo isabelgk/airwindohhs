@@ -54,15 +54,9 @@ class EveryConsole final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
 
             default: break;
         }
@@ -72,15 +66,9 @@ class EveryConsole final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
 
             default: break;
         }
@@ -91,15 +79,9 @@ class EveryConsole final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.0;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
+            case kParamA: return 0.0; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
 
             default: break;
         }
@@ -110,15 +92,9 @@ class EveryConsole final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "contype";
-            break;
-        kParamB:
-            return "intrim";
-            break;
-        kParamC:
-            return "outtrim";
-            break;
+            case kParamA: return "contype"; break;
+            case kParamB: return "intrim"; break;
+            case kParamC: return "outtrim"; break;
 
             default: break;
         }
@@ -129,15 +105,9 @@ class EveryConsole final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "ConType";
-            break;
-        kParamB:
-            return "InTrim";
-            break;
-        kParamC:
-            return "OutTrim";
-            break;
+            case kParamA: return "ConType"; break;
+            case kParamB: return "InTrim"; break;
+            case kParamC: return "OutTrim"; break;
 
             default: break;
         }
@@ -148,15 +118,9 @@ class EveryConsole final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
 
             default: break;
         }
@@ -167,15 +131,9 @@ class EveryConsole final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
 
             default: break;
         }

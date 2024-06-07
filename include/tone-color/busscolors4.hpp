@@ -103,18 +103,10 @@ class BussColors4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
 
             default: break;
         }
@@ -124,18 +116,10 @@ class BussColors4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
 
             default: break;
         }
@@ -146,18 +130,10 @@ class BussColors4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.0;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
-        kParamD:
-            return 1.0;
-            break;
+            case kParamA: return 0.0; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
+            case kParamD: return 1.0; break;
 
             default: break;
         }
@@ -168,18 +144,10 @@ class BussColors4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "color";
-            break;
-        kParamB:
-            return "input trim";
-            break;
-        kParamC:
-            return "output trim";
-            break;
-        kParamD:
-            return "dry/wet";
-            break;
+            case kParamA: return "color"; break;
+            case kParamB: return "input trim"; break;
+            case kParamC: return "output trim"; break;
+            case kParamD: return "dry/wet"; break;
 
             default: break;
         }
@@ -190,18 +158,10 @@ class BussColors4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Color";
-            break;
-        kParamB:
-            return "Input Trim";
-            break;
-        kParamC:
-            return "Output Trim";
-            break;
-        kParamD:
-            return "Dry/Wet";
-            break;
+            case kParamA: return "Color"; break;
+            case kParamB: return "Input Trim"; break;
+            case kParamC: return "Output Trim"; break;
+            case kParamD: return "Dry/Wet"; break;
 
             default: break;
         }
@@ -212,18 +172,10 @@ class BussColors4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
 
             default: break;
         }
@@ -234,18 +186,10 @@ class BussColors4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "dB";
-            break;
-        kParamC:
-            return "dB";
-            break;
-        kParamD:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return "dB"; break;
+            case kParamC: return "dB"; break;
+            case kParamD: return ""; break;
 
             default: break;
         }

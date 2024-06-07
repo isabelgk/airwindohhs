@@ -328,33 +328,15 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
-        kParamF:
-            F = value;
-            break;
-        kParamG:
-            G = value;
-            break;
-        kParamH:
-            H = value;
-            break;
-        kParamI:
-            I = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+            case kParamF: F = value; break;
+            case kParamG: G = value; break;
+            case kParamH: H = value; break;
+            case kParamI: I = value; break;
 
             default: break;
         }
@@ -364,33 +346,15 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
-        kParamF:
-            return F;
-            break;
-        kParamG:
-            return G;
-            break;
-        kParamH:
-            return H;
-            break;
-        kParamI:
-            return I;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
+            case kParamF: return F; break;
+            case kParamG: return G; break;
+            case kParamH: return H; break;
+            case kParamI: return I; break;
 
             default: break;
         }
@@ -401,33 +365,15 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 0.5;
-            break;
-        kParamC:
-            return 0.5;
-            break;
-        kParamD:
-            return 0.5;
-            break;
-        kParamE:
-            return 0.5;
-            break;
-        kParamF:
-            return 0.5;
-            break;
-        kParamG:
-            return 0.5;
-            break;
-        kParamH:
-            return 0.5;
-            break;
-        kParamI:
-            return 1.0;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.5; break;
+            case kParamD: return 0.5; break;
+            case kParamE: return 0.5; break;
+            case kParamF: return 0.5; break;
+            case kParamG: return 0.5; break;
+            case kParamH: return 0.5; break;
+            case kParamI: return 1.0; break;
 
             default: break;
         }
@@ -438,33 +384,15 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "hiss";
-            break;
-        kParamB:
-            return "glitter";
-            break;
-        kParamC:
-            return "rat";
-            break;
-        kParamD:
-            return "fizz";
-            break;
-        kParamE:
-            return "scrape";
-            break;
-        kParamF:
-            return "chug";
-            break;
-        kParamG:
-            return "yowr";
-            break;
-        kParamH:
-            return "snarl";
-            break;
-        kParamI:
-            return "i/dr/wt";
-            break;
+            case kParamA: return "hiss"; break;
+            case kParamB: return "glitter"; break;
+            case kParamC: return "rat"; break;
+            case kParamD: return "fizz"; break;
+            case kParamE: return "scrape"; break;
+            case kParamF: return "chug"; break;
+            case kParamG: return "yowr"; break;
+            case kParamH: return "snarl"; break;
+            case kParamI: return "i/dr/wt"; break;
 
             default: break;
         }
@@ -475,33 +403,15 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Hiss";
-            break;
-        kParamB:
-            return "Glitter";
-            break;
-        kParamC:
-            return "Rat";
-            break;
-        kParamD:
-            return "Fizz";
-            break;
-        kParamE:
-            return "Scrape";
-            break;
-        kParamF:
-            return "Chug";
-            break;
-        kParamG:
-            return "Yowr";
-            break;
-        kParamH:
-            return "Snarl";
-            break;
-        kParamI:
-            return "I/Dr/Wt";
-            break;
+            case kParamA: return "Hiss"; break;
+            case kParamB: return "Glitter"; break;
+            case kParamC: return "Rat"; break;
+            case kParamD: return "Fizz"; break;
+            case kParamE: return "Scrape"; break;
+            case kParamF: return "Chug"; break;
+            case kParamG: return "Yowr"; break;
+            case kParamH: return "Snarl"; break;
+            case kParamI: return "I/Dr/Wt"; break;
 
             default: break;
         }
@@ -512,33 +422,15 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
-        kParamF:
-            return std::to_string(F);
-            break;
-        kParamG:
-            return std::to_string(G);
-            break;
-        kParamH:
-            return std::to_string(H);
-            break;
-        kParamI:
-            return std::to_string(I);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
+            case kParamF: return std::to_string(F); break;
+            case kParamG: return std::to_string(G); break;
+            case kParamH: return std::to_string(H); break;
+            case kParamI: return std::to_string(I); break;
 
             default: break;
         }
@@ -549,33 +441,15 @@ class Energy final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
-        kParamD:
-            return "";
-            break;
-        kParamE:
-            return "";
-            break;
-        kParamF:
-            return "";
-            break;
-        kParamG:
-            return "";
-            break;
-        kParamH:
-            return "";
-            break;
-        kParamI:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
+            case kParamD: return ""; break;
+            case kParamE: return ""; break;
+            case kParamF: return ""; break;
+            case kParamG: return ""; break;
+            case kParamH: return ""; break;
+            case kParamI: return ""; break;
 
             default: break;
         }

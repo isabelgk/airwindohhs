@@ -69,18 +69,10 @@ class XLowpass final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
 
             default: break;
         }
@@ -90,18 +82,10 @@ class XLowpass final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
 
             default: break;
         }
@@ -112,18 +96,10 @@ class XLowpass final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.5;
-            break;
-        kParamB:
-            return 1.0;
-            break;
-        kParamC:
-            return 0.0;
-            break;
-        kParamD:
-            return 1.0;
-            break;
+            case kParamA: return 0.5; break;
+            case kParamB: return 1.0; break;
+            case kParamC: return 0.0; break;
+            case kParamD: return 1.0; break;
 
             default: break;
         }
@@ -134,18 +110,10 @@ class XLowpass final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "gain";
-            break;
-        kParamB:
-            return "freq";
-            break;
-        kParamC:
-            return "nuke";
-            break;
-        kParamD:
-            return "dry/wet";
-            break;
+            case kParamA: return "gain"; break;
+            case kParamB: return "freq"; break;
+            case kParamC: return "nuke"; break;
+            case kParamD: return "dry/wet"; break;
 
             default: break;
         }
@@ -156,18 +124,10 @@ class XLowpass final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "Gain";
-            break;
-        kParamB:
-            return "Freq";
-            break;
-        kParamC:
-            return "Nuke";
-            break;
-        kParamD:
-            return "Dry/Wet";
-            break;
+            case kParamA: return "Gain"; break;
+            case kParamB: return "Freq"; break;
+            case kParamC: return "Nuke"; break;
+            case kParamD: return "Dry/Wet"; break;
 
             default: break;
         }
@@ -178,18 +138,10 @@ class XLowpass final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
 
             default: break;
         }
@@ -200,18 +152,10 @@ class XLowpass final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
-        kParamD:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
+            case kParamD: return ""; break;
 
             default: break;
         }
