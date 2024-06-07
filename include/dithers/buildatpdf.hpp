@@ -305,7 +305,6 @@ class BuildATPDF final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::buildatpdf

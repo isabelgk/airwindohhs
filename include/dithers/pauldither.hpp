@@ -212,7 +212,6 @@ class PaulDither final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::pauldither

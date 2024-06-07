@@ -333,7 +333,6 @@ class HardVacuum final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::hardvacuum
