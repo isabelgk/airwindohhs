@@ -309,7 +309,6 @@ class OneCornerClip final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::onecornerclip
