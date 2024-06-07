@@ -165,24 +165,12 @@ class Cabs final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            A = value;
-            break;
-        kParamB:
-            B = value;
-            break;
-        kParamC:
-            C = value;
-            break;
-        kParamD:
-            D = value;
-            break;
-        kParamE:
-            E = value;
-            break;
-        kParamF:
-            F = value;
-            break;
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+            case kParamF: F = value; break;
 
             default: break;
         }
@@ -192,24 +180,12 @@ class Cabs final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return A;
-            break;
-        kParamB:
-            return B;
-            break;
-        kParamC:
-            return C;
-            break;
-        kParamD:
-            return D;
-            break;
-        kParamE:
-            return E;
-            break;
-        kParamF:
-            return F;
-            break;
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
+            case kParamF: return F; break;
 
             default: break;
         }
@@ -220,24 +196,12 @@ class Cabs final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return 0.0;
-            break;
-        kParamB:
-            return 0.66;
-            break;
-        kParamC:
-            return 0.33;
-            break;
-        kParamD:
-            return 0.66;
-            break;
-        kParamE:
-            return 0.33;
-            break;
-        kParamF:
-            return 0.5;
-            break;
+            case kParamA: return 0.0; break;
+            case kParamB: return 0.66; break;
+            case kParamC: return 0.33; break;
+            case kParamD: return 0.66; break;
+            case kParamE: return 0.33; break;
+            case kParamF: return 0.5; break;
 
             default: break;
         }
@@ -248,24 +212,12 @@ class Cabs final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "cabtype";
-            break;
-        kParamB:
-            return "intense";
-            break;
-        kParamC:
-            return "rm loud";
-            break;
-        kParamD:
-            return "cabsize";
-            break;
-        kParamE:
-            return "offaxis";
-            break;
-        kParamF:
-            return "output";
-            break;
+            case kParamA: return "cabtype"; break;
+            case kParamB: return "intense"; break;
+            case kParamC: return "rm loud"; break;
+            case kParamD: return "cabsize"; break;
+            case kParamE: return "offaxis"; break;
+            case kParamF: return "output"; break;
 
             default: break;
         }
@@ -276,24 +228,12 @@ class Cabs final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "CabType";
-            break;
-        kParamB:
-            return "Intense";
-            break;
-        kParamC:
-            return "Rm Loud";
-            break;
-        kParamD:
-            return "CabSize";
-            break;
-        kParamE:
-            return "OffAxis";
-            break;
-        kParamF:
-            return "Output";
-            break;
+            case kParamA: return "CabType"; break;
+            case kParamB: return "Intense"; break;
+            case kParamC: return "Rm Loud"; break;
+            case kParamD: return "CabSize"; break;
+            case kParamE: return "OffAxis"; break;
+            case kParamF: return "Output"; break;
 
             default: break;
         }
@@ -304,24 +244,12 @@ class Cabs final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return std::to_string(A);
-            break;
-        kParamB:
-            return std::to_string(B);
-            break;
-        kParamC:
-            return std::to_string(C);
-            break;
-        kParamD:
-            return std::to_string(D);
-            break;
-        kParamE:
-            return std::to_string(E);
-            break;
-        kParamF:
-            return std::to_string(F);
-            break;
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
+            case kParamF: return std::to_string(F); break;
 
             default: break;
         }
@@ -332,24 +260,12 @@ class Cabs final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-        kParamA:
-            return "";
-            break;
-        kParamB:
-            return "";
-            break;
-        kParamC:
-            return "";
-            break;
-        kParamD:
-            return "";
-            break;
-        kParamE:
-            return "";
-            break;
-        kParamF:
-            return "";
-            break;
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
+            case kParamD: return ""; break;
+            case kParamE: return ""; break;
+            case kParamF: return ""; break;
 
             default: break;
         }
