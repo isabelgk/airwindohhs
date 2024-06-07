@@ -71,19 +71,38 @@ class EverySlew final : public Effect<T>
         invSampR10,
         threshold10,
         gslew_total
+    }; // fixed frequency pear filter for ultrasonics, stereo
+    double gslew[gslew_total]; // probably worth just using a number here
 
-        public :
-            EverySlew(){
-                A = 0.0;
-                B = 1.0;
-                C = 0.16;
-                D = 1.0;
-                for (int x = 0; x < gslew_total; x++) gslew[x] = 0.0;
-                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
-                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
-                // this is reset: values being initialized only once. Startup values, whatever they are.
+    uint32_t fpdL;
+    uint32_t fpdR;
+    // default stuff
 
-            }
+    float A;
+    float B;
+    float C;
+    float D;
+
+  public:
+    EverySlew()
+    {
+        A = 0.0;
+        B = 1.0;
+        C = 0.16;
+        D = 1.0;
+        for (int x = 0; x < gslew_total; x++) {
+            gslew[x] = 0.0;
+        }
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
+    }
 
     enum params
     {

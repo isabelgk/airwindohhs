@@ -32,177 +32,193 @@ class UltrasonX final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
+    }; // fixed frequency biquad filter for ultrasonics, stereo
+    double fixA[fix_total];
 
-        public :
-            UltrasonX(){
-                A = 0.5;
-                for (int x = 0; x < fix_total; x++){ fixA[x] = 0.0; }
-    fixA[fix_reso] = 0.7071; // butterworth Q
-    fpdL = 1.0;
-    while (fpdL < 16386) {
-        fpdL = rand() * UINT32_MAX;
-    }
-    fpdR = 1.0;
-    while (fpdR < 16386) {
-        fpdR = rand() * UINT32_MAX;
-    }
-    // this is reset: values being initialized only once. Startup values, whatever they are.
+    uint32_t fpdL;
+    uint32_t fpdR;
+    // default stuff
 
-}
+    static const int kA = 0;
+    static const int kB = 1;
+    static const int kC = 2;
+    static const int kD = 3;
+    static const int kE = 4;
 
-enum params {
-    kParamA = 0,
-    kNumParameters = 1
-};
+    float A;
 
-void set_parameter_value(int index, float value)
-{
-    switch (static_cast<params>(index))
+  public:
+    UltrasonX()
     {
-        case kParamA: A = value; break;
-
-        default: break;
-    }
-}
-
-float get_parameter_value(int index)
-{
-    switch (static_cast<params>(index))
-    {
-        case kParamA: return A; break;
-
-        default: break;
-    }
-    return 0.0;
-}
-
-T get_parameter_default(int index)
-{
-    switch (static_cast<params>(index))
-    {
-        case kParamA: return 0.5; break;
-
-        default: break;
-    }
-    return 0.0;
-}
-
-constexpr std::string_view get_parameter_name(int index)
-{
-    switch (static_cast<params>(index))
-    {
-        case kParamA: return "q"; break;
-
-        default: break;
-    }
-    return {};
-}
-
-constexpr std::string_view get_parameter_title(int index)
-{
-    switch (static_cast<params>(index))
-    {
-        case kParamA: return "Q"; break;
-
-        default: break;
-    }
-    return {};
-}
-
-std::string get_parameter_display(int index) const
-{
-    switch (static_cast<params>(index))
-    {
-        case kParamA: return std::to_string(A); break;
-
-        default: break;
-    }
-    return {};
-}
-
-constexpr std::string_view get_parameter_label(int index) const
-{
-    switch (static_cast<params>(index))
-    {
-        case kParamA: return ""; break;
-
-        default: break;
-    }
-    return {};
-}
-
-void process(T** inputs, T** outputs, long sampleFrames)
-{
-    T* in1 = inputs[0];
-    T* in2 = inputs[1];
-    T* out1 = outputs[0];
-    T* out2 = outputs[1];
-
-    fixA[fix_freq] = 21000.0 / Effect<T>::getSampleRate();
-    switch ((VstInt32)(A * 4.999))
-    {
-        case kA:
-            fixA[fix_reso] = 3.19622661;
-            break;
-        case kB:
-            fixA[fix_reso] = 1.10134463;
-            break;
-        case kC:
-            fixA[fix_reso] = 0.70710678; // butterworth Q
-            break;
-        case kD:
-            fixA[fix_reso] = 0.56116312;
-            break;
-        case kE:
-            fixA[fix_reso] = 0.50623256;
-            break;
-    }
-    double K = tan(M_PI * fixA[fix_freq]);
-    double norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);
-    fixA[fix_a0] = K * K * norm;
-    fixA[fix_a1] = 2.0 * fixA[fix_a0];
-    fixA[fix_a2] = fixA[fix_a0];
-    fixA[fix_b1] = 2.0 * (K * K - 1.0) * norm;
-    fixA[fix_b2] = (1.0 - K / fixA[fix_reso] + K * K) * norm;
-    // for the fixed-position biquad filter
-    while (--sampleFrames >= 0)
-    {
-        double inputSampleL = *in1;
-        double inputSampleR = *in2;
-        if (fabs(inputSampleL) < 1.18e-23) {
-            inputSampleL = fpdL * 1.18e-17;
+        A = 0.5;
+        for (int x = 0; x < fix_total; x++) {
+            fixA[x] = 0.0;
         }
-        if (fabs(inputSampleR) < 1.18e-23) {
-            inputSampleR = fpdR * 1.18e-17;
+        fixA[fix_reso] = 0.7071; // butterworth Q
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
         }
-        double temp = (inputSampleL * fixA[fix_a0]) + fixA[fix_sL1];
-        fixA[fix_sL1] = (inputSampleL * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sL2];
-        fixA[fix_sL2] = (inputSampleL * fixA[fix_a2]) - (temp * fixA[fix_b2]);
-        inputSampleL = temp; // fixed biquad filtering ultrasonics
-        temp = (inputSampleR * fixA[fix_a0]) + fixA[fix_sR1];
-        fixA[fix_sR1] = (inputSampleR * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sR2];
-        fixA[fix_sR2] = (inputSampleR * fixA[fix_a2]) - (temp * fixA[fix_b2]);
-        inputSampleR = temp; // fixed biquad filtering ultrasonics
-        // begin 64 bit stereo floating point dither
-        // int expon; frexp((double)inputSampleL, &expon);
-        fpdL ^= fpdL << 13;
-        fpdL ^= fpdL >> 17;
-        fpdL ^= fpdL << 5;
-        // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
-        // frexp((double)inputSampleR, &expon);
-        fpdR ^= fpdR << 13;
-        fpdR ^= fpdR >> 17;
-        fpdR ^= fpdR << 5;
-        // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
-        // end 64 bit stereo floating point dither
-        *out1 = inputSampleL;
-        *out2 = inputSampleR;
-        in1++;
-        in2++;
-        out1++;
-        out2++;
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
     }
-}
 
+    enum params
+    {
+        kParamA = 0,
+        kNumParameters = 1
+    };
+
+    void set_parameter_value(int index, float value)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: A = value; break;
+
+            default: break;
+        }
+    }
+
+    float get_parameter_value(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return A; break;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
+    T get_parameter_default(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.5; break;
+
+            default: break;
+        }
+        return 0.0;
+    }
+
+    constexpr std::string_view get_parameter_name(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "q"; break;
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_title(int index)
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "Q"; break;
+
+            default: break;
+        }
+        return {};
+    }
+
+    std::string get_parameter_display(int index) const
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return std::to_string(A); break;
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_label(int index) const
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return ""; break;
+
+            default: break;
+        }
+        return {};
+    }
+
+    void process(T** inputs, T** outputs, long sampleFrames)
+    {
+        T* in1 = inputs[0];
+        T* in2 = inputs[1];
+        T* out1 = outputs[0];
+        T* out2 = outputs[1];
+
+        fixA[fix_freq] = 21000.0 / Effect<T>::getSampleRate();
+        switch ((VstInt32)(A * 4.999))
+        {
+            case kA:
+                fixA[fix_reso] = 3.19622661;
+                break;
+            case kB:
+                fixA[fix_reso] = 1.10134463;
+                break;
+            case kC:
+                fixA[fix_reso] = 0.70710678; // butterworth Q
+                break;
+            case kD:
+                fixA[fix_reso] = 0.56116312;
+                break;
+            case kE:
+                fixA[fix_reso] = 0.50623256;
+                break;
+        }
+        double K = tan(M_PI * fixA[fix_freq]);
+        double norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);
+        fixA[fix_a0] = K * K * norm;
+        fixA[fix_a1] = 2.0 * fixA[fix_a0];
+        fixA[fix_a2] = fixA[fix_a0];
+        fixA[fix_b1] = 2.0 * (K * K - 1.0) * norm;
+        fixA[fix_b2] = (1.0 - K / fixA[fix_reso] + K * K) * norm;
+        // for the fixed-position biquad filter
+        while (--sampleFrames >= 0)
+        {
+            double inputSampleL = *in1;
+            double inputSampleR = *in2;
+            if (fabs(inputSampleL) < 1.18e-23) {
+                inputSampleL = fpdL * 1.18e-17;
+            }
+            if (fabs(inputSampleR) < 1.18e-23) {
+                inputSampleR = fpdR * 1.18e-17;
+            }
+            double temp = (inputSampleL * fixA[fix_a0]) + fixA[fix_sL1];
+            fixA[fix_sL1] = (inputSampleL * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sL2];
+            fixA[fix_sL2] = (inputSampleL * fixA[fix_a2]) - (temp * fixA[fix_b2]);
+            inputSampleL = temp; // fixed biquad filtering ultrasonics
+            temp = (inputSampleR * fixA[fix_a0]) + fixA[fix_sR1];
+            fixA[fix_sR1] = (inputSampleR * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sR2];
+            fixA[fix_sR2] = (inputSampleR * fixA[fix_a2]) - (temp * fixA[fix_b2]);
+            inputSampleR = temp; // fixed biquad filtering ultrasonics
+            // begin 64 bit stereo floating point dither
+            // int expon; frexp((double)inputSampleL, &expon);
+            fpdL ^= fpdL << 13;
+            fpdL ^= fpdL >> 17;
+            fpdL ^= fpdL << 5;
+            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // frexp((double)inputSampleR, &expon);
+            fpdR ^= fpdR << 13;
+            fpdR ^= fpdR >> 17;
+            fpdR ^= fpdR << 5;
+            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // end 64 bit stereo floating point dither
+            *out1 = inputSampleL;
+            *out2 = inputSampleR;
+            in1++;
+            in2++;
+            out1++;
+            out2++;
+        }
+    }
 };
 } // namespace airwindohhs::ultrasonx

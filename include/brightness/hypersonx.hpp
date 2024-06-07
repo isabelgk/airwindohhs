@@ -32,16 +32,40 @@ class HypersonX final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
+    }; // fixed frequency biquad filter for ultrasonics, stereo
+    double fixA[fix_total];
 
-        public :
-            HypersonX(){
-                A = 0.5;
-                for (int x = 0; x < fix_total; x++) fixA[x] = 0.0;
-                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
-                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
-                // this is reset: values being initialized only once. Startup values, whatever they are.
+    uint32_t fpdL;
+    uint32_t fpdR;
+    // default stuff
 
-            }
+    static const int kA = 0;
+    static const int kB = 1;
+    static const int kC = 2;
+    static const int kD = 3;
+    static const int kE = 4;
+    static const int kF = 5;
+    static const int kG = 6;
+
+    float A;
+
+  public:
+    HypersonX()
+    {
+        A = 0.5;
+        for (int x = 0; x < fix_total; x++) {
+            fixA[x] = 0.0;
+        }
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
+    }
 
     enum params
     {
