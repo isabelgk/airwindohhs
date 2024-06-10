@@ -177,9 +177,9 @@ class Wider final : public Effect<T>
             offset = -sin(-offset);
         }
         offset = -(pow(offset, 4) * 20 * overallscale);
-        int near = (int)floor(fabs(offset));
-        double farLevel = fabs(offset) - near;
-        int far = near + 1;
+        int nearVal = (int)floor(fabs(offset));
+        double farLevel = fabs(offset) - nearVal;
+        int farVal = nearVal + 1;
         double nearLevel = 1.0 - farLevel;
         double bridgerectifier;
         // interpolating the sample
@@ -251,14 +251,14 @@ class Wider final : public Effect<T>
             if (offset > 0)
             {
                 p[count + 2048] = p[count] = mid;
-                mid = p[count + near] * nearLevel;
-                mid += p[count + far] * farLevel;
+                mid = p[count + nearVal] * nearLevel;
+                mid += p[count + farVal] * farLevel;
             }
             if (offset < 0)
             {
                 p[count + 2048] = p[count] = side;
-                side = p[count + near] * nearLevel;
-                side += p[count + far] * farLevel;
+                side = p[count + nearVal] * nearLevel;
+                side += p[count + farVal] * farLevel;
             }
             count -= 1;
             inputSampleL = (drySampleL * (1.0 - wet)) + ((mid + side) * wet);

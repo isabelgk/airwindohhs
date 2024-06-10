@@ -175,9 +175,9 @@ class Golem final : public Effect<T>
             gainL = 0.5;
             gainR = 0.5;
         }
-        int near = (int)floor(fabs(offset));
-        double farLevel = fabs(offset) - near;
-        int far = near + 1;
+        int nearVal = (int)floor(fabs(offset));
+        double farLevel = fabs(offset) - nearVal;
+        int farVal = nearVal + 1;
         double nearLevel = 1.0 - farLevel;
         double inputSampleL;
         double inputSampleR;
@@ -206,16 +206,16 @@ class Golem final : public Effect<T>
             if (offset > 0)
             {
                 p[count + 2048] = p[count] = inputSampleL;
-                inputSampleL = p[count + near] * nearLevel;
-                inputSampleL += p[count + far] * farLevel;
+                inputSampleL = p[count + nearVal] * nearLevel;
+                inputSampleL += p[count + farVal] * farLevel;
                 // consider adding third sample just to bring out superhighs subtly, like old interpolation hacks
                 // or third and fifth samples, ditto
             }
             if (offset < 0)
             {
                 p[count + 2048] = p[count] = inputSampleR;
-                inputSampleR = p[count + near] * nearLevel;
-                inputSampleR += p[count + far] * farLevel;
+                inputSampleR = p[count + nearVal] * nearLevel;
+                inputSampleR += p[count + farVal] * farLevel;
             }
             count -= 1;
             inputSampleL = inputSampleL + inputSampleR;
