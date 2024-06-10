@@ -377,7 +377,6 @@ class TubeDesk final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::tubedesk

@@ -271,7 +271,6 @@ class Desk final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::desk

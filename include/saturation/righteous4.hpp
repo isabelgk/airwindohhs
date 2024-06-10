@@ -944,7 +944,6 @@ class Righteous4 final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::righteous4

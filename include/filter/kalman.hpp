@@ -46,17 +46,30 @@ class Kalman final : public Effect<T>
         kalGainR,
         kalOutR,
         kal_total
+    };
+    double kal[kal_total];
 
-        public :
-            Kalman(){
-                A = 0.5;
-                B = 1.0;
-                for (int x = 0; x < kal_total; x++) kal[x] = 0.0;
-                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
-                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
-                // this is reset: values being initialized only once. Startup values, whatever they are.
+    float A;
+    float B;
 
-            }
+  public:
+    Kalman()
+    {
+        A = 0.5;
+        B = 1.0;
+        for (int x = 0; x < kal_total; x++) {
+            kal[x] = 0.0;
+        }
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
+    }
 
     enum params
     {

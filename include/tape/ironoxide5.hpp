@@ -653,7 +653,6 @@ class IronOxide5 final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::ironoxide5

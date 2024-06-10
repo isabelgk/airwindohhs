@@ -820,7 +820,6 @@ class CrunchyGrooveWear final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::crunchygroovewear

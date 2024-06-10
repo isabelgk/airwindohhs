@@ -15,6 +15,8 @@ constexpr std::string_view k_tags{
     "subtlety"
 };
 
+constexpr int dscBuf = 90;
+
 template <typename T>
 class Discontinuity final : public Effect<T>
 {

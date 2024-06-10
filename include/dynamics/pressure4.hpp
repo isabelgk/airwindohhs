@@ -165,10 +165,10 @@ class Pressure4 final : public Effect<T>
 
     void process(T** inputs, T** outputs, long sampleFrames)
     {
-        T* in1 = inputs[0];
-        T* in2 = inputs[1];
-        T* out1 = outputs[0];
-        T* out2 = outputs[1];
+        T* inputL = inputs[0];
+        T* inputR = inputs[1];
+        T* outputL = outputs[0];
+        T* outputR = outputs[1];
 
         double overallscale = 1.0;
         overallscale /= 44100.0;
@@ -352,7 +352,6 @@ class Pressure4 final : public Effect<T>
             *outputR++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::pressure4

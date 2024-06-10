@@ -69,8 +69,8 @@ class Channel4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: A = value; break;
-            case kParamB: B = value; break;
+            case kParamA: consoletype = value; break;
+            case kParamB: drive = value; break;
 
             default: break;
         }
@@ -80,8 +80,8 @@ class Channel4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return A; break;
-            case kParamB: return B; break;
+            case kParamA: return consoletype; break;
+            case kParamB: return drive; break;
 
             default: break;
         }
@@ -128,8 +128,8 @@ class Channel4 final : public Effect<T>
     {
         switch (static_cast<params>(index))
         {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+            case kParamA: return std::to_string(consoletype); break;
+            case kParamB: return std::to_string(drive); break;
 
             default: break;
         }
@@ -264,7 +264,6 @@ class Channel4 final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::channel4

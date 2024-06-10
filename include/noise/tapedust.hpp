@@ -237,7 +237,6 @@ class TapeDust final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::tapedust

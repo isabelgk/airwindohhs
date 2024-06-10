@@ -14,6 +14,22 @@ constexpr std::string_view k_long_description{
 constexpr std::string_view k_tags{
     "effects"
 };
+constexpr int kshortA = 350;
+constexpr int kshortB = 1710;
+constexpr int kshortC = 1610;
+constexpr int kshortD = 835;
+constexpr int kshortE = 700;
+constexpr int kshortF = 1260;
+constexpr int kshortG = 1110;
+constexpr int kshortH = 1768;
+constexpr int kshortI = 280;
+constexpr int kshortJ = 2645;
+constexpr int kshortK = 1410;
+constexpr int kshortL = 1175;
+constexpr int kshortM = 12;
+constexpr int kshortN = 3110;
+constexpr int kshortO = 120;
+constexpr int kshortP = 2370;
 
 template <typename T>
 class CloudCoat final : public Effect<T>

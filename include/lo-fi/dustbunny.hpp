@@ -299,7 +299,6 @@ class DustBunny final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::dustbunny

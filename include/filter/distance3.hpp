@@ -15,6 +15,8 @@ constexpr std::string_view k_tags{
     "filter"
 };
 
+constexpr int dscBuf = 90;
+
 template <typename T>
 class Distance3 final : public Effect<T>
 {

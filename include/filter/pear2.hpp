@@ -89,21 +89,44 @@ class Pear2 final : public Effect<T>
         prevSlewR16,
         pear_total
 
-        public :
-            Pear2(){
-                A = 1.0;
-                B = 0.5;
-                C = 0.5;
-                D = 1.0;
-                for (int x = 0; x < pear_total; x++) pear[x] = 0.0;
-                freqA = freqB = 0.5;
-                nonLinA = nonLinB = 0.0;
-                wetA = wetB = 0.5;
-                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
-                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
-                // this is reset: values being initialized only once. Startup values, whatever they are.
+    }; // fixed frequency pear filter for ultrasonics, stereo
+    double pear[pear_total]; // probably worth just using a number here
 
-            }
+    double freqA;
+    double freqB;
+    double nonLinA;
+    double nonLinB;
+    double wetA;
+    double wetB;
+
+    float A;
+    float B;
+    float C;
+    float D;
+
+  public:
+    Pear2()
+    {
+        A = 1.0;
+        B = 0.5;
+        C = 0.5;
+        D = 1.0;
+        for (int x = 0; x < pear_total; x++) {
+            pear[x] = 0.0;
+        }
+        freqA = freqB = 0.5;
+        nonLinA = nonLinB = 0.0;
+        wetA = wetB = 0.5;
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
+    }
 
     enum params
     {

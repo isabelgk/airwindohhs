@@ -283,7 +283,6 @@ class Wider final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::wider

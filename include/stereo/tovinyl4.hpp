@@ -939,7 +939,6 @@ class ToVinyl4 final : public Effect<T>
             *out2++;
         }
     }
-}
 
 };
 } // namespace airwindohhs::tovinyl4

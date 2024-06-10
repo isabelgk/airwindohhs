@@ -32,306 +32,338 @@ class YNotHighpass final : public Effect<T>
         biq_sR1,
         biq_sR2,
         biq_total
+    }; // coefficient interpolating biquad filter, stereo
+    double biquad[biq_total];
 
-        public :
-            YNotHighpass(){
-                A = 0.1;
-                B = 0.5;
-                C = 0.1;
-                D = 0.1;
-                E = 1.0;
-                F = 1.0;
-                for (int x = 0; x < biq_total; x++){ biquad[x] = 0.0; }
-    for (int x = 0; x < fix_total; x++) {
-        fixA[x] = 0.0;
-        fixB[x] = 0.0;
-    }
-    fpdL = 1.0;
-    while (fpdL < 16386) {
-        fpdL = rand() * UINT32_MAX;
-    }
-    fpdR = 1.0;
-    while (fpdR < 16386) {
-        fpdR = rand() * UINT32_MAX;
-    }
-    // this is reset: values being initialized only once. Startup values, whatever they are.
-
-}
-
-enum params {
-    kParamA = 0,
-    kParamB = 1,
-    kParamC = 2,
-    kParamD = 3,
-    kParamE = 4,
-    kParamF = 5,
-    kNumParameters = 6
-};
-
-void set_parameter_value(int index, float value)
-{
-    switch (static_cast<params>(index))
+    enum
     {
-        case kParamA: A = value; break;
-        case kParamB: B = value; break;
-        case kParamC: C = value; break;
-        case kParamD: D = value; break;
-        case kParamE: E = value; break;
-        case kParamF: F = value; break;
+        fix_freq,
+        fix_reso,
+        fix_a0,
+        fix_a1,
+        fix_a2,
+        fix_b1,
+        fix_b2,
+        fix_sL1,
+        fix_sL2,
+        fix_sR1,
+        fix_sR2,
+        fix_total
+    }; // fixed frequency biquad filter for ultrasonics, stereo
+    double fixA[fix_total];
+    double fixB[fix_total];
 
-        default: break;
-    }
-}
+    uint32_t fpdL;
+    uint32_t fpdR;
+    // default stuff
 
-float get_parameter_value(int index)
-{
-    switch (static_cast<params>(index))
+    float A;
+    float B;
+    float C;
+    float D;
+    float E;
+    float F; // parameters. Always 0-1, and we scale/alter them elsewhere.
+  public:
+    YNotHighpass()
     {
-        case kParamA: return A; break;
-        case kParamB: return B; break;
-        case kParamC: return C; break;
-        case kParamD: return D; break;
-        case kParamE: return E; break;
-        case kParamF: return F; break;
-
-        default: break;
+        A = 0.1;
+        B = 0.5;
+        C = 0.1;
+        D = 0.1;
+        E = 1.0;
+        F = 1.0;
+        for (int x = 0; x < biq_total; x++) {
+            biquad[x] = 0.0;
+        }
+        for (int x = 0; x < fix_total; x++) {
+            fixA[x] = 0.0;
+            fixB[x] = 0.0;
+        }
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
     }
-    return 0.0;
-}
 
-T get_parameter_default(int index)
-{
-    switch (static_cast<params>(index))
+    enum params
     {
-        case kParamA: return 0.1; break;
-        case kParamB: return 0.5; break;
-        case kParamC: return 0.1; break;
-        case kParamD: return 0.1; break;
-        case kParamE: return 1.0; break;
-        case kParamF: return 1.0; break;
+        kParamA = 0,
+        kParamB = 1,
+        kParamC = 2,
+        kParamD = 3,
+        kParamE = 4,
+        kParamF = 5,
+        kNumParameters = 6
+    };
 
-        default: break;
-    }
-    return 0.0;
-}
-
-constexpr std::string_view get_parameter_name(int index)
-{
-    switch (static_cast<params>(index))
+    void set_parameter_value(int index, float value)
     {
-        case kParamA: return "gain"; break;
-        case kParamB: return "freq"; break;
-        case kParamC: return "reson8"; break;
-        case kParamD: return "resedge"; break;
-        case kParamE: return "output"; break;
-        case kParamF: return "dry/wet"; break;
+        switch (static_cast<params>(index))
+        {
+            case kParamA: A = value; break;
+            case kParamB: B = value; break;
+            case kParamC: C = value; break;
+            case kParamD: D = value; break;
+            case kParamE: E = value; break;
+            case kParamF: F = value; break;
 
-        default: break;
+            default: break;
+        }
     }
-    return {};
-}
 
-constexpr std::string_view get_parameter_title(int index)
-{
-    switch (static_cast<params>(index))
+    float get_parameter_value(int index)
     {
-        case kParamA: return "Gain"; break;
-        case kParamB: return "Freq"; break;
-        case kParamC: return "Reson8"; break;
-        case kParamD: return "ResEdge"; break;
-        case kParamE: return "Output"; break;
-        case kParamF: return "Dry/Wet"; break;
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return A; break;
+            case kParamB: return B; break;
+            case kParamC: return C; break;
+            case kParamD: return D; break;
+            case kParamE: return E; break;
+            case kParamF: return F; break;
 
-        default: break;
+            default: break;
+        }
+        return 0.0;
     }
-    return {};
-}
 
-std::string get_parameter_display(int index) const
-{
-    switch (static_cast<params>(index))
+    T get_parameter_default(int index)
     {
-        case kParamA: return std::to_string(A); break;
-        case kParamB: return std::to_string(B); break;
-        case kParamC: return std::to_string(C); break;
-        case kParamD: return std::to_string(D); break;
-        case kParamE: return std::to_string(E); break;
-        case kParamF: return std::to_string(F); break;
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return 0.1; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.1; break;
+            case kParamD: return 0.1; break;
+            case kParamE: return 1.0; break;
+            case kParamF: return 1.0; break;
 
-        default: break;
+            default: break;
+        }
+        return 0.0;
     }
-    return {};
-}
 
-constexpr std::string_view get_parameter_label(int index) const
-{
-    switch (static_cast<params>(index))
+    constexpr std::string_view get_parameter_name(int index)
     {
-        case kParamA: return ""; break;
-        case kParamB: return ""; break;
-        case kParamC: return ""; break;
-        case kParamD: return ""; break;
-        case kParamE: return ""; break;
-        case kParamF: return ""; break;
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "gain"; break;
+            case kParamB: return "freq"; break;
+            case kParamC: return "reson8"; break;
+            case kParamD: return "resedge"; break;
+            case kParamE: return "output"; break;
+            case kParamF: return "dry/wet"; break;
 
-        default: break;
+            default: break;
+        }
+        return {};
     }
-    return {};
-}
 
-void process(T** inputs, T** outputs, long sampleFrames)
-{
-    T* in1 = inputs[0];
-    T* in2 = inputs[1];
-    T* out1 = outputs[0];
-    T* out2 = outputs[1];
-
-    double overallscale = 1.0;
-    overallscale /= 44100.0;
-    overallscale *= Effect<T>::getSampleRate();
-    double inTrim = A * 10.0;
-    biquad[biq_freq] = pow(B, 3) * 20000.0;
-    if (biquad[biq_freq] < 15.0) {
-        biquad[biq_freq] = 15.0;
-    }
-    biquad[biq_freq] /= Effect<T>::getSampleRate();
-    biquad[biq_reso] = (pow(C, 2) * 15.0) + 0.5571;
-    double K = tan(M_PI * biquad[biq_freq]);
-    double norm = 1.0 / (1.0 + K / biquad[biq_reso] + K * K);
-    biquad[biq_a0] = norm;
-    biquad[biq_a1] = -2.0 * biquad[biq_a0];
-    biquad[biq_a2] = biquad[biq_a0];
-    biquad[biq_b1] = 2.0 * (K * K - 1.0) * norm;
-    biquad[biq_b2] = (1.0 - K / biquad[biq_reso] + K * K) * norm;
-    // for the coefficient-interpolated biquad filter
-    double powFactor = pow(D + 0.9, 4);
-    // 1.0 == target neutral
-    double outTrim = E;
-    double wet = F;
-    fixA[fix_freq] = fixB[fix_freq] = 20000.0 / Effect<T>::getSampleRate();
-    fixA[fix_reso] = fixB[fix_reso] = 0.7071; // butterworth Q
-    K = tan(M_PI * fixA[fix_freq]);
-    norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);
-    fixA[fix_a0] = fixB[fix_a0] = K * K * norm;
-    fixA[fix_a1] = fixB[fix_a1] = 2.0 * fixA[fix_a0];
-    fixA[fix_a2] = fixB[fix_a2] = fixA[fix_a0];
-    fixA[fix_b1] = fixB[fix_b1] = 2.0 * (K * K - 1.0) * norm;
-    fixA[fix_b2] = fixB[fix_b2] = (1.0 - K / fixA[fix_reso] + K * K) * norm;
-    // for the fixed-position biquad filter
-    while (--sampleFrames >= 0)
+    constexpr std::string_view get_parameter_title(int index)
     {
-        double inputSampleL = *in1;
-        double inputSampleR = *in2;
-        if (fabs(inputSampleL) < 1.18e-23) {
-            inputSampleL = fpdL * 1.18e-17;
-        }
-        if (fabs(inputSampleR) < 1.18e-23) {
-            inputSampleR = fpdR * 1.18e-17;
-        }
-        double drySampleL = inputSampleL;
-        double drySampleR = inputSampleR;
-        inputSampleL *= inTrim;
-        inputSampleR *= inTrim;
-        double temp = (inputSampleL * fixA[fix_a0]) + fixA[fix_sL1];
-        fixA[fix_sL1] = (inputSampleL * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sL2];
-        fixA[fix_sL2] = (inputSampleL * fixA[fix_a2]) - (temp * fixA[fix_b2]);
-        inputSampleL = temp; // fixed biquad filtering ultrasonics
-        temp = (inputSampleR * fixA[fix_a0]) + fixA[fix_sR1];
-        fixA[fix_sR1] = (inputSampleR * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sR2];
-        fixA[fix_sR2] = (inputSampleR * fixA[fix_a2]) - (temp * fixA[fix_b2]);
-        inputSampleR = temp; // fixed biquad filtering ultrasonics
-        // encode/decode courtesy of torridgristle under the MIT license
-        if (inputSampleL > 1.0) {
-            inputSampleL = 1.0;
-        }
-        else if (inputSampleL > 0.0) {
-            inputSampleL = 1.0 - pow(1.0 - inputSampleL, powFactor);
-        }
-        if (inputSampleL < -1.0) {
-            inputSampleL = -1.0;
-        }
-        else if (inputSampleL < 0.0) {
-            inputSampleL = -1.0 + pow(1.0 + inputSampleL, powFactor);
-        }
-        if (inputSampleR > 1.0) {
-            inputSampleR = 1.0;
-        }
-        else if (inputSampleR > 0.0) {
-            inputSampleR = 1.0 - pow(1.0 - inputSampleR, powFactor);
-        }
-        if (inputSampleR < -1.0) {
-            inputSampleR = -1.0;
-        }
-        else if (inputSampleR < 0.0) {
-            inputSampleR = -1.0 + pow(1.0 + inputSampleR, powFactor);
-        }
-        temp = (inputSampleL * biquad[biq_a0]) + biquad[biq_sL1];
-        biquad[biq_sL1] = (inputSampleL * biquad[biq_a1]) - (temp * biquad[biq_b1]) + biquad[biq_sL2];
-        biquad[biq_sL2] = (inputSampleL * biquad[biq_a2]) - (temp * biquad[biq_b2]);
-        inputSampleL = temp; // coefficient interpolating biquad filter
-        temp = (inputSampleR * biquad[biq_a0]) + biquad[biq_sR1];
-        biquad[biq_sR1] = (inputSampleR * biquad[biq_a1]) - (temp * biquad[biq_b1]) + biquad[biq_sR2];
-        biquad[biq_sR2] = (inputSampleR * biquad[biq_a2]) - (temp * biquad[biq_b2]);
-        inputSampleR = temp; // coefficient interpolating biquad filter
-        // encode/decode courtesy of torridgristle under the MIT license
-        if (inputSampleL > 1.0) {
-            inputSampleL = 1.0;
-        }
-        else if (inputSampleL > 0.0) {
-            inputSampleL = 1.0 - pow(1.0 - inputSampleL, (1.0 / powFactor));
-        }
-        if (inputSampleL < -1.0) {
-            inputSampleL = -1.0;
-        }
-        else if (inputSampleL < 0.0) {
-            inputSampleL = -1.0 + pow(1.0 + inputSampleL, (1.0 / powFactor));
-        }
-        if (inputSampleR > 1.0) {
-            inputSampleR = 1.0;
-        }
-        else if (inputSampleR > 0.0) {
-            inputSampleR = 1.0 - pow(1.0 - inputSampleR, (1.0 / powFactor));
-        }
-        if (inputSampleR < -1.0) {
-            inputSampleR = -1.0;
-        }
-        else if (inputSampleR < 0.0) {
-            inputSampleR = -1.0 + pow(1.0 + inputSampleR, (1.0 / powFactor));
-        }
-        inputSampleL *= outTrim;
-        inputSampleR *= outTrim;
-        temp = (inputSampleL * fixB[fix_a0]) + fixB[fix_sL1];
-        fixB[fix_sL1] = (inputSampleL * fixB[fix_a1]) - (temp * fixB[fix_b1]) + fixB[fix_sL2];
-        fixB[fix_sL2] = (inputSampleL * fixB[fix_a2]) - (temp * fixB[fix_b2]);
-        inputSampleL = temp; // fixed biquad filtering ultrasonics
-        temp = (inputSampleR * fixB[fix_a0]) + fixB[fix_sR1];
-        fixB[fix_sR1] = (inputSampleR * fixB[fix_a1]) - (temp * fixB[fix_b1]) + fixB[fix_sR2];
-        fixB[fix_sR2] = (inputSampleR * fixB[fix_a2]) - (temp * fixB[fix_b2]);
-        inputSampleR = temp; // fixed biquad filtering ultrasonics
-        if (wet < 1.0) {
-            inputSampleL = (inputSampleL * wet) + (drySampleL * (1.0 - wet));
-            inputSampleR = (inputSampleR * wet) + (drySampleR * (1.0 - wet));
-        }
-        // begin 64 bit stereo floating point dither
-        // int expon; frexp((double)inputSampleL, &expon);
-        fpdL ^= fpdL << 13;
-        fpdL ^= fpdL >> 17;
-        fpdL ^= fpdL << 5;
-        // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
-        // frexp((double)inputSampleR, &expon);
-        fpdR ^= fpdR << 13;
-        fpdR ^= fpdR >> 17;
-        fpdR ^= fpdR << 5;
-        // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
-        // end 64 bit stereo floating point dither
-        *out1 = inputSampleL;
-        *out2 = inputSampleR;
-        in1++;
-        in2++;
-        out1++;
-        out2++;
-    }
-}
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return "Gain"; break;
+            case kParamB: return "Freq"; break;
+            case kParamC: return "Reson8"; break;
+            case kParamD: return "ResEdge"; break;
+            case kParamE: return "Output"; break;
+            case kParamF: return "Dry/Wet"; break;
 
+            default: break;
+        }
+        return {};
+    }
+
+    std::string get_parameter_display(int index) const
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return std::to_string(A); break;
+            case kParamB: return std::to_string(B); break;
+            case kParamC: return std::to_string(C); break;
+            case kParamD: return std::to_string(D); break;
+            case kParamE: return std::to_string(E); break;
+            case kParamF: return std::to_string(F); break;
+
+            default: break;
+        }
+        return {};
+    }
+
+    constexpr std::string_view get_parameter_label(int index) const
+    {
+        switch (static_cast<params>(index))
+        {
+            case kParamA: return ""; break;
+            case kParamB: return ""; break;
+            case kParamC: return ""; break;
+            case kParamD: return ""; break;
+            case kParamE: return ""; break;
+            case kParamF: return ""; break;
+
+            default: break;
+        }
+        return {};
+    }
+
+    void process(T** inputs, T** outputs, long sampleFrames)
+    {
+        T* in1 = inputs[0];
+        T* in2 = inputs[1];
+        T* out1 = outputs[0];
+        T* out2 = outputs[1];
+
+        double overallscale = 1.0;
+        overallscale /= 44100.0;
+        overallscale *= Effect<T>::getSampleRate();
+        double inTrim = A * 10.0;
+        biquad[biq_freq] = pow(B, 3) * 20000.0;
+        if (biquad[biq_freq] < 15.0) {
+            biquad[biq_freq] = 15.0;
+        }
+        biquad[biq_freq] /= Effect<T>::getSampleRate();
+        biquad[biq_reso] = (pow(C, 2) * 15.0) + 0.5571;
+        double K = tan(M_PI * biquad[biq_freq]);
+        double norm = 1.0 / (1.0 + K / biquad[biq_reso] + K * K);
+        biquad[biq_a0] = norm;
+        biquad[biq_a1] = -2.0 * biquad[biq_a0];
+        biquad[biq_a2] = biquad[biq_a0];
+        biquad[biq_b1] = 2.0 * (K * K - 1.0) * norm;
+        biquad[biq_b2] = (1.0 - K / biquad[biq_reso] + K * K) * norm;
+        // for the coefficient-interpolated biquad filter
+        double powFactor = pow(D + 0.9, 4);
+        // 1.0 == target neutral
+        double outTrim = E;
+        double wet = F;
+        fixA[fix_freq] = fixB[fix_freq] = 20000.0 / Effect<T>::getSampleRate();
+        fixA[fix_reso] = fixB[fix_reso] = 0.7071; // butterworth Q
+        K = tan(M_PI * fixA[fix_freq]);
+        norm = 1.0 / (1.0 + K / fixA[fix_reso] + K * K);
+        fixA[fix_a0] = fixB[fix_a0] = K * K * norm;
+        fixA[fix_a1] = fixB[fix_a1] = 2.0 * fixA[fix_a0];
+        fixA[fix_a2] = fixB[fix_a2] = fixA[fix_a0];
+        fixA[fix_b1] = fixB[fix_b1] = 2.0 * (K * K - 1.0) * norm;
+        fixA[fix_b2] = fixB[fix_b2] = (1.0 - K / fixA[fix_reso] + K * K) * norm;
+        // for the fixed-position biquad filter
+        while (--sampleFrames >= 0)
+        {
+            double inputSampleL = *in1;
+            double inputSampleR = *in2;
+            if (fabs(inputSampleL) < 1.18e-23) {
+                inputSampleL = fpdL * 1.18e-17;
+            }
+            if (fabs(inputSampleR) < 1.18e-23) {
+                inputSampleR = fpdR * 1.18e-17;
+            }
+            double drySampleL = inputSampleL;
+            double drySampleR = inputSampleR;
+            inputSampleL *= inTrim;
+            inputSampleR *= inTrim;
+            double temp = (inputSampleL * fixA[fix_a0]) + fixA[fix_sL1];
+            fixA[fix_sL1] = (inputSampleL * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sL2];
+            fixA[fix_sL2] = (inputSampleL * fixA[fix_a2]) - (temp * fixA[fix_b2]);
+            inputSampleL = temp; // fixed biquad filtering ultrasonics
+            temp = (inputSampleR * fixA[fix_a0]) + fixA[fix_sR1];
+            fixA[fix_sR1] = (inputSampleR * fixA[fix_a1]) - (temp * fixA[fix_b1]) + fixA[fix_sR2];
+            fixA[fix_sR2] = (inputSampleR * fixA[fix_a2]) - (temp * fixA[fix_b2]);
+            inputSampleR = temp; // fixed biquad filtering ultrasonics
+            // encode/decode courtesy of torridgristle under the MIT license
+            if (inputSampleL > 1.0) {
+                inputSampleL = 1.0;
+            }
+            else if (inputSampleL > 0.0) {
+                inputSampleL = 1.0 - pow(1.0 - inputSampleL, powFactor);
+            }
+            if (inputSampleL < -1.0) {
+                inputSampleL = -1.0;
+            }
+            else if (inputSampleL < 0.0) {
+                inputSampleL = -1.0 + pow(1.0 + inputSampleL, powFactor);
+            }
+            if (inputSampleR > 1.0) {
+                inputSampleR = 1.0;
+            }
+            else if (inputSampleR > 0.0) {
+                inputSampleR = 1.0 - pow(1.0 - inputSampleR, powFactor);
+            }
+            if (inputSampleR < -1.0) {
+                inputSampleR = -1.0;
+            }
+            else if (inputSampleR < 0.0) {
+                inputSampleR = -1.0 + pow(1.0 + inputSampleR, powFactor);
+            }
+            temp = (inputSampleL * biquad[biq_a0]) + biquad[biq_sL1];
+            biquad[biq_sL1] = (inputSampleL * biquad[biq_a1]) - (temp * biquad[biq_b1]) + biquad[biq_sL2];
+            biquad[biq_sL2] = (inputSampleL * biquad[biq_a2]) - (temp * biquad[biq_b2]);
+            inputSampleL = temp; // coefficient interpolating biquad filter
+            temp = (inputSampleR * biquad[biq_a0]) + biquad[biq_sR1];
+            biquad[biq_sR1] = (inputSampleR * biquad[biq_a1]) - (temp * biquad[biq_b1]) + biquad[biq_sR2];
+            biquad[biq_sR2] = (inputSampleR * biquad[biq_a2]) - (temp * biquad[biq_b2]);
+            inputSampleR = temp; // coefficient interpolating biquad filter
+            // encode/decode courtesy of torridgristle under the MIT license
+            if (inputSampleL > 1.0) {
+                inputSampleL = 1.0;
+            }
+            else if (inputSampleL > 0.0) {
+                inputSampleL = 1.0 - pow(1.0 - inputSampleL, (1.0 / powFactor));
+            }
+            if (inputSampleL < -1.0) {
+                inputSampleL = -1.0;
+            }
+            else if (inputSampleL < 0.0) {
+                inputSampleL = -1.0 + pow(1.0 + inputSampleL, (1.0 / powFactor));
+            }
+            if (inputSampleR > 1.0) {
+                inputSampleR = 1.0;
+            }
+            else if (inputSampleR > 0.0) {
+                inputSampleR = 1.0 - pow(1.0 - inputSampleR, (1.0 / powFactor));
+            }
+            if (inputSampleR < -1.0) {
+                inputSampleR = -1.0;
+            }
+            else if (inputSampleR < 0.0) {
+                inputSampleR = -1.0 + pow(1.0 + inputSampleR, (1.0 / powFactor));
+            }
+            inputSampleL *= outTrim;
+            inputSampleR *= outTrim;
+            temp = (inputSampleL * fixB[fix_a0]) + fixB[fix_sL1];
+            fixB[fix_sL1] = (inputSampleL * fixB[fix_a1]) - (temp * fixB[fix_b1]) + fixB[fix_sL2];
+            fixB[fix_sL2] = (inputSampleL * fixB[fix_a2]) - (temp * fixB[fix_b2]);
+            inputSampleL = temp; // fixed biquad filtering ultrasonics
+            temp = (inputSampleR * fixB[fix_a0]) + fixB[fix_sR1];
+            fixB[fix_sR1] = (inputSampleR * fixB[fix_a1]) - (temp * fixB[fix_b1]) + fixB[fix_sR2];
+            fixB[fix_sR2] = (inputSampleR * fixB[fix_a2]) - (temp * fixB[fix_b2]);
+            inputSampleR = temp; // fixed biquad filtering ultrasonics
+            if (wet < 1.0) {
+                inputSampleL = (inputSampleL * wet) + (drySampleL * (1.0 - wet));
+                inputSampleR = (inputSampleR * wet) + (drySampleR * (1.0 - wet));
+            }
+            // begin 64 bit stereo floating point dither
+            // int expon; frexp((double)inputSampleL, &expon);
+            fpdL ^= fpdL << 13;
+            fpdL ^= fpdL >> 17;
+            fpdL ^= fpdL << 5;
+            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // frexp((double)inputSampleR, &expon);
+            fpdR ^= fpdR << 13;
+            fpdR ^= fpdR >> 17;
+            fpdR ^= fpdR << 5;
+            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // end 64 bit stereo floating point dither
+            *out1 = inputSampleL;
+            *out2 = inputSampleR;
+            in1++;
+            in2++;
+            out1++;
+            out2++;
+        }
+    }
 };
 } // namespace airwindohhs::ynothighpass

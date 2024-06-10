@@ -56,23 +56,78 @@ class Stonefire final : public Effect<T>
         outAR,
         gainAR,
         air_total
+    };
+    double air[air_total];
 
-        public :
-            Stonefire(){
-                A = 0.5;
-                B = 0.5;
-                C = 0.5;
-                D = 0.5;
-                for (int x = 0; x < air_total; x++) air[x] = 0.0;
-                for (int x = 0; x < kal_total; x++) kal[x] = 0.0;
-                trebleGainA = 1.0; trebleGainB = 1.0;
-                midGainA = 1.0; midGainB = 1.0;
-                bassGainA = 1.0; bassGainB = 1.0;
-                fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
-                fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
-                // this is reset: values being initialized only once. Startup values, whatever they are.
+    enum
+    {
+        prevSampL1,
+        prevSlewL1,
+        accSlewL1,
+        prevSampL2,
+        prevSlewL2,
+        accSlewL2,
+        prevSampL3,
+        prevSlewL3,
+        accSlewL3,
+        kalGainL,
+        kalOutL,
+        prevSampR1,
+        prevSlewR1,
+        accSlewR1,
+        prevSampR2,
+        prevSlewR2,
+        accSlewR2,
+        prevSampR3,
+        prevSlewR3,
+        accSlewR3,
+        kalGainR,
+        kalOutR,
+        kal_total
+    };
+    double kal[kal_total];
 
-            }
+    double trebleGainA;
+    double trebleGainB;
+    double midGainA;
+    double midGainB;
+    double bassGainA;
+    double bassGainB;
+
+    float A;
+    float B;
+    float C;
+    float D;
+
+  public:
+    Stonefire()
+    {
+        A = 0.5;
+        B = 0.5;
+        C = 0.5;
+        D = 0.5;
+        for (int x = 0; x < air_total; x++) {
+            air[x] = 0.0;
+        }
+        for (int x = 0; x < kal_total; x++) {
+            kal[x] = 0.0;
+        }
+        trebleGainA = 1.0;
+        trebleGainB = 1.0;
+        midGainA = 1.0;
+        midGainB = 1.0;
+        bassGainA = 1.0;
+        bassGainB = 1.0;
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
+        // this is reset: values being initialized only once. Startup values, whatever they are.
+    }
 
     enum params
     {

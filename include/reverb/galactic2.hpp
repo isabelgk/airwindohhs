@@ -14,6 +14,22 @@ constexpr std::string_view k_long_description{
 constexpr std::string_view k_tags{
     "reverb"
 };
+constexpr int shortA = 683;
+constexpr int shortB = 2339;
+constexpr int shortC = 2381;
+constexpr int shortD = 887;
+constexpr int shortE = 743;
+constexpr int shortF = 1823;
+constexpr int shortG = 1151;
+constexpr int shortH = 2833;
+constexpr int shortI = 521;
+constexpr int shortJ = 3331;
+constexpr int shortK = 2851;
+constexpr int shortL = 1747;
+constexpr int shortM = 3389;
+constexpr int shortN = 83;
+constexpr int shortO = 443;
+constexpr int shortP = 3221; // 290 ms, 10004 seat stadium. Scarcity, 1 in 55796
 
 template <typename T>
 class Galactic2 final : public Effect<T>
