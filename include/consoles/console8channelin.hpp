@@ -23,8 +23,7 @@ class Console8ChannelIn final : public Effect<T>
     double iirAR;
     double iirBR;
     bool hsr;
-    enum
-    {
+    enum {
         fix_freq,
         fix_reso,
         fix_a0,
@@ -37,20 +36,28 @@ class Console8ChannelIn final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
+    }; //fixed frequency biquad filter for ultrasonics, stereo
+    double fix[fix_total];
+    double softL[11];
+    double softR[11];
+    int cycleEnd;
+    uint32_t fpdL;
+    uint32_t fpdR;
+    //default stuff
 
-        public :
-            Console8ChannelIn(){
-                iirAL = 0.0; iirBL = 0.0; iirAR = 0.0; iirBR = 0.0;
-                for (int x = 0; x < fix_total; x++) fix[x] = 0.0;
-                for (int x = 0; x < 10; x++){ softL[x] = 0.0; softR[x] = 0.0; }
-    fpdL = 1.0;
-    while (fpdL < 16386) {
-        fpdL = rand() * UINT32_MAX;
-    }
-    fpdR = 1.0;
-    while (fpdR < 16386) {
-        fpdR = rand() * UINT32_MAX;
-    }
+public :
+    Console8ChannelIn(){
+        iirAL = 0.0; iirBL = 0.0; iirAR = 0.0; iirBR = 0.0;
+        for (int x = 0; x < fix_total; x++) fix[x] = 0.0;
+        for (int x = 0; x < 10; x++){ softL[x] = 0.0; softR[x] = 0.0; }
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
     // this is reset: values being initialized only once. Startup values, whatever they are.
 
 }

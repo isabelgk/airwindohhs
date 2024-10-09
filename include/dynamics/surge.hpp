@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning(disable : 4458)
+
 #include "effect.hpp"
 #include <cstdlib>
 
@@ -254,3 +256,4 @@ class Surge final : public Effect<T>
 
 };
 } // namespace airwindohhs::surge
+#pragma warning(default : 4458)

@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning(disable : 4458)
+
 #include "effect.hpp"
 #include <cstdlib>
 
@@ -12428,3 +12430,4 @@ class PocketVerbs final : public Effect<T>
     }
 };
 } // namespace airwindohhs::pocketverbs
+#pragma warning(default : 4458)

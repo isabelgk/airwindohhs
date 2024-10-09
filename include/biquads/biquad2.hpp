@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning(disable : 4458)
+
 #include "effect.hpp"
 #include <cstdlib>
 
@@ -517,3 +519,5 @@ class Biquad2 final : public Effect<T>
     }
 };
 } // namespace airwindohhs::biquad2
+#pragma warning(default : 4458)
+

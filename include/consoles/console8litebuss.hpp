@@ -23,8 +23,7 @@ class Console8LiteBuss final : public Effect<T>
     double iirAR;
     double iirBR;
     bool hsr;
-    enum
-    {
+    enum {
         fix_freq,
         fix_reso,
         fix_a0,
@@ -37,12 +36,36 @@ class Console8LiteBuss final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
+    }; //fixed frequency biquad filter for ultrasonics, stereo
+    double fix[fix_total];
+    double fixB[fix_total];
+    double softL[11];
+    double softR[11];
+    int cycleEnd;
+	
+    double inTrimA;
+    double inTrimB;
+    double lastSampleL;
+    double intermediateL[18];
+    bool wasPosClipL;
+    bool wasNegClipL; //ClipOnly2
+    double lastSampleR;
+    double intermediateR[18];
+    bool wasPosClipR;
+    bool wasNegClipR;
+    int spacing;	
+	
+    uint32_t fpdL;
+    uint32_t fpdR;
+    //default stuff
 
-        public :
-            Console8LiteBuss(){
-                A = 0.5;
-                iirAL = 0.0; iirBL = 0.0; iirAR = 0.0; iirBR = 0.0;
-                for (int x = 0; x < fix_total; x++){ fix[x] = 0.0; fixB[x] = 0.0; }
+    float A;
+
+public :
+    Console8LiteBuss(){
+        A = 0.5;
+        iirAL = 0.0; iirBL = 0.0; iirAR = 0.0; iirBR = 0.0;
+        for (int x = 0; x < fix_total; x++){ fix[x] = 0.0; fixB[x] = 0.0; }
     for (int x = 0; x < 10; x++) {
         softL[x] = 0.0;
         softR[x] = 0.0;
