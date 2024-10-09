@@ -1,6 +1,8 @@
 #pragma once
 #include "effect.hpp"
 #include <cstdlib>
+#include <cmath>
+
 
 namespace airwindohhs::flutter {
 
@@ -163,11 +165,12 @@ class Flutter final : public Effect<T>
             dR[gcount] = inputSampleR;
             int count = gcount;
             double offset = depth + (depth * pow(rateof, 2) * sin(sweep));
-            count += (int)floor(offset);
-            inputSampleL = (dL[count - ((count > 999) ? 1000 : 0)] * (1 - (offset - floor(offset))));
-            inputSampleL += (dL[count + 1 - ((count + 1 > 999) ? 1000 : 0)] * (offset - floor(offset)));
-            inputSampleR = (dR[count - ((count > 999) ? 1000 : 0)] * (1 - (offset - floor(offset))));
-            inputSampleR += (dR[count + 1 - ((count + 1 > 999) ? 1000 : 0)] * (offset - floor(offset)));
+            count += (int)std::floor(offset);
+            inputSampleL = (dL[count - ((count > 999) ? 1000 : 0)] * (1 - (offset - std::floor(offset))));
+            inputSampleL += (dL[count + 1 - ((count + 1 > 999) ? 1000 : 0)] * (offset - std::floor(offset)));
+            inputSampleR = (dR[count - ((count > 999) ? 1000 : 0)] * (1 - (offset - std::floor(offset))));
+            inputSampleR += (dR[count + 1 - ((count + 1 > 999) ? 1000 : 0)] * (offset - std::floor(offset)));
+
             rateof = (rateof * (1.0 - fluttertrim)) + (nextmax * fluttertrim);
             sweep += rateof * fluttertrim;
             if (sweep >= (M_PI * 2.0)) {

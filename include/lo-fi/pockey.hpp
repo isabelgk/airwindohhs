@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning(disable : 4458)
+
 #include "effect.hpp"
 #include <cstdlib>
 
@@ -349,3 +351,4 @@ class Pockey final : public Effect<T>
     }
 };
 } // namespace airwindohhs::pockey
+#pragma warning(default : 4458)

@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning(disable : 4458)
+
 #include "effect.hpp"
 #include <cstdlib>
 
@@ -1349,3 +1351,4 @@ class Monitoring3 final : public Effect<T>
     }
 };
 } // namespace airwindohhs::monitoring3
+#pragma warning(default : 4458)

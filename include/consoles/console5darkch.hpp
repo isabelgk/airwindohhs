@@ -291,7 +291,7 @@ class Console5DarkCh final : public Effect<T>
             *out2++;
         }
     }
-}
+
 
 };
 } // namespace airwindohhs::console5darkch

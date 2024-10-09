@@ -291,7 +291,7 @@ class Console5Channel final : public Effect<T>
             *out2++;
         }
     }
-}
+
 
 };
 } // namespace airwindohhs::console5channel
