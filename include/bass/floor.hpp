@@ -2,7 +2,7 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-namespace airwindohhs::floor {
+namespace airwindohhs::flooreffect {
 
 constexpr std::string_view k_name{ "Floor" };
 constexpr std::string_view k_short_description{
@@ -535,4 +535,4 @@ class Floor final : public Effect<T>
         }
     }
 };
-} // namespace airwindohhs::floor
+} // namespace airwindohhs::flooreffect
