@@ -1,6 +1,11 @@
 #pragma once
 #pragma warning(disable : 4458)
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+#endif
+
 #include "effect.hpp"
 #include <cstdlib>
 
@@ -352,3 +357,7 @@ class Pockey final : public Effect<T>
 };
 } // namespace airwindohhs::pockey
 #pragma warning(default : 4458)
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
