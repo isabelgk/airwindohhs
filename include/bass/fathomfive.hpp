@@ -273,6 +273,5 @@ class FathomFive final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::fathomfive

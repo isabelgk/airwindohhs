@@ -231,6 +231,5 @@ class PurestGain final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::purestgain

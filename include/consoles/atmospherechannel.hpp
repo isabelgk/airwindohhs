@@ -496,7 +496,5 @@ class AtmosphereChannel final : public Effect<T>
             *out2++;
         }
     }
-
-
 };
 } // namespace airwindohhs::atmospherechannel

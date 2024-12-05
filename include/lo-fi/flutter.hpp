@@ -2,7 +2,6 @@
 #include "effect.hpp"
 #include <cstdlib>
 
-
 namespace airwindohhs::flutter {
 
 constexpr std::string_view k_name{ "Flutter" };

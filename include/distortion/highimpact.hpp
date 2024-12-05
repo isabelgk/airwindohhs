@@ -323,6 +323,5 @@ class HighImpact final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::highimpact

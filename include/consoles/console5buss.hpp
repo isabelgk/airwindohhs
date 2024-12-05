@@ -290,7 +290,5 @@ class Console5Buss final : public Effect<T>
             *out2++;
         }
     }
-
-
 };
 } // namespace airwindohhs::console5buss

@@ -236,7 +236,5 @@ class C5RawBuss final : public Effect<T>
             *out2++;
         }
     }
-
-
 };
 } // namespace airwindohhs::c5rawbuss

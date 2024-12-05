@@ -21,36 +21,46 @@ class Console8ChannelOut final : public Effect<T>
     double inTrimA;
     double inTrimB;
     bool hsr;
-    enum {
-            fix_freq,
-            fix_reso,
-            fix_a0,
-            fix_a1,
-            fix_a2,
-            fix_b1,
-            fix_b2,
-            fix_sL1,
-            fix_sL2,
-            fix_sR1,
-            fix_sR2,
-            fix_total
-        }; //fixed frequency biquad filter for ultrasonics, stereo
-        double fix[fix_total];
-        uint32_t fpdL;
-        uint32_t fpdR;
-        //default stuff
+    enum
+    {
+        fix_freq,
+        fix_reso,
+        fix_a0,
+        fix_a1,
+        fix_a2,
+        fix_b1,
+        fix_b2,
+        fix_sL1,
+        fix_sL2,
+        fix_sR1,
+        fix_sR2,
+        fix_total
+    }; // fixed frequency biquad filter for ultrasonics, stereo
+    double fix[fix_total];
+    uint32_t fpdL;
+    uint32_t fpdR;
+    // default stuff
 
-        float A;
+    float A;
 
-public :
-    Console8ChannelOut(){
+  public:
+    Console8ChannelOut()
+    {
         A = 0.5;
-        inTrimA = 0.5; inTrimB = 0.5;
-        for (int x = 0; x < fix_total; x++) fix[x] = 0.0;
-        fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
-        fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+        inTrimA = 0.5;
+        inTrimB = 0.5;
+        for (int x = 0; x < fix_total; x++) {
+            fix[x] = 0.0;
+        }
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
         // this is reset: values being initialized only once. Startup values, whatever they are.
-
     }
 
     enum params

@@ -672,6 +672,5 @@ class ADClip7 final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::adclip7

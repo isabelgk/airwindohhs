@@ -239,6 +239,5 @@ class SurgeTide final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::surgetide

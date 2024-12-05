@@ -312,6 +312,5 @@ class Density final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::density

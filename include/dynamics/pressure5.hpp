@@ -1,4 +1,4 @@
-    #pragma once
+#pragma once
 #include "effect.hpp"
 #include <cstdlib>
 
@@ -514,6 +514,5 @@ class Pressure5 final : public Effect<T>
             out2++;
         }
     }
-
 };
 } // namespace airwindohhs::pressure5

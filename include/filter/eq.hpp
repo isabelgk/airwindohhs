@@ -794,6 +794,5 @@ class EQ final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::eq

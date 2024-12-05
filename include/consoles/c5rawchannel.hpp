@@ -235,7 +235,5 @@ class C5RawChannel final : public Effect<T>
             *out2++;
         }
     }
-
-
 };
 } // namespace airwindohhs::c5rawchannel

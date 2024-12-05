@@ -127,6 +127,5 @@ class DCVoltage final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::dcvoltage

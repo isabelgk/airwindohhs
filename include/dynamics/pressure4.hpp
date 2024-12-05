@@ -352,6 +352,5 @@ class Pressure4 final : public Effect<T>
             *outputR++;
         }
     }
-
 };
 } // namespace airwindohhs::pressure4

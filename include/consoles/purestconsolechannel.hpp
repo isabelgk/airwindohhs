@@ -152,7 +152,5 @@ class PurestConsoleChannel final : public Effect<T>
             *out2++;
         }
     }
-
-
 };
 } // namespace airwindohhs::purestconsolechannel

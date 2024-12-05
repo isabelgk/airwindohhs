@@ -256,6 +256,5 @@ class Bite final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::bite

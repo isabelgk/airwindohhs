@@ -270,6 +270,5 @@ class PowerSag final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::powersag

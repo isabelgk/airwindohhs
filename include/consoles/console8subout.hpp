@@ -21,7 +21,8 @@ class Console8SubOut final : public Effect<T>
     double inTrimA;
     double inTrimB;
     bool hsr;
-    enum {
+    enum
+    {
         fix_freq,
         fix_reso,
         fix_a0,
@@ -34,23 +35,32 @@ class Console8SubOut final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
-    }; //fixed frequency biquad filter for ultrasonics, stereo
+    }; // fixed frequency biquad filter for ultrasonics, stereo
     double fix[fix_total];
     uint32_t fpdL;
     uint32_t fpdR;
-    //default stuff
+    // default stuff
 
     float A;
 
-public :
-    Console8SubOut(){
+  public:
+    Console8SubOut()
+    {
         A = 0.5;
-        inTrimA = 0.5; inTrimB = 0.5;
-        for (int x = 0; x < fix_total; x++) fix[x] = 0.0;
-        fpdL = 1.0; while (fpdL < 16386) fpdL = rand() * UINT32_MAX;
-        fpdR = 1.0; while (fpdR < 16386) fpdR = rand() * UINT32_MAX;
+        inTrimA = 0.5;
+        inTrimB = 0.5;
+        for (int x = 0; x < fix_total; x++) {
+            fix[x] = 0.0;
+        }
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
         // this is reset: values being initialized only once. Startup values, whatever they are.
-
     }
 
     enum params

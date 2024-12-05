@@ -241,6 +241,5 @@ class Golem final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::golem

@@ -1380,6 +1380,5 @@ class Logical4 final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::logical4

@@ -420,5 +420,5 @@ def main(root_dir):
 
 
 if __name__ == "__main__":
-    path_to_airwindohhs = "/Users/igk/code/c74/airfx/source/airwindohhs"
+    path_to_airwindohhs = "/Users/alexvangils/repos/aria/airwindohhs"
     main(path_to_airwindohhs)

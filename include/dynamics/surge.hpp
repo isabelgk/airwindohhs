@@ -258,7 +258,6 @@ class Surge final : public Effect<T>
             *out2++;
         }
     }
-
 };
 } // namespace airwindohhs::surge
 #pragma warning(default : 4458)

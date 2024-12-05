@@ -6,7 +6,6 @@
 #pragma clang diagnostic ignored "-Wshadow"
 #endif
 
-
 #include "effect.hpp"
 #include <cstdlib>
 
