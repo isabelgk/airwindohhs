@@ -18,6 +18,37 @@ constexpr std::string_view k_tags{
 template <typename T>
 class kPlate140 final : public Effect<T>
 {
+    static constexpr int predelay = 16000;
+    static constexpr int vlfpredelay = 16000;
+    static constexpr int delayA = 466;
+    static constexpr int delayB = 233;
+    static constexpr int delayC = 747;
+    static constexpr int delayD = 70;
+    static constexpr int delayE = 776;
+    static constexpr int delayF = 719;
+    static constexpr int delayG = 130;
+    static constexpr int delayH = 511;
+    static constexpr int delayI = 148;
+    static constexpr int delayJ = 84;
+    static constexpr int delayK = 787;
+    static constexpr int delayL = 124;
+    static constexpr int delayM = 72;
+    static constexpr int delayN = 667;
+    static constexpr int delayO = 773;
+    static constexpr int delayP = 29;
+    static constexpr int delayQ = 710;
+    static constexpr int delayR = 309;
+    static constexpr int delayS = 773;
+    static constexpr int delayT = 487;
+    static constexpr int delayU = 11;
+    static constexpr int delayV = 73;
+    static constexpr int delayW = 756;
+    static constexpr int delayX = 627;
+    static constexpr int delayY = 328;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kpls';
     float A;
     float B;
     float C;

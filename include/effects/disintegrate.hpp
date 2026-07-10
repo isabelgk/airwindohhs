@@ -18,6 +18,12 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Disintegrate final : public Effect<T>
 {
+    static constexpr int dscBufMax = 180;
+    static constexpr int layersMax = 22;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'disi';
     float A;
     float B;
     float C;

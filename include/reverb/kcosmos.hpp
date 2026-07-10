@@ -18,6 +18,36 @@ constexpr std::string_view k_tags{
 template <typename T>
 class kCosmos final : public Effect<T>
 {
+    static constexpr int predelay = 15000;
+    static constexpr int delayA = 857;
+    static constexpr int delayB = 1433;
+    static constexpr int delayC = 1597;
+    static constexpr int delayD = 1789;
+    static constexpr int delayE = 1987;
+    static constexpr int delayF = 373;
+    static constexpr int delayG = 883;
+    static constexpr int delayH = 1471;
+    static constexpr int delayI = 1601;
+    static constexpr int delayJ = 1973;
+    static constexpr int delayK = 191;
+    static constexpr int delayL = 397;
+    static constexpr int delayM = 941;
+    static constexpr int delayN = 1483;
+    static constexpr int delayO = 1663;
+    static constexpr int delayP = 149;
+    static constexpr int delayQ = 227;
+    static constexpr int delayR = 593;
+    static constexpr int delayS = 1061;
+    static constexpr int delayT = 1549;
+    static constexpr int delayU = 137;
+    static constexpr int delayV = 167;
+    static constexpr int delayW = 313;
+    static constexpr int delayX = 641;
+    static constexpr int delayY = 1153;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kcsm';
     float A;
     float B;
     float C;

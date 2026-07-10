@@ -18,6 +18,26 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Cans final : public Effect<T>
 {
+    static constexpr int kshortA = 193;
+    static constexpr int kshortB = 588;
+    static constexpr int kshortC = 551;
+    static constexpr int kshortD = 325;
+    static constexpr int kshortE = 166;
+    static constexpr int kshortF = 427;
+    static constexpr int kshortG = 313;
+    static constexpr int kshortH = 575;
+    static constexpr int kshortI = 101;
+    static constexpr int kshortJ = 794;
+    static constexpr int kshortK = 789;
+    static constexpr int kshortL = 385;
+    static constexpr int kshortM = 12;
+    static constexpr int kshortN = 1009;
+    static constexpr int kshortO = 64;
+    static constexpr int kshortP = 544;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cans';
     float A;
     float B;
     float C;

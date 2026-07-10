@@ -18,6 +18,26 @@ constexpr std::string_view k_tags{
 template <typename T>
 class VerbThic final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vthc';
+    static constexpr int d4A = 1439;
+    static constexpr int d4B = 3;
+    static constexpr int d4C = 259;
+    static constexpr int d4D = 578;
+    static constexpr int d4E = 1562;
+    static constexpr int d4F = 1152;
+    static constexpr int d4G = 189;
+    static constexpr int d4H = 3;
+    static constexpr int d4I = 9;
+    static constexpr int d4J = 101;
+    static constexpr int d4K = 34;
+    static constexpr int d4L = 638;
+    static constexpr int d4M = 719;
+    static constexpr int d4N = 1154;
+    static constexpr int d4O = 38;
+    static constexpr int d4P = 530;
     float A;
     float B;
     float C;

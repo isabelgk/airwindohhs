@@ -18,6 +18,26 @@ constexpr std::string_view k_tags{
 template <typename T>
 class WoodenBox final : public Effect<T>
 {
+    static constexpr int d4A = 173;
+    static constexpr int d4B = 82;
+    static constexpr int d4C = 240;
+    static constexpr int d4D = 191;
+    static constexpr int d4E = 196;
+    static constexpr int d4F = 257;
+    static constexpr int d4G = 203;
+    static constexpr int d4H = 252;
+    static constexpr int d4I = 207;
+    static constexpr int d4J = 203;
+    static constexpr int d4K = 250;
+    static constexpr int d4L = 220;
+    static constexpr int d4M = 261;
+    static constexpr int d4N = 235;
+    static constexpr int d4O = 161;
+    static constexpr int d4P = 161;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'wdbx';
     float A;
     float B;
     float C;

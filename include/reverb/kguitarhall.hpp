@@ -9,7 +9,7 @@ constexpr std::string_view k_short_description{
     "kGuitarHall accentuates loud midrange skronk!"
 };
 constexpr std::string_view k_long_description{
-    "What if reverb, but skronk?kGuitarHall exists to pursue a particular sound experience I had: when I was a kid, the first concert I ever saw was at a hockey rink, at which Night Ranger played. The whole story's a wild one but for the purposes of kGuitarHall, the important part is that they played so loud the air crackled. A lot of that had to do with how echoey the place was… and I've never found any reverb to convey that sensation.This is my attempt to do that sensation, but as a plugin.Skronk is a word that's barely made it into any dictionary: I think the music critic Lester Bangs made it up. Wiktionary describes it as " A raw, discordant sound produced with electric guitars." You've just seen me include it as a slider on the plugin, Mastering: it's sort of the upper midrange between the air band and the next band down on the Kalman filter. It corresponds to 'fire' in the Stonefire plugin, and that's another hint. But simple EQ, even of the most strident upper midranges, won't get you Skronk.So, kGuitarHall draws on my experience evolving kCathedral to essentially go the other direction. A ridiculous number of reverb algorithms got generated, measured and tested, to zero in on which ones would produce the most aggressive, saturated tone in the noisy midrange where guitars talk. It's a balancing act between maximum loudness (which also contributes to how sonorous the reverb tones can be) and just plain unpleasant metallic tonalities. This is independent of 'feedback', by the way: it's exploring how the actual reverb algorithm is constructed, and seeking a different 'color' than just 'clean and pure and free of overtones'.It'd be pretty useless without Discontinuity (the Top dB slider) which, importantly, is inside the reverb's regeneration, not simply on the output. And it'd be pretty ear-splitting… without DeRez, which is able to use Bezier curves to make an interesting-sounding undersampling of the system. That not only makes the reverb work at all sample rates with about the same cost in CPU… but also lets you drop it down to subterranean, vast spaces that barely have any treble or upper mids at all.And when you do that, the skronk is pitched down as well, and turns into strange cavernous sounds as the 'room size' and maximum sustain expands. So, if the ear-splittyness of kGuitarHall doesn't float your boat, you can drown in a sea of reverb with a selection of distinct tone characters by using Derez to darken everything up.kGuitarHall is an experiment, after some years spent trying not to allow metallic skronky reverbs to happen. I don't know if you'll like or hate it, but I feel certain it'll get a strong response either way. So, if there's one person who's like 'oh cool, just what I needed!', then, are you stuck with having that skronk option available?Trick question. I am that person. Enjoy or totally avoid kGuitarHall as you see fit :)"
+    "What if reverb, but skronk?kGuitarHall exists to pursue a particular sound experience I had: when I was a kid, the first concert I ever saw was at a hockey rink, at which Night Ranger played. The whole story's a wild one but for the purposes of kGuitarHall, the important part is that they played so loud the air crackled. A lot of that had to do with how echoey the place was… and I've never found any reverb to convey that sensation.This is my attempt to do that sensation, but as a plugin.Skronk is a word that's barely made it into any dictionary: I think the music critic Lester Bangs made it up. Wiktionary describes it as \"A raw, discordant sound produced with electric guitars.\" You've just seen me include it as a slider on the plugin, Mastering: it's sort of the upper midrange between the air band and the next band down on the Kalman filter. It corresponds to 'fire' in the Stonefire plugin, and that's another hint. But simple EQ, even of the most strident upper midranges, won't get you Skronk.So, kGuitarHall draws on my experience evolving kCathedral to essentially go the other direction. A ridiculous number of reverb algorithms got generated, measured and tested, to zero in on which ones would produce the most aggressive, saturated tone in the noisy midrange where guitars talk. It's a balancing act between maximum loudness (which also contributes to how sonorous the reverb tones can be) and just plain unpleasant metallic tonalities. This is independent of 'feedback', by the way: it's exploring how the actual reverb algorithm is constructed, and seeking a different 'color' than just 'clean and pure and free of overtones'.It'd be pretty useless without Discontinuity (the Top dB slider) which, importantly, is inside the reverb's regeneration, not simply on the output. And it'd be pretty ear-splitting… without DeRez, which is able to use Bezier curves to make an interesting-sounding undersampling of the system. That not only makes the reverb work at all sample rates with about the same cost in CPU… but also lets you drop it down to subterranean, vast spaces that barely have any treble or upper mids at all.And when you do that, the skronk is pitched down as well, and turns into strange cavernous sounds as the 'room size' and maximum sustain expands. So, if the ear-splittyness of kGuitarHall doesn't float your boat, you can drown in a sea of reverb with a selection of distinct tone characters by using Derez to darken everything up.kGuitarHall is an experiment, after some years spent trying not to allow metallic skronky reverbs to happen. I don't know if you'll like or hate it, but I feel certain it'll get a strong response either way. So, if there's one person who's like 'oh cool, just what I needed!', then, are you stuck with having that skronk option available?Trick question. I am that person. Enjoy or totally avoid kGuitarHall as you see fit :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -18,6 +18,38 @@ constexpr std::string_view k_tags{
 template <typename T>
 class kGuitarHall final : public Effect<T>
 {
+    static constexpr int dscBuf = 90;
+    static constexpr int predelay = 15000;
+    static constexpr int vlfpredelay = 11000;
+    static constexpr int delayA = 543;
+    static constexpr int delayB = 402;
+    static constexpr int delayC = 793;
+    static constexpr int delayD = 223;
+    static constexpr int delayE = 849;
+    static constexpr int delayF = 886;
+    static constexpr int delayG = 480;
+    static constexpr int delayH = 658;
+    static constexpr int delayI = 389;
+    static constexpr int delayJ = 90;
+    static constexpr int delayK = 745;
+    static constexpr int delayL = 31;
+    static constexpr int delayM = 62;
+    static constexpr int delayN = 717;
+    static constexpr int delayO = 874;
+    static constexpr int delayP = 24;
+    static constexpr int delayQ = 846;
+    static constexpr int delayR = 270;
+    static constexpr int delayS = 911;
+    static constexpr int delayT = 641;
+    static constexpr int delayU = 11;
+    static constexpr int delayV = 800;
+    static constexpr int delayW = 840;
+    static constexpr int delayX = 267;
+    static constexpr int delayY = 870;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kgth';
     float A;
     float B;
     float C;

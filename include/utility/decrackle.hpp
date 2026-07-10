@@ -18,6 +18,11 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DeCrackle final : public Effect<T>
 {
+    static constexpr int kshort = 1600;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dcrk';
     float A;
     float B;
     float C;

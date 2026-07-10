@@ -18,6 +18,26 @@ constexpr std::string_view k_tags{
 template <typename T>
 class VerbTiny final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vtny';
+    static constexpr int d4A = 136;
+    static constexpr int d4B = 52;
+    static constexpr int d4C = 53;
+    static constexpr int d4D = 1261;
+    static constexpr int d4E = 209;
+    static constexpr int d4F = 473;
+    static constexpr int d4G = 549;
+    static constexpr int d4H = 29;
+    static constexpr int d4I = 92;
+    static constexpr int d4J = 1137;
+    static constexpr int d4K = 1406;
+    static constexpr int d4L = 994;
+    static constexpr int d4M = 1314;
+    static constexpr int d4N = 191;
+    static constexpr int d4O = 1263;
+    static constexpr int d4P = 103;
     float A;
     float B;
     float C;

@@ -18,6 +18,11 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Discontapeity final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dctp';
+    static constexpr int dscBuf = 256;
     float A;
     double dBaL[dscBuf + 5];
     double dBaPosL;
