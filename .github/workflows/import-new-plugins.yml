@@ -102,6 +102,9 @@ jobs:
           fi
 
       - if: steps.verify.outputs.generated == 'true'
+        run: python3 scripts/check_compile.py --cxx clang++ "${{ steps.verify.outputs.file }}"
+
+      - if: steps.verify.outputs.generated == 'true'
         run: clang-format -i "${{ steps.verify.outputs.file }}"
 
       - if: steps.verify.outputs.generated == 'true'
