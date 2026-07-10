@@ -1,7 +1,6 @@
 import os.path
 import string
 from pathlib import Path
-import re
 
 
 class GrabError(RuntimeError):
@@ -19,15 +18,6 @@ def first_matching_line_index(lines: list[str], match: str, line_rstrip=None) ->
 
 def next_matching_line_index(lines: list[str], offset: int, match: str) -> int:
     return first_matching_line_index(lines[offset:], match) + offset
-
-
-def matching_line(lines: list[str], match: str, line_rstrip=None, offset: int = 0) -> str:
-    for line in lines[offset:]:
-        if line_rstrip:
-            line = line.rstrip()
-        if match in line:
-            return line
-    raise GrabError(f"Could not find {match} in lines")
 
 
 def naive_line_filter(lines: list[str]) -> list[str]:
@@ -71,42 +61,14 @@ class Parameter:
     """The default parameter value"""
     label: str
     """The parameter label, often the units of the parameter"""
-    display: str
-    """The parameter display is an expression that usually maps the internal parameter value
-    to a value to show the user"""
 
-    _source_code: list[str]
-    """The .cpp source code to parse for info about parameters"""
-
-    def __init__(self, variable: str, source_dir: Path):
-        self._source_code = self._get_source(source_dir)
-        self._plugin = os.path.basename(source_dir)
+    def __init__(self, variable: str, title: str, default_value: float, label: str):
         self.variable = variable
         self.enum_name = f"kParam{variable}"
-        self.title = self._title()
+        self.title = title
         self.slug = self._slug()
-        self.default_value = self._default_value()
-        self.label = self._label()
-        self.display = self._display()
-
-    @staticmethod
-    def _get_source(source_dir):
-        name = os.path.basename(source_dir)
-        filepath = Path(os.path.join(source_dir, f"{name}.cpp"))
-        with open(filepath, "r") as f:
-            lines = f.readlines()
-        return lines
-
-    def _title(self):
-        fn_index = first_matching_line_index(self._source_code, "::getParameterName")
-        param_index = next_matching_line_index(self._source_code, fn_index, self.enum_name)
-        line = self._source_code[param_index]
-        tokens = line.split("\"")
-        if len(tokens) != 3:
-            warning(self._plugin, "Could not find parameter name; using a default instead")
-            return f"{self.variable}"
-        else:
-            return tokens[1]
+        self.default_value = default_value
+        self.label = label
 
     def _slug(self):
         to_strip = {"-", "/", ""}
@@ -114,48 +76,6 @@ class Parameter:
         for elem in to_strip:
             slug.replace(elem, "")
         return slug
-
-    def _default_value(self):
-        fn_index = first_matching_line_index(self._source_code, "AudioEffectX(")
-        line = matching_line(self._source_code, f"{self.variable} = ", offset=fn_index + 1)
-        token = line.split("= ")[1]  # we know there is "= " in the string already
-        token = token.split(";")[0]
-        try:
-            val = float(token)
-            return val
-        except ValueError as e:
-            warning(self._plugin, f"Could not find default float value in `{line.strip()}` -- using 0.0")
-            return 0.0
-
-    def _label(self):
-        fn_index = first_matching_line_index(self._source_code, "::getParameterLabel")
-        line = matching_line(self._source_code, self.enum_name, offset=fn_index + 1)
-        try:
-            label = line.split("\"")[1]
-            return label
-        except IndexError as e:
-            warning(self._plugin, f"Could not find parameter label in `{line.strip()}` -- using empty string")
-            return ""
-
-    def _display(self):
-        fn_index = first_matching_line_index(self._source_code, "::getParameterDisplay")
-        line = matching_line(self._source_code, self.enum_name, offset=fn_index + 1)
-        if self.variable not in line:
-            return self.variable
-        try:
-            # this is pretty gross, but good enough for now
-            sp = line.split("(")[1]
-            if len(sp) > 1:
-                return sp.split(", text")[0]
-            elif "text" in line:
-                temp = line.split("(")[-1].split(", text")[0]
-                if ")" in temp and "(" not in temp:
-                    return f"({temp}"
-                else:
-                    return temp
-        except IndexError as e:
-            warning(self._plugin, f"Could not get display in `{line.strip}` -- using {self.variable}")
-            return self.variable
 
 
 class Plugin:
@@ -174,73 +94,55 @@ class Plugin:
     processing_code: str
     parameters: dict[str, Parameter]
 
-    def __init__(self, project_root: Path, title: str, category: str):
+    def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path, title: str,
+                 category: str):
         self.project_root = project_root
+        self.airwindopedia_path = airwindopedia_path
         self.title = title.replace(" ", "")
         self.slug = self.title.lower()
         self.category = category
         self.short_description, self.long_description = self._init_descriptions()
 
-        self.source_dir = Path(os.path.join(project_root, "airwindows", self.title))
+        self.source_dir = Path(os.path.join(airwindows_root, self.title))
         self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
 
-        self.initialization_code = self._init_initialization_code()
-        self.processing_code = self._init_processing_code()
-        self.private_vars = self._init_private_vars()
-        self.parameters = self._init_parameters()
+        # deferred import: clang_extractor imports GrabError/naive_line_filter from this module
+        from scripts.grab.clang_extractor import PluginAst
+        ast = PluginAst(self.source_dir, self.title)
 
-    def _init_initialization_code(self):
-        filepath = Path(os.path.join(self.source_dir, f"{self.title}.cpp"))
-        with open(filepath) as f:
-            lines = f.readlines()
+        self.initialization_code = ast.initialization_code()
+        self.processing_code = ast.processing_code()
+        self.private_vars = ast.private_vars()
+        self.parameters = self._init_parameters(ast)
 
-        begin_index = first_matching_line_index(lines, "AudioEffectX(") + 1
-        end_index = first_matching_line_index(lines, "_canDo.insert(")
-        chunk = lines[begin_index:end_index]
-        chunk = naive_line_filter(chunk)
-        return "".join(chunk)
+    def _init_parameters(self, ast):
+        num_parameters = ast.num_parameters()
+        if num_parameters == 0:
+            return dict()
 
-    def _init_processing_code(self):
-        filepath = Path(os.path.join(self.source_dir, f"{self.title}Proc.cpp"))
-        with open(filepath, "r") as f:
-            lines = f.readlines()
+        name_map = ast.parameter_strings("getParameterName")
+        label_map = ast.parameter_strings("getParameterLabel")
 
-        # skip input and output pointers
-        begin_index = first_matching_line_index(lines, "processDoubleReplacing(") + 6
-        chunk = lines[begin_index:]
-        chunk = naive_line_filter(chunk)
-        result = []
-        for line in chunk:
-            result.append(line.replace("getSampleRate()", "Effect<T>::getSampleRate()"))
-        return "".join(result)
-
-    def _init_private_vars(self):
-        filepath = Path(os.path.join(self.source_dir, f"{self.title}.h"))
-        with open(filepath, "r") as f:
-            lines = f.readlines()
-
-        begin_index = first_matching_line_index(lines, "private:") + 1
-        end_index = first_matching_line_index(lines[begin_index:], "};", line_rstrip=True) + begin_index
-        chunk = lines[begin_index:end_index]
-        chunk = naive_line_filter(chunk)
-        return "".join(chunk)
-
-    def _init_parameters(self):
-        filepath = Path(os.path.join(self.source_dir, f"{self.title}.h"))
-        with open(filepath, "r") as f:
-            lines = f.readlines()
-
-        begin_index = first_matching_line_index(lines, "kNumParameters")
-        num_parameters = int(lines[begin_index].split("kNumParameters = ")[1])
         result = dict()
         for i in range(num_parameters):
             variable = num_to_alpha(i)
-            result[variable] = Parameter(variable, self.source_dir)
+
+            title = name_map.get(variable)
+            if title is None:
+                warning(self.title, "Could not find parameter name; using a default instead")
+                title = variable
+
+            label = label_map.get(variable)
+            if label is None:
+                warning(self.title, f"Could not find parameter label for {variable} -- using empty string")
+                label = ""
+
+            default_value = ast.default_value(variable)
+            result[variable] = Parameter(variable, title, default_value, label)
         return result
 
     def _init_descriptions(self):
-        filepath = Path(os.path.join(self.project_root, "scripts", "res", "airwindopedia.txt"))
-        with open(filepath, "r") as f:
+        with open(self.airwindopedia_path, "r") as f:
             lines = f.readlines()
 
         try:
@@ -355,22 +257,26 @@ class Plugin:
 
 class Grabber:
     _project_root: Path
+    _airwindows_root: Path
     _airwindopedia_path: Path
     _template_header_path: Path
     _categories: dict[str, str]
     _categories_transpose: dict[str, list[str]]
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path,
+                 plugin_filter: set[str] = None, category_filter: set[str] = None):
         self._project_root = project_root
-        airwindows_root = os.path.join(project_root, "airwindows")
+        self._airwindows_root = airwindows_root
         if not os.path.exists(airwindows_root) or not os.path.exists(os.path.join(airwindows_root, "Aura")):
-            raise FileNotFoundError("Please add a copy of the airwindows source code to the root of this repo with "
-                                    "the plugin source code as subdirectories")
+            raise FileNotFoundError(f"Could not find airwindows plugin source at {airwindows_root} "
+                                    "(expected a subdirectory per plugin, e.g. `Aura/`)")
+        if not os.path.exists(airwindopedia_path):
+            raise FileNotFoundError(f"Could not find Airwindopedia.txt at {airwindopedia_path}")
 
-        self._airwindopedia_path = Path(os.path.join(self._project_root, "scripts", "res", "airwindopedia.txt"))
+        self._airwindopedia_path = airwindopedia_path
         self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
         self._categories, self._categories_transpose = self._init_categories()
-        self._init_plugins()
+        self._init_plugins(plugin_filter, category_filter)
 
     def _init_categories(self) -> (dict[str, list[str]], dict[str, str]):
         with open(self._airwindopedia_path, "r") as f:
@@ -405,20 +311,15 @@ class Grabber:
             elements[i] = new_elem
         return category, elements
 
-    def _init_plugins(self):
+    def _init_plugins(self, plugin_filter: set[str] = None, category_filter: set[str] = None):
         for plugin, category in self._categories.items():
+            if plugin_filter and plugin not in plugin_filter:
+                continue
+            if category_filter and category not in category_filter:
+                continue
             try:
                 print(f"Writing {plugin} =====")
-                plug = Plugin(self._project_root, plugin, category)
+                plug = Plugin(self._project_root, self._airwindows_root, self._airwindopedia_path, plugin, category)
                 plug.write(self._project_root, self._template_header_path)
             except GrabError as e:
                 print(f">>> Failure... {e}\n")
-
-
-def main(root_dir):
-    grabber = Grabber(Path(root_dir))
-
-
-if __name__ == "__main__":
-    path_to_airwindohhs = "/Users/alexvangils/repos/aria/airwindohhs"
-    main(path_to_airwindohhs)
