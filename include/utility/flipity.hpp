@@ -1,5 +1,6 @@
 #pragma once
 #include "effect.hpp"
+#include <cstdint>
 #include <cstdlib>
 
 namespace airwindohhs::flipity {

@@ -1,5 +1,7 @@
 #pragma once
 #include "effect.hpp"
+#include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
 namespace airwindohhs::trianglizer {

@@ -1,5 +1,6 @@
 #pragma once
 #include "effect.hpp"
+#include <cmath>
 #include <cstdlib>
 
 namespace airwindohhs::dithermediskers {

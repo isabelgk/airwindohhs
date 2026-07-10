@@ -7,6 +7,8 @@
 #endif
 
 #include "effect.hpp"
+#include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
 namespace airwindohhs::cabs {
