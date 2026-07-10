@@ -3,7 +3,9 @@ name = "airwindohhs"
 version = "0.1.0"
 description = "Header generator for the airwindohhs C++ plugin collection"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "libclang==18.1.*",
+]
 
 [project.scripts]
 grab = "scripts.grab.__main__:main"
