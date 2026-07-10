@@ -94,8 +94,10 @@ class Plugin:
     processing_code: str
     parameters: dict[str, Parameter]
 
-    def __init__(self, project_root: Path, airwindows_root: Path, title: str, category: str):
+    def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path, title: str,
+                 category: str):
         self.project_root = project_root
+        self.airwindopedia_path = airwindopedia_path
         self.title = title.replace(" ", "")
         self.slug = self.title.lower()
         self.category = category
@@ -140,8 +142,7 @@ class Plugin:
         return result
 
     def _init_descriptions(self):
-        filepath = Path(os.path.join(self.project_root, "scripts", "res", "airwindopedia.txt"))
-        with open(filepath, "r") as f:
+        with open(self.airwindopedia_path, "r") as f:
             lines = f.readlines()
 
         try:
@@ -262,15 +263,17 @@ class Grabber:
     _categories: dict[str, str]
     _categories_transpose: dict[str, list[str]]
 
-    def __init__(self, project_root: Path, airwindows_root: Path, plugin_filter: set[str] = None,
-                 category_filter: set[str] = None):
+    def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path,
+                 plugin_filter: set[str] = None, category_filter: set[str] = None):
         self._project_root = project_root
         self._airwindows_root = airwindows_root
         if not os.path.exists(airwindows_root) or not os.path.exists(os.path.join(airwindows_root, "Aura")):
             raise FileNotFoundError(f"Could not find airwindows plugin source at {airwindows_root} "
                                     "(expected a subdirectory per plugin, e.g. `Aura/`)")
+        if not os.path.exists(airwindopedia_path):
+            raise FileNotFoundError(f"Could not find Airwindopedia.txt at {airwindopedia_path}")
 
-        self._airwindopedia_path = Path(os.path.join(self._project_root, "scripts", "res", "airwindopedia.txt"))
+        self._airwindopedia_path = airwindopedia_path
         self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
         self._categories, self._categories_transpose = self._init_categories()
         self._init_plugins(plugin_filter, category_filter)
@@ -316,7 +319,7 @@ class Grabber:
                 continue
             try:
                 print(f"Writing {plugin} =====")
-                plug = Plugin(self._project_root, self._airwindows_root, plugin, category)
+                plug = Plugin(self._project_root, self._airwindows_root, self._airwindopedia_path, plugin, category)
                 plug.write(self._project_root, self._template_header_path)
             except GrabError as e:
                 print(f">>> Failure... {e}\n")

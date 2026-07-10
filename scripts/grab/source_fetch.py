@@ -4,7 +4,8 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-UPSTREAM_SOURCE_SUBDIR = Path("plugins/LinuxVST/src")
+PLUGIN_SOURCE_SUBDIR = Path("plugins/LinuxVST/src")
+AIRWINDOPEDIA_SUBPATH = Path("Airwindopedia.txt")
 
 
 @dataclass
@@ -34,16 +35,18 @@ def write_version_pin(version_file: Path, pin: VersionPin):
 def clone_upstream_source(repo_url: str, ref: str, dest: Path) -> Path:
     """Shallow, sparse clone of the upstream airwindows repo at `ref` into `dest`.
 
-    Returns the path containing one subdirectory per plugin (matching the
-    layout Grabber expects), i.e. `dest / UPSTREAM_SOURCE_SUBDIR`.
+    Checks out just the plugin sources (PLUGIN_SOURCE_SUBDIR) and
+    Airwindopedia.txt -- the two things this generator reads -- so `dest`
+    ends up matching the shape of a full local airwindows checkout. Returns
+    `dest`.
     """
     dest.mkdir(parents=True, exist_ok=True)
     _run(["git", "init", "-q"], cwd=dest)
     _run(["git", "remote", "add", "origin", repo_url], cwd=dest)
     _run(["git", "fetch", "--depth", "1", "origin", ref], cwd=dest)
-    _run(["git", "sparse-checkout", "set", str(UPSTREAM_SOURCE_SUBDIR)], cwd=dest)
+    _run(["git", "sparse-checkout", "set", str(PLUGIN_SOURCE_SUBDIR), str(AIRWINDOPEDIA_SUBPATH)], cwd=dest)
     _run(["git", "checkout", "FETCH_HEAD"], cwd=dest)
-    return dest / UPSTREAM_SOURCE_SUBDIR
+    return dest
 
 
 def _run(args: list[str], cwd: Path):
@@ -51,13 +54,22 @@ def _run(args: list[str], cwd: Path):
 
 
 class UpstreamSource:
-    """Resolves the plugin source directory to hand to Grabber, either by
-    cloning upstream at a pinned ref or by using a local escape-hatch path."""
+    """Resolves the airwindows checkout root to read from -- either a fresh
+    clone at a pinned ref, or a local escape-hatch path to an existing
+    checkout -- and exposes the two locations Grabber needs within it."""
 
-    def __init__(self, airwindows_root: Path, temp_dir: Path = None, keep_temp: bool = False):
-        self.airwindows_root = airwindows_root
+    def __init__(self, root: Path, temp_dir: Path = None, keep_temp: bool = False):
+        self.root = root
         self._temp_dir = temp_dir
         self._keep_temp = keep_temp
+
+    @property
+    def plugin_source_dir(self) -> Path:
+        return self.root / PLUGIN_SOURCE_SUBDIR
+
+    @property
+    def airwindopedia_path(self) -> Path:
+        return self.root / AIRWINDOPEDIA_SUBPATH
 
     def cleanup(self):
         if self._temp_dir is not None and not self._keep_temp:
@@ -65,10 +77,10 @@ class UpstreamSource:
 
     @classmethod
     def from_local_path(cls, path: Path) -> "UpstreamSource":
-        return cls(airwindows_root=path)
+        return cls(root=path)
 
     @classmethod
     def from_clone(cls, repo_url: str, ref: str, keep_temp: bool = False) -> "UpstreamSource":
         temp_dir = Path(tempfile.mkdtemp(prefix="airwindohhs-grab-"))
-        airwindows_root = clone_upstream_source(repo_url, ref, temp_dir)
-        return cls(airwindows_root=airwindows_root, temp_dir=temp_dir, keep_temp=keep_temp)
+        root = clone_upstream_source(repo_url, ref, temp_dir)
+        return cls(root=root, temp_dir=temp_dir, keep_temp=keep_temp)

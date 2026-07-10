@@ -14,16 +14,17 @@ uv run grab
 ```
 
 By default this clones the upstream `airwindows/airwindows` repo (shallow,
-sparse-checked-out to just the plugin sources) at the commit pinned in
-`version.txt`, and regenerates every header under `include/`.
+sparse-checked-out to just the plugin sources and `Airwindopedia.txt`) at the
+commit pinned in `version.txt`, and regenerates every header under `include/`.
 
 Useful flags:
 
 - `--plugin NAME` / `--category NAME` -- only regenerate specific plugins or
   categories (repeatable).
-- `--airwindows-src PATH` -- skip cloning and read plugin sources from a local
-  directory instead (a directory containing one subdirectory per plugin, e.g.
-  `Aura/`). The fastest way to iterate locally.
+- `--airwindows-src PATH` -- skip cloning and read from a local airwindows
+  checkout instead -- the root of a `git clone
+  https://github.com/airwindows/airwindows` (containing `Airwindopedia.txt`
+  and `plugins/LinuxVST/src/`). The fastest way to iterate locally.
 - `--airwindows-ref SHA` -- fetch a different upstream commit than the one
   pinned in `version.txt`.
 - `--update-pin` -- rewrite `version.txt` to the fetched ref after a successful

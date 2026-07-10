@@ -20,8 +20,9 @@ def parse_args(argv=None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--airwindows-src", type=Path, default=None,
-        help="Use a local directory of plugin sources instead of cloning upstream "
-             "(a directory containing one subdirectory per plugin, e.g. `Aura/`).",
+        help="Use a local airwindows checkout instead of cloning upstream -- the root of "
+             "a `git clone https://github.com/airwindows/airwindows` (containing "
+             "Airwindopedia.txt and plugins/LinuxVST/src/).",
     )
     parser.add_argument(
         "--update-pin", action="store_true",
@@ -70,7 +71,7 @@ def main(argv=None):
     try:
         plugin_filter = set(args.plugin) if args.plugin else None
         category_filter = set(args.category) if args.category else None
-        Grabber(project_root, source.airwindows_root, plugin_filter, category_filter)
+        Grabber(project_root, source.plugin_source_dir, source.airwindopedia_path, plugin_filter, category_filter)
 
         if args.update_pin:
             write_version_pin(version_file, resolved_pin)
