@@ -19,7 +19,7 @@ target_link_libraries(your_target PRIVATE Airwindohhs::Airwindohhs)
 ```
 
 `Airwindohhs` is a header-only `INTERFACE` library requiring C++17, propagated
-automatically to consumers. `version.txt` at the repo root pins the upstream
+automatically to consumers. `airwindows-version.txt` at the repo root pins the upstream
 `airwindows/airwindows` commit the headers were generated from. 
 
 ## Usage
@@ -51,7 +51,7 @@ uv run grab
 
 By default this clones the upstream `airwindows/airwindows` repo (shallow,
 sparse-checked-out to just the plugin sources and `Airwindopedia.txt`) at the
-commit pinned in `version.txt`, and regenerates every header under `include/`.
+commit pinned in `airwindows-version.txt`, and regenerates every header under `include/`.
 
 Run `uv run grab --help` for the full list of flags.
 

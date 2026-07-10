@@ -16,7 +16,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--airwindows-ref", default=None,
-        help="Upstream airwindows commit SHA to fetch (default: the ref pinned in version.txt).",
+        help="Upstream airwindows commit SHA to fetch (default: the ref pinned in airwindows-version.txt).",
     )
     parser.add_argument(
         "--airwindows-src", type=Path, default=None,
@@ -26,7 +26,7 @@ def parse_args(argv=None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--update-pin", action="store_true",
-        help="Rewrite version.txt to the fetched ref after a fully successful run. "
+        help="Rewrite airwindows-version.txt to the fetched ref after a fully successful run. "
              "Only valid together with --airwindows-ref.",
     )
     parser.add_argument(
@@ -65,7 +65,7 @@ def resolve_source(args: argparse.Namespace, version_file: Path) -> tuple[Upstre
 def main(argv=None):
     args = parse_args(argv)
     project_root = args.project_root.resolve()
-    version_file = project_root / "version.txt"
+    version_file = project_root / "airwindows-version.txt"
 
     source, resolved_pin = resolve_source(args, version_file)
     try:

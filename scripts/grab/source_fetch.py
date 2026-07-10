@@ -17,7 +17,7 @@ class VersionPin:
     def parse(cls, text: str) -> "VersionPin":
         repo_url, _, ref = text.strip().partition("@")
         if not repo_url or not ref:
-            raise ValueError(f"Malformed version.txt contents: {text!r} (expected '<repo_url>@<sha>')")
+            raise ValueError(f"Malformed airwindows-version.txt contents: {text!r} (expected '<repo_url>@<sha>')")
         return cls(repo_url=repo_url, ref=ref)
 
     def format(self) -> str:
