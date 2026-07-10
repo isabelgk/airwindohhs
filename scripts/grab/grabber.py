@@ -45,12 +45,21 @@ def make_missing_directory(path: Path):
         os.mkdir(path)
 
 
+# Airwindopedia.txt's "XYZ Filters" category line has a typo joining two
+# distinct plugins with a period instead of a comma ("XBandpass. XHighpass").
+# Both exist as real, separate upstream plugins -- split them back apart.
+_CATEGORY_ELEMENT_FIXUPS = {
+    "XBandpass. XHighpass": ["XBandpass", "XHighpass"],
+}
+
+
 def _split_category(s: str):
     category = s.split(":")[0].strip().lower().replace(" ", "-")
-    elements = s.split(":")[1].split(",")
-    for i in range(len(elements)):
-        new_elem = elements[i].strip()
-        elements[i] = new_elem
+    raw_elements = s.split(":")[1].split(",")
+    elements = []
+    for raw_element in raw_elements:
+        stripped = raw_element.strip()
+        elements.extend(_CATEGORY_ELEMENT_FIXUPS.get(stripped, [stripped]))
     return category, elements
 
 
