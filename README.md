@@ -39,28 +39,6 @@ comp.set_parameter_value(airwindohhs::buttercomp::ButterComp<float>::kParamA, 0.
 comp.process(inputs, outputs, sampleFrames);
 ```
 
-Per-plugin API:
-
-- `params` -- an enum of `kParam<Name>` indices plus `kNumParameters`, in
-  parameter order.
-- `set_parameter_value(int index, float value)` / `get_parameter_value(int
-  index)` -- read/write a parameter by index, in the plugin's normalized
-  `[0, 1]`-ish range.
-- `get_parameter_default(int index)` -- the parameter's default value.
-- `get_parameter_name(int index)` -- short lowercase name (e.g. `"dry/wet"`).
-- `get_parameter_title(int index)` -- display title (e.g. `"Dry/Wet"`).
-- `get_parameter_display(int index)` -- the current value formatted as a
-  display string.
-- `get_parameter_label(int index)` -- the parameter's unit suffix, if any
-  (e.g. `"dB"`), often empty.
-- `process(T** inputs, T** outputs, long sampleFrames)` -- processes
-  `sampleFrames` of stereo audio in place from `inputs` into `outputs`
-  (`inputs[0]`/`outputs[0]` left, `inputs[1]`/`outputs[1]` right).
-
-Also present on every header: `k_name`, `k_short_description`,
-`k_long_description`, and `k_tags` (`constexpr std::string_view`s carrying
-Airwindopedia's metadata for the plugin).
-
 ## Generating headers
 
 Everything under `include/` is generated from the upstream Airwindows VST
