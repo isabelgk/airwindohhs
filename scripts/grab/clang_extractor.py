@@ -220,6 +220,36 @@ class PluginAst:
         result = _slice_and_filter(self.proc_source, start_offset, end_offset)
         return result.replace("getSampleRate()", "Effect<T>::getSampleRate()")
 
+    def file_scope_constants(self) -> str:
+        """Some plugins declare const globals in the .h (usually array-size
+        constants like `const int kshortA = 193;`) ahead of the class, and
+        reference them directly in private member declarations (e.g.
+        `double aAL[kshortA + 5];`). Carrying only the class's own private
+        section leaves those undefined, so pull in every top-level VAR_DECL
+        too -- harmless if unused (e.g. kNumInputs), required if not."""
+        decls = find_all(
+            self.h_tu.cursor,
+            lambda c: c.kind == cindex.CursorKind.VAR_DECL
+            and c.semantic_parent.kind == cindex.CursorKind.TRANSLATION_UNIT,
+            file=self.h_path,
+        )
+        lines = []
+        for decl in decls:
+            text = self.h_source[decl.extent.start.offset:decl.extent.end.offset].decode("utf-8", errors="replace")
+            text = text.rstrip().rstrip(";").strip()
+            # normalize away whatever qualifiers the original had (const,
+            # static, or neither) -- a non-static member's initializer isn't
+            # a constant-expression even when const+literal (needs `static`
+            # to be usable as a sibling member's array bound), and an
+            # in-class initializer for an array-typed static member needs
+            # `constexpr`, not just `const`.
+            for prefix in ("static constexpr ", "static const ", "constexpr ", "const ", "static "):
+                if text.startswith(prefix):
+                    text = text[len(prefix):]
+                    break
+            lines.append(f"static constexpr {text};\n")
+        return "".join(lines)
+
     def private_vars(self) -> str:
         class_decl = find_first(
             self.h_tu.cursor,
@@ -234,7 +264,7 @@ class PluginAst:
         )
         start_offset = private_spec.extent.end.offset
         end_offset = class_decl.extent.end.offset - 1  # exclude the class's closing '}'
-        return _slice_and_filter(self.h_source, start_offset, end_offset)
+        return self.file_scope_constants() + _slice_and_filter(self.h_source, start_offset, end_offset)
 
     def default_value(self, member: str) -> float:
         ctor = self._constructor_definition()

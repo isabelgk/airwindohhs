@@ -7,6 +7,13 @@ class GrabError(RuntimeError):
     pass
 
 
+def escape_cpp_string(s: str) -> str:
+    """Escape text destined for a C++ string literal in the template --
+    descriptions and parameter names/labels are free text pulled from
+    Airwindopedia.txt/upstream source and can contain a literal '"'."""
+    return s.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def first_matching_line_index(lines: list[str], match: str, line_rstrip=None) -> int:
     for index, line in enumerate(lines):
         if line_rstrip:
@@ -211,7 +218,7 @@ class Plugin:
             chunk = lines[begin_index + 1:next_index]
             chunk = [line.replace("\n", "") for line in chunk]
             long_description = "".join(naive_line_filter(chunk))
-            return short_description, long_description
+            return escape_cpp_string(short_description), escape_cpp_string(long_description)
         except RuntimeError as e:
             warning(self.title, "could not find descriptions; using empty strings")
             return "", ""
@@ -270,14 +277,14 @@ class Plugin:
     def _param_name_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return \"{param.slug}\"; break;\n"
+            line = f"case {param.enum_name}: return \"{escape_cpp_string(param.slug)}\"; break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _param_title_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return \"{param.title}\"; break;\n"
+            line = f"case {param.enum_name}: return \"{escape_cpp_string(param.title)}\"; break;\n"
             lines.append(line)
         return "".join(lines)
 
@@ -291,7 +298,7 @@ class Plugin:
     def _parameter_label_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return \"{param.label}\"; break;\n"
+            line = f"case {param.enum_name}: return \"{escape_cpp_string(param.label)}\"; break;\n"
             lines.append(line)
         return "".join(lines)
 
