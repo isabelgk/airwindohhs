@@ -38,6 +38,53 @@ def make_missing_directory(path: Path):
         os.mkdir(path)
 
 
+def _split_category(s: str):
+    category = s.split(":")[0].strip().lower().replace(" ", "-")
+    elements = s.split(":")[1].split(",")
+    for i in range(len(elements)):
+        new_elem = elements[i].strip()
+        elements[i] = new_elem
+    return category, elements
+
+
+def parse_categories(airwindopedia_path: Path) -> tuple[dict[str, str], dict[str, list[str]]]:
+    """Parse the `# Categories` section of Airwindopedia.txt into
+    (plugin title -> category) and (category -> [plugin titles])."""
+    with open(airwindopedia_path, "r") as f:
+        lines = f.readlines()
+
+    categories = dict()
+    categories_transpose = dict()
+    in_categories = False
+    for line in lines:
+        if line.startswith("#####"):
+            in_categories = False
+        if in_categories:
+            stripped = line.strip()
+            if stripped != "":
+                category, elements = _split_category(stripped)
+                for element in elements:
+                    categories[element] = category
+                if category in categories_transpose.keys():
+                    categories_transpose[category] += elements
+                else:
+                    categories_transpose[category] = elements
+        if line.startswith("# Categories"):
+            in_categories = True
+    return categories, categories_transpose
+
+
+def find_missing_plugins(project_root: Path, categories: dict[str, str]) -> list[str]:
+    """Plugin titles from `categories` that don't have a generated header yet."""
+    missing = []
+    for title, category in categories.items():
+        slug = title.replace(" ", "").lower()
+        output_path = project_root / "include" / category / f"{slug}.hpp"
+        if not output_path.exists():
+            missing.append(title)
+    return missing
+
+
 def num_to_alpha(num: int) -> str:
     return str(chr(65 + num))
 
@@ -275,41 +322,8 @@ class Grabber:
 
         self._airwindopedia_path = airwindopedia_path
         self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
-        self._categories, self._categories_transpose = self._init_categories()
+        self._categories, self._categories_transpose = parse_categories(airwindopedia_path)
         self._init_plugins(plugin_filter, category_filter)
-
-    def _init_categories(self) -> (dict[str, list[str]], dict[str, str]):
-        with open(self._airwindopedia_path, "r") as f:
-            lines = f.readlines()
-
-        categories = dict()
-        categories_transpose = dict()
-        in_categories = False
-        for line in lines:
-            if line.startswith("#####"):
-                in_categories = False
-            if in_categories:
-                stripped = line.strip()
-                if stripped != "":
-                    category, elements = self._split_category(stripped)
-                    for element in elements:
-                        categories[element] = category
-                    if category in categories_transpose.keys():
-                        categories_transpose[category] += elements
-                    else:
-                        categories_transpose[category] = elements
-            if line.startswith("# Categories"):
-                in_categories = True
-        return categories, categories_transpose
-
-    @staticmethod
-    def _split_category(s: str):
-        category = s.split(":")[0].strip().lower().replace(" ", "-")
-        elements = s.split(":")[1].split(",")
-        for i in range(len(elements)):
-            new_elem = elements[i].strip()
-            elements[i] = new_elem
-        return category, elements
 
     def _init_plugins(self, plugin_filter: set[str] = None, category_filter: set[str] = None):
         for plugin, category in self._categories.items():
