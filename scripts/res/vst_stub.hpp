@@ -11,6 +11,8 @@
 // this code, only parses it to locate byte ranges in the original source.
 #pragma once
 
+#include <cstdint>
+
 typedef int VstInt32;
 typedef long VstIntPtr;
 typedef VstIntPtr (*audioMasterCallback)(void* effect, VstInt32 opcode, VstInt32 index,
