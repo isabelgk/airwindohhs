@@ -5,7 +5,7 @@ from pathlib import Path
 
 import clang.cindex as cindex
 
-from scripts.grab.grabber import GrabError, naive_line_filter
+from scripts.grab.grabber import GrabError, naive_line_filter, num_to_alpha
 
 STUB_HEADER = Path(__file__).resolve().parent.parent / "res" / "vst_stub.hpp"
 
@@ -116,6 +116,27 @@ def _references_any(cursor: cindex.Cursor, names: set) -> bool:
     return bool(find_all(cursor, lambda c: c.kind == cindex.CursorKind.DECL_REF_EXPR and c.spelling in names))
 
 
+def _case_variable(case: cindex.Cursor) -> str:
+    """The parameter letter (A, B, ...) a `case` in a parameter switch
+    corresponds to, resolved by the case value's actual enum position --
+    not by string-matching the enum constant's name -- so this works
+    regardless of naming convention (kParamA, kSlewParam, kParamTRF, ...).
+    Returns None for cases (e.g. `default:`) that don't resolve to an index."""
+    case_value = list(case.get_children())[0]
+
+    enum_refs = find_all(case_value, lambda c: c.kind == cindex.CursorKind.DECL_REF_EXPR)
+    if enum_refs:
+        referenced = enum_refs[0].referenced
+        if referenced is not None and referenced.kind == cindex.CursorKind.ENUM_CONSTANT_DECL:
+            return num_to_alpha(referenced.enum_value)
+
+    literals = find_all(case_value, lambda c: c.kind == cindex.CursorKind.INTEGER_LITERAL)
+    if literals:
+        return num_to_alpha(int(next(literals[0].get_tokens()).spelling))
+
+    return None
+
+
 class PluginAst:
     """AST-backed replacement for the naive line/string scanning in the
     original grab.py: libclang locates the correct source byte ranges
@@ -192,7 +213,10 @@ class PluginAst:
 
         start_offset = _line_start_offset(self.proc_source, stmts[skip].extent.start.offset)
         start_offset = _extend_over_leading_comments(self.proc_source, start_offset)
-        end_offset = stmts[-1].extent.end.offset
+        # stmts[-1].extent.end can land before a trailing ';' or comment (e.g. a bare
+        # expression statement as the function's last statement) -- slice to just
+        # before the function body's own closing '}' instead, like initialization_code().
+        end_offset = body.extent.end.offset - 1
         result = _slice_and_filter(self.proc_source, start_offset, end_offset)
         return result.replace("getSampleRate()", "Effect<T>::getSampleRate()")
 
@@ -212,20 +236,20 @@ class PluginAst:
         end_offset = class_decl.extent.end.offset - 1  # exclude the class's closing '}'
         return _slice_and_filter(self.h_source, start_offset, end_offset)
 
-    def default_value(self, variable: str) -> float:
+    def default_value(self, member: str) -> float:
         ctor = self._constructor_definition()
         assign = find_first(
             ctor,
             lambda c: c.kind == cindex.CursorKind.BINARY_OPERATOR and any(
-                child.kind == cindex.CursorKind.MEMBER_REF_EXPR and child.spelling == variable
+                child.kind == cindex.CursorKind.MEMBER_REF_EXPR and child.spelling == member
                 for child in c.get_children()
             ),
-            description=f"assignment to {variable} in constructor",
+            description=f"assignment to {member} in constructor",
         )
         rhs = list(assign.get_children())[1]
         literal = find_first(
             rhs, lambda c: c.kind in (cindex.CursorKind.FLOATING_LITERAL, cindex.CursorKind.INTEGER_LITERAL),
-            description=f"default value literal for {variable}",
+            description=f"default value literal for {member}",
         )
         token = next(literal.get_tokens()).spelling
         return float(token)
@@ -233,19 +257,41 @@ class PluginAst:
     def parameter_strings(self, method_name: str) -> dict:
         """Maps a parameter's variable letter (A, B, ...) to the string
         literal argument of the call in that switch's matching case, e.g.
-        getParameterName's `case kParamA: vst_strncpy(text, "Voicing", ...)`."""
+        getParameterName's `case kParamA: vst_strncpy(text, "Voicing", ...)`.
+        Some plugins skip the switch entirely (e.g. when every label is the
+        same empty string) -- that's not an error, just no strings to map."""
         method = self._method_definition(method_name, self.cpp_path, self.cpp_tu)
-        switch = find_first(method, lambda c: c.kind == cindex.CursorKind.SWITCH_STMT,
-                             description=f"switch statement in {method_name}")
+        switches = find_all(method, lambda c: c.kind == cindex.CursorKind.SWITCH_STMT)
+        if not switches:
+            return {}
         result = {}
-        for case in find_all(switch, lambda c: c.kind == cindex.CursorKind.CASE_STMT):
-            case_value = list(case.get_children())[0]
-            enum_refs = find_all(case_value, lambda c: c.kind == cindex.CursorKind.DECL_REF_EXPR)
-            if not enum_refs or not enum_refs[0].spelling.startswith("kParam"):
+        for case in find_all(switches[0], lambda c: c.kind == cindex.CursorKind.CASE_STMT):
+            variable = _case_variable(case)
+            if variable is None:
                 continue
-            variable = enum_refs[0].spelling[len("kParam"):]
             strings = find_all(case, lambda c: c.kind == cindex.CursorKind.STRING_LITERAL)
             if not strings:
                 continue
             result[variable] = strings[0].spelling.strip('"')
+        return result
+
+    def parameter_members(self) -> dict:
+        """Maps a parameter's variable letter (A, B, ...) to the real C++
+        member variable backing it, resolved from setParameter's switch,
+        e.g. `case kParamA: consoletype = value; break;` -> {"A": "consoletype"}.
+        Usually this is just the letter itself, but older plugins often use
+        descriptive member names instead of the A/B/C convention."""
+        method = self._method_definition("setParameter", self.cpp_path, self.cpp_tu)
+        switches = find_all(method, lambda c: c.kind == cindex.CursorKind.SWITCH_STMT)
+        if not switches:
+            return {}
+        result = {}
+        for case in find_all(switches[0], lambda c: c.kind == cindex.CursorKind.CASE_STMT):
+            variable = _case_variable(case)
+            if variable is None:
+                continue
+            member_refs = find_all(case, lambda c: c.kind == cindex.CursorKind.MEMBER_REF_EXPR)
+            if not member_refs:
+                continue
+            result[variable] = member_refs[0].spelling
         return result

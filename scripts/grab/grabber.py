@@ -98,6 +98,10 @@ class Parameter:
 
     variable: str
     """A variable name, usually a capital letter"""
+    member: str
+    """The real C++ member variable backing this parameter -- usually the
+    same as `variable`, but some plugins use descriptive member names
+    instead of the A/B/C convention (e.g. `consoletype` for kParamA)"""
     enum_name: str
     """An enum name, usually something like kParamA"""
     title: str
@@ -109,8 +113,9 @@ class Parameter:
     label: str
     """The parameter label, often the units of the parameter"""
 
-    def __init__(self, variable: str, title: str, default_value: float, label: str):
+    def __init__(self, variable: str, title: str, default_value: float, label: str, member: str = None):
         self.variable = variable
+        self.member = member if member is not None else variable
         self.enum_name = f"kParam{variable}"
         self.title = title
         self.slug = self._slug()
@@ -169,6 +174,7 @@ class Plugin:
 
         name_map = ast.parameter_strings("getParameterName")
         label_map = ast.parameter_strings("getParameterLabel")
+        member_map = ast.parameter_members()
 
         result = dict()
         for i in range(num_parameters):
@@ -184,8 +190,13 @@ class Plugin:
                 warning(self.title, f"Could not find parameter label for {variable} -- using empty string")
                 label = ""
 
-            default_value = ast.default_value(variable)
-            result[variable] = Parameter(variable, title, default_value, label)
+            member = member_map.get(variable)
+            if member is None:
+                warning(self.title, f"Could not find member variable for {variable}; assuming it's named '{variable}'")
+                member = variable
+
+            default_value = ast.default_value(member)
+            result[variable] = Parameter(variable, title, default_value, label, member=member)
         return result
 
     def _init_descriptions(self):
@@ -238,14 +249,14 @@ class Plugin:
     def _param_set_value_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: {param.variable} = value; break;\n"
+            line = f"case {param.enum_name}: {param.member} = value; break;\n"
             lines.append(line)
         return "".join(lines)
 
     def _param_get_value_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return {param.variable}; break;\n"
+            line = f"case {param.enum_name}: return {param.member}; break;\n"
             lines.append(line)
         return "".join(lines)
 
@@ -273,7 +284,7 @@ class Plugin:
     def _parameter_display_switch(self) -> str:
         lines = []
         for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return std::to_string({param.variable}); break;\n"
+            line = f"case {param.enum_name}: return std::to_string({param.member}); break;\n"
             lines.append(line)
         return "".join(lines)
 
