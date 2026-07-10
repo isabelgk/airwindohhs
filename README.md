@@ -20,8 +20,7 @@ target_link_libraries(your_target PRIVATE Airwindohhs::Airwindohhs)
 
 `Airwindohhs` is a header-only `INTERFACE` library requiring C++17, propagated
 automatically to consumers. `version.txt` at the repo root pins the upstream
-`airwindows/airwindows` commit the headers were generated from -- it is
-unrelated to this project's own version.
+`airwindows/airwindows` commit the headers were generated from. 
 
 ## Usage
 
@@ -54,22 +53,8 @@ By default this clones the upstream `airwindows/airwindows` repo (shallow,
 sparse-checked-out to just the plugin sources and `Airwindopedia.txt`) at the
 commit pinned in `version.txt`, and regenerates every header under `include/`.
 
-Useful flags:
+Run `uv run grab --help` for the full list of flags.
 
-- `--plugin NAME` / `--category NAME` -- only regenerate specific plugins or
-  categories (repeatable).
-- `--airwindows-src PATH` -- skip cloning and read from a local airwindows
-  checkout instead -- the root of a `git clone
-  https://github.com/airwindows/airwindows` (containing `Airwindopedia.txt`
-  and `plugins/LinuxVST/src/`). The fastest way to iterate locally.
-- `--airwindows-ref SHA` -- fetch a different upstream commit than the one
-  pinned in `version.txt`.
-- `--update-pin` -- rewrite `version.txt` to the fetched ref after a successful
-  run (only valid with `--airwindows-ref`).
-- `--keep-temp` -- don't delete the temporary clone directory afterward.
-
-Run `uv run grab --help` for the full list.
-
-Requires a `clang`/`clang++` on `PATH` -- the generator shells out to it once
+Requires a `clang`/`clang++` on `PATH`; the generator shells out to it once
 per run to locate system header search paths for libclang, which ships without
 any headers of its own.
