@@ -8,3 +8,5 @@ tmp/
 .env
 /airwindows
 /dist
+.venv/
+__pycache__/

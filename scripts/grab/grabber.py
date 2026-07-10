@@ -1,7 +1,6 @@
 import os.path
 import string
 from pathlib import Path
-import re
 
 
 class GrabError(RuntimeError):
@@ -174,14 +173,14 @@ class Plugin:
     processing_code: str
     parameters: dict[str, Parameter]
 
-    def __init__(self, project_root: Path, title: str, category: str):
+    def __init__(self, project_root: Path, airwindows_root: Path, title: str, category: str):
         self.project_root = project_root
         self.title = title.replace(" ", "")
         self.slug = self.title.lower()
         self.category = category
         self.short_description, self.long_description = self._init_descriptions()
 
-        self.source_dir = Path(os.path.join(project_root, "airwindows", self.title))
+        self.source_dir = Path(os.path.join(airwindows_root, self.title))
         self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
 
         self.initialization_code = self._init_initialization_code()
@@ -355,22 +354,24 @@ class Plugin:
 
 class Grabber:
     _project_root: Path
+    _airwindows_root: Path
     _airwindopedia_path: Path
     _template_header_path: Path
     _categories: dict[str, str]
     _categories_transpose: dict[str, list[str]]
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, airwindows_root: Path, plugin_filter: set[str] = None,
+                 category_filter: set[str] = None):
         self._project_root = project_root
-        airwindows_root = os.path.join(project_root, "airwindows")
+        self._airwindows_root = airwindows_root
         if not os.path.exists(airwindows_root) or not os.path.exists(os.path.join(airwindows_root, "Aura")):
-            raise FileNotFoundError("Please add a copy of the airwindows source code to the root of this repo with "
-                                    "the plugin source code as subdirectories")
+            raise FileNotFoundError(f"Could not find airwindows plugin source at {airwindows_root} "
+                                    "(expected a subdirectory per plugin, e.g. `Aura/`)")
 
         self._airwindopedia_path = Path(os.path.join(self._project_root, "scripts", "res", "airwindopedia.txt"))
         self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
         self._categories, self._categories_transpose = self._init_categories()
-        self._init_plugins()
+        self._init_plugins(plugin_filter, category_filter)
 
     def _init_categories(self) -> (dict[str, list[str]], dict[str, str]):
         with open(self._airwindopedia_path, "r") as f:
@@ -405,20 +406,15 @@ class Grabber:
             elements[i] = new_elem
         return category, elements
 
-    def _init_plugins(self):
+    def _init_plugins(self, plugin_filter: set[str] = None, category_filter: set[str] = None):
         for plugin, category in self._categories.items():
+            if plugin_filter and plugin not in plugin_filter:
+                continue
+            if category_filter and category not in category_filter:
+                continue
             try:
                 print(f"Writing {plugin} =====")
-                plug = Plugin(self._project_root, plugin, category)
+                plug = Plugin(self._project_root, self._airwindows_root, plugin, category)
                 plug.write(self._project_root, self._template_header_path)
             except GrabError as e:
                 print(f">>> Failure... {e}\n")
-
-
-def main(root_dir):
-    grabber = Grabber(Path(root_dir))
-
-
-if __name__ == "__main__":
-    path_to_airwindohhs = "/Users/alexvangils/repos/aria/airwindohhs"
-    main(path_to_airwindohhs)
