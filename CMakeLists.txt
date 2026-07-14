@@ -9,3 +9,6 @@ add_library(Airwindohhs INTERFACE)
 add_library(Airwindohhs::Airwindohhs ALIAS Airwindohhs)
 target_include_directories(Airwindohhs INTERFACE include)
 target_compile_features(Airwindohhs INTERFACE cxx_std_17)
+
+add_executable(dump_meta tools/dump_meta.cpp)
+target_link_libraries(dump_meta PRIVATE Airwindohhs::Airwindohhs)
