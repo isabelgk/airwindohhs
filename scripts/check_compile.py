@@ -25,8 +25,15 @@ CLASS_RE = re.compile(
 )
 
 
+META_DIR = INCLUDE_DIR / "meta"
+
+
 def find_headers():
-    return sorted(p for p in INCLUDE_DIR.rglob("*.hpp") if p.name != "effect.hpp")
+    return sorted(
+        p
+        for p in INCLUDE_DIR.rglob("*.hpp")
+        if p.name != "effect.hpp" and p != INCLUDE_DIR / "meta.hpp" and META_DIR not in p.parents
+    )
 
 
 def extract_namespace_and_class(header):

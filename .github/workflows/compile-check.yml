@@ -16,3 +16,11 @@ jobs:
           sudo apt-get install -y clang
 
       - run: python3 scripts/check_compile.py --cxx clang++
+
+      - run: |
+          python3 scripts/gen_meta.py
+          git diff --exit-code include/meta/registry.hpp
+
+      - run: |
+          clang++ -std=c++17 -I include -o /tmp/meta_smoke test/meta_smoke.cpp
+          /tmp/meta_smoke

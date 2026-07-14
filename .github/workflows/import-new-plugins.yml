@@ -108,13 +108,16 @@ jobs:
         run: clang-format -i "${{ steps.verify.outputs.file }}"
 
       - if: steps.verify.outputs.generated == 'true'
+        run: python3 scripts/gen_meta.py
+
+      - if: steps.verify.outputs.generated == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "${{ steps.meta.outputs.branch }}"
-          git add "${{ steps.verify.outputs.file }}" airwindows-version.txt
+          git add "${{ steps.verify.outputs.file }}" airwindows-version.txt include/meta/registry.hpp
           git commit -m "Add ${{ matrix.plugin }}"
           git push -u origin "${{ steps.meta.outputs.branch }}"
           gh pr create --title "Add ${{ matrix.plugin }}" \
