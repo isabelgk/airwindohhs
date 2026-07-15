@@ -283,9 +283,9 @@ class DeCrackle final : public Effect<T>
             if (count < 0 || count > adjDelay) {
                 count = 0;
             }
-            double near = rect;
-            double far = aCL[count - ((count > adjDelay) ? adjDelay + 1 : 0)];
-            // near and far are the smoothed rectified version
+            double nearVal = rect;
+            double farVal = aCL[count - ((count > adjDelay) ? adjDelay + 1 : 0)];
+            // nearVal and farVal are the smoothed rectified version
             double prevL = aAL[(count + halfRaw + offset) - (((count + halfRaw + offset) > adjDelay) ? adjDelay + 1 : 0)];
             double prevR = aAR[(count + halfRaw + offset) - (((count + halfRaw + offset) > adjDelay) ? adjDelay + 1 : 0)];
             double outL = aAL[(count + halfRaw) - (((count + halfRaw) > adjDelay) ? adjDelay + 1 : 0)];
@@ -295,8 +295,8 @@ class DeCrackle final : public Effect<T>
             // these are the various outputs to fade between
             double trigL = aAL[(count + halfTrig) - (((count + halfTrig) > adjDelay) ? adjDelay + 1 : 0)];
             double trigR = aAR[(count + halfTrig) - (((count + halfTrig) > adjDelay) ? adjDelay + 1 : 0)];
-            double deClickL = pow(fmax((fabs(trigL) - threshold) - fmax(near, far), 0.0) * 16.0, 3.0);
-            double deClickR = pow(fmax((fabs(trigR) - threshold) - fmax(near, far), 0.0) * 16.0, 3.0);
+            double deClickL = pow(fmax((fabs(trigL) - threshold) - fmax(nearVal, farVal), 0.0) * 16.0, 3.0);
+            double deClickR = pow(fmax((fabs(trigR) - threshold) - fmax(nearVal, farVal), 0.0) * 16.0, 3.0);
             iirTargetL = fmax(iirTargetL - iirCut, 0.0);
             iirTargetR = fmax(iirTargetR - iirCut, 0.0); // taper down at iirCut speed
             if (deClickL > iirTargetL) {
@@ -324,7 +324,7 @@ class DeCrackle final : public Effect<T>
                 inputSampleL = outL - inputSampleL;
                 inputSampleR = outR - inputSampleR;
             } // clicks only at full dry
-            double recordVolume = fmax(fmax(near, far), fmax(prevL, prevR)) + 0.001; // engage only at quietest
+            double recordVolume = fmax(fmax(nearVal, farVal), fmax(prevL, prevR)) + 0.001; // engage only at quietest
             double surfaceL = sin(fmin((fabs(outL - prevL) / recordVolume) * surface, 3.14159265358979)) * 0.5;
             double surfaceR = sin(fmin((fabs(outR - prevR) / recordVolume) * surface, 3.14159265358979)) * 0.5;
             double gateOnAudio = fmax(surface - (recordVolume * surface * 4.0), 0.0);

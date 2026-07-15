@@ -1,5 +1,6 @@
 import functools
 import os.path
+import re
 import subprocess
 from pathlib import Path
 
@@ -107,9 +108,29 @@ def _extend_over_leading_comments(source: bytes, start_offset: int) -> int:
     return cursor
 
 
+# windef.h #defines these as empty legacy near/far pointer-modifier macros
+# on MSVC, so using them as identifiers compiles upstream (GCC/Clang) but
+# fails on Windows once "near"/"far" macro-expand to nothing. Upstream
+# Airwindows code uses them as ordinary variable names (e.g. DeCrackle), so
+# rename on extraction rather than patching generated headers by hand --
+# a header regenerated from upstream source would otherwise silently drop
+# the fix.
+_MSVC_RESERVED_IDENTIFIER_RENAMES = {
+    "near": "nearVal",
+    "far": "farVal",
+}
+
+
+def _sanitize_reserved_identifiers(text: str) -> str:
+    for name, replacement in _MSVC_RESERVED_IDENTIFIER_RENAMES.items():
+        text = re.sub(rf"\b{name}\b", replacement, text)
+    return text
+
+
 def _slice_and_filter(source: bytes, start_offset: int, end_offset: int) -> str:
     raw = source[start_offset:end_offset].decode("utf-8", errors="replace")
-    return "".join(naive_line_filter(raw.splitlines(keepends=True)))
+    filtered = "".join(naive_line_filter(raw.splitlines(keepends=True)))
+    return _sanitize_reserved_identifiers(filtered)
 
 
 def _references_any(cursor: cindex.Cursor, names: set) -> bool:
