@@ -287,6 +287,7 @@
 #include "filter/pear.hpp"
 #include "filter/pear2.hpp"
 #include "filter/peareq.hpp"
+#include "filter/pearliteeq.hpp"
 #include "filter/primefir.hpp"
 #include "filter/reseq.hpp"
 #include "filter/reseq2.hpp"
@@ -2734,6 +2735,14 @@ inline std::unique_ptr<IPlugin<T>> make_peareq()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_pearliteeq()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::pearliteeq::PearLiteEQ>>(
+        airwindohhs::pearliteeq::k_name, airwindohhs::pearliteeq::k_tags,
+        airwindohhs::pearliteeq::k_short_description, airwindohhs::pearliteeq::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_primefir()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::primefir::PrimeFIR>>(
@@ -4767,6 +4776,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::pear::k_name, "pear", "filter", airwindohhs::pear::k_tags, airwindohhs::pear::k_short_description, airwindohhs::pear::k_long_description, static_cast<int>(airwindohhs::pear::Pear<T>::kNumParameters), &make_pear<T> },
         { airwindohhs::pear2::k_name, "pear2", "filter", airwindohhs::pear2::k_tags, airwindohhs::pear2::k_short_description, airwindohhs::pear2::k_long_description, static_cast<int>(airwindohhs::pear2::Pear2<T>::kNumParameters), &make_pear2<T> },
         { airwindohhs::peareq::k_name, "peareq", "filter", airwindohhs::peareq::k_tags, airwindohhs::peareq::k_short_description, airwindohhs::peareq::k_long_description, static_cast<int>(airwindohhs::peareq::PearEQ<T>::kNumParameters), &make_peareq<T> },
+        { airwindohhs::pearliteeq::k_name, "pearliteeq", "filter", airwindohhs::pearliteeq::k_tags, airwindohhs::pearliteeq::k_short_description, airwindohhs::pearliteeq::k_long_description, static_cast<int>(airwindohhs::pearliteeq::PearLiteEQ<T>::kNumParameters), &make_pearliteeq<T> },
         { airwindohhs::primefir::k_name, "primefir", "filter", airwindohhs::primefir::k_tags, airwindohhs::primefir::k_short_description, airwindohhs::primefir::k_long_description, static_cast<int>(airwindohhs::primefir::PrimeFIR<T>::kNumParameters), &make_primefir<T> },
         { airwindohhs::reseq::k_name, "reseq", "filter", airwindohhs::reseq::k_tags, airwindohhs::reseq::k_short_description, airwindohhs::reseq::k_long_description, static_cast<int>(airwindohhs::reseq::ResEQ<T>::kNumParameters), &make_reseq<T> },
         { airwindohhs::reseq2::k_name, "reseq2", "filter", airwindohhs::reseq2::k_tags, airwindohhs::reseq2::k_short_description, airwindohhs::reseq2::k_long_description, static_cast<int>(airwindohhs::reseq2::ResEQ2<T>::kNumParameters), &make_reseq2<T> },
