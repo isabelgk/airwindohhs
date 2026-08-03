@@ -222,6 +222,7 @@
 #include "dynamics/swell.hpp"
 #include "dynamics/thunder.hpp"
 #include "dynamics/varimu.hpp"
+#include "dynamics/x2buss.hpp"
 #include "effects/aura.hpp"
 #include "effects/cloudcoat.hpp"
 #include "effects/disintegrate.hpp"
@@ -2212,6 +2213,14 @@ inline std::unique_ptr<IPlugin<T>> make_varimu()
     return std::make_unique<PluginAdapter<T, airwindohhs::varimu::VariMu>>(
         airwindohhs::varimu::k_name, airwindohhs::varimu::k_tags,
         airwindohhs::varimu::k_short_description, airwindohhs::varimu::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_x2buss()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::x2buss::X2Buss>>(
+        airwindohhs::x2buss::k_name, airwindohhs::x2buss::k_tags,
+        airwindohhs::x2buss::k_short_description, airwindohhs::x2buss::k_long_description);
 }
 
 template <typename T>
@@ -4711,6 +4720,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::swell::k_name, "swell", "dynamics", airwindohhs::swell::k_tags, airwindohhs::swell::k_short_description, airwindohhs::swell::k_long_description, static_cast<int>(airwindohhs::swell::Swell<T>::kNumParameters), &make_swell<T> },
         { airwindohhs::thunder::k_name, "thunder", "dynamics", airwindohhs::thunder::k_tags, airwindohhs::thunder::k_short_description, airwindohhs::thunder::k_long_description, static_cast<int>(airwindohhs::thunder::Thunder<T>::kNumParameters), &make_thunder<T> },
         { airwindohhs::varimu::k_name, "varimu", "dynamics", airwindohhs::varimu::k_tags, airwindohhs::varimu::k_short_description, airwindohhs::varimu::k_long_description, static_cast<int>(airwindohhs::varimu::VariMu<T>::kNumParameters), &make_varimu<T> },
+        { airwindohhs::x2buss::k_name, "x2buss", "dynamics", airwindohhs::x2buss::k_tags, airwindohhs::x2buss::k_short_description, airwindohhs::x2buss::k_long_description, static_cast<int>(airwindohhs::x2buss::X2Buss<T>::kNumParameters), &make_x2buss<T> },
         { airwindohhs::aura::k_name, "aura", "effects", airwindohhs::aura::k_tags, airwindohhs::aura::k_short_description, airwindohhs::aura::k_long_description, static_cast<int>(airwindohhs::aura::Aura<T>::kNumParameters), &make_aura<T> },
         { airwindohhs::cloudcoat::k_name, "cloudcoat", "effects", airwindohhs::cloudcoat::k_tags, airwindohhs::cloudcoat::k_short_description, airwindohhs::cloudcoat::k_long_description, static_cast<int>(airwindohhs::cloudcoat::CloudCoat<T>::kNumParameters), &make_cloudcoat<T> },
         { airwindohhs::disintegrate::k_name, "disintegrate", "effects", airwindohhs::disintegrate::k_tags, airwindohhs::disintegrate::k_short_description, airwindohhs::disintegrate::k_long_description, static_cast<int>(airwindohhs::disintegrate::Disintegrate<T>::kNumParameters), &make_disintegrate<T> },
