@@ -183,6 +183,13 @@ class Plugin:
         self.private_vars = ast.private_vars()
         self.parameters = self._init_parameters(ast)
 
+        injected, injected_names = ast.uninitialized_members()
+        if injected:
+            warning(self.title, f"constructor never assigns {', '.join(injected_names)}; initializing to defaults")
+            if not self.initialization_code.endswith("\n"):
+                self.initialization_code += "\n"
+            self.initialization_code += injected
+
     def _init_parameters(self, ast):
         num_parameters = ast.num_parameters()
         if num_parameters == 0:
