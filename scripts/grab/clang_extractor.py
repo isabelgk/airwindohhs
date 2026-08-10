@@ -361,12 +361,21 @@ class PluginAst:
         ]
 
     def _constructor_assigned_names(self) -> set:
-        """Members appearing as the target of a plain `=` within the emitted part
-        of the constructor. Compound assignment (`+=`) deliberately doesn't count:
-        it reads the member first, so it can't be what establishes its value."""
+        """Members the constructor establishes a value for, whether by member
+        initializer list or by a plain `=` within the emitted part of the body.
+        Compound assignment (`+=`) deliberately doesn't count: it reads the member
+        first, so it can't be what establishes its value."""
         start_offset, end_offset = self._initialization_extent()
-        assigned = set()
-        for op in find_all(self._constructor_definition(),
+        ctor = self._constructor_definition()
+
+        # a member initializer list entry establishes the value just as much as an
+        # assignment does, and appending one afterwards would silently override it
+        assigned = {
+            child.spelling for child in ctor.get_children()
+            if child.kind == cindex.CursorKind.MEMBER_REF
+        }
+
+        for op in find_all(ctor,
                            lambda c: c.kind == cindex.CursorKind.BINARY_OPERATOR):
             if not start_offset <= op.extent.start.offset < end_offset:
                 continue
