@@ -43,6 +43,11 @@ class Recurve final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        A = 0.0;
+        B = 0.0;
+        C = 0.0;
+        D = 0.0;
+        E = 0.0;
     }
 
     enum params

@@ -305,6 +305,32 @@ class Verbity2 final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        delayA = 0;
+        delayB = 0;
+        delayC = 0;
+        delayD = 0;
+        delayE = 0;
+        delayF = 0;
+        delayG = 0;
+        delayH = 0;
+        delayI = 0;
+        delayJ = 0;
+        delayK = 0;
+        delayL = 0;
+        delayM = 0;
+        delayN = 0;
+        delayO = 0;
+        delayP = 0;
+        delayQ = 0;
+        delayR = 0;
+        delayS = 0;
+        delayT = 0;
+        delayU = 0;
+        delayV = 0;
+        delayW = 0;
+        delayX = 0;
+        delayY = 0;
+        delayZ = 0;
     }
 
     enum params

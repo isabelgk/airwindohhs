@@ -74,6 +74,10 @@ class VariMu final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        muAttackL = 0.0;
+        muNewSpeedL = 0.0;
+        muAttackR = 0.0;
+        muNewSpeedR = 0.0;
     }
 
     enum params

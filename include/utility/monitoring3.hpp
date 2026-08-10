@@ -201,6 +201,7 @@ class Monitoring3 final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        depth = 0;
     }
 
     enum params

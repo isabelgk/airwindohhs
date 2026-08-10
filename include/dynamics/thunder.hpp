@@ -71,6 +71,8 @@ class Thunder final : public Effect<T>
         iirSampleCM = 0.0;
         flip = false;
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        muAttack = 0.0;
+        muNewSpeed = 0.0;
     }
 
     enum params

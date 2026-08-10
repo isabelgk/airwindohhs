@@ -204,6 +204,22 @@ class Galactic3 final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        vibML = 0.0;
+        vibMR = 0.0;
+        depthM = 0.0;
+        delayA = 0;
+        delayB = 0;
+        delayC = 0;
+        delayD = 0;
+        delayE = 0;
+        delayF = 0;
+        delayG = 0;
+        delayH = 0;
+        delayI = 0;
+        delayJ = 0;
+        delayK = 0;
+        delayL = 0;
+        delayM = 0;
     }
 
     enum params

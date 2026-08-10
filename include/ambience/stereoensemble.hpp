@@ -146,6 +146,20 @@ class StereoEnsemble final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        dryL = 0.0;
+        dryR = 0.0;
+        maxdelayA = 0;
+        maxdelayB = 0;
+        maxdelayC = 0;
+        maxdelayD = 0;
+        maxdelayE = 0;
+        maxdelayF = 0;
+        maxdelayG = 0;
+        maxdelayH = 0;
+        maxdelayI = 0;
+        maxdelayJ = 0;
+        maxdelayK = 0;
+        maxdelayL = 0;
     }
 
     enum params

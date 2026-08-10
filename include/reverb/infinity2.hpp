@@ -184,6 +184,14 @@ class Infinity2 final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        for (int i0 = 0; i0 < 3111; i0++) {
+            aML[i0] = 0.0;
+        }
+        for (int i0 = 0; i0 < 3111; i0++) {
+            aMR[i0] = 0.0;
+        }
+        countM = 0;
+        delayM = 0;
     }
 
     enum params

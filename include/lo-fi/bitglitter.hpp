@@ -78,6 +78,8 @@ class BitGlitter final : public Effect<T>
         positionBR = 0.0;
         lastOutputSampleR = 0.0;
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        ataDrySampleL = 0.0;
+        ataDrySampleR = 0.0;
     }
 
     enum params

@@ -50,6 +50,8 @@ class Console4Buss final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // TODO: uncomment canDo entries according to your plugin's capabilities
+        fpNShapeL = 0.0;
+        fpNShapeR = 0.0;
     }
 
     enum params
