@@ -154,6 +154,25 @@ _FLOATING_TYPE_KINDS = {
     cindex.TypeKind.LONGDOUBLE,
 }
 
+_INTEGRAL_TYPE_KINDS = {
+    cindex.TypeKind.CHAR_U, cindex.TypeKind.UCHAR, cindex.TypeKind.CHAR16, cindex.TypeKind.CHAR32,
+    cindex.TypeKind.USHORT, cindex.TypeKind.UINT, cindex.TypeKind.ULONG, cindex.TypeKind.ULONGLONG,
+    cindex.TypeKind.CHAR_S, cindex.TypeKind.SCHAR, cindex.TypeKind.WCHAR,
+    cindex.TypeKind.SHORT, cindex.TypeKind.INT, cindex.TypeKind.LONG, cindex.TypeKind.LONGLONG,
+}
+
+_ARITHMETIC_TYPE_KINDS = _FLOATING_TYPE_KINDS | _INTEGRAL_TYPE_KINDS | {cindex.TypeKind.BOOL}
+
+
+def _is_arithmetic(type_: cindex.Type) -> bool:
+    """Whether a zero default is meaningful for this member. Class-typed members
+    run their own default constructor, and there is no safe generic value to
+    assign them, so they are left alone rather than guessed at."""
+    canonical = type_.get_canonical()
+    if canonical.kind == cindex.TypeKind.CONSTANTARRAY:
+        return _is_arithmetic(canonical.element_type)
+    return canonical.kind in _ARITHMETIC_TYPE_KINDS
+
 
 def _zero_literal(type_: cindex.Type) -> str:
     if type_.kind == cindex.TypeKind.BOOL:
@@ -400,7 +419,8 @@ class PluginAst:
         as (code, names). See _XORSHIFT_SEEDED_MEMBERS for why this exists and
         why fpd is not simply zeroed."""
         assigned = self._constructor_assigned_names()
-        missing = [field for field in self._emitted_fields() if field.spelling not in assigned]
+        missing = [field for field in self._emitted_fields()
+                   if field.spelling not in assigned and _is_arithmetic(field.type)]
         code = "".join(_default_initialization(field.spelling, field.type) for field in missing)
         return code, [field.spelling for field in missing]
 
