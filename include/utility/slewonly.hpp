@@ -30,6 +30,14 @@ class SlewOnly final : public Effect<T>
     {
         lastSampleL = 0.0;
         lastSampleR = 0.0;
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
     }
 
     enum params

@@ -72,6 +72,8 @@ class ADClip9 final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        lastDryL = 0.0;
+        lastDryR = 0.0;
     }
 
     enum params

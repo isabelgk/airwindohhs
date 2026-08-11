@@ -71,6 +71,8 @@ class Console8ChannelIn final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        hsr = false;
+        cycleEnd = 0;
     }
 
     enum params

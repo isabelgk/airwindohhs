@@ -58,6 +58,14 @@ class Channel4 final : public Effect<T>
         iirAmount = 0.005832;
         threshold = 0.33362176; // instantiating with Neve values
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
     }
 
     enum params

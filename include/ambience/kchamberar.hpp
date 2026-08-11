@@ -544,6 +544,7 @@ class kChamberAR final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        sweep = 0.0;
     }
 
     enum params

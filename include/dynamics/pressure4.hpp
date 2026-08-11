@@ -57,6 +57,8 @@ class Pressure4 final : public Effect<T>
         muVary = 1;
         flip = false;
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        muAttack = 0.0;
+        muNewSpeed = 0.0;
     }
 
     enum params

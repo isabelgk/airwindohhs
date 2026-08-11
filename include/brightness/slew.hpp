@@ -37,6 +37,14 @@ class Slew final : public Effect<T>
         lastSampleL = 0.0;
         lastSampleR = 0.0;
         // TODO: uncomment canDo entries according to your plugin's capabilities
+        fpdL = 1.0;
+        while (fpdL < 16386) {
+            fpdL = rand() * UINT32_MAX;
+        }
+        fpdR = 1.0;
+        while (fpdR < 16386) {
+            fpdR = rand() * UINT32_MAX;
+        }
     }
 
     enum params

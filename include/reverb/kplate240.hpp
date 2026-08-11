@@ -544,6 +544,26 @@ class kPlate240 final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        iirAL = 0.0;
+        iirBL = 0.0;
+        iirAR = 0.0;
+        iirBR = 0.0;
+        prevMulchBL = 0.0;
+        prevMulchBR = 0.0;
+        prevMulchCL = 0.0;
+        prevMulchCR = 0.0;
+        prevMulchDL = 0.0;
+        prevMulchDR = 0.0;
+        prevMulchEL = 0.0;
+        prevMulchER = 0.0;
+        prevOutDL = 0.0;
+        prevOutDR = 0.0;
+        prevOutEL = 0.0;
+        prevOutER = 0.0;
+        prevInDL = 0.0;
+        prevInDR = 0.0;
+        prevInEL = 0.0;
+        prevInER = 0.0;
     }
 
     enum params

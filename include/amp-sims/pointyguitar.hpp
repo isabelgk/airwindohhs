@@ -104,6 +104,8 @@ class PointyGuitar final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        gateL = 0.0;
+        gateR = 0.0;
     }
 
     enum params

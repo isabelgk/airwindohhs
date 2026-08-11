@@ -127,6 +127,79 @@ def _sanitize_reserved_identifiers(text: str) -> str:
     return text
 
 
+# naive_line_filter drops these from the emitted private section (they are VST
+# plumbing with no analogue here), so they must not be initialized either.
+_NON_EMITTED_MEMBERS = {"_programName", "_canDo"}
+
+# Some upstream constructors leave a member unassigned that the processing code
+# then reads on its first pass. Reading an indeterminate value is undefined
+# behaviour, and where the member is recursive filter state the garbage persists
+# and decays rather than being overwritten after one sample. Synthesize the
+# missing assignments during extraction rather than patching generated headers by
+# hand -- a header regenerated from upstream source would otherwise silently drop
+# the fix, the same reasoning as _MSVC_RESERVED_IDENTIFIER_RENAMES above.
+#
+# Zero is the right quiescent value for ordinary DSP state, and is what these
+# reads have historically tended to land on anyway, since a freshly allocated
+# plugin usually sits on zero-filled pages. It is wrong for exactly one family.
+# fpd is xorshift state for the denormal/dither RNG, and 0 is a fixed point of
+# xorshift: a zeroed fpd stays 0 forever, which turns the standard denormal
+# substitution (inputSample = fpd * 1.18e-17) into an exact 0.0 and silences
+# dither. Those get the seed idiom the other generated headers already carry.
+_XORSHIFT_SEEDED_MEMBERS = {"fpdL", "fpdR"}
+
+_FLOATING_TYPE_KINDS = {
+    cindex.TypeKind.FLOAT,
+    cindex.TypeKind.DOUBLE,
+    cindex.TypeKind.LONGDOUBLE,
+}
+
+_INTEGRAL_TYPE_KINDS = {
+    cindex.TypeKind.CHAR_U, cindex.TypeKind.UCHAR, cindex.TypeKind.CHAR16, cindex.TypeKind.CHAR32,
+    cindex.TypeKind.USHORT, cindex.TypeKind.UINT, cindex.TypeKind.ULONG, cindex.TypeKind.ULONGLONG,
+    cindex.TypeKind.CHAR_S, cindex.TypeKind.SCHAR, cindex.TypeKind.WCHAR,
+    cindex.TypeKind.SHORT, cindex.TypeKind.INT, cindex.TypeKind.LONG, cindex.TypeKind.LONGLONG,
+}
+
+_ARITHMETIC_TYPE_KINDS = _FLOATING_TYPE_KINDS | _INTEGRAL_TYPE_KINDS | {cindex.TypeKind.BOOL}
+
+
+def _is_arithmetic(type_: cindex.Type) -> bool:
+    """Whether a zero default is meaningful for this member. Class-typed members
+    run their own default constructor, and there is no safe generic value to
+    assign them, so they are left alone rather than guessed at."""
+    canonical = type_.get_canonical()
+    if canonical.kind == cindex.TypeKind.CONSTANTARRAY:
+        return _is_arithmetic(canonical.element_type)
+    return canonical.kind in _ARITHMETIC_TYPE_KINDS
+
+
+def _zero_literal(type_: cindex.Type) -> str:
+    if type_.kind == cindex.TypeKind.BOOL:
+        return "false"
+    if type_.kind in _FLOATING_TYPE_KINDS:
+        return "0.0"
+    return "0"
+
+
+def _zero_assignment(name: str, type_: cindex.Type, depth: int = 0) -> str:
+    """Statements zeroing `name`, recursing through array rank so that a member
+    declared `double angSL[18][12]` gets nested loops rather than a bare `= 0`
+    that would not compile."""
+    canonical = type_.get_canonical()
+    if canonical.kind == cindex.TypeKind.CONSTANTARRAY:
+        index = f"i{depth}"
+        inner = _zero_assignment(f"{name}[{index}]", canonical.element_type, depth + 1)
+        return f"for (int {index} = 0; {index} < {canonical.element_count}; {index}++) {{\n{inner}}}\n"
+    return f"{name} = {_zero_literal(canonical)};\n"
+
+
+def _default_initialization(name: str, type_: cindex.Type) -> str:
+    if name in _XORSHIFT_SEEDED_MEMBERS:
+        return f"{name} = 1.0;\nwhile ({name} < 16386) {{\n{name} = rand() * UINT32_MAX;\n}}\n"
+    return _zero_assignment(name, type_)
+
+
 def _slice_and_filter(source: bytes, start_offset: int, end_offset: int) -> str:
     raw = source[start_offset:end_offset].decode("utf-8", errors="replace")
     filtered = "".join(naive_line_filter(raw.splitlines(keepends=True)))
@@ -201,7 +274,9 @@ class PluginAst:
         )
         return enum_const.enum_value
 
-    def initialization_code(self) -> str:
+    def _initialization_extent(self) -> tuple:
+        """Byte range of the constructor body that gets emitted, i.e. up to the
+        first _canDo statement (everything past it is VST host plumbing)."""
         ctor = self._constructor_definition()
         body = find_first(ctor, lambda c: c.kind == cindex.CursorKind.COMPOUND_STMT,
                            description="constructor body")
@@ -215,6 +290,10 @@ class PluginAst:
 
         start_offset = body.extent.start.offset + 1  # just after the opening '{'
         end_offset = stmts[stop_index].extent.start.offset if stop_index < len(stmts) else body.extent.end.offset - 1
+        return start_offset, end_offset
+
+    def initialization_code(self) -> str:
+        start_offset, end_offset = self._initialization_extent()
         return _slice_and_filter(self.cpp_source, start_offset, end_offset)
 
     def processing_code(self) -> str:
@@ -271,12 +350,15 @@ class PluginAst:
             lines.append(f"static constexpr {text};\n")
         return "".join(lines)
 
-    def private_vars(self) -> str:
-        class_decl = find_first(
+    def _class_definition(self) -> cindex.Cursor:
+        return find_first(
             self.h_tu.cursor,
             lambda c: c.kind == cindex.CursorKind.CLASS_DECL and c.spelling == self.title and c.is_definition(),
             file=self.h_path, description=f"class {self.title} definition",
         )
+
+    def private_vars(self) -> str:
+        class_decl = self._class_definition()
         private_spec = find_first(
             class_decl,
             lambda c: c.kind == cindex.CursorKind.CXX_ACCESS_SPEC_DECL
@@ -286,6 +368,61 @@ class PluginAst:
         start_offset = private_spec.extent.end.offset
         end_offset = class_decl.extent.end.offset - 1  # exclude the class's closing '}'
         return self.file_scope_constants() + _slice_and_filter(self.h_source, start_offset, end_offset)
+
+    def _emitted_fields(self) -> list:
+        return [
+            field for field in find_all(
+                self._class_definition(),
+                lambda c: c.kind == cindex.CursorKind.FIELD_DECL,
+                file=self.h_path,
+            )
+            if field.spelling not in _NON_EMITTED_MEMBERS
+        ]
+
+    def _constructor_assigned_names(self) -> set:
+        """Members the constructor establishes a value for, whether by member
+        initializer list or by a plain `=` within the emitted part of the body.
+        Compound assignment (`+=`) deliberately doesn't count: it reads the member
+        first, so it can't be what establishes its value."""
+        start_offset, end_offset = self._initialization_extent()
+        ctor = self._constructor_definition()
+
+        # a member initializer list entry establishes the value just as much as an
+        # assignment does, and appending one afterwards would silently override it
+        assigned = {
+            child.spelling for child in ctor.get_children()
+            if child.kind == cindex.CursorKind.MEMBER_REF
+        }
+
+        for op in find_all(ctor,
+                           lambda c: c.kind == cindex.CursorKind.BINARY_OPERATOR):
+            if not start_offset <= op.extent.start.offset < end_offset:
+                continue
+            children = list(op.get_children())
+            if len(children) != 2:
+                continue
+            lhs = children[0]
+            operator = next(
+                (t.spelling for t in op.get_tokens() if t.extent.start.offset >= lhs.extent.end.offset),
+                None,
+            )
+            if operator != "=":
+                continue
+            # chained `iirA = iirB = 0.0;` nests one BINARY_OPERATOR per target,
+            # so walking every operator picks all of them up
+            for ref in find_all(lhs, lambda c: c.kind == cindex.CursorKind.MEMBER_REF_EXPR):
+                assigned.add(ref.spelling)
+        return assigned
+
+    def uninitialized_members(self) -> tuple:
+        """Synthesized initialization for members the constructor never assigns,
+        as (code, names). See _XORSHIFT_SEEDED_MEMBERS for why this exists and
+        why fpd is not simply zeroed."""
+        assigned = self._constructor_assigned_names()
+        missing = [field for field in self._emitted_fields()
+                   if field.spelling not in assigned and _is_arithmetic(field.type)]
+        code = "".join(_default_initialization(field.spelling, field.type) for field in missing)
+        return code, [field.spelling for field in missing]
 
     def default_value(self, member: str) -> float:
         ctor = self._constructor_definition()
