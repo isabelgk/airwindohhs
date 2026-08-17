@@ -292,6 +292,7 @@
 #include "filter/primefir.hpp"
 #include "filter/reseq.hpp"
 #include "filter/reseq2.hpp"
+#include "filter/retrobass.hpp"
 #include "filter/silken.hpp"
 #include "filter/smootheq.hpp"
 #include "filter/smootheq2.hpp"
@@ -2776,6 +2777,14 @@ inline std::unique_ptr<IPlugin<T>> make_reseq2()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_retrobass()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::retrobass::RetroBass>>(
+        airwindohhs::retrobass::k_name, airwindohhs::retrobass::k_tags,
+        airwindohhs::retrobass::k_short_description, airwindohhs::retrobass::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_silken()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::silken::Silken>>(
@@ -4790,6 +4799,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::primefir::k_name, "primefir", "filter", airwindohhs::primefir::k_tags, airwindohhs::primefir::k_short_description, airwindohhs::primefir::k_long_description, static_cast<int>(airwindohhs::primefir::PrimeFIR<T>::kNumParameters), &make_primefir<T> },
         { airwindohhs::reseq::k_name, "reseq", "filter", airwindohhs::reseq::k_tags, airwindohhs::reseq::k_short_description, airwindohhs::reseq::k_long_description, static_cast<int>(airwindohhs::reseq::ResEQ<T>::kNumParameters), &make_reseq<T> },
         { airwindohhs::reseq2::k_name, "reseq2", "filter", airwindohhs::reseq2::k_tags, airwindohhs::reseq2::k_short_description, airwindohhs::reseq2::k_long_description, static_cast<int>(airwindohhs::reseq2::ResEQ2<T>::kNumParameters), &make_reseq2<T> },
+        { airwindohhs::retrobass::k_name, "retrobass", "filter", airwindohhs::retrobass::k_tags, airwindohhs::retrobass::k_short_description, airwindohhs::retrobass::k_long_description, static_cast<int>(airwindohhs::retrobass::RetroBass<T>::kNumParameters), &make_retrobass<T> },
         { airwindohhs::silken::k_name, "silken", "filter", airwindohhs::silken::k_tags, airwindohhs::silken::k_short_description, airwindohhs::silken::k_long_description, static_cast<int>(airwindohhs::silken::Silken<T>::kNumParameters), &make_silken<T> },
         { airwindohhs::smootheq::k_name, "smootheq", "filter", airwindohhs::smootheq::k_tags, airwindohhs::smootheq::k_short_description, airwindohhs::smootheq::k_long_description, static_cast<int>(airwindohhs::smootheq::SmoothEQ<T>::kNumParameters), &make_smootheq<T> },
         { airwindohhs::smootheq2::k_name, "smootheq2", "filter", airwindohhs::smootheq2::k_tags, airwindohhs::smootheq2::k_short_description, airwindohhs::smootheq2::k_long_description, static_cast<int>(airwindohhs::smootheq2::SmoothEQ2<T>::kNumParameters), &make_smootheq2<T> },
