@@ -440,6 +440,7 @@
 #include "tone-color/channel7.hpp"
 #include "tone-color/channel8.hpp"
 #include "tone-color/channel9.hpp"
+#include "tone-color/channelx.hpp"
 #include "tone-color/cider.hpp"
 #include "tone-color/crystal.hpp"
 #include "tone-color/elation.hpp"
@@ -3961,6 +3962,14 @@ inline std::unique_ptr<IPlugin<T>> make_channel9()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_channelx()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::channelx::ChannelX>>(
+        airwindohhs::channelx::k_name, airwindohhs::channelx::k_tags,
+        airwindohhs::channelx::k_short_description, airwindohhs::channelx::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_cider()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::cider::Cider>>(
@@ -4947,6 +4956,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::channel7::k_name, "channel7", "tone-color", airwindohhs::channel7::k_tags, airwindohhs::channel7::k_short_description, airwindohhs::channel7::k_long_description, static_cast<int>(airwindohhs::channel7::Channel7<T>::kNumParameters), &make_channel7<T> },
         { airwindohhs::channel8::k_name, "channel8", "tone-color", airwindohhs::channel8::k_tags, airwindohhs::channel8::k_short_description, airwindohhs::channel8::k_long_description, static_cast<int>(airwindohhs::channel8::Channel8<T>::kNumParameters), &make_channel8<T> },
         { airwindohhs::channel9::k_name, "channel9", "tone-color", airwindohhs::channel9::k_tags, airwindohhs::channel9::k_short_description, airwindohhs::channel9::k_long_description, static_cast<int>(airwindohhs::channel9::Channel9<T>::kNumParameters), &make_channel9<T> },
+        { airwindohhs::channelx::k_name, "channelx", "tone-color", airwindohhs::channelx::k_tags, airwindohhs::channelx::k_short_description, airwindohhs::channelx::k_long_description, static_cast<int>(airwindohhs::channelx::ChannelX<T>::kNumParameters), &make_channelx<T> },
         { airwindohhs::cider::k_name, "cider", "tone-color", airwindohhs::cider::k_tags, airwindohhs::cider::k_short_description, airwindohhs::cider::k_long_description, static_cast<int>(airwindohhs::cider::Cider<T>::kNumParameters), &make_cider<T> },
         { airwindohhs::crystal::k_name, "crystal", "tone-color", airwindohhs::crystal::k_tags, airwindohhs::crystal::k_short_description, airwindohhs::crystal::k_long_description, static_cast<int>(airwindohhs::crystal::Crystal<T>::kNumParameters), &make_crystal<T> },
         { airwindohhs::elation::k_name, "elation", "tone-color", airwindohhs::elation::k_tags, airwindohhs::elation::k_short_description, airwindohhs::elation::k_long_description, static_cast<int>(airwindohhs::elation::Elation<T>::kNumParameters), &make_elation<T> },
