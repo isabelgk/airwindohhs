@@ -413,6 +413,7 @@
 #include "subtlety/phasenudge.hpp"
 #include "subtlety/purestwarm.hpp"
 #include "subtlety/purestwarm2.hpp"
+#include "subtlety/purestwarm3.hpp"
 #include "subtlety/remap.hpp"
 #include "subtlety/shape.hpp"
 #include "subtlety/singleendedtriode.hpp"
@@ -3746,6 +3747,14 @@ inline std::unique_ptr<IPlugin<T>> make_purestwarm2()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_purestwarm3()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::purestwarm3::PurestWarm3>>(
+        airwindohhs::purestwarm3::k_name, airwindohhs::purestwarm3::k_tags,
+        airwindohhs::purestwarm3::k_short_description, airwindohhs::purestwarm3::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_remap()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::remap::Remap>>(
@@ -4929,6 +4938,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::phasenudge::k_name, "phasenudge", "subtlety", airwindohhs::phasenudge::k_tags, airwindohhs::phasenudge::k_short_description, airwindohhs::phasenudge::k_long_description, static_cast<int>(airwindohhs::phasenudge::PhaseNudge<T>::kNumParameters), &make_phasenudge<T> },
         { airwindohhs::purestwarm::k_name, "purestwarm", "subtlety", airwindohhs::purestwarm::k_tags, airwindohhs::purestwarm::k_short_description, airwindohhs::purestwarm::k_long_description, static_cast<int>(airwindohhs::purestwarm::PurestWarm<T>::kNumParameters), &make_purestwarm<T> },
         { airwindohhs::purestwarm2::k_name, "purestwarm2", "subtlety", airwindohhs::purestwarm2::k_tags, airwindohhs::purestwarm2::k_short_description, airwindohhs::purestwarm2::k_long_description, static_cast<int>(airwindohhs::purestwarm2::PurestWarm2<T>::kNumParameters), &make_purestwarm2<T> },
+        { airwindohhs::purestwarm3::k_name, "purestwarm3", "subtlety", airwindohhs::purestwarm3::k_tags, airwindohhs::purestwarm3::k_short_description, airwindohhs::purestwarm3::k_long_description, static_cast<int>(airwindohhs::purestwarm3::PurestWarm3<T>::kNumParameters), &make_purestwarm3<T> },
         { airwindohhs::remap::k_name, "remap", "subtlety", airwindohhs::remap::k_tags, airwindohhs::remap::k_short_description, airwindohhs::remap::k_long_description, static_cast<int>(airwindohhs::remap::Remap<T>::kNumParameters), &make_remap<T> },
         { airwindohhs::shape::k_name, "shape", "subtlety", airwindohhs::shape::k_tags, airwindohhs::shape::k_short_description, airwindohhs::shape::k_long_description, static_cast<int>(airwindohhs::shape::Shape<T>::kNumParameters), &make_shape<T> },
         { airwindohhs::singleendedtriode::k_name, "singleendedtriode", "subtlety", airwindohhs::singleendedtriode::k_tags, airwindohhs::singleendedtriode::k_short_description, airwindohhs::singleendedtriode::k_long_description, static_cast<int>(airwindohhs::singleendedtriode::SingleEndedTriode<T>::kNumParameters), &make_singleendedtriode<T> },
