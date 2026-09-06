@@ -270,6 +270,7 @@
 #include "filter/distance3.hpp"
 #include "filter/donut.hpp"
 #include "filter/eq.hpp"
+#include "filter/fastdistance.hpp"
 #include "filter/fateq.hpp"
 #include "filter/highpass.hpp"
 #include "filter/highpass2.hpp"
@@ -2603,6 +2604,14 @@ inline std::unique_ptr<IPlugin<T>> make_eq()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_fastdistance()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::fastdistance::FastDistance>>(
+        airwindohhs::fastdistance::k_name, airwindohhs::fastdistance::k_tags,
+        airwindohhs::fastdistance::k_short_description, airwindohhs::fastdistance::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_fateq()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::fateq::FatEQ>>(
@@ -4795,6 +4804,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::distance3::k_name, "distance3", "filter", airwindohhs::distance3::k_tags, airwindohhs::distance3::k_short_description, airwindohhs::distance3::k_long_description, static_cast<int>(airwindohhs::distance3::Distance3<T>::kNumParameters), &make_distance3<T> },
         { airwindohhs::donut::k_name, "donut", "filter", airwindohhs::donut::k_tags, airwindohhs::donut::k_short_description, airwindohhs::donut::k_long_description, static_cast<int>(airwindohhs::donut::Donut<T>::kNumParameters), &make_donut<T> },
         { airwindohhs::eq::k_name, "eq", "filter", airwindohhs::eq::k_tags, airwindohhs::eq::k_short_description, airwindohhs::eq::k_long_description, static_cast<int>(airwindohhs::eq::EQ<T>::kNumParameters), &make_eq<T> },
+        { airwindohhs::fastdistance::k_name, "fastdistance", "filter", airwindohhs::fastdistance::k_tags, airwindohhs::fastdistance::k_short_description, airwindohhs::fastdistance::k_long_description, static_cast<int>(airwindohhs::fastdistance::FastDistance<T>::kNumParameters), &make_fastdistance<T> },
         { airwindohhs::fateq::k_name, "fateq", "filter", airwindohhs::fateq::k_tags, airwindohhs::fateq::k_short_description, airwindohhs::fateq::k_long_description, static_cast<int>(airwindohhs::fateq::FatEQ<T>::kNumParameters), &make_fateq<T> },
         { airwindohhs::highpass::k_name, "highpass", "filter", airwindohhs::highpass::k_tags, airwindohhs::highpass::k_short_description, airwindohhs::highpass::k_long_description, static_cast<int>(airwindohhs::highpass::Highpass<T>::kNumParameters), &make_highpass<T> },
         { airwindohhs::highpass2::k_name, "highpass2", "filter", airwindohhs::highpass2::k_tags, airwindohhs::highpass2::k_short_description, airwindohhs::highpass2::k_long_description, static_cast<int>(airwindohhs::highpass2::Highpass2<T>::kNumParameters), &make_highpass2<T> },
