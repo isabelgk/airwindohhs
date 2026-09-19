@@ -1,6 +1,6 @@
 # airwindohhs
 
-[Airwindows](https://github.com/airwindows/airwindows) VST plugins modified as headers you can include in any C++ project.
+[Airwindows](https://github.com/airwindows/airwindows) VST plugins modified as headers you can include in any C++ project. Requires C++17.
 
 ## Build
 
@@ -18,8 +18,7 @@ FetchContent_MakeAvailable(airwindohhs)
 target_link_libraries(your_target PRIVATE Airwindohhs::Airwindohhs)
 ```
 
-`Airwindohhs` is a header-only `INTERFACE` library requiring C++17, propagated
-automatically to consumers. `airwindows-version.txt` at the repo root pins the upstream
+`Airwindohhs` is a header-only library requiring C++17. `airwindows-version.txt` at the repo root pins the upstream
 `airwindows/airwindows` commit the headers were generated from. 
 
 ## Usage
