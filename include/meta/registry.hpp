@@ -360,6 +360,7 @@
 #include "reverb/kplatec.hpp"
 #include "reverb/kplated.hpp"
 #include "reverb/krockstar.hpp"
+#include "reverb/krockstar2.hpp"
 #include "reverb/kstation.hpp"
 #include "reverb/kwoodroom.hpp"
 #include "reverb/matrixverb.hpp"
@@ -3326,6 +3327,14 @@ inline std::unique_ptr<IPlugin<T>> make_krockstar()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_krockstar2()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::krockstar2::kRockstar2>>(
+        airwindohhs::krockstar2::k_name, airwindohhs::krockstar2::k_tags,
+        airwindohhs::krockstar2::k_short_description, airwindohhs::krockstar2::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_kstation()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::kstation::kStation>>(
@@ -4912,6 +4921,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::kplatec::k_name, "kplatec", "reverb", airwindohhs::kplatec::k_tags, airwindohhs::kplatec::k_short_description, airwindohhs::kplatec::k_long_description, static_cast<int>(airwindohhs::kplatec::kPlateC<T>::kNumParameters), &make_kplatec<T> },
         { airwindohhs::kplated::k_name, "kplated", "reverb", airwindohhs::kplated::k_tags, airwindohhs::kplated::k_short_description, airwindohhs::kplated::k_long_description, static_cast<int>(airwindohhs::kplated::kPlateD<T>::kNumParameters), &make_kplated<T> },
         { airwindohhs::krockstar::k_name, "krockstar", "reverb", airwindohhs::krockstar::k_tags, airwindohhs::krockstar::k_short_description, airwindohhs::krockstar::k_long_description, static_cast<int>(airwindohhs::krockstar::kRockstar<T>::kNumParameters), &make_krockstar<T> },
+        { airwindohhs::krockstar2::k_name, "krockstar2", "reverb", airwindohhs::krockstar2::k_tags, airwindohhs::krockstar2::k_short_description, airwindohhs::krockstar2::k_long_description, static_cast<int>(airwindohhs::krockstar2::kRockstar2<T>::kNumParameters), &make_krockstar2<T> },
         { airwindohhs::kstation::k_name, "kstation", "reverb", airwindohhs::kstation::k_tags, airwindohhs::kstation::k_short_description, airwindohhs::kstation::k_long_description, static_cast<int>(airwindohhs::kstation::kStation<T>::kNumParameters), &make_kstation<T> },
         { airwindohhs::kwoodroom::k_name, "kwoodroom", "reverb", airwindohhs::kwoodroom::k_tags, airwindohhs::kwoodroom::k_short_description, airwindohhs::kwoodroom::k_long_description, static_cast<int>(airwindohhs::kwoodroom::kWoodRoom<T>::kNumParameters), &make_kwoodroom<T> },
         { airwindohhs::matrixverb::k_name, "matrixverb", "reverb", airwindohhs::matrixverb::k_tags, airwindohhs::matrixverb::k_short_description, airwindohhs::matrixverb::k_long_description, static_cast<int>(airwindohhs::matrixverb::MatrixVerb<T>::kNumParameters), &make_matrixverb<T> },
