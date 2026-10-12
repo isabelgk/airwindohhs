@@ -315,6 +315,7 @@
 #include "lo-fi/derez2.hpp"
 #include "lo-fi/derez3.hpp"
 #include "lo-fi/derez4.hpp"
+#include "lo-fi/derez5.hpp"
 #include "lo-fi/dustbunny.hpp"
 #include "lo-fi/flutter.hpp"
 #include "lo-fi/flutter2.hpp"
@@ -2967,6 +2968,14 @@ inline std::unique_ptr<IPlugin<T>> make_derez4()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_derez5()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::derez5::DeRez5>>(
+        airwindohhs::derez5::k_name, airwindohhs::derez5::k_tags,
+        airwindohhs::derez5::k_short_description, airwindohhs::derez5::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_dustbunny()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::dustbunny::DustBunny>>(
@@ -4876,6 +4885,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::derez2::k_name, "derez2", "lo-fi", airwindohhs::derez2::k_tags, airwindohhs::derez2::k_short_description, airwindohhs::derez2::k_long_description, static_cast<int>(airwindohhs::derez2::DeRez2<T>::kNumParameters), &make_derez2<T> },
         { airwindohhs::derez3::k_name, "derez3", "lo-fi", airwindohhs::derez3::k_tags, airwindohhs::derez3::k_short_description, airwindohhs::derez3::k_long_description, static_cast<int>(airwindohhs::derez3::DeRez3<T>::kNumParameters), &make_derez3<T> },
         { airwindohhs::derez4::k_name, "derez4", "lo-fi", airwindohhs::derez4::k_tags, airwindohhs::derez4::k_short_description, airwindohhs::derez4::k_long_description, static_cast<int>(airwindohhs::derez4::DeRez4<T>::kNumParameters), &make_derez4<T> },
+        { airwindohhs::derez5::k_name, "derez5", "lo-fi", airwindohhs::derez5::k_tags, airwindohhs::derez5::k_short_description, airwindohhs::derez5::k_long_description, static_cast<int>(airwindohhs::derez5::DeRez5<T>::kNumParameters), &make_derez5<T> },
         { airwindohhs::dustbunny::k_name, "dustbunny", "lo-fi", airwindohhs::dustbunny::k_tags, airwindohhs::dustbunny::k_short_description, airwindohhs::dustbunny::k_long_description, static_cast<int>(airwindohhs::dustbunny::DustBunny<T>::kNumParameters), &make_dustbunny<T> },
         { airwindohhs::flutter::k_name, "flutter", "lo-fi", airwindohhs::flutter::k_tags, airwindohhs::flutter::k_short_description, airwindohhs::flutter::k_long_description, static_cast<int>(airwindohhs::flutter::Flutter<T>::kNumParameters), &make_flutter<T> },
         { airwindohhs::flutter2::k_name, "flutter2", "lo-fi", airwindohhs::flutter2::k_tags, airwindohhs::flutter2::k_short_description, airwindohhs::flutter2::k_long_description, static_cast<int>(airwindohhs::flutter2::Flutter2<T>::kNumParameters), &make_flutter2<T> },
