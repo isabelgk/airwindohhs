@@ -49,6 +49,8 @@ def _toolchain_args() -> tuple:
 def parse_source(path: Path) -> cindex.TranslationUnit:
     """Parse a plugin source file with a synthetic VST SDK stub so the AST
     reflects the real source structure without the (unavailable) real SDK."""
+    if not path.is_file():
+        raise GrabError(f"source file not found: {path}")
     index = cindex.Index.create()
     args = [
         "-std=c++14", "-x", "c++",
