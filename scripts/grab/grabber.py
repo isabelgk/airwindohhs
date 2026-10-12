@@ -40,6 +40,20 @@ def naive_line_filter(lines: list[str]) -> list[str]:
     return result
 
 
+def resolve_source_title(airwindows_root: Path, title: str) -> str:
+    """Return the upstream source directory name matching `title` ignoring case,
+    since Airwindopedia.txt's spelling can differ from it ("Derez5" vs "DeRez5")."""
+    # Scan rather than test the path: a case-insensitive filesystem would accept
+    # the wrong spelling and leak it into the class name.
+    matches = [e.name for e in Path(airwindows_root).iterdir()
+               if e.is_dir() and e.name.casefold() == title.casefold()]
+    if title in matches:
+        return title
+    if matches:
+        return matches[0]
+    raise GrabError(f"no source directory for {title} under {airwindows_root}")
+
+
 def make_missing_directory(path: Path):
     if not path.exists():
         os.mkdir(path)
@@ -166,7 +180,7 @@ class Plugin:
                  category: str):
         self.project_root = project_root
         self.airwindopedia_path = airwindopedia_path
-        self.title = title.replace(" ", "")
+        self.title = resolve_source_title(airwindows_root, title.replace(" ", ""))
         self.slug = self.title.lower()
         self.category = category
         self.short_description, self.long_description = self._init_descriptions()
