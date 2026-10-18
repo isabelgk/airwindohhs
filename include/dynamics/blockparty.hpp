@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BlockParty is like a moderately saturated analog limiter."
 };
 constexpr std::string_view k_long_description{
-    "What do you get when you cross an Airwindows compressor, with OneCornerClip?Pretty much this. Okay, so it wasn’t a very difficult riddle, was it?BlockParty acts like a somewhat distorty limiter. It’s not at all about lookahead (in fact it doesn’t have any) or preserving tones pristinely. Instead, it takes the onset of sounds that would compress, and manipulates the attack in the way that OneCornerClip does. The threshold gets kicked way down, and gradually expands to full scale, and since the threshold’s determining compression, that means BlockParty doesn’t have a stable compression threshold. It’s interactive with the audio you’re giving it.Because it’s on the OneCornerClip model, that means it’s a mostly-compressor with OneCornerClip-like behaviors. That means bass which blooms and has fullness even under heavy load, and highs that don’t poke out or distract. The result is a thing that sounds real analog-y but not super clean. You can use very small amounts of it (there’s a lot of gain on tap) to do peak limiting for loudness maximizing, or you can slam things into it for effect. It’s called BlockParty because heavily limited stuff sounds like blocks of loudness: it’ll get you some of those sounds, but not as cleanly as your classic ‘loudness war’ limiters. It’ll also smash drums and things in its own distinctive way, which might be its strongest suit. On the end of it is a clipping stage to make sure nothing you do will ever produce overs. The clipping stage is AFTER the dry/wet, so to get a true dry you’ve got to turn it off: this is because raw digital clipping is another style of loudenating, so if you were going super-hot into BlockParty and wanted to dial in some pure digital clipping you could use the dry/wet to do it (or, if including some dry would have given you overs because your direct buss signal includes overs).BlockParty is a fierce loudenator with a voice and style all its own, using techniques that are distinctly Airwindows. It might be just what you needed, or it might be a little too grungy for you… but either way, there’s nothing quite like it, so check it out."
+    "What do you get when you cross an Airwindows compressor, with OneCornerClip? Pretty much this. Okay, so it wasn’t a very difficult riddle, was it? BlockParty acts like a somewhat distorty limiter. It’s not at all about lookahead (in fact it doesn’t have any) or preserving tones pristinely. Instead, it takes the onset of sounds that would compress, and manipulates the attack in the way that OneCornerClip does. The threshold gets kicked way down, and gradually expands to full scale, and since the threshold’s determining compression, that means BlockParty doesn’t have a stable compression threshold. It’s interactive with the audio you’re giving it. Because it’s on the OneCornerClip model, that means it’s a mostly-compressor with OneCornerClip-like behaviors. That means bass which blooms and has fullness even under heavy load, and highs that don’t poke out or distract. The result is a thing that sounds real analog-y but not super clean. You can use very small amounts of it (there’s a lot of gain on tap) to do peak limiting for loudness maximizing, or you can slam things into it for effect. It’s called BlockParty because heavily limited stuff sounds like blocks of loudness: it’ll get you some of those sounds, but not as cleanly as your classic ‘loudness war’ limiters. It’ll also smash drums and things in its own distinctive way, which might be its strongest suit. On the end of it is a clipping stage to make sure nothing you do will ever produce overs. The clipping stage is AFTER the dry/wet, so to get a true dry you’ve got to turn it off: this is because raw digital clipping is another style of loudenating, so if you were going super-hot into BlockParty and wanted to dial in some pure digital clipping you could use the dry/wet to do it (or, if including some dry would have given you overs because your direct buss signal includes overs). BlockParty is a fierce loudenator with a voice and style all its own, using techniques that are distinctly Airwindows. It might be just what you needed, or it might be a little too grungy for you… but either way, there’s nothing quite like it, so check it out."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BlockParty final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'blok';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -135,19 +139,16 @@ class BlockParty final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -158,8 +159,7 @@ class BlockParty final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
 
@@ -170,10 +170,9 @@ class BlockParty final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "pound"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -182,8 +181,7 @@ class BlockParty final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Pound"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -194,26 +192,26 @@ class BlockParty final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -240,8 +238,7 @@ class BlockParty final : public Effect<T>
             voicing = 1.0;
         }
         // some insanity checking
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -283,12 +280,10 @@ class BlockParty final : public Effect<T>
             if (count < 1 || count > 3) {
                 count = 1;
             }
-            switch (count)
-            {
+            switch (count) {
                 case 1:
                     // begin L
-                    if (fabs(inputSampleL) > thresholdL)
-                    {
+                    if (fabs(inputSampleL) > thresholdL) {
                         if (inputSampleL > 0.0) {
                             inputSampleL = (inputSampleL * voicing) + (targetthreshold * (1.0 - voicing));
                             thresholdL = fabs(inputSampleL);
@@ -300,18 +295,15 @@ class BlockParty final : public Effect<T>
                         muVaryL = targetthreshold / fabs(inputSampleL);
                         muAttackL = sqrt(fabs(muSpeedAL));
                         muCoefficientAL = muCoefficientAL * (muAttackL - 1.0);
-                        if (muVaryL < thresholdL)
-                        {
+                        if (muVaryL < thresholdL) {
                             muCoefficientAL = muCoefficientAL + targetthreshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientAL = muCoefficientAL + muVaryL;
                         }
                         muCoefficientAL = muCoefficientAL / muAttackL;
                     }
-                    else
-                    {
+                    else {
                         thresholdL = targetthreshold;
                         muCoefficientAL = muCoefficientAL * ((muSpeedAL * muSpeedAL) - 1.0);
                         muCoefficientAL = muCoefficientAL + 1.0;
@@ -328,8 +320,7 @@ class BlockParty final : public Effect<T>
                     lastCoefficientBL = lastCoefficientAL;
                     // end L
                     // begin R
-                    if (fabs(inputSampleR) > thresholdR)
-                    {
+                    if (fabs(inputSampleR) > thresholdR) {
                         if (inputSampleR > 0.0) {
                             inputSampleR = (inputSampleR * voicing) + (targetthreshold * (1.0 - voicing));
                             thresholdR = fabs(inputSampleR);
@@ -341,18 +332,15 @@ class BlockParty final : public Effect<T>
                         muVaryR = targetthreshold / fabs(inputSampleR);
                         muAttackR = sqrt(fabs(muSpeedAR));
                         muCoefficientAR = muCoefficientAR * (muAttackR - 1.0);
-                        if (muVaryR < thresholdR)
-                        {
+                        if (muVaryR < thresholdR) {
                             muCoefficientAR = muCoefficientAR + targetthreshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientAR = muCoefficientAR + muVaryR;
                         }
                         muCoefficientAR = muCoefficientAR / muAttackR;
                     }
-                    else
-                    {
+                    else {
                         thresholdR = targetthreshold;
                         muCoefficientAR = muCoefficientAR * ((muSpeedAR * muSpeedAR) - 1.0);
                         muCoefficientAR = muCoefficientAR + 1.0;
@@ -371,8 +359,7 @@ class BlockParty final : public Effect<T>
                     break;
                 case 2:
                     // begin L
-                    if (fabs(inputSampleL) > thresholdL)
-                    {
+                    if (fabs(inputSampleL) > thresholdL) {
                         if (inputSampleL > 0.0) {
                             inputSampleL = (inputSampleL * voicing) + (targetthreshold * (1.0 - voicing));
                             thresholdL = fabs(inputSampleL);
@@ -384,18 +371,15 @@ class BlockParty final : public Effect<T>
                         muVaryL = targetthreshold / fabs(inputSampleL);
                         muAttackL = sqrt(fabs(muSpeedBL));
                         muCoefficientBL = muCoefficientBL * (muAttackL - 1);
-                        if (muVaryL < thresholdL)
-                        {
+                        if (muVaryL < thresholdL) {
                             muCoefficientBL = muCoefficientBL + targetthreshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientBL = muCoefficientBL + muVaryL;
                         }
                         muCoefficientBL = muCoefficientBL / muAttackL;
                     }
-                    else
-                    {
+                    else {
                         thresholdL = targetthreshold;
                         muCoefficientBL = muCoefficientBL * ((muSpeedBL * muSpeedBL) - 1.0);
                         muCoefficientBL = muCoefficientBL + 1.0;
@@ -412,8 +396,7 @@ class BlockParty final : public Effect<T>
                     lastCoefficientBL = lastCoefficientAL;
                     // end L
                     // begin R
-                    if (fabs(inputSampleR) > thresholdR)
-                    {
+                    if (fabs(inputSampleR) > thresholdR) {
                         if (inputSampleR > 0.0) {
                             inputSampleR = (inputSampleR * voicing) + (targetthreshold * (1.0 - voicing));
                             thresholdR = fabs(inputSampleR);
@@ -425,18 +408,15 @@ class BlockParty final : public Effect<T>
                         muVaryR = targetthreshold / fabs(inputSampleR);
                         muAttackR = sqrt(fabs(muSpeedBR));
                         muCoefficientBR = muCoefficientBR * (muAttackR - 1);
-                        if (muVaryR < thresholdR)
-                        {
+                        if (muVaryR < thresholdR) {
                             muCoefficientBR = muCoefficientBR + targetthreshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientBR = muCoefficientBR + muVaryR;
                         }
                         muCoefficientBR = muCoefficientBR / muAttackR;
                     }
-                    else
-                    {
+                    else {
                         thresholdR = targetthreshold;
                         muCoefficientBR = muCoefficientBR * ((muSpeedBR * muSpeedBR) - 1.0);
                         muCoefficientBR = muCoefficientBR + 1.0;
@@ -455,8 +435,7 @@ class BlockParty final : public Effect<T>
                     break;
                 case 3:
                     // begin L
-                    if (fabs(inputSampleL) > thresholdL)
-                    {
+                    if (fabs(inputSampleL) > thresholdL) {
                         if (inputSampleL > 0.0) {
                             inputSampleL = (inputSampleL * voicing) + (targetthreshold * (1.0 - voicing));
                             thresholdL = fabs(inputSampleL);
@@ -468,18 +447,15 @@ class BlockParty final : public Effect<T>
                         muVaryL = targetthreshold / fabs(inputSampleL);
                         muAttackL = sqrt(fabs(muSpeedCL));
                         muCoefficientCL = muCoefficientCL * (muAttackL - 1);
-                        if (muVaryL < thresholdL)
-                        {
+                        if (muVaryL < thresholdL) {
                             muCoefficientCL = muCoefficientCL + targetthreshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientCL = muCoefficientCL + muVaryL;
                         }
                         muCoefficientCL = muCoefficientCL / muAttackL;
                     }
-                    else
-                    {
+                    else {
                         thresholdL = targetthreshold;
                         muCoefficientCL = muCoefficientCL * ((muSpeedCL * muSpeedCL) - 1.0);
                         muCoefficientCL = muCoefficientCL + 1.0;
@@ -496,8 +472,7 @@ class BlockParty final : public Effect<T>
                     lastCoefficientBL = lastCoefficientAL;
                     // end L
                     // begin R
-                    if (fabs(inputSampleR) > thresholdR)
-                    {
+                    if (fabs(inputSampleR) > thresholdR) {
                         if (inputSampleR > 0.0) {
                             inputSampleR = (inputSampleR * voicing) + (targetthreshold * (1.0 - voicing));
                             thresholdR = fabs(inputSampleR);
@@ -509,18 +484,15 @@ class BlockParty final : public Effect<T>
                         muVaryR = targetthreshold / fabs(inputSampleR);
                         muAttackR = sqrt(fabs(muSpeedCR));
                         muCoefficientCR = muCoefficientCR * (muAttackR - 1);
-                        if (muVaryR < thresholdR)
-                        {
+                        if (muVaryR < thresholdR) {
                             muCoefficientCR = muCoefficientCR + targetthreshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientCR = muCoefficientCR + muVaryR;
                         }
                         muCoefficientCR = muCoefficientCR / muAttackR;
                     }
-                    else
-                    {
+                    else {
                         thresholdR = targetthreshold;
                         muCoefficientCR = muCoefficientCR * ((muSpeedCR * muSpeedCR) - 1.0);
                         muCoefficientCR = muCoefficientCR + 1.0;
@@ -543,8 +515,7 @@ class BlockParty final : public Effect<T>
             // applied gain correction to control output level- tends to constrain sound rather than inflate it
             if (fpFlip) {
                 // begin L
-                if (fabs(inputSampleL) > thresholdBL)
-                {
+                if (fabs(inputSampleL) > thresholdBL) {
                     if (inputSampleL > 0.0) {
                         inputSampleL = (inputSampleL * voicing) + (targetthreshold * (1.0 - voicing));
                         thresholdBL = fabs(inputSampleL);
@@ -556,18 +527,15 @@ class BlockParty final : public Effect<T>
                     muVaryL = targetthreshold / fabs(inputSampleL);
                     muAttackL = sqrt(fabs(muSpeedDL));
                     muCoefficientDL = muCoefficientDL * (muAttackL - 1.0);
-                    if (muVaryL < thresholdBL)
-                    {
+                    if (muVaryL < thresholdBL) {
                         muCoefficientDL = muCoefficientDL + targetthreshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientDL = muCoefficientDL + muVaryL;
                     }
                     muCoefficientDL = muCoefficientDL / muAttackL;
                 }
-                else
-                {
+                else {
                     thresholdBL = targetthreshold;
                     muCoefficientDL = muCoefficientDL * ((muSpeedDL * muSpeedDL) - 1.0);
                     muCoefficientDL = muCoefficientDL + 1.0;
@@ -584,8 +552,7 @@ class BlockParty final : public Effect<T>
                 lastCoefficientDL = lastCoefficientCL;
                 // end L
                 // begin R
-                if (fabs(inputSampleR) > thresholdBR)
-                {
+                if (fabs(inputSampleR) > thresholdBR) {
                     if (inputSampleR > 0.0) {
                         inputSampleR = (inputSampleR * voicing) + (targetthreshold * (1.0 - voicing));
                         thresholdBR = fabs(inputSampleR);
@@ -597,18 +564,15 @@ class BlockParty final : public Effect<T>
                     muVaryR = targetthreshold / fabs(inputSampleR);
                     muAttackR = sqrt(fabs(muSpeedDR));
                     muCoefficientDR = muCoefficientDR * (muAttackR - 1.0);
-                    if (muVaryR < thresholdBR)
-                    {
+                    if (muVaryR < thresholdBR) {
                         muCoefficientDR = muCoefficientDR + targetthreshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientDR = muCoefficientDR + muVaryR;
                     }
                     muCoefficientDR = muCoefficientDR / muAttackR;
                 }
-                else
-                {
+                else {
                     thresholdBR = targetthreshold;
                     muCoefficientDR = muCoefficientDR * ((muSpeedDR * muSpeedDR) - 1.0);
                     muCoefficientDR = muCoefficientDR + 1.0;
@@ -627,8 +591,7 @@ class BlockParty final : public Effect<T>
             }
             else {
                 // begin L
-                if (fabs(inputSampleL) > thresholdBL)
-                {
+                if (fabs(inputSampleL) > thresholdBL) {
                     if (inputSampleL > 0.0) {
                         inputSampleL = (inputSampleL * voicing) + (targetthreshold * (1.0 - voicing));
                         thresholdBL = fabs(inputSampleL);
@@ -640,18 +603,15 @@ class BlockParty final : public Effect<T>
                     muVaryL = targetthreshold / fabs(inputSampleL);
                     muAttackL = sqrt(fabs(muSpeedEL));
                     muCoefficientEL = muCoefficientEL * (muAttackL - 1.0);
-                    if (muVaryL < thresholdBL)
-                    {
+                    if (muVaryL < thresholdBL) {
                         muCoefficientEL = muCoefficientEL + targetthreshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientEL = muCoefficientEL + muVaryL;
                     }
                     muCoefficientEL = muCoefficientEL / muAttackL;
                 }
-                else
-                {
+                else {
                     thresholdBL = targetthreshold;
                     muCoefficientEL = muCoefficientEL * ((muSpeedEL * muSpeedEL) - 1.0);
                     muCoefficientEL = muCoefficientEL + 1.0;
@@ -668,8 +628,7 @@ class BlockParty final : public Effect<T>
                 lastCoefficientDL = lastCoefficientCL;
                 // end L
                 // begin R
-                if (fabs(inputSampleR) > thresholdBR)
-                {
+                if (fabs(inputSampleR) > thresholdBR) {
                     if (inputSampleR > 0.0) {
                         inputSampleR = (inputSampleR * voicing) + (targetthreshold * (1.0 - voicing));
                         thresholdBR = fabs(inputSampleR);
@@ -681,18 +640,15 @@ class BlockParty final : public Effect<T>
                     muVaryR = targetthreshold / fabs(inputSampleR);
                     muAttackR = sqrt(fabs(muSpeedER));
                     muCoefficientER = muCoefficientER * (muAttackR - 1.0);
-                    if (muVaryR < thresholdBR)
-                    {
+                    if (muVaryR < thresholdBR) {
                         muCoefficientER = muCoefficientER + targetthreshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientER = muCoefficientER + muVaryR;
                     }
                     muCoefficientER = muCoefficientER / muAttackR;
                 }
-                else
-                {
+                else {
                     thresholdBR = targetthreshold;
                     muCoefficientER = muCoefficientER * ((muSpeedER * muSpeedER) - 1.0);
                     muCoefficientER = muCoefficientER + 1.0;

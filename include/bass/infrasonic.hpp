@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Infrasonic is a very steep subsonic filter, built like Ultrasonic."
 };
 constexpr std::string_view k_long_description{
-    "If you saw my recent post about Ultrasonic… this is the same, but at the opposite frequency extreme! It will nuke DC offsets and reshape thunderous rumblings into specifically ‘audible’ subsonic rumblings. That doesn’t mean it will always make the amplitude of subsonic bass go down: there may be times when it alters the waveform so it peaks higher. But it’s the same thing as Ultrasonic: tenth-order Butterworth highpass filter, executed as cleanly as possible (NOT with an internal Console system expanding the tone) using very high resolution math.Normal audio recordists and people working with analog sources will probably find this does nothing for them. But if you get frisky with DAWs and do weird things in the digital mix, you may just end up producing low frequencies that aren’t properly sonic anymore. Normally, you’ll be using various highpasses to tune your deep bass for the purposes of your mix, and this isn’t for that: it’s a more abstract concept of a filter.If you’d like to neatly excise everything below 20hz and retain EVERYTHING remotely considered an audio frequency, especially if you’ve got DC offsets coming out of your other digital processing (I’ve tried to fix a lot of my plugins that do this, but there are other plugins out there which can produce it), then this might be handy. It’s also one of the Airwindows featureless add-and-forget plugins, and I’ve always liked making those: speeds your workflow. No window to open, just put it in the relevant place and you’re good to go.I will also note that this is very likely not what you want for a mastering highpass, because the steepness of the filter means a lot of crazy phase shift. I see it more as a special effects filter, something that can take a rumbly noise and give you a very tailored, impactful result with minimal content actually below 20hz. Sound design is where I'd use Infrasonic, and I'd check to see if I still liked it better than a normal subsonic highpass."
+    "If you saw my recent post about Ultrasonic… this is the same, but at the opposite frequency extreme! It will nuke DC offsets and reshape thunderous rumblings into specifically ‘audible’ subsonic rumblings. That doesn’t mean it will always make the amplitude of subsonic bass go down: there may be times when it alters the waveform so it peaks higher. But it’s the same thing as Ultrasonic: tenth-order Butterworth highpass filter, executed as cleanly as possible (NOT with an internal Console system expanding the tone) using very high resolution math. Normal audio recordists and people working with analog sources will probably find this does nothing for them. But if you get frisky with DAWs and do weird things in the digital mix, you may just end up producing low frequencies that aren’t properly sonic anymore. Normally, you’ll be using various highpasses to tune your deep bass for the purposes of your mix, and this isn’t for that: it’s a more abstract concept of a filter. If you’d like to neatly excise everything below 20hz and retain EVERYTHING remotely considered an audio frequency, especially if you’ve got DC offsets coming out of your other digital processing (I’ve tried to fix a lot of my plugins that do this, but there are other plugins out there which can produce it), then this might be handy. It’s also one of the Airwindows featureless add-and-forget plugins, and I’ve always liked making those: speeds your workflow. No window to open, just put it in the relevant place and you’re good to go. I will also note that this is very likely not what you want for a mastering highpass, because the steepness of the filter means a lot of crazy phase shift. I see it more as a special effects filter, something that can take a rumbly noise and give you a very tailored, impactful result with minimal content actually below 20hz. Sound design is where I'd use Infrasonic, and I'd check to see if I still liked it better than a normal subsonic highpass."
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Infrasonic final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'infr';
     double biquadA[15];
     double biquadB[15];
     double biquadC[15];
@@ -59,17 +63,14 @@ class Infrasonic final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -78,8 +79,7 @@ class Infrasonic final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -88,8 +88,7 @@ class Infrasonic final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -98,8 +97,7 @@ class Infrasonic final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -108,22 +106,22 @@ class Infrasonic final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -174,8 +172,7 @@ class Infrasonic final : public Effect<T>
         biquadE[4] = biquadE[2];
         biquadE[5] = 2.0 * (K * K - 1.0) * norm;
         biquadE[6] = (1.0 - K / biquadE[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

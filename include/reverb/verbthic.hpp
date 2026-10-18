@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "VerbThic is a classic artificial reverb for being opaque and textured."
 };
 constexpr std::string_view k_long_description{
-    "Turns out VerbTiny has a sibling! And a secret… but that's for later.VerbThic is a special case. It's exactly like VerbTiny in every respect, with one difference that may or may not be obvious (I'm hoping it is, but you never can tell). All my other reverbs, very much including VerbTiny, are meant to sound as far back as possible. The whole reason VerbTiny came out is, I stumbled across a reverb algorithm for a 4x4 Householder matrix that had unusually high peak energy relative to RMS.This is not well understood in a world where everything is about making the RMS be louder no matter what,  and where peaks are considered 'unheard' and unimportant, but I've been developing a focus on peak energy for years, and especially with my reverbs where I feel the heightened peak energy makes their spaces feel more distant, rather than 'an up front sound effect'.So imagine my surprise when I ended up with another algorithm, much like VerbTiny, even a fairly similar room size, except it was the opposite! It produced unusually LOW peak energy. In theory, this would produce a reverb that doesn't sound far away: more like a fog that combines with sounds to thicken them up.And so, that's VerbThic. Works the same way as VerbTiny, but meant to do the opposite job, spatially. On top of that, I found a way to re-use variables which cut down the size of the plugin considerably… and which very likely improves its memory use in your DAW, so it got more CPU (or at least memory) efficient. And, in the process of making it sound more up-front, I stumbled over a variation of the TapeHack 'altered sin() equation' concept that was all about taking a saturation effect to an extreme: applying a succession of corrections that were ALWAYS scaled through bit-shifting the exponent, even if that was not the correct amount to use. And I got an interesting-sounding saturation effect that sounds very different from TapeHack and also sounds a lot like nothing at all… I'll be exploring that one more in future. VerbThic is there to add body to sounds while seeming to come from the same depth as the sounds, rather than 'distant'. Consider it an interesting twist to try.Oh, the secret of VerbTiny? The CPU optimization also worked for VerbTiny, running a little more efficiently while not affecting the sound (or saved mixes) the slightest amount. So, I've amended the code and re-uploaded it. Go ahead and redownload it as it's changed since last week, purely in terms of how many variables it uses to do the same thing. Have fun!"
+    "Turns out VerbTiny has a sibling! And a secret… but that's for later. VerbThic is a special case. It's exactly like VerbTiny in every respect, with one difference that may or may not be obvious (I'm hoping it is, but you never can tell). All my other reverbs, very much including VerbTiny, are meant to sound as far back as possible. The whole reason VerbTiny came out is, I stumbled across a reverb algorithm for a 4x4 Householder matrix that had unusually high peak energy relative to RMS. This is not well understood in a world where everything is about making the RMS be louder no matter what,  and where peaks are considered 'unheard' and unimportant, but I've been developing a focus on peak energy for years, and especially with my reverbs where I feel the heightened peak energy makes their spaces feel more distant, rather than 'an up front sound effect'. So imagine my surprise when I ended up with another algorithm, much like VerbTiny, even a fairly similar room size, except it was the opposite! It produced unusually LOW peak energy. In theory, this would produce a reverb that doesn't sound far away: more like a fog that combines with sounds to thicken them up. And so, that's VerbThic. Works the same way as VerbTiny, but meant to do the opposite job, spatially. On top of that, I found a way to re-use variables which cut down the size of the plugin considerably… and which very likely improves its memory use in your DAW, so it got more CPU (or at least memory) efficient. And, in the process of making it sound more up-front, I stumbled over a variation of the TapeHack 'altered sin() equation' concept that was all about taking a saturation effect to an extreme: applying a succession of corrections that were ALWAYS scaled through bit-shifting the exponent, even if that was not the correct amount to use. And I got an interesting-sounding saturation effect that sounds very different from TapeHack and also sounds a lot like nothing at all… I'll be exploring that one more in future. VerbThic is there to add body to sounds while seeming to come from the same depth as the sounds, rather than 'distant'. Consider it an interesting twist to try. Oh, the secret of VerbTiny? The CPU optimization also worked for VerbTiny, running a little more efficiently while not affecting the sound (or saved mixes) the slightest amount. So, I've amended the code and re-uploaded it. Go ahead and redownload it as it's changed since last week, purely in terms of how many variables it uses to do the same thing. Have fun!"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -309,14 +309,13 @@ class VerbThic final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -355,7 +354,7 @@ class VerbThic final : public Effect<T>
             case kParamB: return "derez"; break;
             case kParamC: return "filter"; break;
             case kParamD: return "wider"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -378,30 +377,32 @@ class VerbThic final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

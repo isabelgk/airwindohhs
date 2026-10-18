@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Console8LiteBuss is simplified Console8, working with just a single mix buss."
 };
 constexpr std::string_view k_long_description{
-    "Here's a useful update on Console8! The original Console8 was unlike any other Airwindows Console, as it's designed to be used only in a Channel/Submix/Buss configuration. Its ultrasonic filtering needs to run through all three stages in order to be set up right. Yet, Console8 also introduced other things: a custom distributed highpass algorithm for acting more like real-world analog circuits, treble softening to mimic the use of transformers, and as a result you got a distinctive sound that wasn't present in more purist Console versions.Enter Console8Lite! Bear in mind that the full three-stage Console8 will still have a slight edge in certain ways: the interactions with the ultrasonic filtering are more intense, and things like the capacitor emulation work more effectively on the larger mix topology with more stages. But there's also a place for simpler, more direct mixers, and that's where Console8Lite comes in.It's designed from the ground up to bring all the Console8 features but in simpler, traditional Airwindows Console form. You put the channel plugins last on each channel, have the faders at unity gain, and put the buss plugin first on the buss. Everything else, from the custom highpassing to the treble softening to the ability to boost the buss output into an on-board version of ClipOnly2, is there in the simpler form, easier to set up and ready to bring analog tone to your DAW mix.When using it, set it up like any pre-8 version of Console. Use it as a replacement for Console8, though each plugin is roughly equivalent to a Console8 stage's In and Out run in series: if you mix and match it with Console8 full version it'll function but the ultrasonic filtering will no longer be calibrated.Hope you like the new, simpler and more direct Console8Lite :)"
+    "Here's a useful update on Console8! The original Console8 was unlike any other Airwindows Console, as it's designed to be used only in a Channel/Submix/Buss configuration. Its ultrasonic filtering needs to run through all three stages in order to be set up right. Yet, Console8 also introduced other things: a custom distributed highpass algorithm for acting more like real-world analog circuits, treble softening to mimic the use of transformers, and as a result you got a distinctive sound that wasn't present in more purist Console versions. Enter Console8Lite! Bear in mind that the full three-stage Console8 will still have a slight edge in certain ways: the interactions with the ultrasonic filtering are more intense, and things like the capacitor emulation work more effectively on the larger mix topology with more stages. But there's also a place for simpler, more direct mixers, and that's where Console8Lite comes in. It's designed from the ground up to bring all the Console8 features but in simpler, traditional Airwindows Console form. You put the channel plugins last on each channel, have the faders at unity gain, and put the buss plugin first on the buss. Everything else, from the custom highpassing to the treble softening to the ability to boost the buss output into an on-board version of ClipOnly2, is there in the simpler form, easier to set up and ready to bring analog tone to your DAW mix. When using it, set it up like any pre-8 version of Console. Use it as a replacement for Console8, though each plugin is roughly equivalent to a Console8 stage's In and Out run in series: if you mix and match it with Console8 full version it'll function but the ultrasonic filtering will no longer be calibrated. Hope you like the new, simpler and more direct Console8Lite :)"
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Console8LiteBuss final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'c8bl';
     double iirAL;
     double iirBL;
     double iirAR;
@@ -45,7 +49,6 @@ class Console8LiteBuss final : public Effect<T>
     double softL[11];
     double softR[11];
     int cycleEnd;
-
     double inTrimA;
     double inTrimB;
     double lastSampleL;
@@ -57,11 +60,9 @@ class Console8LiteBuss final : public Effect<T>
     bool wasPosClipR;
     bool wasNegClipR;
     int spacing;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
 
   public:
@@ -114,18 +115,15 @@ class Console8LiteBuss final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -135,8 +133,7 @@ class Console8LiteBuss final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -146,8 +143,7 @@ class Console8LiteBuss final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "fader"; break;
 
             default: break;
@@ -157,8 +153,7 @@ class Console8LiteBuss final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Fader"; break;
 
             default: break;
@@ -168,24 +163,24 @@ class Console8LiteBuss final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -263,8 +258,7 @@ class Console8LiteBuss final : public Effect<T>
         fixB[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixB[fix_b2] = (1.0 - K / fixB[fix_reso] + K * K) * norm;
         // this is the fixed biquad distributed anti-aliasing filter
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

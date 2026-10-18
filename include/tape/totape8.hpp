@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ToTape8 is Airwindows tape emulation with gain staging, bias and optimized Dubly!"
 };
 constexpr std::string_view k_long_description{
-    "Sometimes, things move kinda fast.ToTape8 comes right on the heels of ToTape7, rather than a couple of years later. Why? Necessity. So much was right and new with ToTape7, but it was letting itself down. It wasn't clear how to set levels on it as there was only 'TapeDrv' in the middle of many other controls. There was lots of control over the Dubly, but it'd never made its way into a ToTape version before and quickly showed a gritty, fierce character that actually limited the amount of good Dubly could even do with the tone. Yet it took up four controls, getting in the way of an output level control while still allowing use with Consolidated and the VCV Rack version.Clearly, the answer was to immediately get COVID! But in recuperating from that, there was time to revisit ToTape and Dubly, and the new Dubly is out, and here's the next generation of ToTape. Already. And probably about two years worth of 'better', if you're wondering, because that was just waiting to be unleashed: all the other stuff was ready to support it.It's now obvious how to gain stage ToTape, with an input and an output control… but it's more sophisticated than it looks, because ToTape8 has a safety clipper built in (same as ToTape7). This is ClipOnly2, running after ToTape so no matter what you do the output is safe for a final mixdown… but since there's an output control now, the output control goes after the tape emulation and before the final clip. So if you want to pull it back to 'tape overdrive only', you can set the output to about 0.4 or so (depends on your other settings), shy of the ClipOnly2 clip. Or, if you want a much cleaner tape effect with more powerful peaks, leave it as default or even turn it up: the Input control can have you hit the 'tape' less hard, and since idealized tape needn't have noise you can gain stage it any way you want (there can be a kind of noise in a future variation that's more lo-fi, this is more for being able to put on tracks and mix buss without wrecking the tone)With no tape noise, what does the new Dubly do? Amazing things. Now that it does a kind of compression (not a clone of hardware, but a simpler, optimized compression to clean up the grit) that's tied with the Dubly frequency, the formerly crunchy Dubly has been reduced to two controls, but they're amazing and way more useful than the original four. Tilt simply adjusts the Dubly amounts against each other. Maybe 0.5 is not, in fact, the perfect setting. Try other settings! Anything close to the center will be musical and useful, cranking it to 1.0 will give you the 'Dubly encode trick' used in studios, and turning it down to 0.0 gives you only decode, at the most extreme amount possible. So, it's named Tilt because it works like a tilt EQ, but it comes from the existing Dubly. Then, the Shape control varies the cutoffs of the Dubly encode and decode, AND the response of the compressors, against each other. What this does might not be obvious, but once you try it, there's nothing more obvious. Tweaking this adjusts the midrange hype. You can have the mids be more searing and compressed and lively, or you can dial them back until they're dark and vibey. You get a funky expanded dynamic tone you'll immediately recognize from certain Seventies records. It's at your fingertips with the Shape control.Does that mean setting it to neutral does nothing? Nope, this is the best part. Just by being there, Dubly does a special thing with the ToTape overdrive/saturation. It cancels harmonics, and this is why real tape machines are often thought of as near-magical 'clean level compressors'. ToTape8 pulls this off pretty well, even though it's minimal and clean enough to use in real audio work (not just sound design). Note that this is not 'aliasing control' though it'll sound like it is, compared to the gritty ToTape7 (vibey though it is). ToTape8 does use filtering in both the Dubly encode and decode, but not in an 'elaborate brickwall filter because it thinks it is oversampling' way, in a way that's designed for better tone and ability to run at zero latency. What's happening is, the nature of Dubly means anything producing harmonics tends to also have the harmonics taken back out again, because they're treated as additional noise. It's that simple, and still works in minimal form in spite of not cloning any hardware box, and that's why ToTape8 gets the sound it does.That's the new stuff, Flutter and Bias and Head Bump and Head Bump Frequency still work the way they do in ToTape7. I think they'll be even easier and more pleasing to work with now that the Dubly stuff has been brought up to par. Let me know if this plugin sounds better than ToTape7. It ought to :)"
+    "Sometimes, things move kinda fast. ToTape8 comes right on the heels of ToTape7, rather than a couple of years later. Why? Necessity. So much was right and new with ToTape7, but it was letting itself down. It wasn't clear how to set levels on it as there was only 'TapeDrv' in the middle of many other controls. There was lots of control over the Dubly, but it'd never made its way into a ToTape version before and quickly showed a gritty, fierce character that actually limited the amount of good Dubly could even do with the tone. Yet it took up four controls, getting in the way of an output level control while still allowing use with Consolidated and the VCV Rack version. Clearly, the answer was to immediately get COVID! But in recuperating from that, there was time to revisit ToTape and Dubly, and the new Dubly is out, and here's the next generation of ToTape. Already. And probably about two years worth of 'better', if you're wondering, because that was just waiting to be unleashed: all the other stuff was ready to support it. It's now obvious how to gain stage ToTape, with an input and an output control… but it's more sophisticated than it looks, because ToTape8 has a safety clipper built in (same as ToTape7). This is ClipOnly2, running after ToTape so no matter what you do the output is safe for a final mixdown… but since there's an output control now, the output control goes after the tape emulation and before the final clip. So if you want to pull it back to 'tape overdrive only', you can set the output to about 0.4 or so (depends on your other settings), shy of the ClipOnly2 clip. Or, if you want a much cleaner tape effect with more powerful peaks, leave it as default or even turn it up: the Input control can have you hit the 'tape' less hard, and since idealized tape needn't have noise you can gain stage it any way you want (there can be a kind of noise in a future variation that's more lo-fi, this is more for being able to put on tracks and mix buss without wrecking the tone) With no tape noise, what does the new Dubly do? Amazing things. Now that it does a kind of compression (not a clone of hardware, but a simpler, optimized compression to clean up the grit) that's tied with the Dubly frequency, the formerly crunchy Dubly has been reduced to two controls, but they're amazing and way more useful than the original four. Tilt simply adjusts the Dubly amounts against each other. Maybe 0.5 is not, in fact, the perfect setting. Try other settings! Anything close to the center will be musical and useful, cranking it to 1.0 will give you the 'Dubly encode trick' used in studios, and turning it down to 0.0 gives you only decode, at the most extreme amount possible. So, it's named Tilt because it works like a tilt EQ, but it comes from the existing Dubly. Then, the Shape control varies the cutoffs of the Dubly encode and decode, AND the response of the compressors, against each other. What this does might not be obvious, but once you try it, there's nothing more obvious. Tweaking this adjusts the midrange hype. You can have the mids be more searing and compressed and lively, or you can dial them back until they're dark and vibey. You get a funky expanded dynamic tone you'll immediately recognize from certain Seventies records. It's at your fingertips with the Shape control. Does that mean setting it to neutral does nothing? Nope, this is the best part. Just by being there, Dubly does a special thing with the ToTape overdrive/saturation. It cancels harmonics, and this is why real tape machines are often thought of as near-magical 'clean level compressors'. ToTape8 pulls this off pretty well, even though it's minimal and clean enough to use in real audio work (not just sound design). Note that this is not 'aliasing control' though it'll sound like it is, compared to the gritty ToTape7 (vibey though it is). ToTape8 does use filtering in both the Dubly encode and decode, but not in an 'elaborate brickwall filter because it thinks it is oversampling' way, in a way that's designed for better tone and ability to run at zero latency. What's happening is, the nature of Dubly means anything producing harmonics tends to also have the harmonics taken back out again, because they're treated as additional noise. It's that simple, and still works in minimal form in spite of not cloning any hardware box, and that's why ToTape8 gets the sound it does. That's the new stuff, Flutter and Bias and Head Bump and Head Bump Frequency still work the way they do in ToTape7. I think they'll be even easier and more pleasing to work with now that the Dubly stuff has been brought up to par. Let me know if this plugin sounds better than ToTape7. It ought to :)"
 };
 constexpr std::string_view k_tags{
     "tape"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ToTape8 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'totw';
     float A;
     float B;
     float C;
@@ -80,12 +84,10 @@ class ToTape8 final : public Effect<T>
         gslew_total
     }; // fixed frequency pear filter for ultrasonics, stereo
     double gslew[gslew_total]; // end bias
-
     double iirMidRollerL;
     double iirLowCutoffL;
     double iirMidRollerR;
     double iirLowCutoffR;
-
     double headBumpL;
     double headBumpR;
     enum
@@ -105,7 +107,6 @@ class ToTape8 final : public Effect<T>
     }; // fixed frequency biquad filter for ultrasonics, stereo
     double hdbA[hdb_total];
     double hdbB[hdb_total];
-
     double lastSampleL;
     double intermediateL[16];
     bool wasPosClipL;
@@ -114,7 +115,6 @@ class ToTape8 final : public Effect<T>
     double intermediateR[16];
     bool wasPosClipR;
     bool wasNegClipR; // Stereo ClipOnly2
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -206,8 +206,7 @@ class ToTape8 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -217,15 +216,13 @@ class ToTape8 final : public Effect<T>
             case kParamG: G = value; break;
             case kParamH: H = value; break;
             case kParamI: I = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -243,8 +240,7 @@ class ToTape8 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -262,8 +258,7 @@ class ToTape8 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "tilt"; break;
             case kParamC: return "shape"; break;
@@ -281,8 +276,7 @@ class ToTape8 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Tilt"; break;
             case kParamC: return "Shape"; break;
@@ -300,40 +294,40 @@ class ToTape8 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(((H * H) * 175.0) + 25.0, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return "hz"; break;
-            case kParamI: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -415,8 +409,7 @@ class ToTape8 final : public Effect<T>
         hdbB[hdb_b1] = 2.0 * (K * K - 1.0) * norm;
         hdbB[hdb_b2] = (1.0 - K / hdbB[hdb_reso] + K * K) * norm;
         double outputGain = I * 2.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

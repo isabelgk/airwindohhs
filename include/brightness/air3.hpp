@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Air3 creates a new form of air-band EQ based on Kalman filtering."
 };
 constexpr std::string_view k_long_description{
-    "This should be fun :)Welcome to the experiment zone, once again, with Air3: an air band EQ based on an extension of Kalman filtering, which isn't normally used for audio purposes. As usual, Airwindows is bringing in algorithms that act weirdly because they come out of finance or science. In this case, it's science.What's Kalman filtering? You'll be hearing more about it, but it's a method of trying to bring accuracy out of noisy data by projecting what the real data might be, and then incorporating sensor readings based on how closely they correspond to the projection. The key idea there is 'based on', because Kalman is all about willingness to throw out bad data and try and zero in on what's really happening.Of course, in audio, it's ALL real. There's nothing to throw out, it's all legit. Give Air3 some audio, and it begins to do its analysis and projections based on something that doesn't exist: a hypothetical underlying sound, upon which your real-world cymbal sparkle or voice breathiness are just 'noise' to be removed. It's not even based on frequencies, it's trying to chart out a 'real' sound based on what's already a real sound.What happens? For one, you get a rolled-off sound that is very, very convincing. It's easy to believe the sound was just that way to start with. You don't get a sense of brightness reduction, it just sounds natural. Air3 is shunting off the whole air band to a separate control, and what it leaves behind is very plausible and doesn't sound filtered. Great for reduction of tizz, glare and detail.And then you take that redirected air band, bring it back in, and crank it up five times as loud, and Air3 comes alive.I've not heard a better EQ for this super-high stuff. It seems really good at lighting up any audio you send through it. Bear in mind that much like both Air and Air2 before it, this is not an EQ in the normal sense at all. Air and Air2 used the algorithms I also put in Energy, and what Air3 does has more in common with DeBess or Acceleration than it does an EQ. It's going way into concepts of measuring the rate of change of the rate of change and trying to project that onto expected future samples… it's got a large amount of boost on tap, but can be a bit unpredictable. If you simply cut the Gnd control (for Ground) you get just whatever air there was, if you cut the Air control you remove it, but if you boost the Air control lots and cut Gnd, you get another sound from the sheer intensity of boosting being done.I think this is going to be hard to beat for this purpose, especially used subtly, and expect to be including it into upcoming stuff that doesn't have to act like 'an EQ'. Still a lot of 'lettered' Console versions that need to be made, to emulate analog gear. This one's for imagining where we can go after that, for a new sort of mixing in the box that doesn't follow the constrictions of analog gear, letting you dial in tone characteristics as much as frequencies.For now, enjoy Air3, and if you've got opinions on what needs to follow it next, drop by a livestream: you have Air3 today because a livestream viewer asked for it to come out ASAP, and here we are. There's lots more. I'll keep working on all this stuff, it's great to see it all come together :)"
+    "This should be fun :) Welcome to the experiment zone, once again, with Air3: an air band EQ based on an extension of Kalman filtering, which isn't normally used for audio purposes. As usual, Airwindows is bringing in algorithms that act weirdly because they come out of finance or science. In this case, it's science. What's Kalman filtering? You'll be hearing more about it, but it's a method of trying to bring accuracy out of noisy data by projecting what the real data might be, and then incorporating sensor readings based on how closely they correspond to the projection. The key idea there is 'based on', because Kalman is all about willingness to throw out bad data and try and zero in on what's really happening. Of course, in audio, it's ALL real. There's nothing to throw out, it's all legit. Give Air3 some audio, and it begins to do its analysis and projections based on something that doesn't exist: a hypothetical underlying sound, upon which your real-world cymbal sparkle or voice breathiness are just 'noise' to be removed. It's not even based on frequencies, it's trying to chart out a 'real' sound based on what's already a real sound. What happens? For one, you get a rolled-off sound that is very, very convincing. It's easy to believe the sound was just that way to start with. You don't get a sense of brightness reduction, it just sounds natural. Air3 is shunting off the whole air band to a separate control, and what it leaves behind is very plausible and doesn't sound filtered. Great for reduction of tizz, glare and detail. And then you take that redirected air band, bring it back in, and crank it up five times as loud, and Air3 comes alive. I've not heard a better EQ for this super-high stuff. It seems really good at lighting up any audio you send through it. Bear in mind that much like both Air and Air2 before it, this is not an EQ in the normal sense at all. Air and Air2 used the algorithms I also put in Energy, and what Air3 does has more in common with DeBess or Acceleration than it does an EQ. It's going way into concepts of measuring the rate of change of the rate of change and trying to project that onto expected future samples… it's got a large amount of boost on tap, but can be a bit unpredictable. If you simply cut the Gnd control (for Ground) you get just whatever air there was, if you cut the Air control you remove it, but if you boost the Air control lots and cut Gnd, you get another sound from the sheer intensity of boosting being done. I think this is going to be hard to beat for this purpose, especially used subtly, and expect to be including it into upcoming stuff that doesn't have to act like 'an EQ'. Still a lot of 'lettered' Console versions that need to be made, to emulate analog gear. This one's for imagining where we can go after that, for a new sort of mixing in the box that doesn't follow the constrictions of analog gear, letting you dial in tone characteristics as much as frequencies. For now, enjoy Air3, and if you've got opinions on what needs to follow it next, drop by a livestream: you have Air3 today because a livestream viewer asked for it to come out ASAP, and here we are. There's lots more. I'll keep working on all this stuff, it's great to see it all come together :)"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Air3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'aiyt';
     enum
     {
         pvAL1,
@@ -57,11 +61,9 @@ class Air3 final : public Effect<T>
         air_total
     };
     double air[air_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
 
@@ -93,19 +95,16 @@ class Air3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -116,8 +115,7 @@ class Air3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
 
@@ -128,8 +126,7 @@ class Air3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "air"; break;
             case kParamB: return "gnd"; break;
 
@@ -140,8 +137,7 @@ class Air3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Air"; break;
             case kParamB: return "Gnd"; break;
 
@@ -152,26 +148,26 @@ class Air3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -189,8 +185,7 @@ class Air3 final : public Effect<T>
             airGain = pow(airGain, 3.0 + sqrt(overallscale));
         }
         double gndGain = B * 2.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

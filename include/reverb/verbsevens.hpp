@@ -14,7 +14,7 @@ constexpr std::string_view k_short_description{
     "VerbSevens is a calibrated reference reverb plugin for reverb matrices."
 };
 constexpr std::string_view k_long_description{
-    "Here's a tool I use often, updated to keep pace with where my development's been heading.For years now, I've been developing reverbs along specific lines. I've never been a fan of allpass filters, unless they're MV (my take on a classic bloom effect that's made only out of allpass filters). I think they're smeary and don't actually sound deep, just blurred. I want to be able to make reverbs out of only comb filters, out of only delays, because that's what real reverbs are made of: you just can't have that many echoes, so people do their allpasses and other things to approximate the sound.But what if you could have that many echoes?A classic way to build up echo density is with a Householder matrix. It's 4x4 so you need sixteen delays, but you get 256 echoes from just those sixteen delays, and better still, you can run them all either directly or inverted with no other gain changes. You get a matrix where if you feed the output back into the input, it gives you infinite sustain without any frequency running away. And feedback multiplies the echoes more, so it can get super dense for you.But what about other matrixes? Turns out there's math for Householder matrices of all sizes. If you use 25 delays, you can make a 5x5 matrix, where some of the mixing paths are times 3 and some are times negative 2. That gives you 3125 echoes before feedback, which is a lot more. On the other hand, some of your reverb paths are louder than the others, but only somewhat. Then there's a 6x6 Householder matrix. There's math for it, but now the diagonal path is twice as loud as the other paths, undermining the effectiveness… but now you have 46,656 distinct echoes. Before feedback. What could be better than that? (and this can be heard in VerbSixes, by the way)Enter the Conference Matrix. It's a 6x6 matrix, and unlike the previous ones, it leaves out one summing path for each section. It's as if the diagonal path is zero: only five of the delay chains connect to the next stage. But it's always a different section being left out, so all the information does find its way through… and the big difference is, now all the paths are unity gain again, just with some of them phase-flipped in the manner of a 4x4 Householder matrix.When you combine one of those 6x6es with a Householder 4x4 to feed it, you're looking at close to 12 MILLION echoes before feedback… and the regeneration can be infinite without it running away. But VerbSevens is primarily designed to be a test-bed: feed any combination of delays into it and it'll show you what that does. It just happens to do double duty, as a sort of ginormous reverb pad. How does it sound when it's doing 12 million echoes over an enormous space?It sounds very nice. Because of the combination of the 4x4 and 6x6 I selected for it when you're not compiling it to test things, it works like VerbSixes did, VerbSixes had a few little tweaks intended to produce realistic deep-reverb sounds, though, and they could interact with certain tones in a way that made a noise. VerbSevens no longer tries to do anything of the sort… so it's a huge reverb, but also an unrealistic one, in that the highs don't die away or alter. It's just giant creamy space, turning any noise no matter how percussive into a total wash, and it now does that a lot better than VerbSixes ever could.Hope you like the new genre 'reverb and more reverb', because this is your plugin for making it :)"
+    "Here's a tool I use often, updated to keep pace with where my development's been heading. For years now, I've been developing reverbs along specific lines. I've never been a fan of allpass filters, unless they're MV (my take on a classic bloom effect that's made only out of allpass filters). I think they're smeary and don't actually sound deep, just blurred. I want to be able to make reverbs out of only comb filters, out of only delays, because that's what real reverbs are made of: you just can't have that many echoes, so people do their allpasses and other things to approximate the sound. But what if you could have that many echoes? A classic way to build up echo density is with a Householder matrix. It's 4x4 so you need sixteen delays, but you get 256 echoes from just those sixteen delays, and better still, you can run them all either directly or inverted with no other gain changes. You get a matrix where if you feed the output back into the input, it gives you infinite sustain without any frequency running away. And feedback multiplies the echoes more, so it can get super dense for you. But what about other matrixes? Turns out there's math for Householder matrices of all sizes. If you use 25 delays, you can make a 5x5 matrix, where some of the mixing paths are times 3 and some are times negative 2. That gives you 3125 echoes before feedback, which is a lot more. On the other hand, some of your reverb paths are louder than the others, but only somewhat. Then there's a 6x6 Householder matrix. There's math for it, but now the diagonal path is twice as loud as the other paths, undermining the effectiveness… but now you have 46,656 distinct echoes. Before feedback. What could be better than that? (and this can be heard in VerbSixes, by the way) Enter the Conference Matrix. It's a 6x6 matrix, and unlike the previous ones, it leaves out one summing path for each section. It's as if the diagonal path is zero: only five of the delay chains connect to the next stage. But it's always a different section being left out, so all the information does find its way through… and the big difference is, now all the paths are unity gain again, just with some of them phase-flipped in the manner of a 4x4 Householder matrix. When you combine one of those 6x6es with a Householder 4x4 to feed it, you're looking at close to 12 MILLION echoes before feedback… and the regeneration can be infinite without it running away. But VerbSevens is primarily designed to be a test-bed: feed any combination of delays into it and it'll show you what that does. It just happens to do double duty, as a sort of ginormous reverb pad. How does it sound when it's doing 12 million echoes over an enormous space? It sounds very nice. Because of the combination of the 4x4 and 6x6 I selected for it when you're not compiling it to test things, it works like VerbSixes did, VerbSixes had a few little tweaks intended to produce realistic deep-reverb sounds, though, and they could interact with certain tones in a way that made a noise. VerbSevens no longer tries to do anything of the sort… so it's a huge reverb, but also an unrealistic one, in that the highs don't die away or alter. It's just giant creamy space, turning any noise no matter how percussive into a total wash, and it now does that a lot better than VerbSixes ever could. Hope you like the new genre 'reverb and more reverb', because this is your plugin for making it :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -968,17 +968,14 @@ class VerbSevens final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -987,8 +984,7 @@ class VerbSevens final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -997,8 +993,7 @@ class VerbSevens final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -1007,8 +1002,7 @@ class VerbSevens final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -1017,22 +1011,22 @@ class VerbSevens final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -1077,8 +1071,7 @@ class VerbSevens final : public Effect<T>
         double bezTrim = (double)bezFraction / (bezFraction + 1.0);
         downRez = 0.99999999 / bezFraction;
         bezTrim = 1.0 - (downRez * bezTrim);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

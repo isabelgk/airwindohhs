@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BiquadHiLo is the highpass and lowpass filter in ConsoleX."
 };
 constexpr std::string_view k_long_description{
-    "Pretty straightforward: this is effectively the same thing as the highpass and lowpass used in ConsoleX. Except, in practice it's absolutely not, because in ConsoleX both of these are distributed filters. That means as signal hits the Stonefire section with dynamics, it will have hit some of the highpassing and lowpassing, but not all of it: some of it will happen after the dynamics. Some of it will happen after the four-band parametric EQ, which is somewhat nonlinear. The lowpass in particular gets to work as a distributed filter against aliasing, especially if you're running at high sample rate.But here it's just those filters as a one-piece unit.That also means you can use it as those filters, but in a much more lightweight form than in ConsoleX. I'm hoping ConsoleX is working out for people (it will be a while before I'm finished explaining all that, and getting it working on everybody's DAW, if that's even possible!). But though it is prettier and a lot fancier, it's way more complicated.In the video I made, I demonstrate how you might be running something like a guitar into virtual tape (ToTape8 in this case) and from there into ConsoleX. But there are some things you simply can't do when processing the sound AFTER the tape. Sometimes there's a reason to shape the sound going in front of the tape, so it can hit those harmonics harder with less extra frequencies flying around… and BiquadHiLo can work for 'trapping in' a sound like that so it can hit tape even harder and produce a really direct, clear sound.And of course you can use ConsoleXPre for exactly that purpose and have all the EQs or even dynamics going, both in front of and after the tape, but much like you have access to three bands of the parametric EQ in 'Parametric', and have the dynamics in 'StoneFireComp', you have the additional filters in BiquadHiLo.If all goes well I can have the 'mastering' (a very airwindowsized take on mastering) plugin by next week, but while I work on more fixes for ConsoleX, here's a spare filter to have :)"
+    "Pretty straightforward: this is effectively the same thing as the highpass and lowpass used in ConsoleX. Except, in practice it's absolutely not, because in ConsoleX both of these are distributed filters. That means as signal hits the Stonefire section with dynamics, it will have hit some of the highpassing and lowpassing, but not all of it: some of it will happen after the dynamics. Some of it will happen after the four-band parametric EQ, which is somewhat nonlinear. The lowpass in particular gets to work as a distributed filter against aliasing, especially if you're running at high sample rate. But here it's just those filters as a one-piece unit. That also means you can use it as those filters, but in a much more lightweight form than in ConsoleX. I'm hoping ConsoleX is working out for people (it will be a while before I'm finished explaining all that, and getting it working on everybody's DAW, if that's even possible!). But though it is prettier and a lot fancier, it's way more complicated. In the video I made, I demonstrate how you might be running something like a guitar into virtual tape (ToTape8 in this case) and from there into ConsoleX. But there are some things you simply can't do when processing the sound AFTER the tape. Sometimes there's a reason to shape the sound going in front of the tape, so it can hit those harmonics harder with less extra frequencies flying around… and BiquadHiLo can work for 'trapping in' a sound like that so it can hit tape even harder and produce a really direct, clear sound. And of course you can use ConsoleXPre for exactly that purpose and have all the EQs or even dynamics going, both in front of and after the tape, but much like you have access to three bands of the parametric EQ in 'Parametric', and have the dynamics in 'StoneFireComp', you have the additional filters in BiquadHiLo. If all goes well I can have the 'mastering' (a very airwindowsized take on mastering) plugin by next week, but while I work on more fixes for ConsoleX, here's a spare filter to have :)"
 };
 constexpr std::string_view k_tags{
     "biquads"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BiquadHiLo final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'biqh';
     float A;
     float B;
     enum
@@ -87,11 +91,10 @@ class BiquadHiLo final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -141,24 +144,26 @@ class BiquadHiLo final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

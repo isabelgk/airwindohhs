@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ToTape6 is Airwindows tape emulation for 2020!"
 };
 constexpr std::string_view k_long_description{
-    "Here’s ToTape6. There are still things I want (simplification) but this is all the things you wanted :)ToTape6 brings in tech from UnBox, from Mojo, from BiquadOneHalf… it’s quite literally the culmination of all the stuff I’ve been doing over the last year (or indeed three years). I think it’ll register immediately as a killer tape emulation, perhaps THE killer tape emulation to beat for all that it’s an abstraction and not meant to be any specific tape machine. No GUI, no brandnames: just the tone, and the ability to soak up intense audio gracefully. And of course those delicious tape-machine lows, courtesy of the new head bump.Unlike ToTape5, the new ToTape6 is extremely well behaved in the sub-octaves. By that I mean it has them, tons of them, it’s got that ToTape/BassKit ability to uncork profoundly deep subs, but thanks to the interleaved biquad filters it cuts them right off and doesn’t let DC through. It’s got a special kind of servo damping built in because I found when you stacked them up four deep, the tape machines started subtly motorboating around 20 hz, so I fixed it. Even in its fixed state, be cautious about pushing the head bump beyond its default halfway setting as it’ll produce a LOT of serious lows, with an interesting compressed quality you won’t hear outside of ToTape and the real thing.Due to the influences of UnBox and Mojo, the new ToTape6 puts forth a lot of sonority when you hit it: warm harmonics stand out and project, due to the boosting happening in an overall midrange band that covers most of the audio range. The Soften control is subtly improved as well: if you’re looking to tape to warm up digital overtones and edges, ToTape6 does that effortlessly.Flutter is so profoundly improved that ToTape6 defaults to having it on, at 0.5. That causes the plugin to run a small, varying latency (bear this in mind). It’s also a step into a weirder realm: I was being asked to do a ‘trashed tape’ plugin. This might not be ALL of that, but the new Flutter algorithm is both clean up to extreme settings, and more capable of bonkers warble and wacky over-flutter. Check that out at the far reaches of the Flutter control. At settings below 0.5 the flutter is more usable in serious contexts, and as always if you set Flutter to zero you bypass the whole thing and get zero latency and a lack of interpolation between samples, giving you clearer highs to use Soften on. For serious mastering purposes I still recommend not using flutter, plus there are some electronic genres where it’d be disruptive.The dry/wet control has a trick in store: it only works in the normal way if you’re NOT using flutter. If you’re full-wet you can flutter as you please, but as you bring dry in, you’ll get a striking flanging effect that’s different depending on where your flutter setting is (flutter changing can cause sonic artifacts, but you can still do it for effect). The AU is ‘N to N’ meaning it will randomize stereo or even 5.1 surround: the VST runs true 2-channel stereo so it will more accurately resemble a stereo tape flange. Either way, it’s more of a stunt than an important effect, but it does mean you can be running subtle tape flutter effects and then seamlessly fade into an obvious full-mix flange, and then back to the solid, loud tape effect. This will work differently each time you do it, so be sure to print your results: flutter is a random process.Oh, one more thing: ToTape6 has the guts of ADClip built into it as a safety clipper. So you can use it as a final loudenator, at which it ought to be about as good as they get: if the tape slam isn’t getting you there, you can push the output volume past 0 dB to intentionally clip harder, or pull it back to make sure ToTape is the only distortion stage. If you’re seeing extended periods of -0.09 dB you’re seeing ADClip working."
+    "Here’s ToTape6. There are still things I want (simplification) but this is all the things you wanted :) ToTape6 brings in tech from UnBox, from Mojo, from BiquadOneHalf… it’s quite literally the culmination of all the stuff I’ve been doing over the last year (or indeed three years). I think it’ll register immediately as a killer tape emulation, perhaps THE killer tape emulation to beat for all that it’s an abstraction and not meant to be any specific tape machine. No GUI, no brandnames: just the tone, and the ability to soak up intense audio gracefully. And of course those delicious tape-machine lows, courtesy of the new head bump. Unlike ToTape5, the new ToTape6 is extremely well behaved in the sub-octaves. By that I mean it has them, tons of them, it’s got that ToTape/BassKit ability to uncork profoundly deep subs, but thanks to the interleaved biquad filters it cuts them right off and doesn’t let DC through. It’s got a special kind of servo damping built in because I found when you stacked them up four deep, the tape machines started subtly motorboating around 20 hz, so I fixed it. Even in its fixed state, be cautious about pushing the head bump beyond its default halfway setting as it’ll produce a LOT of serious lows, with an interesting compressed quality you won’t hear outside of ToTape and the real thing. Due to the influences of UnBox and Mojo, the new ToTape6 puts forth a lot of sonority when you hit it: warm harmonics stand out and project, due to the boosting happening in an overall midrange band that covers most of the audio range. The Soften control is subtly improved as well: if you’re looking to tape to warm up digital overtones and edges, ToTape6 does that effortlessly. Flutter is so profoundly improved that ToTape6 defaults to having it on, at 0.5. That causes the plugin to run a small, varying latency (bear this in mind). It’s also a step into a weirder realm: I was being asked to do a ‘trashed tape’ plugin. This might not be ALL of that, but the new Flutter algorithm is both clean up to extreme settings, and more capable of bonkers warble and wacky over-flutter. Check that out at the far reaches of the Flutter control. At settings below 0.5 the flutter is more usable in serious contexts, and as always if you set Flutter to zero you bypass the whole thing and get zero latency and a lack of interpolation between samples, giving you clearer highs to use Soften on. For serious mastering purposes I still recommend not using flutter, plus there are some electronic genres where it’d be disruptive. The dry/wet control has a trick in store: it only works in the normal way if you’re NOT using flutter. If you’re full-wet you can flutter as you please, but as you bring dry in, you’ll get a striking flanging effect that’s different depending on where your flutter setting is (flutter changing can cause sonic artifacts, but you can still do it for effect). The AU is ‘N to N’ meaning it will randomize stereo or even 5.1 surround: the VST runs true 2-channel stereo so it will more accurately resemble a stereo tape flange. Either way, it’s more of a stunt than an important effect, but it does mean you can be running subtle tape flutter effects and then seamlessly fade into an obvious full-mix flange, and then back to the solid, loud tape effect. This will work differently each time you do it, so be sure to print your results: flutter is a random process. Oh, one more thing: ToTape6 has the guts of ADClip built into it as a safety clipper. So you can use it as a final loudenator, at which it ought to be about as good as they get: if the tape slam isn’t getting you there, you can push the output volume past 0 dB to intentionally clip harder, or pull it back to make sure ToTape is the only distortion stage. If you’re seeing extended periods of -0.09 dB you’re seeing ADClip working."
 };
 constexpr std::string_view k_tags{
     "tape"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ToTape6 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'totu';
     double dL[502];
     double dR[502];
     int gcount;
@@ -118,23 +122,20 @@ class ToTape6 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -149,8 +150,7 @@ class ToTape6 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -165,14 +165,13 @@ class ToTape6 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "soften"; break;
-            case kParamC: return "head b"; break;
+            case kParamC: return "headb"; break;
             case kParamD: return "flutter"; break;
             case kParamE: return "output"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -181,8 +180,7 @@ class ToTape6 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Soften"; break;
             case kParamC: return "Head B"; break;
@@ -197,34 +195,34 @@ class ToTape6 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A - 0.5) * 24.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string((E - 0.5) * 24.0, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return "dB"; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -242,7 +240,7 @@ class ToTape6 final : public Effect<T>
         double RollAmount = (1.0 - (SoftenControl * 0.45)) / overallscale;
         double HeadBumpControl = C * 0.25 * inputgain;
         double HeadBumpFreq = 0.12 / overallscale;
-        //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
+        //[0] is frequency: 0.000001 to 0.499999 is nearVal-zero to nearVal-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         biquadAL[0] = biquadBL[0] = biquadAR[0] = biquadBR[0] = 0.007 / overallscale;
         biquadAL[1] = biquadBL[1] = biquadAR[1] = biquadBR[1] = 0.0009;
@@ -266,8 +264,7 @@ class ToTape6 final : public Effect<T>
         double refclip = 0.99;
         double softness = 0.618033988749894848204586;
         double wet = F;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -313,8 +310,7 @@ class ToTape6 final : public Effect<T>
             double NonHighsSampleL = 0.0;
             double NonHighsSampleR = 0.0;
             double tempSample;
-            if (flip)
-            {
+            if (flip) {
                 iirMidRollerAL = (iirMidRollerAL * (1.0 - RollAmount)) + (inputSampleL * RollAmount);
                 iirMidRollerAR = (iirMidRollerAR * (1.0 - RollAmount)) + (inputSampleR * RollAmount);
                 HighsSampleL = inputSampleL - iirMidRollerAL;
@@ -525,8 +521,7 @@ class ToTape6 final : public Effect<T>
                 inputSampleL *= outputgain;
                 inputSampleR *= outputgain;
             }
-            if (lastSampleL >= refclip)
-            {
+            if (lastSampleL >= refclip) {
                 if (inputSampleL < refclip) {
                     lastSampleL = ((refclip * softness) + (inputSampleL * (1.0 - softness)));
                 }
@@ -534,8 +529,7 @@ class ToTape6 final : public Effect<T>
                     lastSampleL = refclip;
                 }
             }
-            if (lastSampleL <= -refclip)
-            {
+            if (lastSampleL <= -refclip) {
                 if (inputSampleL > -refclip) {
                     lastSampleL = ((-refclip * softness) + (inputSampleL * (1.0 - softness)));
                 }
@@ -543,8 +537,7 @@ class ToTape6 final : public Effect<T>
                     lastSampleL = -refclip;
                 }
             }
-            if (inputSampleL > refclip)
-            {
+            if (inputSampleL > refclip) {
                 if (lastSampleL < refclip) {
                     inputSampleL = ((refclip * softness) + (lastSampleL * (1.0 - softness)));
                 }
@@ -552,8 +545,7 @@ class ToTape6 final : public Effect<T>
                     inputSampleL = refclip;
                 }
             }
-            if (inputSampleL < -refclip)
-            {
+            if (inputSampleL < -refclip) {
                 if (lastSampleL > -refclip) {
                     inputSampleL = ((-refclip * softness) + (lastSampleL * (1.0 - softness)));
                 }
@@ -562,8 +554,7 @@ class ToTape6 final : public Effect<T>
                 }
             }
             lastSampleL = inputSampleL; // end ADClip L
-            if (lastSampleR >= refclip)
-            {
+            if (lastSampleR >= refclip) {
                 if (inputSampleR < refclip) {
                     lastSampleR = ((refclip * softness) + (inputSampleR * (1.0 - softness)));
                 }
@@ -571,8 +562,7 @@ class ToTape6 final : public Effect<T>
                     lastSampleR = refclip;
                 }
             }
-            if (lastSampleR <= -refclip)
-            {
+            if (lastSampleR <= -refclip) {
                 if (inputSampleR > -refclip) {
                     lastSampleR = ((-refclip * softness) + (inputSampleR * (1.0 - softness)));
                 }
@@ -580,8 +570,7 @@ class ToTape6 final : public Effect<T>
                     lastSampleR = -refclip;
                 }
             }
-            if (inputSampleR > refclip)
-            {
+            if (inputSampleR > refclip) {
                 if (lastSampleR < refclip) {
                     inputSampleR = ((refclip * softness) + (lastSampleR * (1.0 - softness)));
                 }
@@ -589,8 +578,7 @@ class ToTape6 final : public Effect<T>
                     inputSampleR = refclip;
                 }
             }
-            if (inputSampleR < -refclip)
-            {
+            if (inputSampleR < -refclip) {
                 if (lastSampleR > -refclip) {
                     inputSampleR = ((-refclip * softness) + (lastSampleR * (1.0 - softness)));
                 }

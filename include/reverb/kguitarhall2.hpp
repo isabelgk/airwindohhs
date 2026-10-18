@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kGuitarHall2 puts things in a Loud Room."
 };
 constexpr std::string_view k_long_description{
-    "When I do a GuitarHall reverb, I always have certain things in mind.As a kid, the first concert I ever went to was a Night Ranger concert. (other concerts included Bad Brains at a tiny college gig, and Go Ahead which was the closest I'll ever get to a Dead Show.) Night Ranger was in a hockey arena in Michigan, and the thing about it was that the air crackled with volume. It was overwhelming and kinda scary, at least for a kid.I've not found much to remind me of that experience, and then I kept developing GuitarHall, and now I'm getting somewhere with that journey.kGuitarHall2 takes advantage of new measurement techniques I've developed: I've always been interested in peak vs. RMS loudness, in fact Meter measures and depicts entirely peaks and doesn't show RMS at all. It turns out that you can rate reverbs by how peak-heavy they are versus how RMS-loud they are, and even run separate measurements for the full sound and for zeroing in on the midrange just where the ear is most sensitive. And it all led me to a 'small hall' sound that emphasized peaks a huge amount.This causes the reverb to sound like it's farther away. Try enough variations, and you can get some intense effects… and when you put the right energy in there, things get loud. You've got Derez to pitch down the whole space in two separate ways, stepped (mellow) and continuous (gnarly), you've got the usual sustain and filter controls (in this case a normal type of filter, Pear), and you've got the new control, Positin (think 'Position').This is where the plugin really takes a leap into a new world. I've already designed it to sit properly with brighter tonality, unlike the ones where I've followed Bricasti's tonal lead: I'm trying to do something different now. Adjusting the position in the reverb gives you a whole new ability to shape the tone, where you can move the sound source back up against the wall and get very convincing positionings, much like how a real studio engineer would move the drumkit back and forth until the ultimate sound was reached.This is a subjective thing! Don't expect it to be the same each time, though you might have favorite positions for things. There's a world of difference between a When The Levee Breaks positioning and a Stairway To Heaven positioning though both were John Bonham, in the same haunted studio. With kGuitarHall you can move all the drums, or only some of them, or whatever other instrument, around to sit everything in the mix where you want it to appear.To have multiple layers in the mix, you'll have to either run it on individual tracks, or use multiple auxes and send different sounds to different instances of the plugin, with different position settings (and possibly, other things tuned differently as well). I tend to do the latter. I'm not sure how important it is to have things running to different positionings in the same reverb… but if you're shooting for a convincing, natural sound, this is a new and interesting way to go about that :)"
+    "When I do a GuitarHall reverb, I always have certain things in mind. As a kid, the first concert I ever went to was a Night Ranger concert. (other concerts included Bad Brains at a tiny college gig, and Go Ahead which was the closest I'll ever get to a Dead Show.) Night Ranger was in a hockey arena in Michigan, and the thing about it was that the air crackled with volume. It was overwhelming and kinda scary, at least for a kid. I've not found much to remind me of that experience, and then I kept developing GuitarHall, and now I'm getting somewhere with that journey. kGuitarHall2 takes advantage of new measurement techniques I've developed: I've always been interested in peak vs. RMS loudness, in fact Meter measures and depicts entirely peaks and doesn't show RMS at all. It turns out that you can rate reverbs by how peak-heavy they are versus how RMS-loud they are, and even run separate measurements for the full sound and for zeroing in on the midrange just where the ear is most sensitive. And it all led me to a 'small hall' sound that emphasized peaks a huge amount. This causes the reverb to sound like it's farther away. Try enough variations, and you can get some intense effects… and when you put the right energy in there, things get loud. You've got Derez to pitch down the whole space in two separate ways, stepped (mellow) and continuous (gnarly), you've got the usual sustain and filter controls (in this case a normal type of filter, Pear), and you've got the new control, Positin (think 'Position'). This is where the plugin really takes a leap into a new world. I've already designed it to sit properly with brighter tonality, unlike the ones where I've followed Bricasti's tonal lead: I'm trying to do something different now. Adjusting the position in the reverb gives you a whole new ability to shape the tone, where you can move the sound source back up against the wall and get very convincing positionings, much like how a real studio engineer would move the drumkit back and forth until the ultimate sound was reached. This is a subjective thing! Don't expect it to be the same each time, though you might have favorite positions for things. There's a world of difference between a When The Levee Breaks positioning and a Stairway To Heaven positioning though both were John Bonham, in the same haunted studio. With kGuitarHall you can move all the drums, or only some of them, or whatever other instrument, around to sit everything in the mix where you want it to appear. To have multiple layers in the mix, you'll have to either run it on individual tracks, or use multiple auxes and send different sounds to different instances of the plugin, with different position settings (and possibly, other things tuned differently as well). I tend to do the latter. I'm not sure how important it is to have things running to different positionings in the same reverb… but if you're shooting for a convincing, natural sound, this is a new and interesting way to go about that :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -455,15 +455,14 @@ class kGuitarHall2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -505,7 +504,7 @@ class kGuitarHall2 final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "positin"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -529,32 +528,34 @@ class kGuitarHall2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

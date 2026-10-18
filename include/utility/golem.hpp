@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Golem lets you blend a stereo track of two mics on an amp."
 };
 constexpr std::string_view k_long_description{
-    "Golem takes in a stereo track, typically two mics on a guitar cab (a popular technique among metalheads), and mixes them to mono in the middle of the track.But wait, there’s (very slightly) more!Golem lets you balance the respective inputs so you hear more of L or R, and most importantly, Golem lets you apply a delay to only the side that you want to delay. The other side is always no-latency, straight through, but the one you’re delaying gets its little sample delay. Either one, it automatically switches.Almost done…The way this control is implemented, means that small adjustments give you a tiny, tiny linear-interpolated delay. I think linear interpolating is best for guitars because it’ll scrub off the tiniest amount of ‘hiss and rattiness’ while giving the least processed sound. That said, interpolating between samples in the way this does, allows you to dial in the subtlest imaginable phase relationships between your mics, and THAT has profound effects on the subtleties of your miked guitar tone. You are tuning where the cancellations between mics are, on a very fine level, in order to do specific things in the sound, and you need easily controllable subsample delays at your fingertips. Enter Golem, your simple tool for exactly that.There are some options for allowing a larger range of delay, or inverting one of the channels, but it’s basically just mixing two tracks and being able to micro-delay one of them. Some folks will be deeply unimpressed because you have to be a bit of a fanatic to get that worked up about delaying one of the guitar cab mics five-eighths of a sample in order to place a cancellation node JUST EXACTLY where you need it to be.But you’re talking to someone who noise shapes a long double to the floating-point buss, so yay fanatics! You know who you are. This plugin is for you."
+    "Golem takes in a stereo track, typically two mics on a guitar cab (a popular technique among metalheads), and mixes them to mono in the middle of the track. But wait, there’s (very slightly) more! Golem lets you balance the respective inputs so you hear more of L or R, and most importantly, Golem lets you apply a delay to only the side that you want to delay. The other side is always no-latency, straight through, but the one you’re delaying gets its little sample delay. Either one, it automatically switches. Almost done… The way this control is implemented, means that small adjustments give you a tiny, tiny linear-interpolated delay. I think linear interpolating is best for guitars because it’ll scrub off the tiniest amount of ‘hiss and rattiness’ while giving the least processed sound. That said, interpolating between samples in the way this does, allows you to dial in the subtlest imaginable phase relationships between your mics, and THAT has profound effects on the subtleties of your miked guitar tone. You are tuning where the cancellations between mics are, on a very fine level, in order to do specific things in the sound, and you need easily controllable subsample delays at your fingertips. Enter Golem, your simple tool for exactly that. There are some options for allowing a larger range of delay, or inverting one of the channels, but it’s basically just mixing two tracks and being able to micro-delay one of them. Some folks will be deeply unimpressed because you have to be a bit of a fanatic to get that worked up about delaying one of the guitar cab mics five-eighths of a sample in order to place a cancellation node JUST EXACTLY where you need it to be. But you’re talking to someone who noise shapes a long double to the floating-point buss, so yay fanatics! You know who you are. This plugin is for you."
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Golem final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'golm';
     uint32_t fpdL;
     uint32_t fpdR;
     bool flip;
@@ -62,20 +66,17 @@ class Golem final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -87,8 +88,7 @@ class Golem final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.0; break;
@@ -100,8 +100,7 @@ class Golem final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "balance"; break;
             case kParamB: return "offset"; break;
             case kParamC: return "phase"; break;
@@ -113,8 +112,7 @@ class Golem final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Balance"; break;
             case kParamB: return "Offset"; break;
             case kParamC: return "Phase"; break;
@@ -126,28 +124,40 @@ class Golem final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC:
+                switch ((VstInt32)(C * 5.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "In/Mic", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Out/Mic", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "In/DI", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Out/DI", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "DefTime", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "DefGain", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
 
-            default: break;
-        }
-        return {};
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
+
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -172,8 +182,7 @@ class Golem final : public Effect<T>
         if (phase > 4) {
             offset = 0.0;
         }
-        if (phase > 5)
-        {
+        if (phase > 5) {
             gainL = 0.5;
             gainR = 0.5;
         }
@@ -183,8 +192,7 @@ class Golem final : public Effect<T>
         double nearLevel = 1.0 - farLevel;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -205,16 +213,14 @@ class Golem final : public Effect<T>
             if (count < 1 || count > 2048) {
                 count = 2048;
             }
-            if (offset > 0)
-            {
+            if (offset > 0) {
                 p[count + 2048] = p[count] = inputSampleL;
                 inputSampleL = p[count + nearVal] * nearLevel;
                 inputSampleL += p[count + farVal] * farLevel;
                 // consider adding third sample just to bring out superhighs subtly, like old interpolation hacks
                 // or third and fifth samples, ditto
             }
-            if (offset < 0)
-            {
+            if (offset < 0) {
                 p[count + 2048] = p[count] = inputSampleR;
                 inputSampleR = p[count + nearVal] * nearLevel;
                 inputSampleR += p[count + farVal] * farLevel;

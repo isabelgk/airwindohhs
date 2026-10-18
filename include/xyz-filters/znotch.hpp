@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ZNotch is a notch filter made to sound and act like the Emu e6400 Phaser."
 };
 constexpr std::string_view k_long_description{
-    "And finally, the fourth filter type (I’m doing basic filters, not trying to compete with real Z-Plane releases), ZNotch!This is made to sound like the Emu Phaser, which has notchlike qualities. At heart it’s an extension of the Airwindows Z series, not anything specifically Emu Z-Plane: I didn’t find a notch specifically in the Emu e6400 Ultra, but I thought the Phaser options were very notchlike, so I went for a take on those. You’ll get constant highs, the ability to notch out quite deep into the bass, and that overdrive that’s on tap in all the Airwindows Z plugins, plus the ability to do all that and then add that color, subtly, to the dry signal (do this by getting your distorted and notched tone just right, setting Poles to zero, turning the output up all the way and then bringing in just enough of the color that you can hear what it’s doing. Adjust to taste)This concludes the DnB-inspired sampler emulation EQs. Hopefully this bank of four Z-plugins will be handy to reach for, in the box, to get those vivid tones and grinds… I suspect I’ll find ’em useful in the place of more ‘normal’ EQs simply because the character of the distortion will be so handy. You don’t have to distort them, but since they take a little overdrive so nicely they’ll serve a purpose in all kinds of slight overdrive, or character adding, situations. And since they’re the Z series, you’ll know where to find them even if you’ve installed ALL the Airwindows plugins (and you can do that… if you dare!)"
+    "And finally, the fourth filter type (I’m doing basic filters, not trying to compete with real Z-Plane releases), ZNotch! This is made to sound like the Emu Phaser, which has notchlike qualities. At heart it’s an extension of the Airwindows Z series, not anything specifically Emu Z-Plane: I didn’t find a notch specifically in the Emu e6400 Ultra, but I thought the Phaser options were very notchlike, so I went for a take on those. You’ll get constant highs, the ability to notch out quite deep into the bass, and that overdrive that’s on tap in all the Airwindows Z plugins, plus the ability to do all that and then add that color, subtly, to the dry signal (do this by getting your distorted and notched tone just right, setting Poles to zero, turning the output up all the way and then bringing in just enough of the color that you can hear what it’s doing. Adjust to taste) This concludes the DnB-inspired sampler emulation EQs. Hopefully this bank of four Z-plugins will be handy to reach for, in the box, to get those vivid tones and grinds… I suspect I’ll find ’em useful in the place of more ‘normal’ EQs simply because the character of the distortion will be so handy. You don’t have to distort them, but since they take a little overdrive so nicely they’ll serve a purpose in all kinds of slight overdrive, or character adding, situations. And since they’re the Z series, you’ll know where to find them even if you’ve installed ALL the Airwindows plugins (and you can do that… if you dare!)"
 };
 constexpr std::string_view k_tags{
     "xyz-filters"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ZNotch final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'znot';
     double biquadA[15];
     double biquadB[15];
     double biquadC[15];
@@ -75,21 +79,18 @@ class ZNotch final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -102,8 +103,7 @@ class ZNotch final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.1; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -116,8 +116,7 @@ class ZNotch final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "freq"; break;
             case kParamC: return "output"; break;
@@ -130,8 +129,7 @@ class ZNotch final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Freq"; break;
             case kParamC: return "Output"; break;
@@ -144,30 +142,30 @@ class ZNotch final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -242,8 +240,7 @@ class ZNotch final : public Effect<T>
         // beyond that point: this is a way to progressively add a 'black box' sound processing
         // which lets you fall through to simpler processing at lower settings.
         double outSample = 0.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

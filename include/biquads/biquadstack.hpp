@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BiquadStack is a way of making a parametric EQ out of stacked biquad filters."
 };
 constexpr std::string_view k_long_description{
-    "There's already a plugin called BiquadTriple, and it's three biquads simply cascaded to do what they do with steeper roll-offs before resonance. I'd said 'this is to let you mock up effects where you're going to be using filters' and mentioned 'ways to make the Q factors more specific and staggered' but didn't really go there, at the time.That time arrived in a hurry when I started really trying to work out what was so special about SSL channel strips, so I could use similar parametric bands in ConsoleX.So, BiquadStack is out to let you use this right away, without waiting, and see how that goes. The way it works is, it has the same technique used to make very steep Butterworth filters. This is using specific Q factors in combination, so they end up doing a very accurate highpass or lowpass without resonance or irregularities. Typically, when you find this stuff it's carefully designed to behave correctly, and you can make steep Butterworth filters of whatever order you like, this way.Using it for bandpasses instead, and adding nonlinearity, gives you a really interesting response: it's not a narrowing spike as a normal resonant filter would be, instead it's a little region of intensity that you can bring in or remove. The nonlinearity increases as you add more boost, or stays subtle at lower settings. The edges of the region develop little 'moats' to accentuate the effect: some sort of phase interference.The result is what I wanted: tight and effective parametric EQ which is not 'analog modeled', it's designed to do what I'd WANT to do with analog modeling. It's about letting through the energy and sonority (or suppressing energy you don't want) rather than trying to duplicate tone colors of some hardware and muddying things up. This one is full-range, and smoothed, because there's only one of it: if you want to do sweepy automation things keep it around. There will be more, like a three-band that can fit in Airwindows Consolidated, and the full SSL-style four-band that goes in ConsoleX.If you want to get a head start on what that will bring you, play with BiquadStack. If you want four bands of it on every channel in your whole mix… well so do I, and I'm working on it :)"
+    "There's already a plugin called BiquadTriple, and it's three biquads simply cascaded to do what they do with steeper roll-offs before resonance. I'd said 'this is to let you mock up effects where you're going to be using filters' and mentioned 'ways to make the Q factors more specific and staggered' but didn't really go there, at the time. That time arrived in a hurry when I started really trying to work out what was so special about SSL channel strips, so I could use similar parametric bands in ConsoleX. So, BiquadStack is out to let you use this right away, without waiting, and see how that goes. The way it works is, it has the same technique used to make very steep Butterworth filters. This is using specific Q factors in combination, so they end up doing a very accurate highpass or lowpass without resonance or irregularities. Typically, when you find this stuff it's carefully designed to behave correctly, and you can make steep Butterworth filters of whatever order you like, this way. Using it for bandpasses instead, and adding nonlinearity, gives you a really interesting response: it's not a narrowing spike as a normal resonant filter would be, instead it's a little region of intensity that you can bring in or remove. The nonlinearity increases as you add more boost, or stays subtle at lower settings. The edges of the region develop little 'moats' to accentuate the effect: some sort of phase interference. The result is what I wanted: tight and effective parametric EQ which is not 'analog modeled', it's designed to do what I'd WANT to do with analog modeling. It's about letting through the energy and sonority (or suppressing energy you don't want) rather than trying to duplicate tone colors of some hardware and muddying things up. This one is full-range, and smoothed, because there's only one of it: if you want to do sweepy automation things keep it around. There will be more, like a three-band that can fit in Airwindows Consolidated, and the full SSL-style four-band that goes in ConsoleX. If you want to get a head start on what that will bring you, play with BiquadStack. If you want four bands of it on every channel in your whole mix… well so do I, and I'm working on it :)"
 };
 constexpr std::string_view k_tags{
     "biquads"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BiquadStack final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'biqk';
     float A;
     float B;
     float C;
@@ -77,7 +81,6 @@ class BiquadStack final : public Effect<T>
         biqs_total
     };
     double biqs[biqs_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -112,20 +115,17 @@ class BiquadStack final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -137,8 +137,7 @@ class BiquadStack final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -150,8 +149,7 @@ class BiquadStack final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "freq"; break;
             case kParamB: return "level"; break;
             case kParamC: return "reso"; break;
@@ -163,8 +161,7 @@ class BiquadStack final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Freq"; break;
             case kParamB: return "Level"; break;
             case kParamC: return "Reso"; break;
@@ -176,28 +173,28 @@ class BiquadStack final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -255,8 +252,7 @@ class BiquadStack final : public Effect<T>
             biqs[biqs_fA1] = biqs[biqs_fB1];
             biqs[biqs_fA2] = biqs[biqs_fB2];
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

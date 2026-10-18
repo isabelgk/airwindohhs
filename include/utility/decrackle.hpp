@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DeCrackle isolates clicks and vinyl crackles to remove them."
 };
 constexpr std::string_view k_long_description{
-    "This was a lot of work, for a good purpose (cleaning up vinyl records), being asked for (ever since I did the livestreams developing this, I've been hearing about it) and getting put out as it is. There might well be good ways to inappropriately use it, and I might well get something out of it in its intended use, but all the same I have to establish expectations.The fantasy of a decrackle plugin is that you can throw a scratchy ol' record at it, and get a lovely noiseless version back out, that is perfect and has all the tone you want, with none of the noise. Seemed worth trying. I could try to isolate bursts of energy that were the right kind (more side energy than mid, energy higher than the average energy happening at the time, and so on) and mute them. Or, apply a filter, and snap to the filter while the click is happening, so the lows remain unaltered, then back to the raw audio right away.Turned out to be a lot more tricky to get it to work… but there's a problem. The whole idea was to let the audio through totally untouched, rapidly triggering the decrackle for every instant it's needed. This is happening, but when there's heavy crackle, the noise is so constant that there's no way to play the raw audio between the crackles… and there's always a lot of quieter crackle happening between the louder pops and clicks. So the concept worked, but it didn't work in the sense of making all the noise go away. And since it barely touches or affects the rest of the audio, you get a powerful sense of whatever crackle remains… minus the REALLY loud bits, that get neatly removed as if they weren't there.Filter goes from bass-only to full frequency and is the audio you replace clicks with. You tune it to hide the transitions (full bass might not be the ideal setting, you're looking for minimal disruption). Window is important: it'll go from very narrow, to extremely wide. It's set up so it can be abused to let through a big section of the click's surroundings, which can be used for other purposes. Threshld gets lowered to increase the effect, and requires delicate adjustment: be careful about letting it kick in on actual music as that will sound bad. Surface goes from normal at zero, to intense treble filtering. It's not purely a lowpass, it tries to respond to micro-crackles but not underlying high frequencies, and you can use it to subtly mute general surface noise in quiet sections. Finally, Dry/Wet has a special trick: if you set it to 0.0, full dry, it switches to delta monitoring so you can hear ONLY the clicks. If you hear music coming through that, you know Threshld has to be higher.Since this probably isn't going to excite would-be decracklers unless they're really committed to keeping the tone of the audio at all costs, including 'sounding like you didn't bother decrackling' (certain music might be more resilient to lower thresholds), I have an alternate suggestion for amusingly misusing DeCrackle.Use high Window settings and full Dry to make it a neat little percussive gate which is also a highpass, and which isolates the attack (because it's treating it as a click where it has to remove the entire onset of the sound). It will apply a fair amount of latency: DeCrackle is FAR from zero latency, unlike most of my plugins. That does let it gate around a peak while presenting the whole peak without cropping the front off.Or, use the Dry/Wet to reinvent the attack of percussive sounds, from very high frequency spikes to bassy thumps. Filter controls how much of the attack is allowed to be bright, Window controls how much of the attack you grab, Threshld interacts with that and Dry/Wet blends how much of the attack is removed. This is going to work well for darkening and refining bright attacks on kicks you want to make heavier, since it interacts with the Filter up top plus the Window setting plus the processing latency of the plugin.DeCrackle is a lot of tricky, hard-to-balance processing tuned to invisibly remove just the right crackles and clicks from only certain vinyl recordings. If it works for you like that, I'm thrilled! If it works when used on totally different things, I guess the trickiness of it makes the process more interesting or gives you more sophisticated results. Your mileage may vary. Hope you're enjoying kBeyond, I'm working every day on following it up with even better stuff :)"
+    "This was a lot of work, for a good purpose (cleaning up vinyl records), being asked for (ever since I did the livestreams developing this, I've been hearing about it) and getting put out as it is. There might well be good ways to inappropriately use it, and I might well get something out of it in its intended use, but all the same I have to establish expectations. The fantasy of a decrackle plugin is that you can throw a scratchy ol' record at it, and get a lovely noiseless version back out, that is perfect and has all the tone you want, with none of the noise. Seemed worth trying. I could try to isolate bursts of energy that were the right kind (more side energy than mid, energy higher than the average energy happening at the time, and so on) and mute them. Or, apply a filter, and snap to the filter while the click is happening, so the lows remain unaltered, then back to the raw audio right away. Turned out to be a lot more tricky to get it to work… but there's a problem. The whole idea was to let the audio through totally untouched, rapidly triggering the decrackle for every instant it's needed. This is happening, but when there's heavy crackle, the noise is so constant that there's no way to play the raw audio between the crackles… and there's always a lot of quieter crackle happening between the louder pops and clicks. So the concept worked, but it didn't work in the sense of making all the noise go away. And since it barely touches or affects the rest of the audio, you get a powerful sense of whatever crackle remains… minus the REALLY loud bits, that get neatly removed as if they weren't there. Filter goes from bass-only to full frequency and is the audio you replace clicks with. You tune it to hide the transitions (full bass might not be the ideal setting, you're looking for minimal disruption). Window is important: it'll go from very narrow, to extremely wide. It's set up so it can be abused to let through a big section of the click's surroundings, which can be used for other purposes. Threshld gets lowered to increase the effect, and requires delicate adjustment: be careful about letting it kick in on actual music as that will sound bad. Surface goes from normal at zero, to intense treble filtering. It's not purely a lowpass, it tries to respond to micro-crackles but not underlying high frequencies, and you can use it to subtly mute general surface noise in quiet sections. Finally, Dry/Wet has a special trick: if you set it to 0.0, full dry, it switches to delta monitoring so you can hear ONLY the clicks. If you hear music coming through that, you know Threshld has to be higher. Since this probably isn't going to excite would-be decracklers unless they're really committed to keeping the tone of the audio at all costs, including 'sounding like you didn't bother decrackling' (certain music might be more resilient to lower thresholds), I have an alternate suggestion for amusingly misusing DeCrackle. Use high Window settings and full Dry to make it a neat little percussive gate which is also a highpass, and which isolates the attack (because it's treating it as a click where it has to remove the entire onset of the sound). It will apply a fair amount of latency: DeCrackle is FAR from zero latency, unlike most of my plugins. That does let it gate around a peak while presenting the whole peak without cropping the front off. Or, use the Dry/Wet to reinvent the attack of percussive sounds, from very high frequency spikes to bassy thumps. Filter controls how much of the attack is allowed to be bright, Window controls how much of the attack you grab, Threshld interacts with that and Dry/Wet blends how much of the attack is removed. This is going to work well for darkening and refining bright attacks on kicks you want to make heavier, since it interacts with the Filter up top plus the Window setting plus the processing latency of the plugin. DeCrackle is a lot of tricky, hard-to-balance processing tuned to invisibly remove just the right crackles and clicks from only certain vinyl recordings. If it works for you like that, I'm thrilled! If it works when used on totally different things, I guess the trickiness of it makes the process more interesting or gives you more sophisticated results. Your mileage may vary. Hope you're enjoying kBeyond, I'm working every day on following it up with even better stuff :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -115,14 +115,13 @@ class DeCrackle final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -161,7 +160,7 @@ class DeCrackle final : public Effect<T>
             case kParamB: return "window"; break;
             case kParamC: return "thresld"; break;
             case kParamD: return "surface"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -184,30 +183,32 @@ class DeCrackle final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

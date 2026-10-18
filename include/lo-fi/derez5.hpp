@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DeRez5 adds new forms of derezzing."
 };
 constexpr std::string_view k_long_description{
-    "Interestingly, the last time I worked on DeRez I was also putting a lot of time into Meter. Maybe I turn to imaginary digital noises when struggling to unearth the secrets of the great analog noises.DeRez5 builds on everything DeRez4 can do: in fact if you set Square to 0 and Trim to 1, you have DeRez4 again, complete with the frequency crush, linear point-to-point interpolation, and Bezier filters to turn any corners into neat little rounded places without altering the straight parts of the lines. That is of course weird and has nothing to do with musical or harmonic behavior, but we're doing something different so it doesn't matter :)Add the Square control, and now we can go from the original point-to-point undersampling behavior, to full zero-order-hold behavior: meaning, squarewaves! The control progressively untilts the angles of the point to point waves until they're fully square in all their cornery glory. You can still use the Bright control to add neat little round parts to where the corners are.The Trim control sounds innocent, but it's anything but. If you're heavily derezzed, and you increase Trim, it'll sound like you're raising the DeRez control back up again… kinda. Except it's grungier, weirder, less predictable, and it stops imposing a clashing note onto the sound, because the frequency's less regular. What it is doing is allowing angle-reversals in the underlying sound to determine the derez frequency… so if you crank it, you can definitely get more highs in there and save deeper crunchiness for when bass is happening, but it goes beyond that. You can sneak Trim up just enough to interfere with the steadiness of the underlying derez frequency, producing an altered sound with a little more 'mulch' to it but without dragging in as many highs. You can crank it and see at what point DeRez starts to step on the real highs. You can shape all that with Bright and Bassis, and heighten the edge with Square. And you should tune all this to the sounds you're working with, because more than any other DeRez, the whole sound of this plugin interacts with the sound that's, in theory, being destroyed.Hope you enjoy melding this weird thing with your tracks! :)"
+    "Interestingly, the last time I worked on DeRez I was also putting a lot of time into Meter. Maybe I turn to imaginary digital noises when struggling to unearth the secrets of the great analog noises. DeRez5 builds on everything DeRez4 can do: in fact if you set Square to 0 and Trim to 1, you have DeRez4 again, complete with the frequency crush, linear point-to-point interpolation, and Bezier filters to turn any corners into neat little rounded places without altering the straight parts of the lines. That is of course weird and has nothing to do with musical or harmonic behavior, but we're doing something different so it doesn't matter :) Add the Square control, and now we can go from the original point-to-point undersampling behavior, to full zero-order-hold behavior: meaning, squarewaves! The control progressively untilts the angles of the point to point waves until they're fully square in all their cornery glory. You can still use the Bright control to add neat little round parts to where the corners are. The Trim control sounds innocent, but it's anything but. If you're heavily derezzed, and you increase Trim, it'll sound like you're raising the DeRez control back up again… kinda. Except it's grungier, weirder, less predictable, and it stops imposing a clashing note onto the sound, because the frequency's less regular. What it is doing is allowing angle-reversals in the underlying sound to determine the derez frequency… so if you crank it, you can definitely get more highs in there and save deeper crunchiness for when bass is happening, but it goes beyond that. You can sneak Trim up just enough to interfere with the steadiness of the underlying derez frequency, producing an altered sound with a little more 'mulch' to it but without dragging in as many highs. You can crank it and see at what point DeRez starts to step on the real highs. You can shape all that with Bright and Bassis, and heighten the edge with Square. And you should tune all this to the sounds you're working with, because more than any other DeRez, the whole sound of this plugin interacts with the sound that's, in theory, being destroyed. Hope you enjoy melding this weird thing with your tracks! :)"
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -110,23 +110,20 @@ class DeRez5 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -141,8 +138,7 @@ class DeRez5 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 1.0; break;
             case kParamC: return 0.0; break;
@@ -157,8 +153,7 @@ class DeRez5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "derez"; break;
             case kParamB: return "trim"; break;
             case kParamC: return "square"; break;
@@ -173,8 +168,7 @@ class DeRez5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Derez"; break;
             case kParamB: return "Trim"; break;
             case kParamC: return "Square"; break;
@@ -189,34 +183,34 @@ class DeRez5 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -253,8 +247,7 @@ class DeRez5 final : public Effect<T>
         }
         double bassisTrim = 1.0 - (bassisBez * ((double)stepped / (stepped + 1.0)));
         double output = F;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

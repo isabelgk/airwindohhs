@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ClipOnly2 suppresses the brightness of digital clipping without affecting unclipped samples, at any sample rate."
 };
 constexpr std::string_view k_long_description{
-    "ClipOnly2 is the heart of my mastering-grade clipping algorithm. Instead of trying to define the cleanest possible nasty sharp edge, or doing a soft-clip thing, ClipOnly passes through ALL nonclipped samples totally untouched… but when you get a clipped sample, what ClipOnly does is it takes the sample entering clipping, and the sample exiting clipping, and it interpolates between the last unclipped sample and the clipped stuff. So, it is synthesizing a soft entry and exit from what is otherwise total hard clipping, and if only the one sample clipped? That very bright clip simply goes away, turned right down.This produces a hard-clip suitable for safety clipper purposes, which is purely ‘bypass’ (plus a one sample delay to allow for the processing), with softer highs than you’d get from any pure hard-clip, no matter how oversampled. It’s an alternate technique, and is also pretty CPU-efficient.ClipOnly2 takes this principle and changes the ‘one sample’ to ‘the space of one sample at 44.1k’. Same tone, same ear-friendly approach to clipping extreme highs, except that now it’s effective at high sample rates. I’m demonstrating it and its predecessor at 96k, but ClipOnly2 is designed to work up to 700k or so, in case people get giddy with their newfound power :)"
+    "ClipOnly2 is the heart of my mastering-grade clipping algorithm. Instead of trying to define the cleanest possible nasty sharp edge, or doing a soft-clip thing, ClipOnly passes through ALL nonclipped samples totally untouched… but when you get a clipped sample, what ClipOnly does is it takes the sample entering clipping, and the sample exiting clipping, and it interpolates between the last unclipped sample and the clipped stuff. So, it is synthesizing a soft entry and exit from what is otherwise total hard clipping, and if only the one sample clipped? That very bright clip simply goes away, turned right down. This produces a hard-clip suitable for safety clipper purposes, which is purely ‘bypass’ (plus a one sample delay to allow for the processing), with softer highs than you’d get from any pure hard-clip, no matter how oversampled. It’s an alternate technique, and is also pretty CPU-efficient. ClipOnly2 takes this principle and changes the ‘one sample’ to ‘the space of one sample at 44.1k’. Same tone, same ear-friendly approach to clipping extreme highs, except that now it’s effective at high sample rates. I’m demonstrating it and its predecessor at 96k, but ClipOnly2 is designed to work up to 700k or so, in case people get giddy with their newfound power :)"
 };
 constexpr std::string_view k_tags{
     "clipping"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ClipOnly2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cloz';
     double lastSampleL;
     double intermediateL[16];
     bool wasPosClipL;
@@ -57,17 +61,14 @@ class ClipOnly2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -76,8 +77,7 @@ class ClipOnly2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -86,8 +86,7 @@ class ClipOnly2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -96,8 +95,7 @@ class ClipOnly2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -106,22 +104,22 @@ class ClipOnly2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -148,8 +146,7 @@ class ClipOnly2 final : public Effect<T>
         // refclip*softness = 0.249171763330607	Seven decimal places is plenty as it's
         // not related to the original sound much: it's an arbitrary position in softening.
         // This is where the numbers come from, referencing the code of the original ClipOnly
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             //		if (fabs(inputSampleL)<1.18e-43) inputSampleL = fpdL * 1.18e-43;

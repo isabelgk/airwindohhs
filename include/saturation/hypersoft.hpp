@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Hypersoft is a more extreme form of soft-clipper."
 };
 constexpr std::string_view k_long_description{
-    "A funny thing happened on the way to posting the video for this…Hypersoft is a new softclipper. Its purpose was to answer the question 'what if a softclipper, that develops a sharper and sharper corner as you overdrive it, placed that corner NOT up at the maximum volume, but somewhere else?'I feel like this isn't investigated because it's 'wasting' the distortion, assigning it to quieter parts of the sound, and that it's been such an assumption that everything be LOUD, that nobody would even try such a weird experiment. But I've been working on Airwindows Meter, and looking at how hit records in my collection produce these 'clouds' of peak energy and slew energy that always take up more space than modern mixes allow. And so, I wondered: what even do you get, if you used soft-clipping and techniques like wavefolding to produce a 'curve' where the 'flat-topping' instead became a circle or something, and it tries to get progressively sharper somewhere in the middle?So I started working with test tones, sine waves, and hashed it out for a while on livestreams and made a thing that produced this curve, plus the wavefolding caused the 'flat top' that you eventually hit, to stick around longer than it normally would, and then curve down into a strange point. When you send a ramping-up louder and louder sine into this, the harmonics it produces go from very soft and mellow, to more sharp and high-frequency, based on how loud the sine was. (compare to a hardclip, where you get highs immediately and then they mostly don't change.)On music, it's a wildly grungey dirt-factory that's almost as colorful as class AB distortion, for some of the same reasons. The place that the 'curve' changes most sharply is no longer at the top. But it's still a softclip, so quiet sounds don't grind as they would in class AB distortion. It goes from subtly punchy and textural, all the way to aggressively gnarly.And then I made a video and used a simple room-miced drum beat, a basic boom-bap played as well as I could, just two mics placed in front of the kit, and cranked up Hypersoft until I thought it sounded pretty amazing, thought I'd be able to use something like that.And ContentID flagged it as Rammstein, 'Das Alte Leid' and refused to let me monetize it. (ads that run are out of my hands now, and go to Rammstein.) With no other processing at all, my simple drum playing has apparently become Rammstein enough to fool YouTube. The raw mic feed wouldn't do that at all: Rammstein is a highly processed modern-metal sound. But there it was.What's happening is this: drum impacts are being allowed to persist (like in the highly sculpted sound) but the body of the sound is brought up and reshaped interestingly, producing a 'big' effect that acts kind of like the sound is experienced in real life. Pushed hard enough the dynamics will invert, but it'll take a lot to do that. It's a new form of softclip which I think lends itself to drums, but will probably also suit basses.You get Input, Depth, Bright and Output. 0.5 is as neutral as it gets though the effect will add a little boost just by reshaping. Depth specifies how many additional wavefoldings to apply (each runs its own sin() function so high settings will cost a bit more CPU) and more Depth intensifies the effect, making it more focused and colorful. Adding Bright means all the wavefoldings will be used even if they're going to alias: less Bright means the wavefoldings start to bail out when they risk aliasing. Note that this WILL NOT fix aliasing! It changes the tone in such a way that you can dial in the amount of treble hype you get out of Hypersoft, or leave it as a darker effect.This will not be as effective a loudenator as just clipping the crud out of something, before you ask. This adds harmonics and intensity while retaining dynamics. In fact it tries to heighten dynamics by throwing more overtones when the overload is greater. I think it's going to be really, really useful but not for simple loudenating: if you're after intensification and impact, Hypersoft might come in handy. I hope you find it helpful :)"
+    "A funny thing happened on the way to posting the video for this… Hypersoft is a new softclipper. Its purpose was to answer the question 'what if a softclipper, that develops a sharper and sharper corner as you overdrive it, placed that corner NOT up at the maximum volume, but somewhere else?' I feel like this isn't investigated because it's 'wasting' the distortion, assigning it to quieter parts of the sound, and that it's been such an assumption that everything be LOUD, that nobody would even try such a weird experiment. But I've been working on Airwindows Meter, and looking at how hit records in my collection produce these 'clouds' of peak energy and slew energy that always take up more space than modern mixes allow. And so, I wondered: what even do you get, if you used soft-clipping and techniques like wavefolding to produce a 'curve' where the 'flat-topping' instead became a circle or something, and it tries to get progressively sharper somewhere in the middle? So I started working with test tones, sine waves, and hashed it out for a while on livestreams and made a thing that produced this curve, plus the wavefolding caused the 'flat top' that you eventually hit, to stick around longer than it normally would, and then curve down into a strange point. When you send a ramping-up louder and louder sine into this, the harmonics it produces go from very soft and mellow, to more sharp and high-frequency, based on how loud the sine was. (compare to a hardclip, where you get highs immediately and then they mostly don't change.) On music, it's a wildly grungey dirt-factory that's almost as colorful as class AB distortion, for some of the same reasons. The place that the 'curve' changes most sharply is no longer at the top. But it's still a softclip, so quiet sounds don't grind as they would in class AB distortion. It goes from subtly punchy and textural, all the way to aggressively gnarly. And then I made a video and used a simple room-miced drum beat, a basic boom-bap played as well as I could, just two mics placed in front of the kit, and cranked up Hypersoft until I thought it sounded pretty amazing, thought I'd be able to use something like that. And ContentID flagged it as Rammstein, 'Das Alte Leid' and refused to let me monetize it. (ads that run are out of my hands now, and go to Rammstein.) With no other processing at all, my simple drum playing has apparently become Rammstein enough to fool YouTube. The raw mic feed wouldn't do that at all: Rammstein is a highly processed modern-metal sound. But there it was. What's happening is this: drum impacts are being allowed to persist (like in the highly sculpted sound) but the body of the sound is brought up and reshaped interestingly, producing a 'big' effect that acts kind of like the sound is experienced in real life. Pushed hard enough the dynamics will invert, but it'll take a lot to do that. It's a new form of softclip which I think lends itself to drums, but will probably also suit basses. You get Input, Depth, Bright and Output. 0.5 is as neutral as it gets though the effect will add a little boost just by reshaping. Depth specifies how many additional wavefoldings to apply (each runs its own sin() function so high settings will cost a bit more CPU) and more Depth intensifies the effect, making it more focused and colorful. Adding Bright means all the wavefoldings will be used even if they're going to alias: less Bright means the wavefoldings start to bail out when they risk aliasing. Note that this WILL NOT fix aliasing! It changes the tone in such a way that you can dial in the amount of treble hype you get out of Hypersoft, or leave it as a darker effect. This will not be as effective a loudenator as just clipping the crud out of something, before you ask. This adds harmonics and intensity while retaining dynamics. In fact it tries to heighten dynamics by throwing more overtones when the overload is greater. I think it's going to be really, really useful but not for simple loudenating: if you're after intensification and impact, Hypersoft might come in handy. I hope you find it helpful :)"
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Hypersoft final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'hpso';
     float A;
     float B;
     float C;
@@ -61,21 +65,18 @@ class Hypersoft final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -88,8 +89,7 @@ class Hypersoft final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -102,8 +102,7 @@ class Hypersoft final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "depth"; break;
             case kParamC: return "bright"; break;
@@ -116,8 +115,7 @@ class Hypersoft final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Depth"; break;
             case kParamC: return "Bright"; break;
@@ -130,30 +128,30 @@ class Hypersoft final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -184,8 +182,7 @@ class Hypersoft final : public Effect<T>
         }
         outputGain *= 0.68;
         // this is the fader curve from ConsoleX, rescaled to work with Hypersoft
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

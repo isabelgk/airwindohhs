@@ -11,51 +11,54 @@ constexpr std::string_view k_short_description{
     "kPlateA is a plate reverb, not unlike its namesake atop Abbey Road."
 };
 constexpr std::string_view k_long_description{
-    "So I just happened to turn my efforts to plate reverbs last week, since the internet exploded over some plugin drama and some of the plugins in question just happened to be models of some specific plate reverbs in a famous place: atop Abbey Road Studios. There were four of them, and I'm sure I can't make a plugin to model those exact ones, as the rights to the name are probably all tied up. And I wouldn't suggest that I tried to make reverb plugins MORE realistic than those made by this company with rights to the name. That would be rude! :DBut I bet nothing is stopping me from making plugins and using the LETTER. And indeed nothing is stopping me from finding examples of dry sound and then the sound of these other plugins, and using that as a reference to the lettered EMT plate reverb on top of Abbey Road, or indeed figuring out that this other company rather overprocessed its stuff and finding ways to get a similar effect that's cleaner, deeper and more intense.It's actually a really interesting puzzle to do this sort of thing… especially when you don't really have good reference yet, as it's all happening so fast. But now you have kPlateA. And in it, you might just have a new best plate reverb. It's using multiple fancy Householder feedforward matrices, all sorts of filtering, undersampling to make it useable at 96k and 192k, and seeing as it was developed on my antique Macbook Pro running Snow Leopard, I daresay it both sounds better and runs better than its competition.Oh, one more thing: you get to own it. And by that I mean, not only do you get it maintained and supported for free (thanks to a thriving Patreon and those who help me), but it is also MIT-licensed open source code. So you get to own it, in the sense of you can take the code and skin it with a big GUI with pictures of plate reverbs with funny waves drawn on them, if you feel that is really necessary. You just have to credit Airwindows.Or, you may find that the way this can sit in the mix, means the GUI with pictures of plate reverbs with funny waves drawn on them, isn't really as necessary as you thought it was :)"
+    "So I just happened to turn my efforts to plate reverbs last week, since the internet exploded over some plugin drama and some of the plugins in question just happened to be models of some specific plate reverbs in a famous place: atop Abbey Road Studios. There were four of them, and I'm sure I can't make a plugin to model those exact ones, as the rights to the name are probably all tied up. And I wouldn't suggest that I tried to make reverb plugins MORE realistic than those made by this company with rights to the name. That would be rude! :D But I bet nothing is stopping me from making plugins and using the LETTER. And indeed nothing is stopping me from finding examples of dry sound and then the sound of these other plugins, and using that as a reference to the lettered EMT plate reverb on top of Abbey Road, or indeed figuring out that this other company rather overprocessed its stuff and finding ways to get a similar effect that's cleaner, deeper and more intense. It's actually a really interesting puzzle to do this sort of thing… especially when you don't really have good reference yet, as it's all happening so fast. But now you have kPlateA. And in it, you might just have a new best plate reverb. It's using multiple fancy Householder feedforward matrices, all sorts of filtering, undersampling to make it useable at 96k and 192k, and seeing as it was developed on my antique Macbook Pro running Snow Leopard, I daresay it both sounds better and runs better than its competition. Oh, one more thing: you get to own it. And by that I mean, not only do you get it maintained and supported for free (thanks to a thriving Patreon and those who help me), but it is also MIT-licensed open source code. So you get to own it, in the sense of you can take the code and skin it with a big GUI with pictures of plate reverbs with funny waves drawn on them, if you feel that is really necessary. You just have to credit Airwindows. Or, you may find that the way this can sit in the mix, means the GUI with pictures of plate reverbs with funny waves drawn on them, isn't really as necessary as you thought it was :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
 };
 
-constexpr int earlyA = 61;
-constexpr int earlyB = 499;
-constexpr int earlyC = 107;
-constexpr int earlyD = 127;
-constexpr int earlyE = 607;
-constexpr int earlyF = 313;
-constexpr int earlyG = 563;
-constexpr int earlyH = 47;
-constexpr int earlyI = 409;
-constexpr int predelay = 24010; // 37 ms, 170 seat club
-constexpr int delayA = 631;
-constexpr int delayB = 281;
-constexpr int delayC = 97;
-constexpr int delayD = 709;
-constexpr int delayE = 307;
-constexpr int delayF = 149;
-constexpr int delayG = 313;
-constexpr int delayH = 37;
-constexpr int delayI = 659;
-constexpr int delayJ = 701;
-constexpr int delayK = 13;
-constexpr int delayL = 733;
-constexpr int delayM = 773;
-constexpr int delayN = 23;
-constexpr int delayO = 61;
-constexpr int delayP = 787;
-constexpr int delayQ = 83;
-constexpr int delayR = 691;
-constexpr int delayS = 5;
-constexpr int delayT = 587;
-constexpr int delayU = 829;
-constexpr int delayV = 449;
-constexpr int delayW = 53;
-constexpr int delayX = 503;
-constexpr int delayY = 181; // 86 ms, 882 seat hall. Scarcity, 1 in 41582
-
 template <typename T>
 class kPlateA final : public Effect<T>
 {
+    static constexpr int earlyA = 61;
+    static constexpr int earlyB = 499;
+    static constexpr int earlyC = 107;
+    static constexpr int earlyD = 127;
+    static constexpr int earlyE = 607;
+    static constexpr int earlyF = 313;
+    static constexpr int earlyG = 563;
+    static constexpr int earlyH = 47;
+    static constexpr int earlyI = 409;
+    static constexpr int predelay = 24010;
+    static constexpr int delayA = 631;
+    static constexpr int delayB = 281;
+    static constexpr int delayC = 97;
+    static constexpr int delayD = 709;
+    static constexpr int delayE = 307;
+    static constexpr int delayF = 149;
+    static constexpr int delayG = 313;
+    static constexpr int delayH = 37;
+    static constexpr int delayI = 659;
+    static constexpr int delayJ = 701;
+    static constexpr int delayK = 13;
+    static constexpr int delayL = 733;
+    static constexpr int delayM = 773;
+    static constexpr int delayN = 23;
+    static constexpr int delayO = 61;
+    static constexpr int delayP = 787;
+    static constexpr int delayQ = 83;
+    static constexpr int delayR = 691;
+    static constexpr int delayS = 5;
+    static constexpr int delayT = 587;
+    static constexpr int delayU = 829;
+    static constexpr int delayV = 449;
+    static constexpr int delayW = 53;
+    static constexpr int delayX = 503;
+    static constexpr int delayY = 181;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kpla';
     double iirAL;
     double iirBL;
     double gainIn;
@@ -235,7 +238,6 @@ class kPlateA final : public Effect<T>
     double fixB[fix_total];
     double fixC[fix_total];
     double fixD[fix_total];
-
     double prevMulchAL;
     double prevMulchAR;
     double prevMulchBL;
@@ -246,24 +248,21 @@ class kPlateA final : public Effect<T>
     double prevMulchDR;
     double prevMulchEL;
     double prevMulchER;
-
     double prevOutAL;
     double prevOutAR;
-
     double prevInAL;
     double prevInAR;
     double prevInBL;
     double prevInBR;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
+
   public:
     kPlateA()
     {
@@ -557,22 +556,19 @@ class kPlateA final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -586,8 +582,7 @@ class kPlateA final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -601,11 +596,10 @@ class kPlateA final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "inputpad"; break;
             case kParamB: return "damping"; break;
-            case kParamC: return "low cut"; break;
+            case kParamC: return "lowcut"; break;
             case kParamD: return "predelay"; break;
             case kParamE: return "wetness"; break;
 
@@ -616,8 +610,7 @@ class kPlateA final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "InputPad"; break;
             case kParamB: return "Damping"; break;
             case kParamC: return "Low Cut"; break;
@@ -631,32 +624,32 @@ class kPlateA final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B * 10.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 3.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(pow(D, 2) * 0.5, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return "sec"; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "sec", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -746,8 +739,7 @@ class kPlateA final : public Effect<T>
         fixD[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixD[fix_b2] = (1.0 - K / fixD[fix_reso] + K * K) * norm;
         // stereo biquad bandpasses we can put into the reverb matrix
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

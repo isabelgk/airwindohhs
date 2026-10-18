@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BrightAmbience is a plugin for very bright gated reverbs."
 };
 constexpr std::string_view k_long_description{
-    "BrightAmbience is one of the old secret weapons of classic Airwindows. It’s nasty enough to be pretty unique, and nice enough to be useable. What it does, is it sets up a BIG pile of delay taps spaced by prime numbers. There’s a decay control and a sustain control: the sustain will help with its CPU hungriness, the decay won’t. Dry/wet is at the top (what can I say, this was an early one) and wet tends to run HOT so you might like to use it as mostly dry and add its coloration to things as needed.It’s CPU hungry because it’s using a really naive method of doing all that, but it also has a really distinct sound that differs from what you can get out of convolution reverbs. And since the distribution of delay taps is prime-numbered but also kind of naive, instead of getting a convincing room you get a sort of steel-chamber effect with a nasty resonance up near the Nyquist frequency. But that can work as a special effect. Back in the day I meant this to be a great reverb, but it’s not. However, it IS a great ‘crazy bright ambience effect’, though it’s pretty CPU hungry like I said. You can apply it to anything that you’d like a halo of shiny around, and its tone is nicer at 96K as I demo it. (the sustain is tied to maximum sample delay, so higher sample rates will give you shorter sustains and denser shininess)"
+    "BrightAmbience is one of the old secret weapons of classic Airwindows. It’s nasty enough to be pretty unique, and nice enough to be useable. What it does, is it sets up a BIG pile of delay taps spaced by prime numbers. There’s a decay control and a sustain control: the sustain will help with its CPU hungriness, the decay won’t. Dry/wet is at the top (what can I say, this was an early one) and wet tends to run HOT so you might like to use it as mostly dry and add its coloration to things as needed. It’s CPU hungry because it’s using a really naive method of doing all that, but it also has a really distinct sound that differs from what you can get out of convolution reverbs. And since the distribution of delay taps is prime-numbered but also kind of naive, instead of getting a convincing room you get a sort of steel-chamber effect with a nasty resonance up near the Nyquist frequency. But that can work as a special effect. Back in the day I meant this to be a great reverb, but it’s not. However, it IS a great ‘crazy bright ambience effect’, though it’s pretty CPU hungry like I said. You can apply it to anything that you’d like a halo of shiny around, and its tone is nicer at 96K as I demo it. (the sustain is tied to maximum sample delay, so higher sample rates will give you shorter sustains and denser shininess)"
 };
 constexpr std::string_view k_tags{
     "ambience"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BrightAmbience final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'brab';
     int32_t pL[25361];
     int32_t pR[25361];
     int gcount;
@@ -62,20 +66,17 @@ class BrightAmbience final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -87,8 +88,7 @@ class BrightAmbience final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.0; break;
@@ -100,9 +100,8 @@ class BrightAmbience final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dry/wet"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "drywet"; break;
             case kParamB: return "sustain"; break;
             case kParamC: return "decay"; break;
 
@@ -113,8 +112,7 @@ class BrightAmbience final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Dry/Wet"; break;
             case kParamB: return "Sustain"; break;
             case kParamC: return "Decay"; break;
@@ -126,28 +124,28 @@ class BrightAmbience final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -163,8 +161,7 @@ class BrightAmbience final : public Effect<T>
         double scale = 4;
         int count;
         int32_t temp;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -183,8 +180,7 @@ class BrightAmbience final : public Effect<T>
             //-8388352 to 8388352 is equal to 24 bit linear space
             // begin L
             temp = 0;
-            switch (cpu)
-            {
+            switch (cpu) {
                 case 32:
                     temp = (int32_t)((double)temp / decay);
                     temp += pL[count + 12679];
@@ -914,8 +910,7 @@ class BrightAmbience final : public Effect<T>
             // end L
             // begin R
             temp = 0;
-            switch (cpu)
-            {
+            switch (cpu) {
                 case 32:
                     temp = (int32_t)((double)temp / decay);
                     temp += pR[count + 12679];

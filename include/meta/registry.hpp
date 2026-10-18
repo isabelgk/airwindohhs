@@ -455,6 +455,25 @@
 #include "tone-color/neverland.hpp"
 #include "tone-color/precious.hpp"
 #include "tone-color/woodenbox.hpp"
+#include "uncategorized/bezeq4.hpp"
+#include "uncategorized/consolehbuss.hpp"
+#include "uncategorized/consolehchannel.hpp"
+#include "uncategorized/consolehpre.hpp"
+#include "uncategorized/consolex2buss.hpp"
+#include "uncategorized/consolex2channel.hpp"
+#include "uncategorized/consolex2pre.hpp"
+#include "uncategorized/consolex3.hpp"
+#include "uncategorized/consolexbuss.hpp"
+#include "uncategorized/consolexchannel.hpp"
+#include "uncategorized/consolexpre.hpp"
+#include "uncategorized/cstrip.hpp"
+#include "uncategorized/echojam.hpp"
+#include "uncategorized/pafnuty.hpp"
+#include "uncategorized/purestconsole4buss.hpp"
+#include "uncategorized/purestconsole4channel.hpp"
+#include "uncategorized/spiral3.hpp"
+#include "uncategorized/weave.hpp"
+#include "uncategorized/woodenchest.hpp"
 #include "utility/balanced.hpp"
 #include "utility/bitdualpan.hpp"
 #include "utility/bitshiftgain.hpp"
@@ -4089,6 +4108,158 @@ inline std::unique_ptr<IPlugin<T>> make_woodenbox()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_bezeq4()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::bezeq4::BezEQ4>>(
+        airwindohhs::bezeq4::k_name, airwindohhs::bezeq4::k_tags,
+        airwindohhs::bezeq4::k_short_description, airwindohhs::bezeq4::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolehbuss()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolehbuss::ConsoleHBuss>>(
+        airwindohhs::consolehbuss::k_name, airwindohhs::consolehbuss::k_tags,
+        airwindohhs::consolehbuss::k_short_description, airwindohhs::consolehbuss::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolehchannel()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolehchannel::ConsoleHChannel>>(
+        airwindohhs::consolehchannel::k_name, airwindohhs::consolehchannel::k_tags,
+        airwindohhs::consolehchannel::k_short_description, airwindohhs::consolehchannel::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolehpre()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolehpre::ConsoleHPre>>(
+        airwindohhs::consolehpre::k_name, airwindohhs::consolehpre::k_tags,
+        airwindohhs::consolehpre::k_short_description, airwindohhs::consolehpre::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolex2buss()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolex2buss::ConsoleX2Buss>>(
+        airwindohhs::consolex2buss::k_name, airwindohhs::consolex2buss::k_tags,
+        airwindohhs::consolex2buss::k_short_description, airwindohhs::consolex2buss::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolex2channel()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolex2channel::ConsoleX2Channel>>(
+        airwindohhs::consolex2channel::k_name, airwindohhs::consolex2channel::k_tags,
+        airwindohhs::consolex2channel::k_short_description, airwindohhs::consolex2channel::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolex2pre()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolex2pre::ConsoleX2Pre>>(
+        airwindohhs::consolex2pre::k_name, airwindohhs::consolex2pre::k_tags,
+        airwindohhs::consolex2pre::k_short_description, airwindohhs::consolex2pre::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolex3()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolex3::ConsoleX3>>(
+        airwindohhs::consolex3::k_name, airwindohhs::consolex3::k_tags,
+        airwindohhs::consolex3::k_short_description, airwindohhs::consolex3::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolexbuss()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolexbuss::ConsoleXBuss>>(
+        airwindohhs::consolexbuss::k_name, airwindohhs::consolexbuss::k_tags,
+        airwindohhs::consolexbuss::k_short_description, airwindohhs::consolexbuss::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolexchannel()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolexchannel::ConsoleXChannel>>(
+        airwindohhs::consolexchannel::k_name, airwindohhs::consolexchannel::k_tags,
+        airwindohhs::consolexchannel::k_short_description, airwindohhs::consolexchannel::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_consolexpre()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::consolexpre::ConsoleXPre>>(
+        airwindohhs::consolexpre::k_name, airwindohhs::consolexpre::k_tags,
+        airwindohhs::consolexpre::k_short_description, airwindohhs::consolexpre::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_cstrip()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::cstrip::CStrip>>(
+        airwindohhs::cstrip::k_name, airwindohhs::cstrip::k_tags,
+        airwindohhs::cstrip::k_short_description, airwindohhs::cstrip::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_echojam()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::echojam::Echojam>>(
+        airwindohhs::echojam::k_name, airwindohhs::echojam::k_tags,
+        airwindohhs::echojam::k_short_description, airwindohhs::echojam::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_pafnuty()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::pafnuty::Pafnuty>>(
+        airwindohhs::pafnuty::k_name, airwindohhs::pafnuty::k_tags,
+        airwindohhs::pafnuty::k_short_description, airwindohhs::pafnuty::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_purestconsole4buss()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::purestconsole4buss::PurestConsole4Buss>>(
+        airwindohhs::purestconsole4buss::k_name, airwindohhs::purestconsole4buss::k_tags,
+        airwindohhs::purestconsole4buss::k_short_description, airwindohhs::purestconsole4buss::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_purestconsole4channel()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::purestconsole4channel::PurestConsole4Channel>>(
+        airwindohhs::purestconsole4channel::k_name, airwindohhs::purestconsole4channel::k_tags,
+        airwindohhs::purestconsole4channel::k_short_description, airwindohhs::purestconsole4channel::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_spiral3()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::spiral3::Spiral3>>(
+        airwindohhs::spiral3::k_name, airwindohhs::spiral3::k_tags,
+        airwindohhs::spiral3::k_short_description, airwindohhs::spiral3::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_weave()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::weave::Weave>>(
+        airwindohhs::weave::k_name, airwindohhs::weave::k_tags,
+        airwindohhs::weave::k_short_description, airwindohhs::weave::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_woodenchest()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::woodenchest::WoodenChest>>(
+        airwindohhs::woodenchest::k_name, airwindohhs::woodenchest::k_tags,
+        airwindohhs::woodenchest::k_short_description, airwindohhs::woodenchest::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_balanced()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::balanced::Balanced>>(
@@ -5034,6 +5205,25 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::neverland::k_name, "neverland", "tone-color", airwindohhs::neverland::k_tags, airwindohhs::neverland::k_short_description, airwindohhs::neverland::k_long_description, static_cast<int>(airwindohhs::neverland::Neverland<T>::kNumParameters), &make_neverland<T> },
         { airwindohhs::precious::k_name, "precious", "tone-color", airwindohhs::precious::k_tags, airwindohhs::precious::k_short_description, airwindohhs::precious::k_long_description, static_cast<int>(airwindohhs::precious::Precious<T>::kNumParameters), &make_precious<T> },
         { airwindohhs::woodenbox::k_name, "woodenbox", "tone-color", airwindohhs::woodenbox::k_tags, airwindohhs::woodenbox::k_short_description, airwindohhs::woodenbox::k_long_description, static_cast<int>(airwindohhs::woodenbox::WoodenBox<T>::kNumParameters), &make_woodenbox<T> },
+        { airwindohhs::bezeq4::k_name, "bezeq4", "uncategorized", airwindohhs::bezeq4::k_tags, airwindohhs::bezeq4::k_short_description, airwindohhs::bezeq4::k_long_description, static_cast<int>(airwindohhs::bezeq4::BezEQ4<T>::kNumParameters), &make_bezeq4<T> },
+        { airwindohhs::consolehbuss::k_name, "consolehbuss", "uncategorized", airwindohhs::consolehbuss::k_tags, airwindohhs::consolehbuss::k_short_description, airwindohhs::consolehbuss::k_long_description, static_cast<int>(airwindohhs::consolehbuss::ConsoleHBuss<T>::kNumParameters), &make_consolehbuss<T> },
+        { airwindohhs::consolehchannel::k_name, "consolehchannel", "uncategorized", airwindohhs::consolehchannel::k_tags, airwindohhs::consolehchannel::k_short_description, airwindohhs::consolehchannel::k_long_description, static_cast<int>(airwindohhs::consolehchannel::ConsoleHChannel<T>::kNumParameters), &make_consolehchannel<T> },
+        { airwindohhs::consolehpre::k_name, "consolehpre", "uncategorized", airwindohhs::consolehpre::k_tags, airwindohhs::consolehpre::k_short_description, airwindohhs::consolehpre::k_long_description, static_cast<int>(airwindohhs::consolehpre::ConsoleHPre<T>::kNumParameters), &make_consolehpre<T> },
+        { airwindohhs::consolex2buss::k_name, "consolex2buss", "uncategorized", airwindohhs::consolex2buss::k_tags, airwindohhs::consolex2buss::k_short_description, airwindohhs::consolex2buss::k_long_description, static_cast<int>(airwindohhs::consolex2buss::ConsoleX2Buss<T>::kNumParameters), &make_consolex2buss<T> },
+        { airwindohhs::consolex2channel::k_name, "consolex2channel", "uncategorized", airwindohhs::consolex2channel::k_tags, airwindohhs::consolex2channel::k_short_description, airwindohhs::consolex2channel::k_long_description, static_cast<int>(airwindohhs::consolex2channel::ConsoleX2Channel<T>::kNumParameters), &make_consolex2channel<T> },
+        { airwindohhs::consolex2pre::k_name, "consolex2pre", "uncategorized", airwindohhs::consolex2pre::k_tags, airwindohhs::consolex2pre::k_short_description, airwindohhs::consolex2pre::k_long_description, static_cast<int>(airwindohhs::consolex2pre::ConsoleX2Pre<T>::kNumParameters), &make_consolex2pre<T> },
+        { airwindohhs::consolex3::k_name, "consolex3", "uncategorized", airwindohhs::consolex3::k_tags, airwindohhs::consolex3::k_short_description, airwindohhs::consolex3::k_long_description, static_cast<int>(airwindohhs::consolex3::ConsoleX3<T>::kNumParameters), &make_consolex3<T> },
+        { airwindohhs::consolexbuss::k_name, "consolexbuss", "uncategorized", airwindohhs::consolexbuss::k_tags, airwindohhs::consolexbuss::k_short_description, airwindohhs::consolexbuss::k_long_description, static_cast<int>(airwindohhs::consolexbuss::ConsoleXBuss<T>::kNumParameters), &make_consolexbuss<T> },
+        { airwindohhs::consolexchannel::k_name, "consolexchannel", "uncategorized", airwindohhs::consolexchannel::k_tags, airwindohhs::consolexchannel::k_short_description, airwindohhs::consolexchannel::k_long_description, static_cast<int>(airwindohhs::consolexchannel::ConsoleXChannel<T>::kNumParameters), &make_consolexchannel<T> },
+        { airwindohhs::consolexpre::k_name, "consolexpre", "uncategorized", airwindohhs::consolexpre::k_tags, airwindohhs::consolexpre::k_short_description, airwindohhs::consolexpre::k_long_description, static_cast<int>(airwindohhs::consolexpre::ConsoleXPre<T>::kNumParameters), &make_consolexpre<T> },
+        { airwindohhs::cstrip::k_name, "cstrip", "uncategorized", airwindohhs::cstrip::k_tags, airwindohhs::cstrip::k_short_description, airwindohhs::cstrip::k_long_description, static_cast<int>(airwindohhs::cstrip::CStrip<T>::kNumParameters), &make_cstrip<T> },
+        { airwindohhs::echojam::k_name, "echojam", "uncategorized", airwindohhs::echojam::k_tags, airwindohhs::echojam::k_short_description, airwindohhs::echojam::k_long_description, static_cast<int>(airwindohhs::echojam::Echojam<T>::kNumParameters), &make_echojam<T> },
+        { airwindohhs::pafnuty::k_name, "pafnuty", "uncategorized", airwindohhs::pafnuty::k_tags, airwindohhs::pafnuty::k_short_description, airwindohhs::pafnuty::k_long_description, static_cast<int>(airwindohhs::pafnuty::Pafnuty<T>::kNumParameters), &make_pafnuty<T> },
+        { airwindohhs::purestconsole4buss::k_name, "purestconsole4buss", "uncategorized", airwindohhs::purestconsole4buss::k_tags, airwindohhs::purestconsole4buss::k_short_description, airwindohhs::purestconsole4buss::k_long_description, static_cast<int>(airwindohhs::purestconsole4buss::PurestConsole4Buss<T>::kNumParameters), &make_purestconsole4buss<T> },
+        { airwindohhs::purestconsole4channel::k_name, "purestconsole4channel", "uncategorized", airwindohhs::purestconsole4channel::k_tags, airwindohhs::purestconsole4channel::k_short_description, airwindohhs::purestconsole4channel::k_long_description, static_cast<int>(airwindohhs::purestconsole4channel::PurestConsole4Channel<T>::kNumParameters), &make_purestconsole4channel<T> },
+        { airwindohhs::spiral3::k_name, "spiral3", "uncategorized", airwindohhs::spiral3::k_tags, airwindohhs::spiral3::k_short_description, airwindohhs::spiral3::k_long_description, static_cast<int>(airwindohhs::spiral3::Spiral3<T>::kNumParameters), &make_spiral3<T> },
+        { airwindohhs::weave::k_name, "weave", "uncategorized", airwindohhs::weave::k_tags, airwindohhs::weave::k_short_description, airwindohhs::weave::k_long_description, static_cast<int>(airwindohhs::weave::Weave<T>::kNumParameters), &make_weave<T> },
+        { airwindohhs::woodenchest::k_name, "woodenchest", "uncategorized", airwindohhs::woodenchest::k_tags, airwindohhs::woodenchest::k_short_description, airwindohhs::woodenchest::k_long_description, static_cast<int>(airwindohhs::woodenchest::WoodenChest<T>::kNumParameters), &make_woodenchest<T> },
         { airwindohhs::balanced::k_name, "balanced", "utility", airwindohhs::balanced::k_tags, airwindohhs::balanced::k_short_description, airwindohhs::balanced::k_long_description, static_cast<int>(airwindohhs::balanced::Balanced<T>::kNumParameters), &make_balanced<T> },
         { airwindohhs::bitdualpan::k_name, "bitdualpan", "utility", airwindohhs::bitdualpan::k_tags, airwindohhs::bitdualpan::k_short_description, airwindohhs::bitdualpan::k_long_description, static_cast<int>(airwindohhs::bitdualpan::BitDualPan<T>::kNumParameters), &make_bitdualpan<T> },
         { airwindohhs::bitshiftgain::k_name, "bitshiftgain", "utility", airwindohhs::bitshiftgain::k_tags, airwindohhs::bitshiftgain::k_short_description, airwindohhs::bitshiftgain::k_long_description, static_cast<int>(airwindohhs::bitshiftgain::BitShiftGain<T>::kNumParameters), &make_bitshiftgain<T> },

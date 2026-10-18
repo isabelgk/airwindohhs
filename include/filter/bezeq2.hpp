@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BezEQ2 is a unique, subtle three-band shelving EQ."
 };
 constexpr std::string_view k_long_description{
-    "Turns out there's a reason BezEQ sounded so weird! Bugs. Both in the sense of 'what's that doing there' and 'hey, this could be very different and it just might work'. So now there's two BezEQs, the first one is still a strange strange beast, and this one is……fugitive?It's hard to explain how different this became. It's still a three-band EQ made by crossing over filters in such a way that re-adding them produces perfect fidelity: that works great even on steep filters like SmoothEQ. It even works if you do funny things like heavy phase shifting in the filter… or if, like in this filter, you're delaying bands to more accurately cancel out bass frequencies. (This filter incurs a little bit of latency, depending on how the crossovers are set, because of these delays.)Far from the first BezEQ, this BezEQ2 has a special knack for hiding what it's doing. It can boost highs, boost bass, and the result is weirdly like no change was made. There's a quirk where if you cut the middle all the way to zero, the highs will also cut out (a side-effect of how the delays are set up). It's still not exactly normal.And then, perhaps a factor of how the bands are summed together, if you go to cut highs or lows, BezEQ does the opposite. It gives you a midrangey sound with a lot of punch and character. This, even though it's doing the opposite of last week's FatEQ, and isn't distorting anything. Something about how the Bezier curves handle transient impact, combined with the phase-altering delay lines, makes the plugin a heck of a secret weapon for heightening midrange drama and impact. Or, you can just set it up as first a mids cut, and then even more of a bass cut, and get a really articulate, natural-sounding energy lift that sounds remarkably unhyped for all the hype it sneaks into a track.I have a feeling this is gonna be a real 'sleeper' plugin. It seems to do anything I ask while sounding like nothing was done. Those who are trying to mix by adding color upon color to their sounds, probably won't get this at all. But those of a simpler, rawer approach might really be pleasantly surprised. Even startled, in the best possible way."
+    "Turns out there's a reason BezEQ sounded so weird! Bugs. Both in the sense of 'what's that doing there' and 'hey, this could be very different and it just might work'. So now there's two BezEQs, the first one is still a strange strange beast, and this one is… …fugitive? It's hard to explain how different this became. It's still a three-band EQ made by crossing over filters in such a way that re-adding them produces perfect fidelity: that works great even on steep filters like SmoothEQ. It even works if you do funny things like heavy phase shifting in the filter… or if, like in this filter, you're delaying bands to more accurately cancel out bass frequencies. (This filter incurs a little bit of latency, depending on how the crossovers are set, because of these delays.) Far from the first BezEQ, this BezEQ2 has a special knack for hiding what it's doing. It can boost highs, boost bass, and the result is weirdly like no change was made. There's a quirk where if you cut the middle all the way to zero, the highs will also cut out (a side-effect of how the delays are set up). It's still not exactly normal. And then, perhaps a factor of how the bands are summed together, if you go to cut highs or lows, BezEQ does the opposite. It gives you a midrangey sound with a lot of punch and character. This, even though it's doing the opposite of last week's FatEQ, and isn't distorting anything. Something about how the Bezier curves handle transient impact, combined with the phase-altering delay lines, makes the plugin a heck of a secret weapon for heightening midrange drama and impact. Or, you can just set it up as first a mids cut, and then even more of a bass cut, and get a really articulate, natural-sounding energy lift that sounds remarkably unhyped for all the hype it sneaks into a track. I have a feeling this is gonna be a real 'sleeper' plugin. It seems to do anything I ask while sounding like nothing was done. Those who are trying to mix by adding color upon color to their sounds, probably won't get this at all. But those of a simpler, rawer approach might really be pleasantly surprised. Even startled, in the best possible way."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -100,14 +100,13 @@ class BezEQ2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -169,30 +168,32 @@ class BezEQ2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

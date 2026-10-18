@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "TubeDesk is a tube recording console type tone coloring."
 };
 constexpr std::string_view k_long_description{
-    "More classic Airwindows analog modeling with TubeDesk!Tubes aren’t necessarily ‘mellow’. They’re also known for clarity, realism. TubeDesk isn’t a mud-ifier, but it might bring you some effects reminiscent of vintage recordings.Like the other Desk plugins, it’s got a kind of saturation going on, a distinct flavor to how it distorts. However, unlike TransDesk, its power supply is very different. TubeDesk is so old school it acts like there’s a vintage tube rectifier, imparting an obvious rectifier sag. This conditions the sound, affecting how dynamics work through the plugin.You have a distinct ‘analog modeling’ tone then, which is no specific console, no arbitrary color: just sort of retro vibe, generalized. It’s not calibrated to work with Console (that’s the for-pay version of Desk that consolidated these and calibrated them all) and it doesn’t have special requirements for where it should go. Place it where you want that style of tone coloring: like Desk, you can use it on auxes and submixes (including ones ‘inside’ Console) to better emulate running through a lot of circuitry."
+    "More classic Airwindows analog modeling with TubeDesk! Tubes aren’t necessarily ‘mellow’. They’re also known for clarity, realism. TubeDesk isn’t a mud-ifier, but it might bring you some effects reminiscent of vintage recordings. Like the other Desk plugins, it’s got a kind of saturation going on, a distinct flavor to how it distorts. However, unlike TransDesk, its power supply is very different. TubeDesk is so old school it acts like there’s a vintage tube rectifier, imparting an obvious rectifier sag. This conditions the sound, affecting how dynamics work through the plugin. You have a distinct ‘analog modeling’ tone then, which is no specific console, no arbitrary color: just sort of retro vibe, generalized. It’s not calibrated to work with Console (that’s the for-pay version of Desk that consolidated these and calibrated them all) and it doesn’t have special requirements for where it should go. Place it where you want that style of tone coloring: like Desk, you can use it on auxes and submixes (including ones ‘inside’ Console) to better emulate running through a lot of circuitry."
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class TubeDesk final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tdsk';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -69,17 +73,11 @@ class TubeDesk final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
-        }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -88,8 +86,7 @@ class TubeDesk final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -98,8 +95,7 @@ class TubeDesk final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -108,8 +104,7 @@ class TubeDesk final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -118,22 +113,16 @@ class TubeDesk final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -173,8 +162,7 @@ class TubeDesk final : public Effect<T>
         double inputSampleR;
         double drySampleL;
         double drySampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

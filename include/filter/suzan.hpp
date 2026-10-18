@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Suzan is a new type of ladder filter."
 };
 constexpr std::string_view k_long_description{
-    "So a funny thing happened to me on the way to Dattorro…I was talking about the very simple state variable filter I made, Dattorro, and how it was very handy, could even substitute for a biquad filter according to Andy from Cytomic who's an eager advocate of these (as opposed to, say, a biquad filter of direct form 1), and how I'd come up with a twist on it using only a sin() function to do the unexpected thing of subtracting the distorted bandpass element FROM the lowpass, and how that had a neat tone I liked. The twist was new, and I was excited about the possibilities.Then, on a famously crotchety forum, a guy popped up to object… saying I shouldn't call it not a biquad. It's just an SVF and not direct form 1, but it's still a biquadratic filter. You could even have literal analog filters that are biquads. I had the language wrong and he apologized for the fact that this drove him up the wall.He's Antoine Portes, and he's writing an experimental book about filters called Working Class Filter Design. Biquadratic means the transfer function's denominator is a quadratic formula, another name for second order polynomial. He's been trying to do a really good Moog ladder, which apparently is more like fourth order, and he notes that we use Q for resonance, but there's another part that goes 1/(2*Q) and this doesn't have a consistent name. He's calling it Damping, but suggests if you don't like that you can call it Suzan for all the difference it'll make to him.Naturally, I was charmed though his math is over my foolish head :) and so, I got busy again, except it was with experimenting in code rather than figuring out the math of it. And I told him I'd name the filter, meant to be experiments on this fourth-order, Moog-flavored filter, 'Suzan' in his honor.And this is the result. It's a small stack of SVFs. The difference is, Antoine understandably is interested in representing these things in correct math, and doing sensible things at least some of the time. Me on the other hand… my whole deal is being able to try things that don't exist yet. By all rights the AIs should be paying me to come up with novel things for them (maybe there'll come a day when that's a reality).And so, Suzan is not two but three SVFs in series. And the SVFs are still normal, except I'm up to my Dattorro tricks but even worse. Stage A subtracts the bandpass of stage C. Stage B subtracts the bandpass of stage A… and stage C adds the bandpass of stage B. Oh, except they're all the sines of those bandpasses, and the first two are using half the amplitude of the bandpass, the final one which adds is using the full amplitude going into the sine function.I don't claim justification for this or an analysis of why it works. Swept way up high it can have high frequency instability when hit with full blast white noise, which I hope doesn't cause issues (I got it to where it was simply a boost but didn't blow up). I find it's a nice chunky resonant peak and even gives appropriate amounts of bass restriction when resonance is turned up… and the inappropriate use of feedback across the stages does a nice job of giving a colorful texture. One I am intimately familiar with both from records, and from owning everything from a MG-1 Concertmate to a Werkstatt to a Sub Phatty. But we're not calling it that, because it isn't one of those. It's Suzan, and it's trying to bring the right kind of mojo to my filter collection. I hope you like it :)"
+    "So a funny thing happened to me on the way to Dattorro… I was talking about the very simple state variable filter I made, Dattorro, and how it was very handy, could even substitute for a biquad filter according to Andy from Cytomic who's an eager advocate of these (as opposed to, say, a biquad filter of direct form 1), and how I'd come up with a twist on it using only a sin() function to do the unexpected thing of subtracting the distorted bandpass element FROM the lowpass, and how that had a neat tone I liked. The twist was new, and I was excited about the possibilities. Then, on a famously crotchety forum, a guy popped up to object… saying I shouldn't call it not a biquad. It's just an SVF and not direct form 1, but it's still a biquadratic filter. You could even have literal analog filters that are biquads. I had the language wrong and he apologized for the fact that this drove him up the wall. He's Antoine Portes, and he's writing an experimental book about filters called Working Class Filter Design. Biquadratic means the transfer function's denominator is a quadratic formula, another name for second order polynomial. He's been trying to do a really good Moog ladder, which apparently is more like fourth order, and he notes that we use Q for resonance, but there's another part that goes 1/(2*Q) and this doesn't have a consistent name. He's calling it Damping, but suggests if you don't like that you can call it Suzan for all the difference it'll make to him. Naturally, I was charmed though his math is over my foolish head :) and so, I got busy again, except it was with experimenting in code rather than figuring out the math of it. And I told him I'd name the filter, meant to be experiments on this fourth-order, Moog-flavored filter, 'Suzan' in his honor. And this is the result. It's a small stack of SVFs. The difference is, Antoine understandably is interested in representing these things in correct math, and doing sensible things at least some of the time. Me on the other hand… my whole deal is being able to try things that don't exist yet. By all rights the AIs should be paying me to come up with novel things for them (maybe there'll come a day when that's a reality). And so, Suzan is not two but three SVFs in series. And the SVFs are still normal, except I'm up to my Dattorro tricks but even worse. Stage A subtracts the bandpass of stage C. Stage B subtracts the bandpass of stage A… and stage C adds the bandpass of stage B. Oh, except they're all the sines of those bandpasses, and the first two are using half the amplitude of the bandpass, the final one which adds is using the full amplitude going into the sine function. I don't claim justification for this or an analysis of why it works. Swept way up high it can have high frequency instability when hit with full blast white noise, which I hope doesn't cause issues (I got it to where it was simply a boost but didn't blow up). I find it's a nice chunky resonant peak and even gives appropriate amounts of bass restriction when resonance is turned up… and the inappropriate use of feedback across the stages does a nice job of giving a colorful texture. One I am intimately familiar with both from records, and from owning everything from a MG-1 Concertmate to a Werkstatt to a Sub Phatty. But we're not calling it that, because it isn't one of those. It's Suzan, and it's trying to bring the right kind of mojo to my filter collection. I hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Suzan final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'suza';
     float A;
     float B;
     float C;
@@ -66,12 +70,11 @@ class Suzan final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -125,26 +128,28 @@ class Suzan final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

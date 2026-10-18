@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kCyberCity brings live atmosphere to deep reverb."
 };
 constexpr std::string_view k_long_description{
-    "If you count the number of Airwindows reverbs, even just the ones with 'k' in front, it's pretty daunting. This journey has taken years. Most recently, I've been working on the basic technology of how the reverbs are even made (running a 6x6 Householder matrix fed by a 3x3 early reflections matrix) and refining the program that I run, night after night, to explore the space of possible delay combinations using genetic algorithms.And still, the best discoveries are the accidents.kCyberCity sounded, from the first, like rainy neon dystopian futurism. Which is to say, it screamed 'Blade Runner', but it doesn't actually have a Lexicon algorithm in it… it's way more complex than that. It sounded like what I imagine Blade Runner sounded like. Specifically, I got a sense not of a big room, but of rainy city streets, washes of echo return, a particular sheen that felt like neon reflections on pavement sounds.But what really helped (in more practical terms) was developing a 'room tone' method that involved not only feeding 'VoiceOfTheStarship' noise into only the regeneration part of the reverb, but also coming up with a way to modulate that, where before I'd tried things like 'Discontinuity' in that position. What I got was special: where I got a hot intense sound in a reverb like kGuitarHall2, this time I got the ability to disrupt the deep reverb field as if listening into a live environment, with wind and atmosphere. And two separate ways to manipulate that, for defining the apparent size of the reverb space and for defining how still (or un-still) the air was in there. Oh, and also a feedback nonlinearity that tweaks the whole character of the space.This is the first truly live Airwindows reverb, but won't be the last. Turns out that even if you drop the 'room tone' right down to what is realistic for an acoustic space, it still makes a huge difference in believability. A lot like dither, really, but considerably more obvious. You'll have to use BitShiftGain (or compress really hard?) to get it to be obvious, but you don't have to. The room tone is heightened when regen is turned way up, if that's your intention. In normal use, think of it like a sort of dither, but for spaciousness."
+    "If you count the number of Airwindows reverbs, even just the ones with 'k' in front, it's pretty daunting. This journey has taken years. Most recently, I've been working on the basic technology of how the reverbs are even made (running a 6x6 Householder matrix fed by a 3x3 early reflections matrix) and refining the program that I run, night after night, to explore the space of possible delay combinations using genetic algorithms. And still, the best discoveries are the accidents. kCyberCity sounded, from the first, like rainy neon dystopian futurism. Which is to say, it screamed 'Blade Runner', but it doesn't actually have a Lexicon algorithm in it… it's way more complex than that. It sounded like what I imagine Blade Runner sounded like. Specifically, I got a sense not of a big room, but of rainy city streets, washes of echo return, a particular sheen that felt like neon reflections on pavement sounds. But what really helped (in more practical terms) was developing a 'room tone' method that involved not only feeding 'VoiceOfTheStarship' noise into only the regeneration part of the reverb, but also coming up with a way to modulate that, where before I'd tried things like 'Discontinuity' in that position. What I got was special: where I got a hot intense sound in a reverb like kGuitarHall2, this time I got the ability to disrupt the deep reverb field as if listening into a live environment, with wind and atmosphere. And two separate ways to manipulate that, for defining the apparent size of the reverb space and for defining how still (or un-still) the air was in there. Oh, and also a feedback nonlinearity that tweaks the whole character of the space. This is the first truly live Airwindows reverb, but won't be the last. Turns out that even if you drop the 'room tone' right down to what is realistic for an acoustic space, it still makes a huge difference in believability. A lot like dither, really, but considerably more obvious. You'll have to use BitShiftGain (or compress really hard?) to get it to be obvious, but you don't have to. The room tone is heightened when regen is turned way up, if that's your intention. In normal use, think of it like a sort of dither, but for spaciousness."
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -497,12 +497,11 @@ class kCyberCity final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -535,7 +534,7 @@ class kCyberCity final : public Effect<T>
         switch (static_cast<params>(index)) {
             case kParamA: return "regen"; break;
             case kParamB: return "positin"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -556,26 +555,28 @@ class kCyberCity final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

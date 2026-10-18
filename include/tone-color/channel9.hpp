@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Channel9 is Channel8 with ultrasonic filtering, and new Teac and Mackie 'low end' settings."
 };
 constexpr std::string_view k_long_description{
-    "Channel9 retains everything it had—the two-stage drive control, the newly improved highpass, the slew clipping—the same calibrated Airwindows algorithms to not clone, but give you the general sense of various fancy name brand consoles in a cleaner, less ’emulated’ way which lets the music through…But now, Channel9 has the same ultrasonic aliasing-filtering that’s come to Console and other recent Airwindows plugins. In a new way! Because Channel9 isn’t just sticking to ’20k’ as its definition of supersonic. Instead, Channel9 steepens its filter with a teeny resonant peak at this cutoff point… and then selects it in keeping with what the real console would be doing, if you had it! The Neve is the most extended, well beyond 20k. The SSL cuts off tighter, gives more audible sparkle (due to the additional gain stages in a really huge SSL desk, the cutoff will be steeper over the entire desk). API is between the two. The lift at the peak comes before the saturation stage, for better smoothness when the console is being driven.And then I went and added two MUCH more affordable ‘models’, with their own usefulness.The new settings are ‘Teac’ and ‘Mackie’. That’s right, old school house/techno classic basement mixers! The Teac, I was able to reference recordings of a real unit. I didn’t get it perfect as the real board had a noticeable high-mids peak that doesn’t belong in Channel, but it’s the correct kind of dark and vibey. And the Mackie’s my take on what you get out of the classic vintage 1202: A hair leaner than the Teac, but brighter. They both grind a bit harder than any of the big expensive desks, they both have slightly more exaggerated reshaping of the deep bass (using the Capacitor2 algorithm, like the others), they both control the brightest highs much like you’d get in a classic old low end mixer. It’s two new settings that follow entirely different rules than the big guns, for folks who know how to use an actual mixer much like metal guitarists use a Tube Screamer.You can still have your fancy desk models (only better: the ultrasonic filtering brings just the right additional distinction to the models) but now you can go cheap and get the tone and vibe of some house music warhorses. The sonic reshaping these low end models do is just the ticket for sculpting relentlessly synthetic sounds into an appealing result. And since it’s Channel… it won’t have the noise of the real ones, it won’t have weird extra colorations, it’ll honor more of your real mix as it reshapes it: sort of best of both worlds! You can always add funky colorations or noise to your digital mix, but you can’t remove that stuff from the real mixers. Channel9 will shape your sound in ‘classic’ ways but along Airwindows lines: getting out of the way so your sound is interfered with as little as possible.Channel9 can be used anywhere you like. If you’re doing a Console mix, I’d put it after ConsoleBuss. If you’re not doing a Console mix, you can literally do anything you want with it: it’s a subtle distortion/fattener combined with a set of careful tone shaping algorithms. Hope you like it!"
+    "Channel9 retains everything it had—the two-stage drive control, the newly improved highpass, the slew clipping—the same calibrated Airwindows algorithms to not clone, but give you the general sense of various fancy name brand consoles in a cleaner, less ’emulated’ way which lets the music through… But now, Channel9 has the same ultrasonic aliasing-filtering that’s come to Console and other recent Airwindows plugins. In a new way! Because Channel9 isn’t just sticking to ’20k’ as its definition of supersonic. Instead, Channel9 steepens its filter with a teeny resonant peak at this cutoff point… and then selects it in keeping with what the real console would be doing, if you had it! The Neve is the most extended, well beyond 20k. The SSL cuts off tighter, gives more audible sparkle (due to the additional gain stages in a really huge SSL desk, the cutoff will be steeper over the entire desk). API is between the two. The lift at the peak comes before the saturation stage, for better smoothness when the console is being driven. And then I went and added two MUCH more affordable ‘models’, with their own usefulness. The new settings are ‘Teac’ and ‘Mackie’. That’s right, old school house/techno classic basement mixers! The Teac, I was able to reference recordings of a real unit. I didn’t get it perfect as the real board had a noticeable high-mids peak that doesn’t belong in Channel, but it’s the correct kind of dark and vibey. And the Mackie’s my take on what you get out of the classic vintage 1202: A hair leaner than the Teac, but brighter. They both grind a bit harder than any of the big expensive desks, they both have slightly more exaggerated reshaping of the deep bass (using the Capacitor2 algorithm, like the others), they both control the brightest highs much like you’d get in a classic old low end mixer. It’s two new settings that follow entirely different rules than the big guns, for folks who know how to use an actual mixer much like metal guitarists use a Tube Screamer. You can still have your fancy desk models (only better: the ultrasonic filtering brings just the right additional distinction to the models) but now you can go cheap and get the tone and vibe of some house music warhorses. The sonic reshaping these low end models do is just the ticket for sculpting relentlessly synthetic sounds into an appealing result. And since it’s Channel… it won’t have the noise of the real ones, it won’t have weird extra colorations, it’ll honor more of your real mix as it reshapes it: sort of best of both worlds! You can always add funky colorations or noise to your digital mix, but you can’t remove that stuff from the real mixers. Channel9 will shape your sound in ‘classic’ ways but along Airwindows lines: getting out of the way so your sound is interfered with as little as possible. Channel9 can be used anywhere you like. If you’re doing a Console mix, I’d put it after ConsoleBuss. If you’re not doing a Console mix, you can literally do anything you want with it: it’s a subtle distortion/fattener combined with a set of careful tone shaping algorithms. Hope you like it!"
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Channel9 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cha9';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -84,20 +88,45 @@ class Channel9 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
+        }
+        switch ((VstInt32)(A * 4.999)) {
+            case 0:
+                iirAmount = 0.005832;
+                threshold = 0.33362176;
+                cutoff = 28811.0;
+                break; // Neve
+            case 1:
+                iirAmount = 0.004096;
+                threshold = 0.59969536;
+                cutoff = 27216.0;
+                break; // API
+            case 2:
+                iirAmount = 0.004913;
+                threshold = 0.84934656;
+                cutoff = 23011.0;
+                break; // SSL
+            case 3:
+                iirAmount = 0.009216;
+                threshold = 0.149;
+                cutoff = 18544.0;
+                break; // Teac
+            case 4:
+                iirAmount = 0.011449;
+                threshold = 0.092;
+                cutoff = 19748.0;
+                break; // Mackie
+            default: break; // should not happen
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -109,8 +138,7 @@ class Channel9 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -122,9 +150,8 @@ class Channel9 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "console type"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "consoletype"; break;
             case kParamB: return "drive"; break;
             case kParamC: return "output"; break;
 
@@ -135,8 +162,7 @@ class Channel9 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Console Type"; break;
             case kParamB: return "Drive"; break;
             case kParamC: return "Output"; break;
@@ -148,28 +174,38 @@ class Channel9 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 4.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Neve", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "API", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SSL", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Teac", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Mackie", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: int2string((VstInt32)(B * 200), text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return "%"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "%", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -210,8 +246,7 @@ class Channel9 final : public Effect<T>
         biquadB[4] = biquadB[2];
         biquadB[5] = 2.0 * (K * K - 1.0) * norm;
         biquadB[6] = (1.0 - K / biquadB[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -243,8 +278,7 @@ class Channel9 final : public Effect<T>
             }
             double dielectricScaleL = fabs(2.0 - ((inputSampleL + nonLin) / nonLin));
             double dielectricScaleR = fabs(2.0 - ((inputSampleR + nonLin) / nonLin));
-            if (flip)
-            {
+            if (flip) {
                 if (fabs(iirSampleLA) < 1.18e-37) {
                     iirSampleLA = 0.0;
                 }
@@ -256,8 +290,7 @@ class Channel9 final : public Effect<T>
                 iirSampleRA = (iirSampleRA * (1.0 - (localiirAmount * dielectricScaleR))) + (inputSampleR * localiirAmount * dielectricScaleR);
                 inputSampleR = inputSampleR - iirSampleRA;
             }
-            else
-            {
+            else {
                 if (fabs(iirSampleLB) < 1.18e-37) {
                     iirSampleLB = 0.0;
                 }

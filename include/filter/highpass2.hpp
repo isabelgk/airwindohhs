@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Highpass2 is an unusual-sounding variable-slope highpass filter."
 };
 constexpr std::string_view k_long_description{
-    "So, the way the interleaved IIR filters act in Highpass is like this: the harder you filter, the more the filter rolls off the very highest frequencies. That’s because it’s like the inverse of Lowpass2. It’s got the same four poles, the same type of tone doctoring (in this case, loose and tight for what bass remains) but the way to use it might be distinct.I think it works well for getting a subsonic roll-off (perhaps with the four poles of filtering, like a mini ToVinyl highpass) and then using the Loose option to let the bass move a little more. I found it more difficult to distinguish what the funny-named slider was doing, but it’s still intense on high settings. And it’s great for trapping in high percussion because of the clarity of the passband and the way it rolls off over 20K (or higher, if you’re at higher sample rates).And of course, like Lowpass2, this is here to fix the limitations of the original Highpass on those very same sample rates, going from no filtering to total filtering."
+    "So, the way the interleaved IIR filters act in Highpass is like this: the harder you filter, the more the filter rolls off the very highest frequencies. That’s because it’s like the inverse of Lowpass2. It’s got the same four poles, the same type of tone doctoring (in this case, loose and tight for what bass remains) but the way to use it might be distinct. I think it works well for getting a subsonic roll-off (perhaps with the four poles of filtering, like a mini ToVinyl highpass) and then using the Loose option to let the bass move a little more. I found it more difficult to distinguish what the funny-named slider was doing, but it’s still intense on high settings. And it’s great for trapping in high percussion because of the clarity of the passband and the way it rolls off over 20K (or higher, if you’re at higher sample rates). And of course, like Lowpass2, this is here to fix the limitations of the original Highpass on those very same sample rates, going from no filtering to total filtering."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Highpass2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'hpat';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -91,21 +95,18 @@ class Highpass2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -118,8 +119,7 @@ class Highpass2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.25; break;
@@ -132,12 +132,11 @@ class Highpass2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "hipass"; break;
-            case kParamB: return "ls/tite"; break;
+            case kParamB: return "lstite"; break;
             case kParamC: return "poles"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -146,8 +145,7 @@ class Highpass2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Hipass"; break;
             case kParamB: return "Ls/Tite"; break;
             case kParamC: return "Poles"; break;
@@ -160,30 +158,30 @@ class Highpass2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 4.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -234,8 +232,7 @@ class Highpass2 final : public Effect<T>
         // beyond that point: this is a way to progressively add a 'black box' sound processing
         // which lets you fall through to simpler processing at lower settings.
         double wet = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -270,8 +267,7 @@ class Highpass2 final : public Effect<T>
             if (offsetR > 1) {
                 offsetR = 1;
             }
-            if (fpFlip)
-            {
+            if (fpFlip) {
                 if (aWet > 0.0) {
                     iirSampleAL = (iirSampleAL * (1 - (offsetL * iirAmount))) + (inputSampleL * (offsetL * iirAmount));
                     inputSampleL = ((inputSampleL - iirSampleAL) * aWet) + (inputSampleL * (1.0 - aWet));
@@ -297,8 +293,7 @@ class Highpass2 final : public Effect<T>
                     inputSampleR = ((inputSampleR - iirSampleGR) * dWet) + (inputSampleR * (1.0 - dWet));
                 }
             }
-            else
-            {
+            else {
                 if (aWet > 0.0) {
                     iirSampleBL = (iirSampleBL * (1 - (offsetL * iirAmount))) + (inputSampleL * (offsetL * iirAmount));
                     inputSampleL = ((inputSampleL - iirSampleBL) * aWet) + (inputSampleL * (1.0 - aWet));

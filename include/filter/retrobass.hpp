@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "RetroBass is a special kind of highpass."
 };
 constexpr std::string_view k_long_description{
-    "It started with a second-and-fourth-harmonic generator I stumbled into (never fear, you'll get that too). Though it was a little more complex than the simplest second harmonic generators, it still had the unmistakable signs of them: you could mess with the settings until the output clipped like mad and still you'd not really hear what it was doing. The asymmetry has tone qualities, is warm and all, but at such low harmonics it's just so hard to hear.Causing me to wonder: can you use that to take away low frequencies like a filter?So, combining it with a simpler version of the highpass filter I use in Channel, I start experimenting (on a livestream) by modulating it with the same IIR stuff I'm subtracting to make the highpass. Not only that, this asymmetrical even-harmonics thing is using the aliasing-manipulation hack I came up with for normal distortions just recently (and that is buck wild because I invented that on purely hard clipping, but it generalizes) and the next thing you know I'm figuring out whether it's best to bring it in directly, or inverted.And I observe that it produces this funny double bump of a distortion, but one way around the initial lobe of what was once a sine wave normalized to 1.0, is bigger, and what follows is both smaller and a tighter shape. It's acting like it's taking energy in the oscillating wave, and running out mid-oscillation. This is what analog circuits do, when their coupling capacitors run out of steam. It's just being done in a peculiar way.And dialing it in using the test waves, and then trying it out on lots of different things… I discover that it's RetroBuss. It's better than anything else I've had, for specifically making stuff bass-starved in a retro-seeming way. It sounds like old gear not designed for modern subs.Not only that, if I push it farther, it starts to get into those hot harmonic-rich zones that make some old vocals sound so intense. It's like a treble zing that is done through weakening the fundamental. Very handy.RetroBass will continue to be useful in things like retro consoles, but right now it's a standalone highpass you can use however you like. There's more to follow (I did mention the aliasing thing designed around hard clipping) but RetroBass leads the way. :)"
+    "It started with a second-and-fourth-harmonic generator I stumbled into (never fear, you'll get that too). Though it was a little more complex than the simplest second harmonic generators, it still had the unmistakable signs of them: you could mess with the settings until the output clipped like mad and still you'd not really hear what it was doing. The asymmetry has tone qualities, is warm and all, but at such low harmonics it's just so hard to hear. Causing me to wonder: can you use that to take away low frequencies like a filter? So, combining it with a simpler version of the highpass filter I use in Channel, I start experimenting (on a livestream) by modulating it with the same IIR stuff I'm subtracting to make the highpass. Not only that, this asymmetrical even-harmonics thing is using the aliasing-manipulation hack I came up with for normal distortions just recently (and that is buck wild because I invented that on purely hard clipping, but it generalizes) and the next thing you know I'm figuring out whether it's best to bring it in directly, or inverted. And I observe that it produces this funny double bump of a distortion, but one way around the initial lobe of what was once a sine wave normalized to 1.0, is bigger, and what follows is both smaller and a tighter shape. It's acting like it's taking energy in the oscillating wave, and running out mid-oscillation. This is what analog circuits do, when their coupling capacitors run out of steam. It's just being done in a peculiar way. And dialing it in using the test waves, and then trying it out on lots of different things… I discover that it's RetroBass. It's better than anything else I've had, for specifically making stuff bass-starved in a retro-seeming way. It sounds like old gear not designed for modern subs. Not only that, if I push it farther, it starts to get into those hot harmonic-rich zones that make some old vocals sound so intense. It's like a treble zing that is done through weakening the fundamental. Very handy. RetroBass will continue to be useful in things like retro consoles, but right now it's a standalone highpass you can use however you like. There's more to follow (I did mention the aliasing thing designed around hard clipping) but RetroBass leads the way. :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -78,18 +78,15 @@ class RetroBass final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -99,8 +96,7 @@ class RetroBass final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -110,8 +106,7 @@ class RetroBass final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "freq"; break;
 
             default: break;
@@ -121,8 +116,7 @@ class RetroBass final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Freq"; break;
 
             default: break;
@@ -132,24 +126,24 @@ class RetroBass final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -163,8 +157,7 @@ class RetroBass final : public Effect<T>
         overallscale /= 44100.0;
         overallscale *= Effect<T>::getSampleRate();
         double rbAmount = pow(A * 0.5, 2.0) / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

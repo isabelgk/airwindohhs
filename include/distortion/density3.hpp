@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Density3 refines Density to keep up with recent developments."
 };
 constexpr std::string_view k_long_description{
-    "This secret weapon's seen a little fine-tuning.Density's one of my first plugins. Its power is in using sin() based overdrive combined with a very gentle highpass, one that can dial back the amount of saturation on heavy basses… while allowing it through anyhow using the dry/wet control. It's an incredible dirt-shaper for refined work.But what if it used the technique from PurestSaturation? That's Density3: finally an upgrade.But there's more! Turns out the negative Density range enjoys a change too: it blended better with a phase-flip. I could have known it needed one, except nobody constructs inverse saturations like this, as it doesn't seem like a useful sound. Until you take advantage of its gatey qualities to dial in tone, between -1 and 0, that keeps the nature of the tone the same but dries up its quieter regions, as subtly as you'd like.This is out because another dev I know was looking into Density2, and wanting to shoot it out against his own algorithms. I said, just so you know, there's a Density3 and it's on the github repository, it's just not out yet.Now it is :)"
+    "This secret weapon's seen a little fine-tuning. Density's one of my first plugins. Its power is in using sin() based overdrive combined with a very gentle highpass, one that can dial back the amount of saturation on heavy basses… while allowing it through anyhow using the dry/wet control. It's an incredible dirt-shaper for refined work. But what if it used the technique from PurestSaturation? That's Density3: finally an upgrade. But there's more! Turns out the negative Density range enjoys a change too: it blended better with a phase-flip. I could have known it needed one, except nobody constructs inverse saturations like this, as it doesn't seem like a useful sound. Until you take advantage of its gatey qualities to dial in tone, between -1 and 0, that keeps the nature of the tone the same but dries up its quieter regions, as subtly as you'd like. This is out because another dev I know was looking into Density2, and wanting to shoot it out against his own algorithms. I said, just so you know, there's a Density3 and it's on the github repository, it's just not out yet. Now it is :)"
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Density3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'den3';
     float A;
     float B;
     float C;
@@ -61,13 +65,12 @@ class Density3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -103,7 +106,7 @@ class Density3 final : public Effect<T>
             case kParamA: return "density"; break;
             case kParamB: return "highpas"; break;
             case kParamC: return "output"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -125,28 +128,30 @@ class Density3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 5.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kAlienSpaceship is an unreal realistic reverb."
 };
 constexpr std::string_view k_long_description{
-    "Though I've got a lot of other irons in the fire, my work on reverbs is ramping up something fierce. I'm going through millions of possibilities with a genetic algorithm, then turning around and rendering out dozens (hundreds!) of possibilities, mostly in the area of small spaces like kStation because they seem to lend themselves to what I'm doing.And then there's kAlienSpaceship. If I can top this one, I will, but the work's going in the other direction at the moment, so it's time to put out the mothership.This one works like recent reverbs do: it's got the same controls such as a DeRez and a Filter control that are both Bezier undersampling, and both two-way controls with 'brightest or highest sample rate' at the center, left for stepped and 'good sounding' tones, and right for an edgier, stranger take. Moving DeRez to the right can produce a 'pitch dive' effect while the effect is still running: move it to the left to cleanly shift the entire reverb down in pitch and make it even more massive in size.The intention here is to make an 'unreal realistic' reverb. Not a giant real-world room or hall, but more like an imaginary space… indeed, a spaceship. It's so vast it doesn't come off like a real room, but neither does it have the abstractness of something like Galactic. Instead it suggests strange geometries, unusual shapes. It was designed back when I was still debugging Bezier Undersampling, and had an odd alien quality, but it's up to speed with my current work so there's a realism factor too. It's synthetic and realistic, pristine but quirky. Not as much as the earlier reverb that acted like there was a slapback integrated into the reverb, but enough to produce a real character.Use kAlienSpaceship if you're looking for a very big hall or stadium, or if you're doing a synthetic thing and want to gloss it up with deep shimmery ambience, or if you need to expand something out into seemingly infinite space. You can set it to be many kinds of realistic, but it'll also go way beyond that into spaces that bear no relation to reality. I find it to have a fun imaginary quality that sits well with artificial sounds, but you needn't stop there. Hope you like the new spaceship to go play music in! :)"
+    "Though I've got a lot of other irons in the fire, my work on reverbs is ramping up something fierce. I'm going through millions of possibilities with a genetic algorithm, then turning around and rendering out dozens (hundreds!) of possibilities, mostly in the area of small spaces like kStation because they seem to lend themselves to what I'm doing. And then there's kAlienSpaceship. If I can top this one, I will, but the work's going in the other direction at the moment, so it's time to put out the mothership. This one works like recent reverbs do: it's got the same controls such as a DeRez and a Filter control that are both Bezier undersampling, and both two-way controls with 'brightest or highest sample rate' at the center, left for stepped and 'good sounding' tones, and right for an edgier, stranger take. Moving DeRez to the right can produce a 'pitch dive' effect while the effect is still running: move it to the left to cleanly shift the entire reverb down in pitch and make it even more massive in size. The intention here is to make an 'unreal realistic' reverb. Not a giant real-world room or hall, but more like an imaginary space… indeed, a spaceship. It's so vast it doesn't come off like a real room, but neither does it have the abstractness of something like Galactic. Instead it suggests strange geometries, unusual shapes. It was designed back when I was still debugging Bezier Undersampling, and had an odd alien quality, but it's up to speed with my current work so there's a realism factor too. It's synthetic and realistic, pristine but quirky. Not as much as the earlier reverb that acted like there was a slapback integrated into the reverb, but enough to produce a real character. Use kAlienSpaceship if you're looking for a very big hall or stadium, or if you're doing a synthetic thing and want to gloss it up with deep shimmery ambience, or if you need to expand something out into seemingly infinite space. You can set it to be many kinds of realistic, but it'll also go way beyond that into spaces that bear no relation to reality. I find it to have a fun imaginary quality that sits well with artificial sounds, but you needn't stop there. Hope you like the new spaceship to go play music in! :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -438,15 +438,14 @@ class kAlienSpaceship final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -488,7 +487,7 @@ class kAlienSpaceship final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "positin"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -512,32 +511,34 @@ class kAlienSpaceship final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "VoiceOfTheStarship is a deep noise tone source."
 };
 constexpr std::string_view k_long_description{
-    "This is the core of Noise, in maybe a more approachable form. The algorithm works like this: you do a random noise wander, where the audio output drifts around randomly with random amounts being added and subtracted from it. This is known as a random walk, and even if the amounts are equally positive and negative, the result will do two things: it'll give you more of a bassy rumble, and the loudest part of this bass will be a DC component. In other words, you can't use this directly for audio, because it won't make frequencies.Voice Of The Starship uses a flipping variable to alternately add and subtract the randomness, which is what makes the amounts equally positive and negative, but it does one more thing: it runs another variable so that, periodically, it'll take a moment to check whether the output is above or below zero… and at that moment it will ALWAYS use the randomness to move toward zero.This is enough to fix the DC problem, without adding a filter. (mind you, VOTS does also have lowpass filtering to help with the dark tonalities.) When you adjust Voice Of The Starship to have a less bassy noise, what you're doing is making it revert to zero more often, still with the simple randomness it's using.This lets you go from regular noise to deep dark noise to purely subsonic rumble. I also used this algorithm for background ambience in my game Counterpart. Now it’s open source under the MIT license, so other game projects can have algorithmic noise (better and more flexible than wave files)"
+    "This is the core of Noise, in maybe a more approachable form. The algorithm works like this: you do a random noise wander, where the audio output drifts around randomly with random amounts being added and subtracted from it. This is known as a random walk, and even if the amounts are equally positive and negative, the result will do two things: it'll give you more of a bassy rumble, and the loudest part of this bass will be a DC component. In other words, you can't use this directly for audio, because it won't make frequencies. Voice Of The Starship uses a flipping variable to alternately add and subtract the randomness, which is what makes the amounts equally positive and negative, but it does one more thing: it runs another variable so that, periodically, it'll take a moment to check whether the output is above or below zero… and at that moment it will ALWAYS use the randomness to move toward zero. This is enough to fix the DC problem, without adding a filter. (mind you, VOTS does also have lowpass filtering to help with the dark tonalities.) When you adjust Voice Of The Starship to have a less bassy noise, what you're doing is making it revert to zero more often, still with the simple randomness it's using. This lets you go from regular noise to deep dark noise to purely subsonic rumble. I also used this algorithm for background ambience in my game Counterpart. Now it’s open source under the MIT license, so other game projects can have algorithmic noise (better and more flexible than wave files)"
 };
 constexpr std::string_view k_tags{
     "noise"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class VoiceOfTheStarship final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vots';
     double noiseAL;
     double noiseBL;
     double noiseCL;
@@ -83,19 +87,16 @@ class VoiceOfTheStarship final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -106,8 +107,7 @@ class VoiceOfTheStarship final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
 
@@ -118,8 +118,7 @@ class VoiceOfTheStarship final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "filter"; break;
             case kParamB: return "algrthm"; break;
 
@@ -130,8 +129,7 @@ class VoiceOfTheStarship final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Filter"; break;
             case kParamB: return "Algrthm"; break;
 
@@ -142,26 +140,26 @@ class VoiceOfTheStarship final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(floor(B * 16.9), text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -365,14 +363,12 @@ class VoiceOfTheStarship final : public Effect<T>
         // this among other things is just to give volume compensation
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             // we then ignore this!
             quadratic -= 1;
-            if (quadratic < 0)
-            {
+            if (quadratic < 0) {
                 position += 1;
                 quadratic = position * position;
                 quadratic = quadratic % 170003; //% is C++ mod operator
@@ -414,8 +410,7 @@ class VoiceOfTheStarship final : public Effect<T>
                 noiseAR -= (double(fpdR) / UINT32_MAX);
             }
             // here's the guts of the random walk
-            if (filterflip)
-            {
+            if (filterflip) {
                 noiseBL *= invcutoff;
                 noiseBL += (noiseAL * cutoff);
                 inputSampleL = noiseBL;
@@ -423,8 +418,7 @@ class VoiceOfTheStarship final : public Effect<T>
                 noiseBR += (noiseAR * cutoff);
                 inputSampleR = noiseBR;
             }
-            else
-            {
+            else {
                 noiseCL *= invcutoff;
                 noiseCL += (noiseAL * cutoff);
                 inputSampleL = noiseCL;

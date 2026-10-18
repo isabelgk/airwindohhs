@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Ditherbox is a switchable selection of dithers in 16 and 24 bit, plus monitoring tools."
 };
 constexpr std::string_view k_long_description{
-    "This one’s fairly simple to explain. It’s (nearly) every Airwindows dither plugin in one box, with a control to select between them.Well, there’s a bit more: Ditherbox comes with 16 bit versions built in (the individual plugins are based on 24 bit, with the exception of NotJustAnotherCD). So rather than messing around with BitShiftGain (which will still give you any weird bit depth you could wish for) you can output to CD-quality 16 bit directly from Ditherbox. That was kind of waiting for Ditherbox to come out, didn’t want to steal all of its thunder.Oh, did I say thunder? Ditherbox also comes with monitoring tools: calibrated SlewOnly and SubsOnly playback, where it’s supposed to give you roughly the same levels and dynamics from full bandwidth, SlewOnly and SubsOnly. Might not be exactly the same, but if one of them is wildly different from the full bandwidth you might have a look at the mix.Lastly, it has a new trick: Silhouette! The idea behind this one is simple: calibrated noise replaces your mix. If you can still hear beats and dynamic behavior, or best of all if your music is kind of recognizable, it’s a good sign! That means your mix is communicating information dynamically. If it’s just a wash, you might want to look at your overcompression or over-limiting, because especially now in the days of replay gain, it’s good to leave the ability to communicate with dynamics and not squish everything too much. It’ll also tell you things about how spikey your compression peaks are, and the dynamic texture of your drum impacts.This plugin marks the open-sourcing of everything I’ve ever done dither-wise, including the Benford Realness-based Not Just Another Dither (named by the internet!). Seemed sensible, as they are all included in Ditherbox (well… actually the TPDF-based stuff like TapeDither, NodeDither, PaulDither, DoublePaul didn’t get included as they weren’t in the original Ditherbox. I’m kind of exhausted doing this one and VSTing it and opensourcing everything: there was a lot of fussy porting work and barely room to move the slider on the VST: forgive, plz?)Anyhow, with MOST of the Airwindows dither work represented, hopefully this is fun to fool with. I do still recommend Not Just Another Dither on general principles, as in practical terms it’s the best one. You can still put TapeDither on outputs going to a mix, I’m just saying, it all culminated in NJAD.As a follow-up in 2022 (not 2018, when this came out), Ditherbox is somewhat out of date. The version of NJAD in it isn't the most current: Monitoring has a better one. Monitoring also has Peaks, which is superior to Silhouette at the task Silhouette is for. One of the reasons Ditherbox still exists is, if someone got into it and REALLY liked the version of NJAD in there, it's all very well making improvements but I should keep unaltered versions of things. And that's what Ditherbox is now: it's not a go-to in my opinion, but if someone was depending on it, it got through a series of additional ports (like to signed AU and VST for Mac M1 processors, native) without anything about it changing. This has value of its own."
+    "This one’s fairly simple to explain. It’s (nearly) every Airwindows dither plugin in one box, with a control to select between them. Well, there’s a bit more: Ditherbox comes with 16 bit versions built in (the individual plugins are based on 24 bit, with the exception of NotJustAnotherCD). So rather than messing around with BitShiftGain (which will still give you any weird bit depth you could wish for) you can output to CD-quality 16 bit directly from Ditherbox. That was kind of waiting for Ditherbox to come out, didn’t want to steal all of its thunder. Oh, did I say thunder? Ditherbox also comes with monitoring tools: calibrated SlewOnly and SubsOnly playback, where it’s supposed to give you roughly the same levels and dynamics from full bandwidth, SlewOnly and SubsOnly. Might not be exactly the same, but if one of them is wildly different from the full bandwidth you might have a look at the mix. Lastly, it has a new trick: Silhouette! The idea behind this one is simple: calibrated noise replaces your mix. If you can still hear beats and dynamic behavior, or best of all if your music is kind of recognizable, it’s a good sign! That means your mix is communicating information dynamically. If it’s just a wash, you might want to look at your overcompression or over-limiting, because especially now in the days of replay gain, it’s good to leave the ability to communicate with dynamics and not squish everything too much. It’ll also tell you things about how spikey your compression peaks are, and the dynamic texture of your drum impacts. This plugin marks the open-sourcing of everything I’ve ever done dither-wise, including the Benford Realness-based Not Just Another Dither (named by the internet!). Seemed sensible, as they are all included in Ditherbox (well… actually the TPDF-based stuff like TapeDither, NodeDither, PaulDither, DoublePaul didn’t get included as they weren’t in the original Ditherbox. I’m kind of exhausted doing this one and VSTing it and opensourcing everything: there was a lot of fussy porting work and barely room to move the slider on the VST: forgive, plz?) Anyhow, with MOST of the Airwindows dither work represented, hopefully this is fun to fool with. I do still recommend Not Just Another Dither on general principles, as in practical terms it’s the best one. You can still put TapeDither on outputs going to a mix, I’m just saying, it all culminated in NJAD. As a follow-up in 2022 (not 2018, when this came out), Ditherbox is somewhat out of date. The version of NJAD in it isn't the most current: Monitoring has a better one. Monitoring also has Peaks, which is superior to Silhouette at the task Silhouette is for. One of the reasons Ditherbox still exists is, if someone got into it and REALLY liked the version of NJAD in there, it's all very well making improvements but I should keep unaltered versions of things. And that's what Ditherbox is now: it's not a go-to in my opinion, but if someone was depending on it, it got through a series of additional ports (like to signed AU and VST for Mac M1 processors, native) without anything about it changing. This has value of its own."
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Ditherbox final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dith';
     double bynL[13];
     double bynR[13];
     double noiseShapingL;
@@ -241,18 +245,15 @@ class Ditherbox final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -262,8 +263,7 @@ class Ditherbox final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.86; break;
 
             default: break;
@@ -273,8 +273,7 @@ class Ditherbox final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "type"; break;
 
             default: break;
@@ -284,8 +283,7 @@ class Ditherbox final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Type"; break;
 
             default: break;
@@ -295,24 +293,84 @@ class Ditherbox final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 24.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Trunc", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Flat", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "TPDF", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Paul", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "DbPaul", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Tape", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "HiGloss", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "Vinyl", kVstMaxParamStrLen); break;
+                    case 8: vst_strncpy(text, "Spatial", kVstMaxParamStrLen); break;
+                    case 9: vst_strncpy(text, "Natural", kVstMaxParamStrLen); break;
+                    case 10: vst_strncpy(text, "NJAD", kVstMaxParamStrLen); break;
+                    case 11: vst_strncpy(text, "Trunc", kVstMaxParamStrLen); break;
+                    case 12: vst_strncpy(text, "Flat", kVstMaxParamStrLen); break;
+                    case 13: vst_strncpy(text, "TPDF", kVstMaxParamStrLen); break;
+                    case 14: vst_strncpy(text, "Paul", kVstMaxParamStrLen); break;
+                    case 15: vst_strncpy(text, "DbPaul", kVstMaxParamStrLen); break;
+                    case 16: vst_strncpy(text, "Tape", kVstMaxParamStrLen); break;
+                    case 17: vst_strncpy(text, "HiGloss", kVstMaxParamStrLen); break;
+                    case 18: vst_strncpy(text, "Vinyl", kVstMaxParamStrLen); break;
+                    case 19: vst_strncpy(text, "Spatial", kVstMaxParamStrLen); break;
+                    case 20: vst_strncpy(text, "Natural", kVstMaxParamStrLen); break;
+                    case 21: vst_strncpy(text, "NJAD", kVstMaxParamStrLen); break;
+                    case 22: vst_strncpy(text, "SlewOnl", kVstMaxParamStrLen); break;
+                    case 23: vst_strncpy(text, "SubsOnl", kVstMaxParamStrLen); break;
+                    case 24: vst_strncpy(text, "Silhoue", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 24.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 8: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 9: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 10: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 11: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 12: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 13: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 14: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 15: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 16: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 17: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 18: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 19: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 20: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 21: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 22: vst_strncpy(text, "y", kVstMaxParamStrLen); break;
+                    case 23: vst_strncpy(text, "y", kVstMaxParamStrLen); break;
+                    case 24: vst_strncpy(text, "tte", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -359,8 +417,7 @@ class Ditherbox final : public Effect<T>
             highRes = false;
         }
         // follow up by switching high res back off for the monitoring
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -384,8 +441,7 @@ class Ditherbox final : public Effect<T>
                 inputSampleL *= 256.0;
                 inputSampleR *= 256.0;
             } // 256 for 16/24 version
-            switch (dtype)
-            {
+            switch (dtype) {
                 case 1:
                     inputSampleL = floor(inputSampleL);
                     inputSampleR = floor(inputSampleR);
@@ -876,8 +932,7 @@ class Ditherbox final : public Effect<T>
                     hotbinA = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number floored
                     totalA = 0;
-                    if ((hotbinA > 0) && (hotbinA < 10))
-                    {
+                    if ((hotbinA > 0) && (hotbinA < 10)) {
                         bynL[hotbinA] += 1;
                         totalA += (301 - bynL[1]);
                         totalA += (176 - bynL[2]);
@@ -907,8 +962,7 @@ class Ditherbox final : public Effect<T>
                     hotbinB = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number ceiled
                     totalB = 0;
-                    if ((hotbinB > 0) && (hotbinB < 10))
-                    {
+                    if ((hotbinB > 0) && (hotbinB < 10)) {
                         bynL[hotbinB] += 1;
                         totalB += (301 - bynL[1]);
                         totalB += (176 - bynL[2]);
@@ -925,13 +979,11 @@ class Ditherbox final : public Effect<T>
                         hotbinB = 10;
                     }
                     // produce total number- smaller is closer to Benford real
-                    if (totalA < totalB)
-                    {
+                    if (totalA < totalB) {
                         bynL[hotbinA] += 1;
                         inputSampleL = floor(inputSampleL);
                     }
-                    else
-                    {
+                    else {
                         bynL[hotbinB] += 1;
                         inputSampleL = ceil(inputSampleL);
                     }
@@ -965,8 +1017,7 @@ class Ditherbox final : public Effect<T>
                     hotbinA = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number floored
                     totalA = 0;
-                    if ((hotbinA > 0) && (hotbinA < 10))
-                    {
+                    if ((hotbinA > 0) && (hotbinA < 10)) {
                         bynR[hotbinA] += 1;
                         totalA += (301 - bynR[1]);
                         totalA += (176 - bynR[2]);
@@ -996,8 +1047,7 @@ class Ditherbox final : public Effect<T>
                     hotbinB = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number ceiled
                     totalB = 0;
-                    if ((hotbinB > 0) && (hotbinB < 10))
-                    {
+                    if ((hotbinB > 0) && (hotbinB < 10)) {
                         bynR[hotbinB] += 1;
                         totalB += (301 - bynR[1]);
                         totalB += (176 - bynR[2]);
@@ -1014,13 +1064,11 @@ class Ditherbox final : public Effect<T>
                         hotbinB = 10;
                     }
                     // produce total number- smaller is closer to Benford real
-                    if (totalA < totalB)
-                    {
+                    if (totalA < totalB) {
                         bynR[hotbinA] += 1;
                         inputSampleR = floor(inputSampleR);
                     }
-                    else
-                    {
+                    else {
                         bynR[hotbinB] += 1;
                         inputSampleR = ceil(inputSampleR);
                     }
@@ -1065,8 +1113,7 @@ class Ditherbox final : public Effect<T>
                     hotbinA = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number floored
                     totalA = 0;
-                    if ((hotbinA > 0) && (hotbinA < 10))
-                    {
+                    if ((hotbinA > 0) && (hotbinA < 10)) {
                         bynL[hotbinA] += 1;
                         totalA += (301 - bynL[1]);
                         totalA += (176 - bynL[2]);
@@ -1105,8 +1152,7 @@ class Ditherbox final : public Effect<T>
                     hotbinB = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number ceiled
                     totalB = 0;
-                    if ((hotbinB > 0) && (hotbinB < 10))
-                    {
+                    if ((hotbinB > 0) && (hotbinB < 10)) {
                         bynL[hotbinB] += 1;
                         totalB += (301 - bynL[1]);
                         totalB += (176 - bynL[2]);
@@ -1123,13 +1169,11 @@ class Ditherbox final : public Effect<T>
                         hotbinB = 10;
                     }
                     // produce total number- smaller is closer to Benford real
-                    if (totalA < totalB)
-                    {
+                    if (totalA < totalB) {
                         bynL[hotbinA] += 1;
                         inputSampleL = floor(inputSampleL);
                     }
-                    else
-                    {
+                    else {
                         bynL[hotbinB] += 1;
                         inputSampleL = ceil(inputSampleL);
                     }
@@ -1172,8 +1216,7 @@ class Ditherbox final : public Effect<T>
                     hotbinA = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number floored
                     totalA = 0;
-                    if ((hotbinA > 0) && (hotbinA < 10))
-                    {
+                    if ((hotbinA > 0) && (hotbinA < 10)) {
                         bynR[hotbinA] += 1;
                         totalA += (301 - bynR[1]);
                         totalA += (176 - bynR[2]);
@@ -1212,8 +1255,7 @@ class Ditherbox final : public Effect<T>
                     hotbinB = floor(benfordize);
                     // hotbin becomes the Benford bin value for this number ceiled
                     totalB = 0;
-                    if ((hotbinB > 0) && (hotbinB < 10))
-                    {
+                    if ((hotbinB > 0) && (hotbinB < 10)) {
                         bynR[hotbinB] += 1;
                         totalB += (301 - bynR[1]);
                         totalB += (176 - bynR[2]);
@@ -1230,13 +1272,11 @@ class Ditherbox final : public Effect<T>
                         hotbinB = 10;
                     }
                     // produce total number- smaller is closer to Benford real
-                    if (totalA < totalB)
-                    {
+                    if (totalA < totalB) {
                         bynR[hotbinA] += 1;
                         inputSampleR = floor(inputSampleR);
                     }
-                    else
-                    {
+                    else {
                         bynR[hotbinB] += 1;
                         inputSampleR = ceil(inputSampleR);
                     }

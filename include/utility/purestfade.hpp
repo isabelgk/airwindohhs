@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PurestFade is just like PurestGain, but for LONG fades."
 };
 constexpr std::string_view k_long_description{
-    "This is a plugin for one person.Okay, it’s a plugin that EXISTS because one person asked the right thing at the right time. A mastering engineer emailed me and said, PurestGain is great, it’s just perfect, everything I need except… when I do fades with it, there’s a discontinuity when I go from 0.001 volume on the Slow Fade, to 0. It cuts out abruptly, and that’s a problem. Can you help?I can!Thing is, PurestGain is designed so you can whack that control around aggressively. It doesn’t mute instantly, but you can kill a track real fast in a mix, gracefully, without zipper noise. PurestGain is correct for some users. If you needed to have a control on some kind of USB controller, like a NanoKontrol or something (say you’re doing an automation pass) you might well need to trim the overall gain with the top slider, and then assign the hardware controller to the bottom slider and automate. It’ll smooth out the incoming MIDI data and the result will be dynamic and aggressive, will feel like you’re yanking faders around on a real board. That’s the design intent for the ballistics of PurestGain.PurestFade is totally different. If you are at full crank and snap it instantly to zero, you’ll get an automated fade of about eight seconds or so. It gets subtler and subtler the quieter you go, until at the point of silence you literally can’t mess up the fade: it will always smooth out the last tiny bit.If you drag it slower than ten seconds you can do any slowness of fade you want, smooth as you like. And, an interesting thing is that if you need a faster fade than the automatic one (of just going fully to zero in an instant and letting the plugin do it) what you can do is manually drag it down faster than that. It’ll chase your fade speed, which means if you’re doing an unnaturally fast fade it’ll be trying to smooth you out a bit but it will let you do that. I think it’s the ultimate smoothed fade.And, in mixing (since it’s still PurestGain at heart) I think you can decide which you prefer, and if you’ve got a style then you know which one is right for you. Probably won’t be both. If you need to do abrupt, dynamic things it’s PurestGain you’ll want… but if your fader moves are generally more subtle, invisible, then you’re probably going to always want PurestFade for everything. (The top control will still give you more rapid moves if you need them)Which one is the right one for you? Most likely you already know which one you’ll be using, just from the descriptions."
+    "This is a plugin for one person. Okay, it’s a plugin that EXISTS because one person asked the right thing at the right time. A mastering engineer emailed me and said, PurestGain is great, it’s just perfect, everything I need except… when I do fades with it, there’s a discontinuity when I go from 0.001 volume on the Slow Fade, to 0. It cuts out abruptly, and that’s a problem. Can you help? I can! Thing is, PurestGain is designed so you can whack that control around aggressively. It doesn’t mute instantly, but you can kill a track real fast in a mix, gracefully, without zipper noise. PurestGain is correct for some users. If you needed to have a control on some kind of USB controller, like a NanoKontrol or something (say you’re doing an automation pass) you might well need to trim the overall gain with the top slider, and then assign the hardware controller to the bottom slider and automate. It’ll smooth out the incoming MIDI data and the result will be dynamic and aggressive, will feel like you’re yanking faders around on a real board. That’s the design intent for the ballistics of PurestGain. PurestFade is totally different. If you are at full crank and snap it instantly to zero, you’ll get an automated fade of about eight seconds or so. It gets subtler and subtler the quieter you go, until at the point of silence you literally can’t mess up the fade: it will always smooth out the last tiny bit. If you drag it slower than ten seconds you can do any slowness of fade you want, smooth as you like. And, an interesting thing is that if you need a faster fade than the automatic one (of just going fully to zero in an instant and letting the plugin do it) what you can do is manually drag it down faster than that. It’ll chase your fade speed, which means if you’re doing an unnaturally fast fade it’ll be trying to smooth you out a bit but it will let you do that. I think it’s the ultimate smoothed fade. And, in mixing (since it’s still PurestGain at heart) I think you can decide which you prefer, and if you’ve got a style then you know which one is right for you. Probably won’t be both. If you need to do abrupt, dynamic things it’s PurestGain you’ll want… but if your fader moves are generally more subtle, invisible, then you’re probably going to always want PurestFade for everything. (The top control will still give you more rapid moves if you need them) Which one is the right one for you? Most likely you already know which one you’ll be using, just from the descriptions."
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PurestFade final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'purf';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -59,19 +63,16 @@ class PurestFade final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -82,8 +83,7 @@ class PurestFade final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 1.0; break;
 
@@ -94,8 +94,7 @@ class PurestFade final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "gain"; break;
             case kParamB: return "fade"; break;
 
@@ -106,8 +105,7 @@ class PurestFade final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Gain"; break;
             case kParamB: return "Fade"; break;
 
@@ -118,26 +116,26 @@ class PurestFade final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 80.0) - 40.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -181,8 +179,7 @@ class PurestFade final : public Effect<T>
         fadeSpeed = ((Effect<T>::getSampleRate() * 0.004) / fadeSpeed);
         // this will tend to be much slower than PurestGain, and also adapt to sample rates
         double outputgain;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -205,8 +202,7 @@ class PurestFade final : public Effect<T>
             // gainchase is chasing the target, as a simple multiply gain factor
             outputgain = gainchase * gainBchase;
             // directly multiply the dB gain by the straight multiply gain
-            if (1.0 == outputgain)
-            {
+            if (1.0 == outputgain) {
                 *out1 = *in1;
                 *out2 = *in2;
             }

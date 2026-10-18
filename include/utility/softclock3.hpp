@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SoftClock3 is a groove-oriented time reference."
 };
 constexpr std::string_view k_long_description{
-    "You might or might not have heard of the first SoftClock. It came out shortly after I'd developed it because people desperately wanted to play with it, and before I was able to use it much. (still can't, too busy with plugins.) It's the metronome made of waving, wobbling tones where the beat is always a swoop of a (mostly) sine wave that goes up to a high point. Inspired by a joke metronome of dog woofs that proved strangely inspiring to play along to, SoftClock is the machine tempo with perfect regularity but no actual beat, where you have to place the 'click' of your notes wherever it SEEMS to be.Version 3 is largely about taking SoftClock in a strange direction where it builds in Airwindows theories about tempo from 2020, and designs its wobbly guide sound around them, producing distinct wobbles based on what sort of tempo node you're using.But what on earth is a tempo node? Well, in practical terms it's the thing that took away the whole 'big beat' and 'snare pocket' and 'speed' controls, replacing them all with ONE control that is simply 'Flavor'. Set 'flavor' to zero, and you get a simple repeating pitch-waver to guide your tempo. It is not a 'click' but you'll find it easy to sync up to it because the pitch-waver sounds like moving your body feels, and you can set a tempo by its regularity. The beat is where you feel the beat is. The waver is perfectly regular, so it doesn't drift.Set 'flavor' to 0.5, or even more, and things start getting a lot more interesting.That's because this 'node' concept of tempo covers a lot of bases. You can have 'relaxed' nodes where the groove mustn't be too rigid or strenuous. You can have 'tense' nodes where it's positively brittle, loaded with energy. There's nodes that amp up the relaxed energy until it's an infectuous groove… or nodes that take the relaxed energy and hang back, sneaking in attitude until the groove swaggers. It's a continuum of groove, cycling between serene ease and jittery edginess, and it wraps around and around rising tempo like a barber-pole from the slowest to the fastest tempos. One of the Airwindows fans, Bo Danerius, worked out the algorithm and shared it, after I made a post outlining the theory: math webpages can do things like that given scatter-plots of data, and I'd sorted a whole bunch of hit records into these categories.And now, SoftClock3 does it automatically: just set the tempo and it AUTOMATICALLY applies the speed, swing and wobble settings to deliver the correct pitch-wobble for whatever that tempo is. No guesswork. It even helps you tune in exact tempos for a song or riff: if you're near the ideal setting, it's likely that one direction will be ramping up speed and tension, and the other direction will slow the wavering and calm the energy. Either of these directions could be either faster tempo or slower: depends what node you're already at. It ought to be a very natural way to find the correct tempo for whatever you like, by roughing in the general region and then exploring until SoftClock moves the way you need the song to move. Use the Flavor control to govern the amount of character that should be applied to the tempo: full relaxed or full tense don't have swing, but groove and swagger do, and they're adjusted by the amount of Flavor.If all this sounds like complete madness, that is perfectly fine. It's experimentation. We can't all go 'tell me what plugin you want and I'll have AI make you one'. Some of us gotta deal with getting these big ideas, and pursuing where they lead, sometimes for years. It's been six years since I posted the first thoughts on this stuff. SoftClock already existed. Why not run with the combination of all these things, and see what it does?SoftClock3 is a groove-oriented time reference. It's pursuing various theories nobody else has, in hopes of making a kind of 'click' that so perfectly represents entrainment (the way musicians feel time) that it can not only lock people in effortlessly, but also lead them towards the perfect tempo, through exaggerating the flavor of that tempo until it's impossible to miss.If it works, we can all discover a new thing together… and lay down some momentous grooves of all flavors and varieties. :)"
+    "You might or might not have heard of the first SoftClock. It came out shortly after I'd developed it because people desperately wanted to play with it, and before I was able to use it much. (still can't, too busy with plugins.) It's the metronome made of waving, wobbling tones where the beat is always a swoop of a (mostly) sine wave that goes up to a high point. Inspired by a joke metronome of dog woofs that proved strangely inspiring to play along to, SoftClock is the machine tempo with perfect regularity but no actual beat, where you have to place the 'click' of your notes wherever it SEEMS to be. Version 3 is largely about taking SoftClock in a strange direction where it builds in Airwindows theories about tempo from 2020, and designs its wobbly guide sound around them, producing distinct wobbles based on what sort of tempo node you're using. But what on earth is a tempo node? Well, in practical terms it's the thing that took away the whole 'big beat' and 'snare pocket' and 'speed' controls, replacing them all with ONE control that is simply 'Flavor'. Set 'flavor' to zero, and you get a simple repeating pitch-waver to guide your tempo. It is not a 'click' but you'll find it easy to sync up to it because the pitch-waver sounds like moving your body feels, and you can set a tempo by its regularity. The beat is where you feel the beat is. The waver is perfectly regular, so it doesn't drift. Set 'flavor' to 0.5, or even more, and things start getting a lot more interesting. That's because this 'node' concept of tempo covers a lot of bases. You can have 'relaxed' nodes where the groove mustn't be too rigid or strenuous. You can have 'tense' nodes where it's positively brittle, loaded with energy. There's nodes that amp up the relaxed energy until it's an infectuous groove… or nodes that take the relaxed energy and hang back, sneaking in attitude until the groove swaggers. It's a continuum of groove, cycling between serene ease and jittery edginess, and it wraps around and around rising tempo like a barber-pole from the slowest to the fastest tempos. One of the Airwindows fans, Bo Danerius, worked out the algorithm and shared it, after I made a post outlining the theory: math webpages can do things like that given scatter-plots of data, and I'd sorted a whole bunch of hit records into these categories. And now, SoftClock3 does it automatically: just set the tempo and it AUTOMATICALLY applies the speed, swing and wobble settings to deliver the correct pitch-wobble for whatever that tempo is. No guesswork. It even helps you tune in exact tempos for a song or riff: if you're near the ideal setting, it's likely that one direction will be ramping up speed and tension, and the other direction will slow the wavering and calm the energy. Either of these directions could be either faster tempo or slower: depends what node you're already at. It ought to be a very natural way to find the correct tempo for whatever you like, by roughing in the general region and then exploring until SoftClock moves the way you need the song to move. Use the Flavor control to govern the amount of character that should be applied to the tempo: full relaxed or full tense don't have swing, but groove and swagger do, and they're adjusted by the amount of Flavor. If all this sounds like complete madness, that is perfectly fine. It's experimentation. We can't all go 'tell me what plugin you want and I'll have AI make you one'. Some of us gotta deal with getting these big ideas, and pursuing where they lead, sometimes for years. It's been six years since I posted the first thoughts on this stuff. SoftClock already existed. Why not run with the combination of all these things, and see what it does? SoftClock3 is a groove-oriented time reference. It's pursuing various theories nobody else has, in hopes of making a kind of 'click' that so perfectly represents entrainment (the way musicians feel time) that it can not only lock people in effortlessly, but also lead them towards the perfect tempo, through exaggerating the flavor of that tempo until it's impossible to miss. If it works, we can all discover a new thing together… and lay down some momentous grooves of all flavors and varieties. :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SoftClock3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sfc3';
     float A;
     float B;
     float C;
@@ -116,14 +120,13 @@ class SoftClock3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -185,30 +188,70 @@ class SoftClock3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((int)(A * 200.99) + 40, text, kVstMaxParamStrLen); break;
+            case kParamB: int2string((int)(B * 32.99), text, kVstMaxParamStrLen); break;
+            case kParamC: int2string((int)(C * 16.99), text, kVstMaxParamStrLen); break;
+            case kParamD: int2string((int)(D * 1.99), text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return "bpm"; break;
-            case kParamB: return "0"; break;
-            case kParamC: return "th note"; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        int beatCode = (int)(B * 32.99);
+        switch (index) {
+            case kParamA: vst_strncpy(text, "bpm", kVstMaxParamStrLen); break;
+            case kParamB:
+                switch (beatCode) {
+                    case 0: vst_strncpy(text, "0", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "1", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "2", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "3", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "4", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "5", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "6", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "7", kVstMaxParamStrLen); break;
+                    case 8: vst_strncpy(text, "8", kVstMaxParamStrLen); break;
+                    case 9: vst_strncpy(text, "9", kVstMaxParamStrLen); break;
+                    case 10: vst_strncpy(text, "10", kVstMaxParamStrLen); break;
+                    case 11: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 12: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 13: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 14: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 15: vst_strncpy(text, "13", kVstMaxParamStrLen); break;
+                    case 16: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 17: vst_strncpy(text, "13", kVstMaxParamStrLen); break;
+                    case 18: vst_strncpy(text, "13", kVstMaxParamStrLen); break;
+                    case 19: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 20: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 21: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 22: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 23: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 24: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 25: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 26: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 27: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 28: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 29: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 30: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 31: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 32: vst_strncpy(text, "32", kVstMaxParamStrLen); break;
+                    default: break;
+                }
+                break;
+            case kParamC: vst_strncpy(text, "th note", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Beam is a wordlength reducer that tries to heighten sonority."
 };
 constexpr std::string_view k_long_description{
-    "Beam’s a wordlength reducer like Dark, but instead of seeking to always give you the least departure from whatever trajectory the audio’s on (like Dark: and that suppresses highs, including noise in the highs), Beam seeks to make all waveforms converge on the same angle (either ascending, or descending). Imagine a world of triangle-waves, the deepest frequencies taking the most energy, and progressively quieter until high frequencies are in balance with the lows. That’s Beam. Beam has a ‘focus’ control that sort of optimizes the frequency range it’s providing a window into (as in, lower settings SEEM to encourage focus on deeper sounds, higher settings SEEMS to highlight the treble, and the 0.5 is set to zero in on where our hearing’s most sensitive.) And it uses those frequencies, across a broad range of possible sounds, to emphasize the energy and depth of the audio to shocking effect.Except, it’s not. It doesn’t know what a frequency is. It’s only ‘dithering’ in such a way as to try and accentuate certain waveform slope angles, and has no real power to do even that beyond statistical averaging of a bunch of samples.On top of that, its noise floor is WEIRD. Dark gates into silence, sort of well-behavedly. Normal dithers become noise seamlessly. Beam goes nuts and screams, and the only thing I can say for it is, raw truncation is worse. It’s super weird… and yet, even while it’s doing that, the background audio retains a startling depth and personality. Or at least so it seems… even more than Dark, with this one you turn up DeRez and nothing happens to the sound at all. You don’t even hear the noise until it’s silly loud. (there will be a series of dither reissues with DeRez, both for auditioning and for lo-fi duties.) It might even be a ‘sonic maximizer’, putting tone qualities into the audio that weren’t there to begin with.I admit I don’t know what to make of this at all. I know how I got it, and I know it’s doing what I made it to do. But nobody knows what you get if you sculpt audio, not by frequencies or loudness, but by reinforcing certain waveform slope angles, because to my knowledge nobody has ever wanted to do that or had a way to make it happen, even in subtle ways like this. And now that I’ve done it, I’m not certain it’s better than Dark. I understand what Dark’s doing, and why that’s useful. This is a wilder beast. Looking forward to getting people’s reactions… because one of these may replace NJAD in my flagship Airwindows plugin, Monitoring. (followup: turns out it is Dark in Monitoring2)"
+    "Beam’s a wordlength reducer like Dark, but instead of seeking to always give you the least departure from whatever trajectory the audio’s on (like Dark: and that suppresses highs, including noise in the highs), Beam seeks to make all waveforms converge on the same angle (either ascending, or descending). Imagine a world of triangle-waves, the deepest frequencies taking the most energy, and progressively quieter until high frequencies are in balance with the lows. That’s Beam. Beam has a ‘focus’ control that sort of optimizes the frequency range it’s providing a window into (as in, lower settings SEEM to encourage focus on deeper sounds, higher settings SEEMS to highlight the treble, and the 0.5 is set to zero in on where our hearing’s most sensitive.) And it uses those frequencies, across a broad range of possible sounds, to emphasize the energy and depth of the audio to shocking effect. Except, it’s not. It doesn’t know what a frequency is. It’s only ‘dithering’ in such a way as to try and accentuate certain waveform slope angles, and has no real power to do even that beyond statistical averaging of a bunch of samples. On top of that, its noise floor is WEIRD. Dark gates into silence, sort of well-behavedly. Normal dithers become noise seamlessly. Beam goes nuts and screams, and the only thing I can say for it is, raw truncation is worse. It’s super weird… and yet, even while it’s doing that, the background audio retains a startling depth and personality. Or at least so it seems… even more than Dark, with this one you turn up DeRez and nothing happens to the sound at all. You don’t even hear the noise until it’s silly loud. (there will be a series of dither reissues with DeRez, both for auditioning and for lo-fi duties.) It might even be a ‘sonic maximizer’, putting tone qualities into the audio that weren’t there to begin with. I admit I don’t know what to make of this at all. I know how I got it, and I know it’s doing what I made it to do. But nobody knows what you get if you sculpt audio, not by frequencies or loudness, but by reinforcing certain waveform slope angles, because to my knowledge nobody has ever wanted to do that or had a way to make it happen, even in subtle ways like this. And now that I’ve done it, I’m not certain it’s better than Dark. I understand what Dark’s doing, and why that’s useful. This is a wilder beast. Looking forward to getting people’s reactions… because one of these may replace NJAD in my flagship Airwindows plugin, Monitoring. (followup: turns out it is Dark in Monitoring2)"
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Beam final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'beam';
     float lastSampleL[100];
     float lastSampleR[100];
     uint32_t fpdL;
@@ -60,20 +64,17 @@ class Beam final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -85,8 +86,7 @@ class Beam final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.0; break;
@@ -98,8 +98,7 @@ class Beam final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "quant"; break;
             case kParamB: return "focus"; break;
             case kParamC: return "derez"; break;
@@ -111,8 +110,7 @@ class Beam final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Quant"; break;
             case kParamB: return "Focus"; break;
             case kParamC: return "DeRez"; break;
@@ -124,28 +122,35 @@ class Beam final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 1.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "CD 16", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "HD 24", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -189,8 +194,7 @@ class Beam final : public Effect<T>
         if (outScale < 8.0) {
             outScale = 8.0;
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

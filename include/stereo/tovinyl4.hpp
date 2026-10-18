@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ToVinyl4 is a vinyl-mastering simulator bringing several vinyl-type colors."
 };
 constexpr std::string_view k_long_description{
-    "ToVinyl has several uses. You can use it to reshape the bass in your track, making it more mono or tightening up the center. It’s a special multipole IIR filter that acts almost like a ‘mega-bass’ plugin: it doesn’t just take away, it rearranges (so don’t expect it to act like a normal digital cut, you might see increased peak energy down low.)Then, there’s the acceleration limiter. This algorithm is unlike any other Airwindows treble-reducer: it zeroes in on just the sorts of transients that’d burn up a cutting head, and zaps them ruthlessly. (if you own a cutting head you’re responsible for checking this, but some of you folks are still using Spitfish, and I’m pretty sure this will way outperform Spitfish.) The effect is treble softening without any obvious treble reduction, and it’ll make stuff sound like classic vinyl grooves very effectively.But that’s nothing compared to the next control, Groove Wear. This one analyzes the virtual groove, and then sets up an imaginary stylus going down that groove, and gives it a tiny bit of inertia. It’s more slew mojo (and not tied to any particular frequency, it doesn’t even know what a frequency is) and the effect (should you choose to use it) is a very characteristic darkening and slight trashening of the most extreme highs. You can shut it off entirely, or turn it up, and you can combine it with the acceleration limiter to get pretty much any ‘vinyl LP high end’ you want. Some settings even bring a touch of moving-coil sparkle: it’s not all darken, in fact Groove Wear is very much its own thing distortion-wise.Combine it all together and you’ve got ToVinyl4, the up-to-date version of a classic Airwindows for-pay plugin."
+    "ToVinyl has several uses. You can use it to reshape the bass in your track, making it more mono or tightening up the center. It’s a special multipole IIR filter that acts almost like a ‘mega-bass’ plugin: it doesn’t just take away, it rearranges (so don’t expect it to act like a normal digital cut, you might see increased peak energy down low.) Then, there’s the acceleration limiter. This algorithm is unlike any other Airwindows treble-reducer: it zeroes in on just the sorts of transients that’d burn up a cutting head, and zaps them ruthlessly. (if you own a cutting head you’re responsible for checking this, but some of you folks are still using Spitfish, and I’m pretty sure this will way outperform Spitfish.) The effect is treble softening without any obvious treble reduction, and it’ll make stuff sound like classic vinyl grooves very effectively. But that’s nothing compared to the next control, Groove Wear. This one analyzes the virtual groove, and then sets up an imaginary stylus going down that groove, and gives it a tiny bit of inertia. It’s more slew mojo (and not tied to any particular frequency, it doesn’t even know what a frequency is) and the effect (should you choose to use it) is a very characteristic darkening and slight trashening of the most extreme highs. You can shut it off entirely, or turn it up, and you can combine it with the acceleration limiter to get pretty much any ‘vinyl LP high end’ you want. Some settings even bring a touch of moving-coil sparkle: it’s not all darken, in fact Groove Wear is very much its own thing distortion-wise. Combine it all together and you’ve got ToVinyl4, the up-to-date version of a classic Airwindows for-pay plugin."
 };
 constexpr std::string_view k_tags{
     "stereo"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ToVinyl4 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tovb';
     double ataLastOutL;
     double ataLastOutR;
     double s1L;
@@ -210,21 +214,18 @@ class ToVinyl4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -237,12 +238,11 @@ class ToVinyl4 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return 0.0; break;
-            case kParamB: return 0.0; break;
-            case kParamC: return 0.0; break;
-            case kParamD: return 0.0; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return 0.203419; break;
+            case kParamB: return 0.3424051; break;
+            case kParamC: return 0.32; break;
+            case kParamD: return 0.064; break;
 
             default: break;
         }
@@ -251,12 +251,11 @@ class ToVinyl4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "mid hip"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "midhip"; break;
             case kParamB: return "sidehip"; break;
-            case kParamC: return "h limit"; break;
-            case kParamD: return "gv wear"; break;
+            case kParamC: return "hlimit"; break;
+            case kParamD: return "gvwear"; break;
 
             default: break;
         }
@@ -265,8 +264,7 @@ class ToVinyl4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Mid HiP"; break;
             case kParamB: return "SideHiP"; break;
             case kParamC: return "H Limit"; break;
@@ -279,30 +277,30 @@ class ToVinyl4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(((A * A) * 290.0) + 10.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(((B * B) * 290.0) + 10.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "hz"; break;
-            case kParamB: return "hz"; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -639,8 +637,7 @@ class ToVinyl4 final : public Effect<T>
         double midCorrection;
         double sideCorrection;
         double correction;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

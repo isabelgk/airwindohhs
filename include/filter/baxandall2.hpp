@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Baxandall2 is Baxandall, extended and made more powerful."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes the only way you can make something bigger is to strip it down. I'd been exploring EQs for the purposes of putting one in a future Console version, and revisited Baxandall… well, by the time I was done, a lot was different and a lot was still the same. It still uses my interleaved biquad filters (an unusual choice that helps the shallowness of the filter slopes in this very 'broad strokes' EQ). It still uses the technique of sweeping those filter center points to make increasingly extreme effects as you get crazier with it: it gets almost synth-like, starting with general 'tilt EQ' effects of great subtlety but bringing in wild boosts as you crank it. The purpose of that is to do the sort of anti-Soothe thing I favor: if you have a track and it's carrying highs, in no way do you need to also have full bass on it. Instead, you build a mix out of composite parts each of which bring a different voicing to the mix. And Baxandall2 is designed to get you to whatever broad EQ place you need, from a place of naturalness.But there's nothing natural about the cranked-up 24dB boosts and cuts you can now do. This is newly tuned with the filter sweeping to take you straight past the original Baxandall's settings into wild new places. Also, the original Baxandall was made more forgiving by running it inside an internal Console processing, analog-ifying it. But it turns out that I can leave that to actual Console versions and strip Baxandall2 down to the guts of it, which actually gave it a lot more power.This is Baxandall in the form that I will need it, for doing things with. But since it's Airwindows, you can use it too. And you can still use the original Baxandall, that's not going anywhere and has its own merits. Baxandall2 is just… more, at any cost, no holds barred. Hope you like it."
+    "Sometimes the only way you can make something bigger is to strip it down. I'd been exploring EQs for the purposes of putting one in a future Console version, and revisited Baxandall… well, by the time I was done, a lot was different and a lot was still the same. It still uses my interleaved biquad filters (an unusual choice that helps the shallowness of the filter slopes in this very 'broad strokes' EQ). It still uses the technique of sweeping those filter center points to make increasingly extreme effects as you get crazier with it: it gets almost synth-like, starting with general 'tilt EQ' effects of great subtlety but bringing in wild boosts as you crank it. The purpose of that is to do the sort of anti-Soothe thing I favor: if you have a track and it's carrying highs, in no way do you need to also have full bass on it. Instead, you build a mix out of composite parts each of which bring a different voicing to the mix. And Baxandall2 is designed to get you to whatever broad EQ place you need, from a place of naturalness. But there's nothing natural about the cranked-up 24dB boosts and cuts you can now do. This is newly tuned with the filter sweeping to take you straight past the original Baxandall's settings into wild new places. Also, the original Baxandall was made more forgiving by running it inside an internal Console processing, analog-ifying it. But it turns out that I can leave that to actual Console versions and strip Baxandall2 down to the guts of it, which actually gave it a lot more power. This is Baxandall in the form that I will need it, for doing things with. But since it's Airwindows, you can use it too. And you can still use the original Baxandall, that's not going anywhere and has its own merits. Baxandall2 is just… more, at any cost, no holds barred. Hope you like it."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Baxandall2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'baxb';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -77,19 +81,16 @@ class Baxandall2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -100,8 +101,7 @@ class Baxandall2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
 
@@ -112,8 +112,7 @@ class Baxandall2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "treble"; break;
             case kParamB: return "bass"; break;
 
@@ -124,8 +123,7 @@ class Baxandall2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Treble"; break;
             case kParamB: return "Bass"; break;
 
@@ -136,26 +134,26 @@ class Baxandall2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 48.0) - 24.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 48.0) - 24.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return "dB"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -194,8 +192,7 @@ class Baxandall2 final : public Effect<T>
         bassBL[4] = bassAL[4] = bassBR[4] = bassAR[4] = bassAL[2];
         bassBL[5] = bassAL[5] = bassBR[5] = bassAR[5] = 2.0 * (K * K - 1.0) * norm;
         bassBL[6] = bassAL[6] = bassBR[6] = bassAR[6] = (1.0 - K / bassAL[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -208,8 +205,7 @@ class Baxandall2 final : public Effect<T>
             double bassSampleL;
             double trebleSampleR;
             double bassSampleR;
-            if (flip)
-            {
+            if (flip) {
                 trebleSampleL = (inputSampleL * trebleAL[2]) + trebleAL[7];
                 trebleAL[7] = (inputSampleL * trebleAL[3]) - (trebleSampleL * trebleAL[5]) + trebleAL[8];
                 trebleAL[8] = (inputSampleL * trebleAL[4]) - (trebleSampleL * trebleAL[6]);
@@ -225,8 +221,7 @@ class Baxandall2 final : public Effect<T>
                 bassAR[7] = (inputSampleR * bassAR[3]) - (bassSampleR * bassAR[5]) + bassAR[8];
                 bassAR[8] = (inputSampleR * bassAR[4]) - (bassSampleR * bassAR[6]);
             }
-            else
-            {
+            else {
                 trebleSampleL = (inputSampleL * trebleBL[2]) + trebleBL[7];
                 trebleBL[7] = (inputSampleL * trebleBL[3]) - (trebleSampleL * trebleBL[5]) + trebleBL[8];
                 trebleBL[8] = (inputSampleL * trebleBL[4]) - (trebleSampleL * trebleBL[6]);

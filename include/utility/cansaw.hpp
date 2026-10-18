@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "CansAW is Chris's Airwindows room, in a plugin, for headphone mixers."
 };
 constexpr std::string_view k_long_description{
-    "This is pretty straightforward. Remember Cans? Every possible control room sound from compact to huge, adjustable any way you like?This is the Airwindows presets. That's all.By that I mean: I've been developing my mix room, where I do all my work, for years. By now I've got speakers, subwoofers (stereo), extensive room treatment, multiple mix check positions up to and including a stairwell at the back that leads up to a small hallway, from which you can hear how a mix hits a much larger space and how it'll work there. I have to close all the doors like to my bedroom to use that mix position, and I've shown it on mixing livestreams (though miking it can get hissy as I'm not using live-gig levels here). It's real-world acoustics used to better document how a mix works in different situations, and it works really well, better than anything you could do over headphones.And I've made a version of Cans that does these exact mix positions, including the hallway mix check, and while it is not as good as real life… it's not bad, not bad at all. It tells you some of the same things. It worked, in other words.This is for me as much as you. If it's out there, even if my house gets flattened by a meteor or perhaps Elon Musk experiencing a nuclear K-hole, and I survive the meteor or madman, and I have a laptop and some headphones, I can work after a fashion :) there's enough out there whether it's publically available tracks from my own music or new synths like Six Sines or my perennial fave Surge XT (which can fire one-shot percussion samples off the wavetable osc), and of course I can download ConsoleX just like anybody (making progress on helping Yaeltex put out the control surface I designed!) and that means I, like anybody else, have access to some of the universe of free audio stuff, that universe that's become so broad that I can even do the music I care about, with just a bunch of downloading open source projects :)Of course if the meteor gets me all bets are off and you're gonna have trouble getting ConsoleH out of anybody else. But that's why I'm burning the midnight oil (well, up-very-early firewood?) to keep making stuff: I'm not done and I've got even more exciting stuff than ConsoleX in the works, as well as lots of extra support stuff to put everything in gear, and studio tricks to give audio (that can be sampled and re-used) that hasn't been heard right for decades. Starting to figure all that out, and I hope I can convey my enthuiasm.For today, here's CansAW. You can get to any setting in it using Cans (it's all Room D, for a start). But each setting is dialed in as exactly as I could get it, using real acoustical audio for reference, in the mix environment I've been developing for years. If I had access to all the mix rooms in the world I'd give you the approximation of those as well, but here's my place, in the box :)"
+    "This is pretty straightforward. Remember Cans? Every possible control room sound from compact to huge, adjustable any way you like? This is the Airwindows presets. That's all. By that I mean: I've been developing my mix room, where I do all my work, for years. By now I've got speakers, subwoofers (stereo), extensive room treatment, multiple mix check positions up to and including a stairwell at the back that leads up to a small hallway, from which you can hear how a mix hits a much larger space and how it'll work there. I have to close all the doors like to my bedroom to use that mix position, and I've shown it on mixing livestreams (though miking it can get hissy as I'm not using live-gig levels here). It's real-world acoustics used to better document how a mix works in different situations, and it works really well, better than anything you could do over headphones. And I've made a version of Cans that does these exact mix positions, including the hallway mix check, and while it is not as good as real life… it's not bad, not bad at all. It tells you some of the same things. It worked, in other words. This is for me as much as you. If it's out there, even if my house gets flattened by a meteor or perhaps Elon Musk experiencing a nuclear K-hole, and I survive the meteor or madman, and I have a laptop and some headphones, I can work after a fashion :) there's enough out there whether it's publically available tracks from my own music or new synths like Six Sines or my perennial fave Surge XT (which can fire one-shot percussion samples off the wavetable osc), and of course I can download ConsoleX just like anybody (making progress on helping Yaeltex put out the control surface I designed!) and that means I, like anybody else, have access to some of the universe of free audio stuff, that universe that's become so broad that I can even do the music I care about, with just a bunch of downloading open source projects :) Of course if the meteor gets me all bets are off and you're gonna have trouble getting ConsoleH out of anybody else. But that's why I'm burning the midnight oil (well, up-very-early firewood?) to keep making stuff: I'm not done and I've got even more exciting stuff than ConsoleX in the works, as well as lots of extra support stuff to put everything in gear, and studio tricks to give audio (that can be sampled and re-used) that hasn't been heard right for decades. Starting to figure all that out, and I hope I can convey my enthuiasm. For today, here's CansAW. You can get to any setting in it using Cans (it's all Room D, for a start). But each setting is dialed in as exactly as I could get it, using real acoustical audio for reference, in the mix environment I've been developing for years. If I had access to all the mix rooms in the world I'd give you the approximation of those as well, but here's my place, in the box :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -290,10 +290,9 @@ class CansAW final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -339,22 +338,33 @@ class CansAW final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 3.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Bypass", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "UpFront", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SitBack", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Hallway", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // Z as example 'popup' parameter with four values  */
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

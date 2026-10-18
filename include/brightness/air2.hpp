@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Air2 is a different bright EQ with silk tone and high sample rate support."
 };
 constexpr std::string_view k_long_description{
-    "Here’s what you get: Air2 has three treble-boost bands, Hiss, Glitter and Air. The first two are very like what’s in Energy2, but Air2 is NOT the same: it’s a different algorithm, not done the samw way Energy2’s ‘Rat’ band is done, and it has a broader, softer air band that’s less ‘raw harsh energy injection’ and more ‘bright and pretty’.And then, they all run through a ‘Silk’ control… inspired by but NOT the same as the Neve Portico Silk circuit. That is a real hardware transformer biased into second harmonic creation by a DC current. Air2’s Silk control is the same thing as Single Ended Triode (which you can download and use already) but only applied to the highs out of Air2, so it’s the same general concept but is not a clone of the Portico preamp. Plus if they freak out I will rename it to ‘Sow’s Ear’: it’s part of a treble brightener and the same basic functionality and as far as I’m concerned, nothing is stopping me from asymmetrically distorting highs, and Silk is the best general term for what that does. Except with mine you can push it too far for effect, because of course you can :)And finally, unlike Energy2, the Dry/Wet control for Air2 strikes a new balance between the Energy style of increasing the effect, and the traditional Dry/Wet control. New with Air2, you can now turn it to full-wet and get ONLY the output of the brightener bands. They’re not exactly filters but they act like it, and by adjusting them against each other you can produce insanely treble-boosted sounds and wipe out everything else using Dry/Wet. The way it works is, up to 75% (0.75) you still have full volume Dry. It won’t re-balance your track, just add whatever Air2 highs you’re looking for. Then, between 0.75 and 1 (full Wet) the dry goes away, so if you crank it up all the way you get the fullest extreme, but for most normal use it’s like Energy2, taking an unvarying dry signal (which is NOT undersampled) and adding however much of the effect you like."
+    "Here’s what you get: Air2 has three treble-boost bands, Hiss, Glitter and Air. The first two are very like what’s in Energy2, but Air2 is NOT the same: it’s a different algorithm, not done the samw way Energy2’s ‘Rat’ band is done, and it has a broader, softer air band that’s less ‘raw harsh energy injection’ and more ‘bright and pretty’. And then, they all run through a ‘Silk’ control… inspired by but NOT the same as the Neve Portico Silk circuit. That is a real hardware transformer biased into second harmonic creation by a DC current. Air2’s Silk control is the same thing as Single Ended Triode (which you can download and use already) but only applied to the highs out of Air2, so it’s the same general concept but is not a clone of the Portico preamp. Plus if they freak out I will rename it to ‘Sow’s Ear’: it’s part of a treble brightener and the same basic functionality and as far as I’m concerned, nothing is stopping me from asymmetrically distorting highs, and Silk is the best general term for what that does. Except with mine you can push it too far for effect, because of course you can :) And finally, unlike Energy2, the Dry/Wet control for Air2 strikes a new balance between the Energy style of increasing the effect, and the traditional Dry/Wet control. New with Air2, you can now turn it to full-wet and get ONLY the output of the brightener bands. They’re not exactly filters but they act like it, and by adjusting them against each other you can produce insanely treble-boosted sounds and wipe out everything else using Dry/Wet. The way it works is, up to 75% (0.75) you still have full volume Dry. It won’t re-balance your track, just add whatever Air2 highs you’re looking for. Then, between 0.75 and 1 (full Wet) the dry goes away, so if you crank it up all the way you get the fullest extreme, but for most normal use it’s like Energy2, taking an unvarying dry signal (which is NOT undersampled) and adding however much of the effect you like."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Air2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'aiys';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -150,22 +154,19 @@ class Air2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -179,8 +180,7 @@ class Air2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -194,13 +194,12 @@ class Air2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "hiss"; break;
             case kParamB: return "glitter"; break;
             case kParamC: return "air"; break;
             case kParamD: return "silk"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -209,8 +208,7 @@ class Air2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Hiss"; break;
             case kParamB: return "Glitter"; break;
             case kParamC: return "Air"; break;
@@ -224,32 +222,32 @@ class Air2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -298,8 +296,7 @@ class Air2 final : public Effect<T>
             drymix = 1.0;
         }
         // all types of air band are running in parallel, not series
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -317,8 +314,7 @@ class Air2 final : public Effect<T>
                 if (fabs(hiIntensity) > 0.0001) {
                     airFactorCL = airPrevCL - inputSampleL;
                     airFactorCR = airPrevCR - inputSampleR;
-                    if (flop)
-                    {
+                    if (flop) {
                         airEvenCL += airFactorCL;
                         airOddCL -= airFactorCL;
                         airFactorCL = airEvenCL * hiIntensity;
@@ -326,8 +322,7 @@ class Air2 final : public Effect<T>
                         airOddCR -= airFactorCR;
                         airFactorCR = airEvenCR * hiIntensity;
                     }
-                    else
-                    {
+                    else {
                         airOddCL += airFactorCL;
                         airEvenCL -= airFactorCL;
                         airFactorCL = airOddCL * hiIntensity;
@@ -351,8 +346,7 @@ class Air2 final : public Effect<T>
                     if (count < 1 || count > 3) {
                         count = 1;
                     }
-                    switch (count)
-                    {
+                    switch (count) {
                         case 1:
                             tripletAL += tripletFactorL;
                             tripletCL -= tripletFactorL;
@@ -401,12 +395,10 @@ class Air2 final : public Effect<T>
                     count++;
                 } // 15K
                 if (fabs(airIntensity) > 0.0001) {
-                    if (flop)
-                    {
+                    if (flop) {
                         airFactorAL = airPrevAL - inputSampleL;
                         airFactorAR = airPrevAR - inputSampleR;
-                        if (flipA)
-                        {
+                        if (flipA) {
                             airEvenAL += airFactorAL;
                             airOddAL -= airFactorAL;
                             airFactorAL = airEvenAL * airIntensity;
@@ -414,8 +406,7 @@ class Air2 final : public Effect<T>
                             airOddAR -= airFactorAR;
                             airFactorAR = airEvenAR * airIntensity;
                         }
-                        else
-                        {
+                        else {
                             airOddAL += airFactorAL;
                             airEvenAL -= airFactorAL;
                             airFactorAL = airOddAL * airIntensity;
@@ -433,12 +424,10 @@ class Air2 final : public Effect<T>
                         correctionR = correctionR + airFactorAR;
                         flipA = !flipA;
                     }
-                    else
-                    {
+                    else {
                         airFactorBL = airPrevBL - inputSampleL;
                         airFactorBR = airPrevBR - inputSampleR;
-                        if (flipB)
-                        {
+                        if (flipB) {
                             airEvenBL += airFactorBL;
                             airOddBL -= airFactorBL;
                             airFactorBL = airEvenBL * airIntensity;
@@ -446,8 +435,7 @@ class Air2 final : public Effect<T>
                             airOddBR -= airFactorBR;
                             airFactorBR = airEvenBR * airIntensity;
                         }
-                        else
-                        {
+                        else {
                             airOddBL += airFactorBL;
                             airEvenBL -= airFactorBL;
                             airFactorBL = airOddBL * airIntensity;

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PaulWide is a highpassed TPDF wide dither. (quieter, airier AND wider)"
 };
 constexpr std::string_view k_long_description{
-    "Return Of The Son Of Monster Dither :DSo if you tuned in last week for TPDFWide you probably thought that was all I had, in the dither tank, for now.But guess what? Happy accidents occurred. I thought it might be fun to try this same principle not on TPDFDither, but on PaulDither.PaulDither is of course a simple highpassed dither. It does the Airwindows-style very tiny offset to make the dither noisefloor sit across one extra possible value, and now PaulWide is the same thing except it rerolls the randomness if it’s going to seem too much like mono. It’s still TPDF, it’s still just random one bit noise sources, it’s still technically correct as far as dithering accurately (some might freak out at the offset, but it’s on purpose and WAY too quiet to hurt you, as it’s less than one significant bit), but now it’s also widened while remaining purely TPDF in nature.So this is your ‘hot-rod’ industry-standard dither. If you need TPDF and fancy at the same time, here you go. It is silky in texture just like Paul Frindle’s preferred dithers because it’s the highpass dither, it’s slightly richer in texture because it’s offset a teeny amount like Airwindows TPDF, and then it’s widened through discarding random values that lead to ‘mono-like’ results: except it turns out, when you apply that to a highpassed dither, you get MUCH MORE wideness than you do with the regular highpass.Enjoy the most boutique, decked-out, hot-rod ‘regular ordinary dither’ you’re ever likely to see. I’m not sure what else can be even done here without ceasing to be TPDF anymore."
+    "Return Of The Son Of Monster Dither :D So if you tuned in last week for TPDFWide you probably thought that was all I had, in the dither tank, for now. But guess what? Happy accidents occurred. I thought it might be fun to try this same principle not on TPDFDither, but on PaulDither. PaulDither is of course a simple highpassed dither. It does the Airwindows-style very tiny offset to make the dither noisefloor sit across one extra possible value, and now PaulWide is the same thing except it rerolls the randomness if it’s going to seem too much like mono. It’s still TPDF, it’s still just random one bit noise sources, it’s still technically correct as far as dithering accurately (some might freak out at the offset, but it’s on purpose and WAY too quiet to hurt you, as it’s less than one significant bit), but now it’s also widened while remaining purely TPDF in nature. So this is your ‘hot-rod’ industry-standard dither. If you need TPDF and fancy at the same time, here you go. It is silky in texture just like Paul Frindle’s preferred dithers because it’s the highpass dither, it’s slightly richer in texture because it’s offset a teeny amount like Airwindows TPDF, and then it’s widened through discarding random values that lead to ‘mono-like’ results: except it turns out, when you apply that to a highpassed dither, you get MUCH MORE wideness than you do with the regular highpass. Enjoy the most boutique, decked-out, hot-rod ‘regular ordinary dither’ you’re ever likely to see. I’m not sure what else can be even done here without ceasing to be TPDF anymore."
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PaulWide final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pauw';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -55,19 +59,16 @@ class PaulWide final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -78,8 +79,7 @@ class PaulWide final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.0; break;
 
@@ -90,8 +90,7 @@ class PaulWide final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "quant"; break;
             case kParamB: return "derez"; break;
 
@@ -102,8 +101,7 @@ class PaulWide final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Quant"; break;
             case kParamB: return "DeRez"; break;
 
@@ -114,26 +112,33 @@ class PaulWide final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 1.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "CD 16", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "HD 24", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -166,8 +171,7 @@ class PaulWide final : public Effect<T>
         if (outScale < 8.0) {
             outScale = 8.0;
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "AQuickVoiceClip softens headset mic recordings that have been super hard clipped on capture."
 };
 constexpr std::string_view k_long_description{
-    "I hope this is handy for somebody: I made it for myself. The idea is, if you’re a youtuber or something and have the ability to post-process your mic feed, you might have it set up so normal levels give a normal sound, but then if some monster jumps out and KILLS you in your video game, you might scream very loudly into your mic and blow the recording into ridiculously loud clipping.This does several things. Firstly, it clips and softens those moments further and tries to suppress some of the highs you got from the super-hard clipping. Secondly, it’s got a highpass which can subdue thumps and pops, and can also be used in conjunction with something like a pitch shifter to give cartoony voices (I’ve tried this with DiracFxAU, now known as zynaptiq: only used their demo AU, didn’t use their library in anything code-wise and won’t be doing so as they are unaffordable). I found highpassing before the pitch processing was very helpful for toon voices of that type.This isn’t the seriousest of plugins, but I’ve seen people ask me for it, so now it’s free and Mac/PC VST too. I think it’s best confined to its intended use, processing single voice tracks that have wildly distorted moments. If you try to use it on the 2-buss I will be very cross with you ;)"
+    "I hope this is handy for somebody: I made it for myself. The idea is, if you’re a youtuber or something and have the ability to post-process your mic feed, you might have it set up so normal levels give a normal sound, but then if some monster jumps out and KILLS you in your video game, you might scream very loudly into your mic and blow the recording into ridiculously loud clipping. This does several things. Firstly, it clips and softens those moments further and tries to suppress some of the highs you got from the super-hard clipping. Secondly, it’s got a highpass which can subdue thumps and pops, and can also be used in conjunction with something like a pitch shifter to give cartoony voices (I’ve tried this with DiracFxAU, now known as zynaptiq: only used their demo AU, didn’t use their library in anything code-wise and won’t be doing so as they are unaffordable). I found highpassing before the pitch processing was very helpful for toon voices of that type. This isn’t the seriousest of plugins, but I’ve seen people ask me for it, so now it’s free and Mac/PC VST too. I think it’s best confined to its intended use, processing single voice tracks that have wildly distorted moments. If you try to use it on the 2-buss I will be very cross with you ;)"
 };
 constexpr std::string_view k_tags{
     "clipping"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class AQuickVoiceClip final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'aqvc';
     double LataLast6Sample;
     double LataLast5Sample;
     double LataLast4Sample;
@@ -146,18 +150,15 @@ class AQuickVoiceClip final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -167,8 +168,7 @@ class AQuickVoiceClip final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.42; break;
 
             default: break;
@@ -178,8 +178,7 @@ class AQuickVoiceClip final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "highpass"; break;
 
             default: break;
@@ -189,8 +188,7 @@ class AQuickVoiceClip final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Highpass"; break;
 
             default: break;
@@ -200,24 +198,24 @@ class AQuickVoiceClip final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((pow(A, 3) * 2070) + 30, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "hz"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -252,8 +250,7 @@ class AQuickVoiceClip final : public Effect<T>
         double RdrySample;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -338,44 +335,36 @@ class AQuickVoiceClip final : public Effect<T>
             LdrySample = LataHalfwaySample;
             RdrySample = RataHalfwaySample;
             // begin L channel for the clipper
-            if (LlastSample >= refclip)
-            {
+            if (LlastSample >= refclip) {
                 LlpDepth += 0.1;
-                if (LataHalfwaySample < refclip)
-                {
+                if (LataHalfwaySample < refclip) {
                     LlastSample = ((refclip * hardness) + (LataHalfwaySample * softness));
                 }
                 else {
                     LlastSample = refclip;
                 }
             }
-            if (LlastSample <= -refclip)
-            {
+            if (LlastSample <= -refclip) {
                 LlpDepth += 0.1;
-                if (LataHalfwaySample > -refclip)
-                {
+                if (LataHalfwaySample > -refclip) {
                     LlastSample = ((-refclip * hardness) + (LataHalfwaySample * softness));
                 }
                 else {
                     LlastSample = -refclip;
                 }
             }
-            if (LataHalfwaySample > refclip)
-            {
+            if (LataHalfwaySample > refclip) {
                 LlpDepth += 0.1;
-                if (LlastSample < refclip)
-                {
+                if (LlastSample < refclip) {
                     LataHalfwaySample = ((refclip * hardness) + (LlastSample * softness));
                 }
                 else {
                     LataHalfwaySample = refclip;
                 }
             }
-            if (LataHalfwaySample < -refclip)
-            {
+            if (LataHalfwaySample < -refclip) {
                 LlpDepth += 0.1;
-                if (LlastSample > -refclip)
-                {
+                if (LlastSample > -refclip) {
                     LataHalfwaySample = ((-refclip * hardness) + (LlastSample * softness));
                 }
                 else {
@@ -384,44 +373,36 @@ class AQuickVoiceClip final : public Effect<T>
             }
             /// end L channel for the clipper
             // begin R channel for the clipper
-            if (RlastSample >= refclip)
-            {
+            if (RlastSample >= refclip) {
                 RlpDepth += 0.1;
-                if (RataHalfwaySample < refclip)
-                {
+                if (RataHalfwaySample < refclip) {
                     RlastSample = ((refclip * hardness) + (RataHalfwaySample * softness));
                 }
                 else {
                     RlastSample = refclip;
                 }
             }
-            if (RlastSample <= -refclip)
-            {
+            if (RlastSample <= -refclip) {
                 RlpDepth += 0.1;
-                if (RataHalfwaySample > -refclip)
-                {
+                if (RataHalfwaySample > -refclip) {
                     RlastSample = ((-refclip * hardness) + (RataHalfwaySample * softness));
                 }
                 else {
                     RlastSample = -refclip;
                 }
             }
-            if (RataHalfwaySample > refclip)
-            {
+            if (RataHalfwaySample > refclip) {
                 RlpDepth += 0.1;
-                if (RlastSample < refclip)
-                {
+                if (RlastSample < refclip) {
                     RataHalfwaySample = ((refclip * hardness) + (RlastSample * softness));
                 }
                 else {
                     RataHalfwaySample = refclip;
                 }
             }
-            if (RataHalfwaySample < -refclip)
-            {
+            if (RataHalfwaySample < -refclip) {
                 RlpDepth += 0.1;
-                if (RlastSample > -refclip)
-                {
+                if (RlastSample > -refclip) {
                     RataHalfwaySample = ((-refclip * hardness) + (RlastSample * softness));
                 }
                 else {
@@ -445,44 +426,36 @@ class AQuickVoiceClip final : public Effect<T>
             LdrySample = inputSampleL;
             RdrySample = inputSampleR;
             // begin second L clip
-            if (LlastSample >= refclip)
-            {
+            if (LlastSample >= refclip) {
                 LlpDepth += 0.1;
-                if (inputSampleL < refclip)
-                {
+                if (inputSampleL < refclip) {
                     LlastSample = ((refclip * hardness) + (inputSampleL * softness));
                 }
                 else {
                     LlastSample = refclip;
                 }
             }
-            if (LlastSample <= -refclip)
-            {
+            if (LlastSample <= -refclip) {
                 LlpDepth += 0.1;
-                if (inputSampleL > -refclip)
-                {
+                if (inputSampleL > -refclip) {
                     LlastSample = ((-refclip * hardness) + (inputSampleL * softness));
                 }
                 else {
                     LlastSample = -refclip;
                 }
             }
-            if (inputSampleL > refclip)
-            {
+            if (inputSampleL > refclip) {
                 LlpDepth += 0.1;
-                if (LlastSample < refclip)
-                {
+                if (LlastSample < refclip) {
                     inputSampleL = ((refclip * hardness) + (LlastSample * softness));
                 }
                 else {
                     inputSampleL = refclip;
                 }
             }
-            if (inputSampleL < -refclip)
-            {
+            if (inputSampleL < -refclip) {
                 LlpDepth += 0.1;
-                if (LlastSample > -refclip)
-                {
+                if (LlastSample > -refclip) {
                     inputSampleL = ((-refclip * hardness) + (LlastSample * softness));
                 }
                 else {
@@ -491,44 +464,36 @@ class AQuickVoiceClip final : public Effect<T>
             }
             // end second L clip
             // begin second R clip
-            if (RlastSample >= refclip)
-            {
+            if (RlastSample >= refclip) {
                 RlpDepth += 0.1;
-                if (inputSampleR < refclip)
-                {
+                if (inputSampleR < refclip) {
                     RlastSample = ((refclip * hardness) + (inputSampleR * softness));
                 }
                 else {
                     RlastSample = refclip;
                 }
             }
-            if (RlastSample <= -refclip)
-            {
+            if (RlastSample <= -refclip) {
                 RlpDepth += 0.1;
-                if (inputSampleR > -refclip)
-                {
+                if (inputSampleR > -refclip) {
                     RlastSample = ((-refclip * hardness) + (inputSampleR * softness));
                 }
                 else {
                     RlastSample = -refclip;
                 }
             }
-            if (inputSampleR > refclip)
-            {
+            if (inputSampleR > refclip) {
                 RlpDepth += 0.1;
-                if (RlastSample < refclip)
-                {
+                if (RlastSample < refclip) {
                     inputSampleR = ((refclip * hardness) + (RlastSample * softness));
                 }
                 else {
                     inputSampleR = refclip;
                 }
             }
-            if (inputSampleR < -refclip)
-            {
+            if (inputSampleR < -refclip) {
                 RlpDepth += 0.1;
-                if (RlastSample > -refclip)
-                {
+                if (RlastSample > -refclip) {
                     inputSampleR = ((-refclip * hardness) + (RlastSample * softness));
                 }
                 else {
@@ -561,8 +526,7 @@ class AQuickVoiceClip final : public Effect<T>
             Loverall = (Loverall * cancelold) + (LataDiffSample * cancelnew);
             Roverall = (Roverall * cancelold) + (RataDiffSample * cancelnew);
             // apply all the diffs to a lowpassed IIR
-            if (flip)
-            {
+            if (flip) {
                 LiirSampleA = (LiirSampleA * altAmount) + (inputSampleL * iirAmount);
                 inputSampleL -= LiirSampleA;
                 LiirSampleC = (LiirSampleC * altAmount) + (LpassThrough * iirAmount);
@@ -572,8 +536,7 @@ class AQuickVoiceClip final : public Effect<T>
                 RiirSampleC = (RiirSampleC * altAmount) + (RpassThrough * iirAmount);
                 RpassThrough -= RiirSampleC;
             }
-            else
-            {
+            else {
                 LiirSampleB = (LiirSampleB * altAmount) + (inputSampleL * iirAmount);
                 inputSampleL -= LiirSampleB;
                 LiirSampleD = (LiirSampleD * altAmount) + (LpassThrough * iirAmount);
@@ -593,16 +556,14 @@ class AQuickVoiceClip final : public Effect<T>
             RlastOutSample = inputSampleR;
             LlpDepth -= lpSpeed;
             RlpDepth -= lpSpeed;
-            if (LlpDepth > 0.0)
-            {
+            if (LlpDepth > 0.0) {
                 if (LlpDepth > 1.0) {
                     LlpDepth = 1.0;
                 }
                 inputSampleL *= (1.0 - LlpDepth);
                 inputSampleL += (((LlastOutSample + LlastOut2Sample + LlastOut3Sample) / 3.6) * LlpDepth);
             }
-            if (RlpDepth > 0.0)
-            {
+            if (RlpDepth > 0.0) {
                 if (RlpDepth > 1.0) {
                     RlpDepth = 1.0;
                 }

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "TapeFat is the tone control from TapeDelay."
 };
 constexpr std::string_view k_long_description{
-    "TapeFat is just the tone control from TapeDelay. It works like an averaging filter that you can use to either roll off highs (or eventually mids), or subtract the effect to create a highpass and take out the lows.The reason this is interesting is, that tone control is completely bizarre. It’s an averaging filter, but on a pile of delay taps arranged according to prime numbers. Works more like an ambience control, but more densely packed. If you put an impulse through it you don’t get a smoothed-out lowpass so much as a bizarre micro-reverb. Since it’s using primes, it doesn’t reinforce any particular frequency. Since it’s an ambience, it doesn’t have any pre-echoes like linear phase EQs, and the artifacts it produces become a tone of their own (either in-phase, or inverted).You can hear it on the video, which has a number of things updated, not least this: the new audio is directly captured analog sorta-house music out of my livestreams. This way you ought to be able to really hear the way my plugins retain analog qualities, because now the demo music is essentially AAD: not products of other DAW mixes or digital synthesis, but source material."
+    "TapeFat is just the tone control from TapeDelay. It works like an averaging filter that you can use to either roll off highs (or eventually mids), or subtract the effect to create a highpass and take out the lows. The reason this is interesting is, that tone control is completely bizarre. It’s an averaging filter, but on a pile of delay taps arranged according to prime numbers. Works more like an ambience control, but more densely packed. If you put an impulse through it you don’t get a smoothed-out lowpass so much as a bizarre micro-reverb. Since it’s using primes, it doesn’t reinforce any particular frequency. Since it’s an ambience, it doesn’t have any pre-echoes like linear phase EQs, and the artifacts it produces become a tone of their own (either in-phase, or inverted). You can hear it on the video, which has a number of things updated, not least this: the new audio is directly captured analog sorta-house music out of my livestreams. This way you ought to be able to really hear the way my plugins retain analog qualities, because now the demo music is essentially AAD: not products of other DAW mixes or digital synthesis, but source material."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class TapeFat final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tayp';
     int pL[258];
     int pR[258];
     int gcount;
@@ -59,19 +63,16 @@ class TapeFat final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -82,8 +83,7 @@ class TapeFat final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.0; break;
 
@@ -94,9 +94,8 @@ class TapeFat final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "lean/ft"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "leanft"; break;
             case kParamB: return "depth"; break;
 
             default: break;
@@ -106,8 +105,7 @@ class TapeFat final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Lean/Ft"; break;
             case kParamB: return "Depth"; break;
 
@@ -118,26 +116,26 @@ class TapeFat final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(((A * 2.0) - 1.0), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(floor((B * 29.0) + 3.0), text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return "taps"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "taps", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -155,8 +153,7 @@ class TapeFat final : public Effect<T>
         int sumtotalL = 0;
         int sumtotalR = 0;
         int count;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -171,8 +168,7 @@ class TapeFat final : public Effect<T>
             count = gcount;
             pL[count + 128] = pL[count] = sumtotalL = (int)(inputSampleL * 8388608.0);
             pR[count + 128] = pR[count] = sumtotalR = (int)(inputSampleR * 8388608.0);
-            switch (fatness)
-            {
+            switch (fatness) {
                 case 32: sumtotalL += pL[count + 127]; sumtotalR += pR[count + 127]; // note NO break statement.
                 case 31: sumtotalL += pL[count + 113]; sumtotalR += pR[count + 113]; // This jumps to the relevant tap
                 case 30: sumtotalL += pL[count + 109]; sumtotalR += pR[count + 109]; // and then includes all smaller taps.

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "AngleEQ is a strange and colorful EQ."
 };
 constexpr std::string_view k_long_description{
-    "This would have been amazing, had it worked. Instead, it's astonishing, and is never going to be your main EQ, or mine, ever.Seriously, it'd be a world of hurt, and don't do it. Not even while sandwiching it with uLaw plugins.Since you can't use it for real work, what good is it? Also, why can't you use it for real work?It's not just that its response is irregular and non-flat. You could deal with that. The trouble is, it's a new attempt at filtering, meant to do a super-sharp but non-resonant lowpass for a crossover.And it does a lot of that! But in the process, it scrambles the audio so pervasively that if you try to assemble an EQ out of subtracting it from the dry signal (a neat trick for making 'flat' be pristine beyond all reason) the 'highpass' you get from subtracting the lowpass, is a complete mess full of phase-rotated bass.So I came up with a way to get a real highpass, even with multiple stages of this filtering. And I got one, and even that is decidedly strange.So, AngleEQ is a highpass for a treble band, a lowpass for a bass band, and a midrange that has a separate highpass and lowpass, just because they will not combine in any suitable way anyhow. Then you've got a dry/wet because combining any of these bands with dry brings even more havoc, and then the dry/wet also is an attenuverter and lets you apply the EQ inverted because it wasn't doing enough damage already.How does it sound? Very opaque, weirdly resonant, perhaps like the largest color-style EQ on the biggest most overdesigned mixing board ever. Nothing about it is well behaved, it cannot do 'clean' to save its life, it exists only to make sonic trouble and produce strange pungent tones full of resonances and cancellations.Just because it's not a proper EQ doesn't mean you can't have fun. Hope you enjoy AngleEQ!"
+    "This would have been amazing, had it worked. Instead, it's astonishing, and is never going to be your main EQ, or mine, ever. Seriously, it'd be a world of hurt, and don't do it. Not even while sandwiching it with uLaw plugins. Since you can't use it for real work, what good is it? Also, why can't you use it for real work? It's not just that its response is irregular and non-flat. You could deal with that. The trouble is, it's a new attempt at filtering, meant to do a super-sharp but non-resonant lowpass for a crossover. And it does a lot of that! But in the process, it scrambles the audio so pervasively that if you try to assemble an EQ out of subtracting it from the dry signal (a neat trick for making 'flat' be pristine beyond all reason) the 'highpass' you get from subtracting the lowpass, is a complete mess full of phase-rotated bass. So I came up with a way to get a real highpass, even with multiple stages of this filtering. And I got one, and even that is decidedly strange. So, AngleEQ is a highpass for a treble band, a lowpass for a bass band, and a midrange that has a separate highpass and lowpass, just because they will not combine in any suitable way anyhow. Then you've got a dry/wet because combining any of these bands with dry brings even more havoc, and then the dry/wet also is an attenuverter and lets you apply the EQ inverted because it wasn't doing enough damage already. How does it sound? Very opaque, weirdly resonant, perhaps like the largest color-style EQ on the biggest most overdesigned mixing board ever. Nothing about it is well behaved, it cannot do 'clean' to save its life, it exists only to make sonic trouble and produce strange pungent tones full of resonances and cancellations. Just because it's not a proper EQ doesn't mean you can't have fun. Hope you enjoy AngleEQ!"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class AngleEQ final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'ange';
     float A;
     float B;
     float C;
@@ -103,7 +107,7 @@ class AngleEQ final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -112,8 +116,7 @@ class AngleEQ final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -161,7 +164,7 @@ class AngleEQ final : public Effect<T>
             case kParamE: return "mhifreq"; break;
             case kParamF: return "mlofreq"; break;
             case kParamG: return "lofreq"; break;
-            case kParamH: return "inv/wet"; break;
+            case kParamH: return "invwet"; break;
 
             default: break;
         }
@@ -187,36 +190,38 @@ class AngleEQ final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

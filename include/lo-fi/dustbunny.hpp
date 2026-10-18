@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DustBunny is unpredictable distorty noise, like dust wedged under your turntable needle."
 };
 constexpr std::string_view k_long_description{
-    "And then sometimes there’s a plugin that just makes you go ‘wut’…DustBunny was an accident. I was doing something and put out a plugin (possibly a freebie) and there was a bug and I was in a hurry and put it out without checking… and quickly learned something horrible was wrong. Initial reports were along the lines of ‘oops’ and ‘yikes’, and when I checked, sure enough, the plugin erupted in terrible scrunch, and I in turn erupted in apologies and scrambled to fix the problem (which wasn’t that hard).But even before I’d got the fix out (and simple oversight problems, I sometimes fix within hours), more reports were coming in: hold on, don’t fix it, it’s cool!That wasn’t what I had in mind, but the solution was obvious: DustBunny was born. This twisted little plugin just applies a weird accidental scrunch based on where the bunny control is set. Please don’t use it on the 2-buss, or in mastering :) but more seriously, this is born to sit inside some kind of weird plugin matrix device as part of a nefarious sound design idea. It would’ve been perfect in one of the parallel effect chains used on the latest DOOM soundtrack, mangling a sinewave. If you hit it with high levels it gets kind of jumpy, so you might want to give it more restrained levels. If you don’t like running a gain trim in front of it, run something more amusing like a delay or a flanger to pad your signal a touch.DustBunny is kind of like a joke, except for it’s real and does produce an unusual, distinctive effect (or 1000, as all the settings are kind of unique)."
+    "And then sometimes there’s a plugin that just makes you go ‘wut’… DustBunny was an accident. I was doing something and put out a plugin (possibly a freebie) and there was a bug and I was in a hurry and put it out without checking… and quickly learned something horrible was wrong. Initial reports were along the lines of ‘oops’ and ‘yikes’, and when I checked, sure enough, the plugin erupted in terrible scrunch, and I in turn erupted in apologies and scrambled to fix the problem (which wasn’t that hard). But even before I’d got the fix out (and simple oversight problems, I sometimes fix within hours), more reports were coming in: hold on, don’t fix it, it’s cool! That wasn’t what I had in mind, but the solution was obvious: DustBunny was born. This twisted little plugin just applies a weird accidental scrunch based on where the bunny control is set. Please don’t use it on the 2-buss, or in mastering :) but more seriously, this is born to sit inside some kind of weird plugin matrix device as part of a nefarious sound design idea. It would’ve been perfect in one of the parallel effect chains used on the latest DOOM soundtrack, mangling a sinewave. If you hit it with high levels it gets kind of jumpy, so you might want to give it more restrained levels. If you don’t like running a gain trim in front of it, run something more amusing like a delay or a flanger to pad your signal a touch. DustBunny is kind of like a joke, except for it’s real and does produce an unusual, distinctive effect (or 1000, as all the settings are kind of unique)."
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DustBunny final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dbny';
     float LataLast3Sample;
     float LataLast2Sample;
     float LataLast1Sample;
@@ -89,18 +93,15 @@ class DustBunny final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -110,8 +111,7 @@ class DustBunny final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -121,8 +121,7 @@ class DustBunny final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "bunny"; break;
 
             default: break;
@@ -132,8 +131,7 @@ class DustBunny final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Bunny"; break;
 
             default: break;
@@ -143,24 +141,24 @@ class DustBunny final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -174,8 +172,7 @@ class DustBunny final : public Effect<T>
         bunny = (bunny * bunny);
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             // note: this algorithm does goofy stuff with bit masks, so the 64-bit buss will use floats for processing to produce the same output.

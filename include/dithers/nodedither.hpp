@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "NodeDither is adjusta-TPDF-dither, like a dither flanger. Can do Paul and Tape settings."
 };
 constexpr std::string_view k_long_description{
-    "And just one more dither plugin before the eagerly anticipated Naturalize… (because who will care about these then?) …NodeDither, the testbed upon which PaulDither and TapeDither were developed!I still think it’s good to have those as separate plugins (for simplicity and purity of concept) but since the concept is ‘TPDF made up of a sample of noise, and then a delayed version either normal or inverted’, how can I not give out the tool I used to find things like TapeDither? This was coded to do something that wasn’t possible: put a big delay in so there’s a ‘cancellation node’ at around 1.5K, making the noise quieter there.Trouble was, all you get is comb filtering and no nice clear ‘quieter’ zone. That’s why I experimented and found that four samples delay (inverted) gives you TapeDither, a nice softer noise. One sample inverted gives you PaulDither (in other words, a very bright one-pole highpass). Two samples gives you a neat silky texture which is still very bright. Eight samples gives you a thing kinda like TapeDither but even darker and beginning to sound flangey… you might call it CassetteDither, or maybe ‘TapeDither for 96K’.Call it what you like, because NodeDither lets you use all those and anything else, up to really extreme delays that give heavy, heavy comb filtering (flangeyness). You can reinforce lows rather than cancelling them through out-of-phase, and dial in dark moody dither noises that fit better with your project. You can tune the flangey note of the dither to your track. All manner of silly things can be yours with NodeDither :)And yes, you can make your noisefloor a flanger. I’ve demonstrated in the video how to do this with automation. If people really REALLY need a flange dither, I can make one later, but Naturalize will not be delayed any longer and is due to come out this Wednesday. But hopefully the possibilities of NodeDither are worth having! Or, put it this way: if NodeDither is for you, you know who you are and you’ve probably already downloaded it and are playing with the controls and thinking of how it would affect your creations.Because, bottom line: this is still technically correct TPDF dither. It’s just also an instrument, now. Have fun playing it :)"
+    "And just one more dither plugin before the eagerly anticipated Naturalize… (because who will care about these then?) …NodeDither, the testbed upon which PaulDither and TapeDither were developed! I still think it’s good to have those as separate plugins (for simplicity and purity of concept) but since the concept is ‘TPDF made up of a sample of noise, and then a delayed version either normal or inverted’, how can I not give out the tool I used to find things like TapeDither? This was coded to do something that wasn’t possible: put a big delay in so there’s a ‘cancellation node’ at around 1.5K, making the noise quieter there. Trouble was, all you get is comb filtering and no nice clear ‘quieter’ zone. That’s why I experimented and found that four samples delay (inverted) gives you TapeDither, a nice softer noise. One sample inverted gives you PaulDither (in other words, a very bright one-pole highpass). Two samples gives you a neat silky texture which is still very bright. Eight samples gives you a thing kinda like TapeDither but even darker and beginning to sound flangey… you might call it CassetteDither, or maybe ‘TapeDither for 96K’. Call it what you like, because NodeDither lets you use all those and anything else, up to really extreme delays that give heavy, heavy comb filtering (flangeyness). You can reinforce lows rather than cancelling them through out-of-phase, and dial in dark moody dither noises that fit better with your project. You can tune the flangey note of the dither to your track. All manner of silly things can be yours with NodeDither :) And yes, you can make your noisefloor a flanger. I’ve demonstrated in the video how to do this with automation. If people really REALLY need a flange dither, I can make one later, but Naturalize will not be delayed any longer and is due to come out this Wednesday. But hopefully the possibilities of NodeDither are worth having! Or, put it this way: if NodeDither is for you, you know who you are and you’ve probably already downloaded it and are playing with the controls and thinking of how it would affect your creations. Because, bottom line: this is still technically correct TPDF dither. It’s just also an instrument, now. Have fun playing it :)"
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class NodeDither final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'node';
     double dL[5000];
     double dR[5000];
     int gcount;
@@ -59,19 +63,16 @@ class NodeDither final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -82,8 +83,7 @@ class NodeDither final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.04; break;
             case kParamB: return 0.0; break;
 
@@ -94,8 +94,7 @@ class NodeDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "node"; break;
             case kParamB: return "phase"; break;
 
@@ -106,8 +105,7 @@ class NodeDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Node"; break;
             case kParamB: return "Phase"; break;
 
@@ -118,26 +116,33 @@ class NodeDither final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((VstInt32)floor(A * 100), text, kVstMaxParamStrLen); break;
+            case kParamB:
+                switch ((VstInt32)(B * 1.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Out", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "In", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed D 'popup' parameter, exit
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "samples"; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "samples", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -163,8 +168,7 @@ class NodeDither final : public Effect<T>
         double inputSampleR;
         double currentDitherL;
         double currentDitherR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

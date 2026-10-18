@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ChannelX translates Channel9 into a profusion of wild experiments."
 };
 constexpr std::string_view k_long_description{
-    "Everything's the same, and nothing is the same.It's quite hard to tell what will happen with this plugin update. To surface appearances it's exactly the same as Console9, right down to the slightly odd choices like a (lower slope) interleaved IIR filter for highpassing. The controls and what they do are exactly the same. It still has named 'modes' it operates in, still has a drive control that produces the Spiral saturator at 100% and Density at 200% and crossfades from dry to Spiral to Density, linearly. This is what Channel9 has had since 2021.It's not 2021 anymore… and Chris from Airwindows has been responding to the pressure of vibecode guys flooding the plugin market by trying new stuff more often… based on the existing Airwindows codebase, and pretty much nothing else. And Channel's number came up. (technically, letter, since X can be used for 10)Longhand was an experiment in using a Taylor series to make a sine function 'by hand' in case building it out of a single, continuous algorithm sounded better than the stock, optimized form. It seemed to sound nice. Both the sine part, and the Spiral part of ChannelX are now made that way, longhand, at very high precision.RetroBass came out just last week! It involves modulating even harmonics into the sound. ChannelX now includes this in its highpasses, but still uses the dielectric modulation from Capacitor, and also still uses interleaved filters, which RetroBass does NOT use.A stack of other plugins are being updated with an experiment I did inspired by elliptic BLEP antialiasing! But where that is established as a way to flawlessly synthesize a filtered result to any degree of high-order filter ripple, my experiments veered off to produce a tweak that operates over ONE sample, not to delete aliasing but to doctor it in such a way that high frequencies remain locked in place and do not 'come forward' in the way aliased highs seem to do. Totally other thing, seems to work, zero ripple or blur or SRC-like qualities. The directness is incredible. (people don't seem to go for this quality very often in 2026, which might be as good a reason as any to pursue it)So ChannelX is a wild mix of very new experiments under a familiar surface. There have been times I freaked out over how good it sounded compared to Channel9. With a bit of luck this bodes well for new plugins coming up. We shall see."
+    "Everything's the same, and nothing is the same. It's quite hard to tell what will happen with this plugin update. To surface appearances it's exactly the same as Channel9, right down to the slightly odd choices like a (lower slope) interleaved IIR filter for highpassing. The controls and what they do are exactly the same. It still has named 'modes' it operates in, still has a drive control that produces the Spiral saturator at 100% and Density at 200% and crossfades from dry to Spiral to Density, linearly. This is what Channel9 has had since 2021. It's not 2021 anymore… and Chris from Airwindows has been responding to the pressure of vibecode guys flooding the plugin market by trying new stuff more often… based on the existing Airwindows codebase, and pretty much nothing else. And Channel's number came up. (technically, letter, since X can be used for 10) Longhand was an experiment in using a Taylor series to make a sine function 'by hand' in case building it out of a single, continuous algorithm sounded better than the stock, optimized form. It seemed to sound nice. Both the sine part, and the Spiral part of ChannelX are now made that way, longhand, at very high precision. RetroBass came out just last week! It involves modulating even harmonics into the sound. ChannelX now includes this in its highpasses, but still uses the dielectric modulation from Capacitor, and also still uses interleaved filters, which RetroBass does NOT use. A stack of other plugins are being updated with an experiment I did inspired by elliptic BLEP antialiasing! But where that is established as a way to flawlessly synthesize a filtered result to any degree of high-order filter ripple, my experiments veered off to produce a tweak that operates over ONE sample, not to delete aliasing but to doctor it in such a way that high frequencies remain locked in place and do not 'come forward' in the way aliased highs seem to do. Totally other thing, seems to work, zero ripple or blur or SRC-like qualities. The directness is incredible. (people don't seem to go for this quality very often in 2026, which might be as good a reason as any to pursue it) So ChannelX is a wild mix of very new experiments under a familiar surface. There have been times I freaked out over how good it sounded compared to Channel9. With a bit of luck this bodes well for new plugins coming up. We shall see."
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -120,20 +120,17 @@ class ChannelX final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -145,8 +142,7 @@ class ChannelX final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -158,9 +154,8 @@ class ChannelX final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "console type"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "consoletype"; break;
             case kParamB: return "drive"; break;
             case kParamC: return "output"; break;
 
@@ -171,8 +166,7 @@ class ChannelX final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Console Type"; break;
             case kParamB: return "Drive"; break;
             case kParamC: return "Output"; break;
@@ -184,28 +178,38 @@ class ChannelX final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 4.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Neve", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "API", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SSL", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Teac", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Mackie", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: int2string((VstInt32)(B * 200), text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return "%"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "%", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -230,8 +234,7 @@ class ChannelX final : public Effect<T>
         double output = C;
         double rbAmount = 0.005832;
         double threshold = 0.33362176; // instantiating with Neve values
-        switch ((int)(A * 4.999))
-        {
+        switch ((int)(A * 4.999)) {
             case 0:
                 rbAmount = 0.005832;
                 threshold = 0.33362176;
@@ -255,8 +258,7 @@ class ChannelX final : public Effect<T>
         }
         rbAmount /= overallscale; // we've learned not to try and adjust threshold for sample rate
         // also can't set and forget this as we're updating it in place
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -526,8 +528,7 @@ class ChannelX final : public Effect<T>
             lastSampleRA = (lastSampleRA * 0.381966011250105) + (inputSampleR * 0.6180339887498948482045);
             // split the difference between raw and smoothed for buffer
             flip = !flip;
-            if (output < 1.0)
-            {
+            if (output < 1.0) {
                 inputSampleL *= output;
                 inputSampleR *= output;
             }

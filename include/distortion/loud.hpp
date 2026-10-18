@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Loud is distortion and demolition of air molecules, modeled."
 };
 constexpr std::string_view k_long_description{
-    "Here’s something rather special. What if you could distort like air molecules distort?I studied recordings of competitive tractor pulls, of Space Shuttle launches, various recordings that represented the way air can be mangled and break apart. The result is Loud… a step into a much louder world. It’s a distortion that can be slammed to unthinkable ‘heart of a supernova’ dB levels, but can also be subtly introduced to give the sonic coloration of a big LOUD noise in open air. Makes for a very interesting ‘glue’ at zero boost!Here’s how it’s done: rather than apply a consistent transfer function like a normal distortion, Loud knows whether you’re compressing the air, or letting it rebound. And if it’s snapping back, it can do it with the speed of lightning, but if it’s compressing, the air can be squished to practically solid, increasing heat. This extreme nonlinearity is why Loud sounds the way it does. It can sit on a whole mix to give it scope and authority, or it can be pushed harder on individual tracks like guitars and drums to amp up the ferocity.Remember, if you’ve got it totally fuzzing out, you are probably already beyond any sound level achievable by human means. The completely fried sound of cranked-up Loud is not meant to seem like acoustic phenomena as we know it. It turns up that loud because I grew up reading Douglas Adams’ “Hitchhiker’s Guide to the Galaxy”, and because in no other way can you accurately emulate a Disaster Area concert. :)"
+    "Here’s something rather special. What if you could distort like air molecules distort? I studied recordings of competitive tractor pulls, of Space Shuttle launches, various recordings that represented the way air can be mangled and break apart. The result is Loud… a step into a much louder world. It’s a distortion that can be slammed to unthinkable ‘heart of a supernova’ dB levels, but can also be subtly introduced to give the sonic coloration of a big LOUD noise in open air. Makes for a very interesting ‘glue’ at zero boost! Here’s how it’s done: rather than apply a consistent transfer function like a normal distortion, Loud knows whether you’re compressing the air, or letting it rebound. And if it’s snapping back, it can do it with the speed of lightning, but if it’s compressing, the air can be squished to practically solid, increasing heat. This extreme nonlinearity is why Loud sounds the way it does. It can sit on a whole mix to give it scope and authority, or it can be pushed harder on individual tracks like guitars and drums to amp up the ferocity. Remember, if you’ve got it totally fuzzing out, you are probably already beyond any sound level achievable by human means. The completely fried sound of cranked-up Loud is not meant to seem like acoustic phenomena as we know it. It turns up that loud because I grew up reading Douglas Adams’ “Hitchhiker’s Guide to the Galaxy”, and because in no other way can you accurately emulate a Disaster Area concert. :)"
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Loud final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'loud';
     double lastSampleL;
     double lastSampleR;
     uint32_t fpdL;
@@ -58,20 +62,17 @@ class Loud final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -83,8 +84,7 @@ class Loud final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
             case kParamC: return 1.0; break;
@@ -96,11 +96,10 @@ class Loud final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "boost"; break;
-            case kParamB: return "output level"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamB: return "outputlevel"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -109,8 +108,7 @@ class Loud final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Boost"; break;
             case kParamB: return "Output Level"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -122,28 +120,28 @@ class Loud final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return " "; break;
-            case kParamC: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -165,8 +163,7 @@ class Loud final : public Effect<T>
         double drySampleL;
         double drySampleR;
         double clamp;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -180,8 +177,7 @@ class Loud final : public Effect<T>
             // begin L
             inputSampleL *= boost;
             clamp = inputSampleL - lastSampleL;
-            if (clamp > 0)
-            {
+            if (clamp > 0) {
                 inputSampleL = -(inputSampleL - 1.0);
                 inputSampleL *= 1.2566108;
                 if (inputSampleL < 0.0) {
@@ -195,8 +191,7 @@ class Loud final : public Effect<T>
                     clamp = inputSampleL;
                 }
             }
-            if (clamp < 0)
-            {
+            if (clamp < 0) {
                 inputSampleL += 1.0;
                 inputSampleL *= 1.2566108;
                 if (inputSampleL < 0.0) {
@@ -216,8 +211,7 @@ class Loud final : public Effect<T>
             // begin R
             inputSampleR *= boost;
             clamp = inputSampleR - lastSampleR;
-            if (clamp > 0)
-            {
+            if (clamp > 0) {
                 inputSampleR = -(inputSampleR - 1.0);
                 inputSampleR *= 1.2566108;
                 if (inputSampleR < 0.0) {
@@ -231,8 +225,7 @@ class Loud final : public Effect<T>
                     clamp = inputSampleR;
                 }
             }
-            if (clamp < 0)
-            {
+            if (clamp < 0) {
                 inputSampleR += 1.0;
                 inputSampleR *= 1.2566108;
                 if (inputSampleR < 0.0) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PurestGain is a high-res noise shaped gain, with smoothed fader."
 };
 constexpr std::string_view k_long_description{
-    "Marking the 200th plugin in Airwindows’ ‘AU’ category (not perfectly accurate, but yay anyhow) is PurestGain, in VST-enabled form!What’s to explain? It’s a gain utility. :DNo, seriously, that’s what it is. Here’s why some folks are a fan of this plugin anyway, even though every DAW has this as a utility plugin, plus the DAW faders built in.Firstly, gain is processing. When you apply even a simple gain change, it expands the word length of your digital audio out to arbitrary size. PurestGain comes from a set of plugins I did to experiment with the extremes of digital audio accuracy. You might think digital audio is automatically accurate, but that’s far from the truth. We hear degradation in the resolution domain as flatness, cardboardy-ness, and it’s cumulative. I don’t think anybody can hear the difference between PurestGain and a DAW utility gain plugin, when just a single plugin is in the signal path… but it’s cumulative.Also, you can’t be sure that a gain plugin is truly minimalist. If a plugin takes in floating-point audio of great quietness, and multiplies it by 1.0… that’s a math operation that can force the result into the same floating-point ‘level of resolution’ as the 1.0. Floating-point is treacherous, and the damage done is still very subtle but again is cumulative.PurestGain takes the input audio and does the gain processing at ‘long double’ resolution. It then noise shapes the result back into the DAW audio buss, whether that’s a 32 bit buss for normal VST and AU, or a double-precision 64 bit VST buss, if available. The result is an ultra-high-precision gain plugin that refuses to lose any audio quality. It’s the plugin equivalent of using switched attenuators with precision resistors in a mastering console, rather than potentiometers.There’s one more trick PurestGain has up its sleeve: a second control especially for fades. The trouble with DAW faders is that they must serve two masters: they’ve got to adjust smoothly and avoid zipper noise (crackling while you move the control, most clearly audible if you get a low-frequency sine wave going and then manipulate the control) but they’ve also got to snap instantly to a position if asked. The second slider in PurestGain runs in series with the dB gain control, but it functions very differently. One way to resist zipper noise is to have the gain smoothly ramp between volume settings, and that second control is designed for human-performed gain rides. Map the fader on a control surface to it, do your active mixing, and PurestGain will smooth every fader motion until it’s as fluid as any real-world analog console: try it with sinewaves and see how flawless the result can be.That’s a surprising amount to say about a gain plugin, but that’s Airwindows for you :)"
+    "Marking the 200th plugin in Airwindows’ ‘AU’ category (not perfectly accurate, but yay anyhow) is PurestGain, in VST-enabled form! What’s to explain? It’s a gain utility. :D No, seriously, that’s what it is. Here’s why some folks are a fan of this plugin anyway, even though every DAW has this as a utility plugin, plus the DAW faders built in. Firstly, gain is processing. When you apply even a simple gain change, it expands the word length of your digital audio out to arbitrary size. PurestGain comes from a set of plugins I did to experiment with the extremes of digital audio accuracy. You might think digital audio is automatically accurate, but that’s far from the truth. We hear degradation in the resolution domain as flatness, cardboardy-ness, and it’s cumulative. I don’t think anybody can hear the difference between PurestGain and a DAW utility gain plugin, when just a single plugin is in the signal path… but it’s cumulative. Also, you can’t be sure that a gain plugin is truly minimalist. If a plugin takes in floating-point audio of great quietness, and multiplies it by 1.0… that’s a math operation that can force the result into the same floating-point ‘level of resolution’ as the 1.0. Floating-point is treacherous, and the damage done is still very subtle but again is cumulative. PurestGain takes the input audio and does the gain processing at ‘long double’ resolution. It then noise shapes the result back into the DAW audio buss, whether that’s a 32 bit buss for normal VST and AU, or a double-precision 64 bit VST buss, if available. The result is an ultra-high-precision gain plugin that refuses to lose any audio quality. It’s the plugin equivalent of using switched attenuators with precision resistors in a mastering console, rather than potentiometers. There’s one more trick PurestGain has up its sleeve: a second control especially for fades. The trouble with DAW faders is that they must serve two masters: they’ve got to adjust smoothly and avoid zipper noise (crackling while you move the control, most clearly audible if you get a low-frequency sine wave going and then manipulate the control) but they’ve also got to snap instantly to a position if asked. The second slider in PurestGain runs in series with the dB gain control, but it functions very differently. One way to resist zipper noise is to have the gain smoothly ramp between volume settings, and that second control is designed for human-performed gain rides. Map the fader on a control surface to it, do your active mixing, and PurestGain will smooth every fader motion until it’s as fluid as any real-world analog console: try it with sinewaves and see how flawless the result can be. That’s a surprising amount to say about a gain plugin, but that’s Airwindows for you :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PurestGain final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'purg';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -59,19 +63,16 @@ class PurestGain final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
-
-            default: break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -82,8 +83,7 @@ class PurestGain final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 1.0; break;
 
@@ -94,10 +94,9 @@ class PurestGain final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "gain"; break;
-            case kParamB: return "slow fade"; break;
+            case kParamB: return "slowfade"; break;
 
             default: break;
         }
@@ -106,8 +105,7 @@ class PurestGain final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Gain"; break;
             case kParamB: return "Slow Fade"; break;
 
@@ -118,26 +116,26 @@ class PurestGain final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 80.0) - 40.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -180,8 +178,7 @@ class PurestGain final : public Effect<T>
         double outputgain;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             targetgain = pow(10.0, settingchase / 20.0);
             // now we have the target in our temp variable
             chasespeed *= 0.9999;
@@ -204,8 +201,7 @@ class PurestGain final : public Effect<T>
             if (fabs(inputSampleR) < 1.18e-23) {
                 inputSampleR = fpdR * 1.18e-17;
             }
-            if (1.0 == outputgain)
-            {
+            if (1.0 == outputgain) {
                 *out1 = *in1;
                 *out2 = *in2;
             }

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Infinity2 expands Infinity with more tone shaping and a much-requested kill-switch!"
 };
 constexpr std::string_view k_long_description{
-    "Here’s a much-requested upgrade! Infinity has been working out surprisingly well for people (surprising me, anyway, I got so excited about the feedforward reverb topologies that I thought Infinity was far too old school) except there’s quite a few DAWs that keep the plugin ‘live’ permanently if you’ve got it loaded. That, I didn’t expect. And so, there’s folks who are still sitting there waiting for their Infinity to clear out so they can add some new sounds to it.And since it’s Infinity, they’ll be waiting a very very long time.Until now!Infinity2 is carefully kept to allow exactly the same tones as before. No undersampling, no changes, just the addition of a Feedback control as well as the Damping control, so you can shut the thing off (or turn it to a traditional dual-mono reverb if you wish).But of course that would be too easy: so, more controls! Damping now works on all the reverb paths so to get the previous amount, set it to 0.125 or so. Zero is still full brightness, and now turning it up to 1 gives you a more significant treble fall-off effect. It’s possible that this can interact with frequencies to cause feedback reinforcement, so keep an eye out for that.The allpasses at the beginning (which spread and smooth incoming audio) can now be bypassed with another control, for brighter, more transient-rich input sounds.The maximum verb size (tied to sample rate like the original) is still exactly the same, but Infinity2 now lets you crank the pitch up to a LOT higher for when you’re doing weird effects with the plugin. That seemed like a nice tweak: if you don’t like it, try to not move the slider that far to the left :)"
+    "Here’s a much-requested upgrade! Infinity has been working out surprisingly well for people (surprising me, anyway, I got so excited about the feedforward reverb topologies that I thought Infinity was far too old school) except there’s quite a few DAWs that keep the plugin ‘live’ permanently if you’ve got it loaded. That, I didn’t expect. And so, there’s folks who are still sitting there waiting for their Infinity to clear out so they can add some new sounds to it. And since it’s Infinity, they’ll be waiting a very very long time. Until now! Infinity2 is carefully kept to allow exactly the same tones as before. No undersampling, no changes, just the addition of a Feedback control as well as the Damping control, so you can shut the thing off (or turn it to a traditional dual-mono reverb if you wish). But of course that would be too easy: so, more controls! Damping now works on all the reverb paths so to get the previous amount, set it to 0.125 or so. Zero is still full brightness, and now turning it up to 1 gives you a more significant treble fall-off effect. It’s possible that this can interact with frequencies to cause feedback reinforcement, so keep an eye out for that. The allpasses at the beginning (which spread and smooth incoming audio) can now be bypassed with another control, for brighter, more transient-rich input sounds. The maximum verb size (tied to sample rate like the original) is still exactly the same, but Infinity2 now lets you crank the pitch up to a LOT higher for when you’re doing weird effects with the plugin. That seemed like a nice tweak: if you don’t like it, try to not move the slider that far to the left :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Infinity2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'infj';
     double biquadA[11];
     double biquadB[11];
     double biquadC[11];
@@ -207,23 +211,20 @@ class Infinity2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -238,11 +239,10 @@ class Infinity2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
-            case kParamB: return 1.0; break;
-            case kParamC: return 1.0; break;
+            case kParamB: return 0.5; break;
+            case kParamC: return 0.0; break;
             case kParamD: return 1.0; break;
             case kParamE: return 1.0; break;
             case kParamF: return 1.0; break;
@@ -254,14 +254,13 @@ class Infinity2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "filter"; break;
             case kParamB: return "size"; break;
             case kParamC: return "damping"; break;
             case kParamD: return "allpass"; break;
             case kParamE: return "feedback"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -270,8 +269,7 @@ class Infinity2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Filter"; break;
             case kParamB: return "Size"; break;
             case kParamC: return "Damping"; break;
@@ -286,34 +284,34 @@ class Infinity2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -365,8 +363,7 @@ class Infinity2 final : public Effect<T>
         delayJ = 41 * size;
         delayK = 37 * size;
         delayL = 31 * size;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

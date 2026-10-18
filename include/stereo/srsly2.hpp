@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Srsly2 is a revisit of Srsly, to make the stereo widening more extreme."
 };
 constexpr std::string_view k_long_description{
-    "“You call that a wide? Now THIS is a wide!”A little while ago, I put out a plugin that reverse engineered the famous Hughes SRS stereo widener, from pictures in an old Popular Mechanics article. By applying a set of narrow little EQ boosts and cuts to stereo, mid and side channels, you could make a sort of holographic effect. Srsly still exists, just as it was, for use tweaking out more natural stereo imagery.But the rabbit hole goes a bit deeper than just that…Srsly was by request of my friend Chad whose Hughes SRS wasn’t working properly, and who wanted a plugin version that didn’t hum. I didn’t have one of my own, so it was largely guesswork. Thing is, somewhere in there I got my hands on one (thanks Patreon! Between that and getting a real Mackie 1202 to play with, it turns out it’s useful for me to get actual gear relevant to my plugin interests, especially when I’m not getting the plugin right at first)And before I used it myself, I didn’t really ‘get it’, but then I started putting it on reverb returns, and quickly got very fond of a certain ultra-wide reverb field.And then I got more heavily into mixing in the box (and not with my hardware stuff) after Console7 came out… and discovered that my ITB reverbs did NOT do that kind of wide, and tried out my original Srsly… and had the same problem Chad ran into. It just didn’t do what the hardware box did. But I wasn’t done… so I started running stuff into the real hardware box, and just fooling around with the specific audio I’d begun to use, and rapidly worked out what was happening. My original Srsly left out a lot. It was more ‘audiophile’, more subtle, would fit in with more accurate recordings, but the real deal hardware device could be pushed WAY farther.…in a way that I could interpret. And coding ensued…Meet Srsly2. I’ve intentionally not tried super hard to exactly duplicate what is, after all, an unobtainable original hardware box by Howard Hughes’ company. Variations of this are still being licensed for use in car stereos and things, and I intentionally make no claim that I’m duplicating someone else’s property.But. But. BUT. What I was asked for, was to accomplish a particular effect, where the stereo wideness could be made crazy exaggerated. And I was able to interpret what a real hardware box (not original, though) was doing. And I continued to modify Srsly until, with Srsly2, you can now dial it in to do very similar crazy and unreasonable things… and that’s probably close enough for a free and open source plugin modeling an ancient hardware device that can’t really be found anymore. You’ll find the controls ought to work as you’d expect them to, and you may find as I did that leaving the Center control alone and cranking up the Space control just right, can get you into a wild and somewhat boosted and hyped zone that makes the most of your spectacular stereo content, in much the same way the original, obscure, Hughes box did.That’s my hope, anyhow. Hope you like it! I know I’ll be using it on stuff."
+    "“You call that a wide? Now THIS is a wide!” A little while ago, I put out a plugin that reverse engineered the famous Hughes SRS stereo widener, from pictures in an old Popular Mechanics article. By applying a set of narrow little EQ boosts and cuts to stereo, mid and side channels, you could make a sort of holographic effect. Srsly still exists, just as it was, for use tweaking out more natural stereo imagery. But the rabbit hole goes a bit deeper than just that… Srsly was by request of my friend Chad whose Hughes SRS wasn’t working properly, and who wanted a plugin version that didn’t hum. I didn’t have one of my own, so it was largely guesswork. Thing is, somewhere in there I got my hands on one (thanks Patreon! Between that and getting a real Mackie 1202 to play with, it turns out it’s useful for me to get actual gear relevant to my plugin interests, especially when I’m not getting the plugin right at first) And before I used it myself, I didn’t really ‘get it’, but then I started putting it on reverb returns, and quickly got very fond of a certain ultra-wide reverb field. And then I got more heavily into mixing in the box (and not with my hardware stuff) after Console7 came out… and discovered that my ITB reverbs did NOT do that kind of wide, and tried out my original Srsly… and had the same problem Chad ran into. It just didn’t do what the hardware box did. But I wasn’t done… so I started running stuff into the real hardware box, and just fooling around with the specific audio I’d begun to use, and rapidly worked out what was happening. My original Srsly left out a lot. It was more ‘audiophile’, more subtle, would fit in with more accurate recordings, but the real deal hardware device could be pushed WAY farther. …in a way that I could interpret. And coding ensued… Meet Srsly2. I’ve intentionally not tried super hard to exactly duplicate what is, after all, an unobtainable original hardware box by Howard Hughes’ company. Variations of this are still being licensed for use in car stereos and things, and I intentionally make no claim that I’m duplicating someone else’s property. But. But. BUT. What I was asked for, was to accomplish a particular effect, where the stereo wideness could be made crazy exaggerated. And I was able to interpret what a real hardware box (not original, though) was doing. And I continued to modify Srsly until, with Srsly2, you can now dial it in to do very similar crazy and unreasonable things… and that’s probably close enough for a free and open source plugin modeling an ancient hardware device that can’t really be found anymore. You’ll find the controls ought to work as you’d expect them to, and you may find as I did that leaving the Center control alone and cranking up the Space control just right, can get you into a wild and somewhat boosted and hyped zone that makes the most of your spectacular stereo content, in much the same way the original, obscure, Hughes box did. That’s my hope, anyhow. Hope you like it! I know I’ll be using it on stuff."
 };
 constexpr std::string_view k_tags{
     "stereo"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Srsly2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'srsm';
     double biquadM2[11];
     double biquadM7[11];
     double biquadM10[11];
@@ -80,22 +84,19 @@ class Srsly2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -109,8 +110,7 @@ class Srsly2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -124,13 +124,12 @@ class Srsly2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "center"; break;
             case kParamB: return "space"; break;
             case kParamC: return "level"; break;
             case kParamD: return "q"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -139,8 +138,7 @@ class Srsly2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Center"; break;
             case kParamB: return "Space"; break;
             case kParamC: return "Level"; break;
@@ -154,32 +152,32 @@ class Srsly2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -284,7 +282,7 @@ class Srsly2 final : public Effect<T>
         double level = C; // output pad
         double wet = E; // dry/wet
         // biquad contains these values:
-        //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
+        //[0] is frequency: 0.000001 to 0.499999 is nearVal-zero to nearVal-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         //[2] is a0 but you need distinct ones for additional biquad instances so it's here
         //[3] is a1 but you need distinct ones for additional biquad instances so it's here
@@ -295,8 +293,7 @@ class Srsly2 final : public Effect<T>
         //[8] is LEFT stored delayed sample (you have to include the coefficient making code if you do that)
         //[9] is RIGHT stored delayed sample (freq and res are stored so you can move them sample by sample)
         //[10] is RIGHT stored delayed sample (you have to include the coefficient making code if you do that)
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

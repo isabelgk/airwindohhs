@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Channel4 is a tone coloring plugin that gives more of an analog feel."
 };
 constexpr std::string_view k_long_description{
-    "Channel4 uses a very good-sounding saturation function, a calibrated slew clipper and a highpass to approximate the tone coloration of a recording console. (the plugin Console4 approximates the space and depth on the mix buss, which is different.) Because the bandwidth-limiters are set up based on measurements of real gear (through impulse responses), Channel4’s console type is labeled ‘Neve/API/SSL’. It doesn’t actually contain any of those things or any convolution kernels, but the presentation of the sound ought to suggest those voicings.There’s also an argument for doing it that way, because in many cases you can’t hear those limitations unless they’re being way overloaded. Channel’s a very clean, pure ‘coloration’ plugin, especially with the drive kept at 50% or under. It’ll voice extreme sounds the way it’s labeled, but you would struggle to consistently set plugins like Slew to those targets because mostly you can’t hear what it’s doing, especially on normal/musical sounds."
+    "Channel4 uses a very good-sounding saturation function, a calibrated slew clipper and a highpass to approximate the tone coloration of a recording console. (the plugin Console4 approximates the space and depth on the mix buss, which is different.) Because the bandwidth-limiters are set up based on measurements of real gear (through impulse responses), Channel4’s console type is labeled ‘Neve/API/SSL’. It doesn’t actually contain any of those things or any convolution kernels, but the presentation of the sound ought to suggest those voicings. There’s also an argument for doing it that way, because in many cases you can’t hear those limitations unless they’re being way overloaded. Channel’s a very clean, pure ‘coloration’ plugin, especially with the drive kept at 50% or under. It’ll voice extreme sounds the way it’s labeled, but you would struggle to consistently set plugins like Slew to those targets because mostly you can’t hear what it’s doing, especially on normal/musical sounds."
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Channel4 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cha4';
     double fpNShapeLA;
     double fpNShapeLB;
     double fpNShapeRA;
@@ -77,19 +81,38 @@ class Channel4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: consoletype = value; break;
             case kParamB: drive = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
+        // we can also set other defaults here, and do calculations that only have to happen
+        // once when parameters actually change. Here is the 'popup' setting its (global) values.
+        // variables can also be set in the processreplacing loop, and there they'll be set every buffersize
+        // here they're set when a parameter's actually changed, which should be less frequent, but
+        // you must use global variables in the Channel4.h file to do it.
+        switch ((VstInt32)(consoletype * 2.999)) {
+            case 0:
+                iirAmount = 0.005832;
+                threshold = 0.33362176;
+                break; // Neve
+            case 1:
+                iirAmount = 0.004096;
+                threshold = 0.59969536;
+                break; // API
+            case 2:
+                iirAmount = 0.004913;
+                threshold = 0.84934656;
+                break; // SSL
+            default: break; // should not happen
+        }
+        // this relates to using D as a 'popup' and changing things based on that switch.
+        // we are using fpFlip just because it's already there globally, as an example.
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return consoletype; break;
             case kParamB: return drive; break;
 
@@ -100,8 +123,7 @@ class Channel4 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
 
@@ -112,9 +134,8 @@ class Channel4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "console type"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "consoletype"; break;
             case kParamB: return "drive"; break;
 
             default: break;
@@ -124,8 +145,7 @@ class Channel4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Console Type"; break;
             case kParamB: return "Drive"; break;
 
@@ -136,26 +156,34 @@ class Channel4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(consoletype); break;
-            case kParamB: return std::to_string(drive); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(consoletype * 2.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Neve", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "API", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SSL", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: int2string((VstInt32)(drive * 100), text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return "%"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "%", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -178,8 +206,7 @@ class Channel4 final : public Effect<T>
         double bridgerectifier;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -188,15 +215,13 @@ class Channel4 final : public Effect<T>
             if (fabs(inputSampleR) < 1.18e-23) {
                 inputSampleR = fpdR * 1.18e-17;
             }
-            if (fpFlip)
-            {
+            if (fpFlip) {
                 iirSampleLA = (iirSampleLA * (1 - localiirAmount)) + (inputSampleL * localiirAmount);
                 inputSampleL = inputSampleL - iirSampleLA;
                 iirSampleRA = (iirSampleRA * (1 - localiirAmount)) + (inputSampleR * localiirAmount);
                 inputSampleR = inputSampleR - iirSampleRA;
             }
-            else
-            {
+            else {
                 iirSampleLB = (iirSampleLB * (1 - localiirAmount)) + (inputSampleL * localiirAmount);
                 inputSampleL = inputSampleL - iirSampleLB;
                 iirSampleRB = (iirSampleRB * (1 - localiirAmount)) + (inputSampleR * localiirAmount);

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "FastDistance is a sort of ultra-efficient lowpass filter."
 };
 constexpr std::string_view k_long_description{
-    "This is work I'm doing in efforts to help the Godot game engine. Whether or not it's accepted by them, you get to have it now :)The idea of the distance filter is, something you can have on every sound source in a scene. It's gotta be efficient, because there can be an awful lot of them. It's gotta handle wild modulations, because who knows what might be happening there in the game engine. And it's gotta roll off high frequencies, because stuff that's far away doesn't sound as bright as stuff that's right next to you.Ideally (like with my previous Distance plugins) it's doing clever things to put across the sense of great distance, but how clever can you be if you might have to have hundreds of sound-makers all talking at once? And so, FastDistance specifically chooses forms of treble-filtering that are dirt simple. It's just a variation on an averaging filter crossed with an IIR. Need more? Layer on more of them. The IIR (infinite impulse response) is not there to be fancy, it's just there because it saves me allocating one extra variable. The way it uses more or less poles of filtering is literally jumping into a pile of them and letting them go. There's no way of controlling it other than just choosing how deeply you filter in this one particular way that's unreasonably efficient to calculate. In fact you don't 'calculate' it at all, you just use it directly.The weird thing is it actually sounds pretty awesome.Since it's so efficient to run, instead of doing three or four poles of filtering, you can do thirty or forty. They run about as quick as calculating the coefficients of a regular old filter. There's next to nothing to them. And when you take such a primitive filter and just do it more, what you get is increased cutoff steepness… but the cutoff is very high already, and it's not at all resonant. So the intense layering just gives you a very natural sounding darkening effect, combined with taking the highs and absolutely burying them an unthinkable number of dB down. It's just how it works. It's not really a 'steep cutoff' no matter how many poles you use, and is never the least bit resonant or filter-sweepy. Just a distance through air darkener.It's very likely that this will find other use but for now I'm gonna see if Godot likes it (and if it's competitive efficiency wise with the more traditional low shelf they're using). I'm working on a system for game engine reverb that I hope will be useful, also for Godot, and I'll have an ultra lightweight reverb soon that's teaching me many useful things I can incorporate into my flagship reverbs.And whatever else happens with all that, you have FastDistance as a free plugin, plus also as MIT licensed source code that you can use for anything so long as you credit. Enjoy the new lowpass :)"
+    "This is work I'm doing in efforts to help the Godot game engine. Whether or not it's accepted by them, you get to have it now :) The idea of the distance filter is, something you can have on every sound source in a scene. It's gotta be efficient, because there can be an awful lot of them. It's gotta handle wild modulations, because who knows what might be happening there in the game engine. And it's gotta roll off high frequencies, because stuff that's far away doesn't sound as bright as stuff that's right next to you. Ideally (like with my previous Distance plugins) it's doing clever things to put across the sense of great distance, but how clever can you be if you might have to have hundreds of sound-makers all talking at once? And so, FastDistance specifically chooses forms of treble-filtering that are dirt simple. It's just a variation on an averaging filter crossed with an IIR. Need more? Layer on more of them. The IIR (infinite impulse response) is not there to be fancy, it's just there because it saves me allocating one extra variable. The way it uses more or less poles of filtering is literally jumping into a pile of them and letting them go. There's no way of controlling it other than just choosing how deeply you filter in this one particular way that's unreasonably efficient to calculate. In fact you don't 'calculate' it at all, you just use it directly. The weird thing is it actually sounds pretty awesome. Since it's so efficient to run, instead of doing three or four poles of filtering, you can do thirty or forty. They run about as quick as calculating the coefficients of a regular old filter. There's next to nothing to them. And when you take such a primitive filter and just do it more, what you get is increased cutoff steepness… but the cutoff is very high already, and it's not at all resonant. So the intense layering just gives you a very natural sounding darkening effect, combined with taking the highs and absolutely burying them an unthinkable number of dB down. It's just how it works. It's not really a 'steep cutoff' no matter how many poles you use, and is never the least bit resonant or filter-sweepy. Just a distance through air darkener. It's very likely that this will find other use but for now I'm gonna see if Godot likes it (and if it's competitive efficiency wise with the more traditional low shelf they're using). I'm working on a system for game engine reverb that I hope will be useful, also for Godot, and I'll have an ultra lightweight reverb soon that's teaching me many useful things I can incorporate into my flagship reverbs. And whatever else happens with all that, you have FastDistance as a free plugin, plus also as MIT licensed source code that you can use for anything so long as you credit. Enjoy the new lowpass :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -77,18 +77,15 @@ class FastDistance final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -98,8 +95,7 @@ class FastDistance final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -109,8 +105,7 @@ class FastDistance final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "distnce"; break;
 
             default: break;
@@ -120,8 +115,7 @@ class FastDistance final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Distnce"; break;
 
             default: break;
@@ -131,24 +125,24 @@ class FastDistance final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -165,8 +159,7 @@ class FastDistance final : public Effect<T>
         float distance = pow(A * 7.28f, 2.0f); // 0 to 52.9984
         int distanceSteps = (int)distance; // 52 maximum
         distance -= (float)distanceSteps; // 0.9984
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -187,8 +180,7 @@ class FastDistance final : public Effect<T>
                 inputSampleL = (firstDryL * (1.0f - distance)) + (inputSampleL * distance);
                 // having done at least one interpolation we can now do the integer number of stages
                 if (prevDistance < distanceSteps) {
-                    switch (prevDistance)
-                    {
+                    switch (prevDistance) {
                         case 0: lsA = inputSampleL; // if we've changed the setting
                         case 1: lsB = inputSampleL; // reset the ones being put back into play
                         case 2: lsC = inputSampleL; // this won't be happening constantly,
@@ -244,8 +236,7 @@ class FastDistance final : public Effect<T>
                         case 52: break; // reset prevDistance after R channel
                     }
                 }
-                switch (52 - distanceSteps)
-                { // apply the stack of filter steps to produce the distance filter
+                switch (52 - distanceSteps) { // apply the stack of filter steps to produce the distance filter
                     case 0:
                         inputSampleL += lsz;
                         inputSampleL *= 0.5;
@@ -465,8 +456,7 @@ class FastDistance final : public Effect<T>
                 inputSampleR = (firstDryR * (1.0f - distance)) + (inputSampleR * distance);
                 // having done at least one interpolation we can now do the integer number of stages
                 if (prevDistance < distanceSteps) {
-                    switch (prevDistance)
-                    {
+                    switch (prevDistance) {
                         case 0: rsA = inputSampleR; // if we've changed the setting
                         case 1: rsB = inputSampleR; // reset the ones being put back into play
                         case 2: rsC = inputSampleR; // this won't be happening constantly,
@@ -522,8 +512,7 @@ class FastDistance final : public Effect<T>
                         case 52: prevDistance = distanceSteps;
                     }
                 }
-                switch (52 - distanceSteps)
-                { // apply the stack of filter steps to produce the distance filter
+                switch (52 - distanceSteps) { // apply the stack of filter steps to produce the distance filter
                     case 0:
                         inputSampleR += rsz;
                         inputSampleR *= 0.5;

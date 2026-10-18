@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BezEQ3 refines the concept into four vivid, unified bands."
 };
 constexpr std::string_view k_long_description{
-    "Persistence has its rewards…The idea was to see if BezEQ could be expanded into something I can use in a Console, for which I like having four bands and frequency sweep controls for each. But the delay lines built into BezEQ2 had to go, because I'd also want zero latency… and that would produce a phasier response, perhaps interactions between bands that would make it behave less normally. But normal's easy to come by, SmoothEQ2 exists, so what if we could get something worth having that's less normal?Enter BezEQ3. There's more improvements on getting it to filter smoothly, there's that needed 4th band, and the sweepable middle positions to the bands, but it's still very much BezEQ. It's refined that unusual tonality down, and is still using a filter topology where, set flat, it's literally perfectly transparent.And then it's perfectly transparent for any other setting, no matter how extreme… but how you GET to those settings is something else.Because removing the internal delay lines and making it be zero latency, derailed the filter bands in some peculiar way. If you boost a frequency, you're cutting something else. Everything's kind of interactive. It's not going to behave nicely if you think you can treat it like shelving filters with neat markings. No point EVEN marking it. This is not SmoothEQ2, which runs on DF1 biquad filters like a normal plugin.Instead, you voice it by using the bands and sweeps as suggestions, and you listen to what it's doing. Nothing will get a frequency band to separate out and act like a 'frequency band', and curiously nothing will get frequency bands to come forward or fall back (like FatEQ) either. It acts, more than any other EQ I've ever heard or made, like no EQ had been done, and like the sound was that way on recording.It's just that you can revoice things to a ridiculous degree and still have it sound like one coherent piece.This plugin will be very polarizing. You will likely love it or absolutely hate it. I suspect some of the other old-schoolers will like what they hear. I'm almost sure anybody with extensive modern-production expertise will be frustrated and confused. So very many people think in terms of taking all the sounds and decomposing them into distinct pieces and fitting them together like some mixing jigsaw puzzle. What are you going to do with an EQ that refuses to separate out anything, where you can never turn a sound into this band and that band and holes where the bad audio used to be?Meanwhile, the old school practitioners of mixing black arts are licking their chops and can't wait to turn a much smaller number of tracks into something huge and compelling… sneakily heightening rawness and energy, without ever seeming like they are EQing. It's more like voicing. Nothing needs to be aggressive, just voice everything until it hits right and sits in the right places, and the top-to-bottom, left-to-right, mixing jigsaw puzzle can stay in the box. With suitable use of compression and saturation you could use this to mix a whole thing in mono, sounding unequalized, and it'd still hit like a ton of bricks.BezEQ3 is currently on track to be the primary EQ in ConsoleX3. Many people will just get mad at it, most likely. I'm just gonna have to show people what this is about… but if something happens when you try this plugin, and it gets exactly the sound you crave and you want to use it on everything… well, you know who you are, and you're welcome :)"
+    "Persistence has its rewards… The idea was to see if BezEQ could be expanded into something I can use in a Console, for which I like having four bands and frequency sweep controls for each. But the delay lines built into BezEQ2 had to go, because I'd also want zero latency… and that would produce a phasier response, perhaps interactions between bands that would make it behave less normally. But normal's easy to come by, SmoothEQ2 exists, so what if we could get something worth having that's less normal? Enter BezEQ3. There's more improvements on getting it to filter smoothly, there's that needed 4th band, and the sweepable middle positions to the bands, but it's still very much BezEQ. It's refined that unusual tonality down, and is still using a filter topology where, set flat, it's literally perfectly transparent. And then it's perfectly transparent for any other setting, no matter how extreme… but how you GET to those settings is something else. Because removing the internal delay lines and making it be zero latency, derailed the filter bands in some peculiar way. If you boost a frequency, you're cutting something else. Everything's kind of interactive. It's not going to behave nicely if you think you can treat it like shelving filters with neat markings. No point EVEN marking it. This is not SmoothEQ2, which runs on DF1 biquad filters like a normal plugin. Instead, you voice it by using the bands and sweeps as suggestions, and you listen to what it's doing. Nothing will get a frequency band to separate out and act like a 'frequency band', and curiously nothing will get frequency bands to come forward or fall back (like FatEQ) either. It acts, more than any other EQ I've ever heard or made, like no EQ had been done, and like the sound was that way on recording. It's just that you can revoice things to a ridiculous degree and still have it sound like one coherent piece. This plugin will be very polarizing. You will likely love it or absolutely hate it. I suspect some of the other old-schoolers will like what they hear. I'm almost sure anybody with extensive modern-production expertise will be frustrated and confused. So very many people think in terms of taking all the sounds and decomposing them into distinct pieces and fitting them together like some mixing jigsaw puzzle. What are you going to do with an EQ that refuses to separate out anything, where you can never turn a sound into this band and that band and holes where the bad audio used to be? Meanwhile, the old school practitioners of mixing black arts are licking their chops and can't wait to turn a much smaller number of tracks into something huge and compelling… sneakily heightening rawness and energy, without ever seeming like they are EQing. It's more like voicing. Nothing needs to be aggressive, just voice everything until it hits right and sits in the right places, and the top-to-bottom, left-to-right, mixing jigsaw puzzle can stay in the box. With suitable use of compression and saturation you could use this to mix a whole thing in mono, sounding unequalized, and it'd still hit like a ton of bricks. BezEQ3 is currently on track to be the primary EQ in ConsoleX3. Many people will just get mad at it, most likely. I'm just gonna have to show people what this is about… but if something happens when you try this plugin, and it gets exactly the sound you crave and you want to use it on everything… well, you know who you are, and you're welcome :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BezEQ3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bzes';
     float A;
     float B;
     float C;
@@ -106,7 +110,7 @@ class BezEQ3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -115,8 +119,7 @@ class BezEQ3 final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -190,36 +193,38 @@ class BezEQ3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

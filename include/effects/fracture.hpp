@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Fracture is a frequency multiplier/waveshaper with a soft disruption to the sound."
 };
 constexpr std::string_view k_long_description{
-    "Fracture is straight up a West Coast wavefolder, in a plugin. My original description doesn't help explain that too much: it is a sine-based distortion that wraps around and lets you set a maximum 'fold' which becomes a hard clip. Boost into it with Drive to do more intense wavefolding, and increase Fracture to allow you to fold more times before it just clips. This also allows you to clip either at full crank, or at silence (for a different effect). Original post was simply this:Hi! Merry Xmas to Xmas-ers. Here’s a truly freaky little wave-shaper. It’s of interest to distortion fanciers, those who make wubs and things, and anybody who might like the digital equivalent of an insane boutique stompbox that doesn’t sound like anything else."
+    "Fracture is straight up a West Coast wavefolder, in a plugin. My original description doesn't help explain that too much: it is a sine-based distortion that wraps around and lets you set a maximum 'fold' which becomes a hard clip. Boost into it with Drive to do more intense wavefolding, and increase Fracture to allow you to fold more times before it just clips. This also allows you to clip either at full crank, or at silence (for a different effect). Original post was simply this: Hi! Merry Xmas to Xmas-ers. Here’s a truly freaky little wave-shaper. It’s of interest to distortion fanciers, those who make wubs and things, and anybody who might like the digital equivalent of an insane boutique stompbox that doesn’t sound like anything else."
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Fracture final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'frct';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -57,21 +61,18 @@ class Fracture final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -84,8 +85,7 @@ class Fracture final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.25; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -98,12 +98,11 @@ class Fracture final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drive"; break;
             case kParamB: return "fracture"; break;
-            case kParamC: return "out lvl"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamC: return "outlvl"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -112,8 +111,7 @@ class Fracture final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drive"; break;
             case kParamB: return "Fracture"; break;
             case kParamC: return "Out Lvl"; break;
@@ -126,30 +124,30 @@ class Fracture final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 4), text, kVstMaxParamStrLen); break;
+            case kParamB: int2string((VstInt32)floor(B * 2.999) + 1, text, kVstMaxParamStrLen); break;
+            case kParamC: dB2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return " "; break;
-            case kParamC: return "dB"; break;
-            case kParamD: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the popup
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -173,8 +171,7 @@ class Fracture final : public Effect<T>
         double inputSampleR;
         double drySampleL;
         double drySampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

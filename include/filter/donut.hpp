@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Donut is in memory of Dilla."
 };
 constexpr std::string_view k_long_description{
-    "The main reason for this plugin is, one of my livestream people has wanted it for a long time. I'm hoping this brings him joy?Thing is, I've made a plugin in the SPIRIT of what I hear in Dilla, not a clone of a particular effect he may or may not have used on various things. And so, I believe this can be set up to do numerous things you've heard Dilla do… but also, I took pains to help it do other stuff I heard, and it kinda went on from there.This is basically an envelope follower. It's like my newest compressor plugin (as in, not out by itself yet but the one that's in ConsoleH and ConsoleX2), but instead of modulating volume, it modulates a lowpass filter. Except it's not just 'a lowpass filter', it's me trying out a very popular version of those filters known as a state variable filter, and doing some experiments with it which I don't know how common they are, but I loved the sound I got when I did them. The filter will come out by itself too, it's called Dattorro after the guy who wrote it into a textbook, and it's going to do interesting things like help me make a formant filter, later.But the way it works NOW is, you've got the compressor (a Bezier-filter compressor, so it doesn't have attack speed artifacts) with an attack speed that basically has it act like the original BeziComp, and then a release speed that lets you slow it right down. If you want to hear where it's at, you can turn the resonance up until it's basically just a wavering note.Then, there's a filter cutoff, a resonance control, and two more sliders just below those which modulate them according to the envelope, and that's it.If you put the filter in the middle, you can see that the modulator is at zero when in the center. So you can subtract the envelope, OR add it. Same with the resonance. My hope is that this can get you some neat effects, perhaps using Dilla-esque techniques like splitting the tracks and applying this real aggressively to only certain parts. In no way is it a 'push butan for dilla FX', my hope is that it's flexible enough to do a wide range of things with. Remember, if you use a very slow attack and fast release it's more of a BeziComp response, very wiggly.Part of what I found was that Dilla, I think, liked to run stuff into his Moog to process. Donut can do some of that: sweep it low and give it the right amount of resonance and it ought to resynthesize bass real well. It should handle automation nicely: state variable filters are better at that than, for instance, biquads. This is not the steepest of filters, but I set it up to have tone while reshaping things.I hope you like Donut! I have many things to put out but I can put out Dattorro too, if you like. That one comes with debugged versions of the original SVF code (which didn't work perfectly right out of the box, but has more options than I use here)"
+    "The main reason for this plugin is, one of my livestream people has wanted it for a long time. I'm hoping this brings him joy? Thing is, I've made a plugin in the SPIRIT of what I hear in Dilla, not a clone of a particular effect he may or may not have used on various things. And so, I believe this can be set up to do numerous things you've heard Dilla do… but also, I took pains to help it do other stuff I heard, and it kinda went on from there. This is basically an envelope follower. It's like my newest compressor plugin (as in, not out by itself yet but the one that's in ConsoleH and ConsoleX2), but instead of modulating volume, it modulates a lowpass filter. Except it's not just 'a lowpass filter', it's me trying out a very popular version of those filters known as a state variable filter, and doing some experiments with it which I don't know how common they are, but I loved the sound I got when I did them. The filter will come out by itself too, it's called Dattorro after the guy who wrote it into a textbook, and it's going to do interesting things like help me make a formant filter, later. But the way it works NOW is, you've got the compressor (a Bezier-filter compressor, so it doesn't have attack speed artifacts) with an attack speed that basically has it act like the original BeziComp, and then a release speed that lets you slow it right down. If you want to hear where it's at, you can turn the resonance up until it's basically just a wavering note. Then, there's a filter cutoff, a resonance control, and two more sliders just below those which modulate them according to the envelope, and that's it. If you put the filter in the middle, you can see that the modulator is at zero when in the center. So you can subtract the envelope, OR add it. Same with the resonance. My hope is that this can get you some neat effects, perhaps using Dilla-esque techniques like splitting the tracks and applying this real aggressively to only certain parts. In no way is it a 'push butan for dilla FX', my hope is that it's flexible enough to do a wide range of things with. Remember, if you use a very slow attack and fast release it's more of a BeziComp response, very wiggly. Part of what I found was that Dilla, I think, liked to run stuff into his Moog to process. Donut can do some of that: sweep it low and give it the right amount of resonance and it ought to resynthesize bass real well. It should handle automation nicely: state variable filters are better at that than, for instance, biquads. This is not the steepest of filters, but I set it up to have tone while reshaping things. I hope you like Donut! I have many things to put out but I can put out Dattorro too, if you like. That one comes with debugged versions of the original SVF code (which didn't work perfectly right out of the box, but has more options than I use here)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Donut final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'donu';
     float A;
     float B;
     float C;
@@ -95,7 +99,7 @@ class Donut final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -103,8 +107,7 @@ class Donut final : public Effect<T>
             case kParamE: E = value; break;
             case kParamF: F = value; break;
             case kParamG: G = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -174,34 +177,36 @@ class Donut final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

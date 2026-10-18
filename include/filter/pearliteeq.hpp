@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PearLiteEQ is a four-band Pear-based graphic EQ."
 };
 constexpr std::string_view k_long_description{
-    "It's been a minute since we've seen PearEQ… at least directly. It's been a secret weapon in my console emulations for some time. You know how there are EQ designs that are normal and act normally? There's also weirder options, and I've tried most of them and invented a few.AngleFilter was one of them: very strange and messy, and it became the lowpass and highpass in Cabs and several variations on Console. The newest Console lets you have Anglefilters, but also control the steepness so it doesn't have to get as fierce. AngleFilter is what makes PointyGuitar and PointyDeluxe especially, be so pungent and unmanageable.SmoothEQ was the opposite: a regulation biquad filter, but used in a new topology for a purer sound. That one? Not weird at all, not a lot of character either. You get to make stuff be all frequencies rather than character. It's got its uses.And then there's Pear.So this is basically a kinder, gentler version of PearEQ. It's way nicer than AngleFilter or PointyDeluxe, but it's still strong on character. It's got an ability to strongly shape frequency ranges, but tends to sound more cohesive and less clinical. It's softer and nicer than PearEQ (a six-band) and is easier to come to grips with, as it's just four nice-sounding bands.PearLiteEQ is for being friends with your sound. Though you can do pretty extreme EQ moves with it, it resists turning into total sound deconstruction, it hangs onto the basic tone of the sounds it's working on. It's not quite as invisible as a time-aligned BexEQ, but it also doesn't have to run latency. It's the sort of thing you might build into a console emulation or have on every track of your mix, and Pear will continue to find use as a kind of crossover in Airwindows EQ designs: neither so surgical that it's clinical, nor so 'character' that it's awkward and messy.I hope PearLiteEQ brightens your day :)"
+    "It's been a minute since we've seen PearEQ… at least directly. It's been a secret weapon in my console emulations for some time. You know how there are EQ designs that are normal and act normally? There's also weirder options, and I've tried most of them and invented a few. AngleFilter was one of them: very strange and messy, and it became the lowpass and highpass in Cabs and several variations on Console. The newest Console lets you have Anglefilters, but also control the steepness so it doesn't have to get as fierce. AngleFilter is what makes PointyGuitar and PointyDeluxe especially, be so pungent and unmanageable. SmoothEQ was the opposite: a regulation biquad filter, but used in a new topology for a purer sound. That one? Not weird at all, not a lot of character either. You get to make stuff be all frequencies rather than character. It's got its uses. And then there's Pear. So this is basically a kinder, gentler version of PearEQ. It's way nicer than AngleFilter or PointyDeluxe, but it's still strong on character. It's got an ability to strongly shape frequency ranges, but tends to sound more cohesive and less clinical. It's softer and nicer than PearEQ (a six-band) and is easier to come to grips with, as it's just four nice-sounding bands. PearLiteEQ is for being friends with your sound. Though you can do pretty extreme EQ moves with it, it resists turning into total sound deconstruction, it hangs onto the basic tone of the sounds it's working on. It's not quite as invisible as a time-aligned BezEQ, but it also doesn't have to run latency. It's the sort of thing you might build into a console emulation or have on every track of your mix, and Pear will continue to find use as a kind of crossover in Airwindows EQ designs: neither so surgical that it's clinical, nor so 'character' that it's awkward and messy. I hope PearLiteEQ brightens your day :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -113,21 +113,18 @@ class PearLiteEQ final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -140,8 +137,7 @@ class PearLiteEQ final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -154,8 +150,7 @@ class PearLiteEQ final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "high"; break;
             case kParamB: return "hmid"; break;
             case kParamC: return "lmid"; break;
@@ -168,8 +163,7 @@ class PearLiteEQ final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "High"; break;
             case kParamB: return "HMid"; break;
             case kParamC: return "LMid"; break;
@@ -182,30 +176,30 @@ class PearLiteEQ final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -226,8 +220,7 @@ class PearLiteEQ final : public Effect<T>
         pearA[freq] = pow(0.564, freqFactor + 0.85);
         pearB[freq] = pow(0.564, freqFactor + 4.1);
         pearC[freq] = pow(0.564, freqFactor + 7.1);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

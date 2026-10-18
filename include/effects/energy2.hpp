@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Energy2 is electrifying fixed-frequency treble boosts for high sample rate."
 };
 constexpr std::string_view k_long_description{
-    "Energy2 is energy boosts. Mostly treble, but you can also bring out aggression in the high-mids. These are NOT done through usual means. They’re a weird little algorithm that’s tied to the sample rate, and the big deal with Energy2 as an update is that it’s using my undersampling (which I just recently improved) to function as intended at high sample rates: it’s also more CPU-efficient than the original, but otherwise it’s the same (the original Energy might still be preferable for some, for instance if you absolutely must work at 48k and find it works better for you than Energy2 at that rate).When I say energy boosts, what I mean is: this is not a normal EQ. You could not make the Energy2 sound happen by mimicking the frequency curve using a pile of biquad filters, or worse yet phase accurate EQ. It’s an entirely different algorithm, and this is what you get. Energy2 has enormous edge and focus around attack transients, not smearing them with pre-ring or high-Q traditional filtering, even though it produces very steep curves and isolates specific tones. Energy2 also has a definite color in how it adds frequencies: if you’re boosting upper mids with one of the lower sliders, you also get a bunch of highs along with it. Part of the sound. Probably shouldn’t struggle to remove those overtones too hard.You can combine the sliders in weird ways to get very striking tone colors, but I think Energy2 is at its best when you focus on one color at a time, perhaps with a little of another color added or subtracted (less than zero means taking that tone color out: but remember, this is Energy2, it’s never completely tame or predictable). The breakthrough with Energy2 is that it’s designed to run at elevated sample rates, undersamples its boosts, but unlike the original Energy, it mixes that with a NON-undersampled Dry to get best of both worlds: the exact tone colors it ought to have, but against an unaltered, hi-res background. Since Energy’s generally able to get obnoxious levels of boost, the thing to do is get sounds where at least one slider is cranked out as far as it’ll go, and then use Inv/Dry/Wet to use only as much of that added energy as you need.You get high and upper mid boosts, all the way up into the highest of air bands, that are more like they’re part of the original sound and not even added using EQ at all… but complete control over how much of that is added to the fully high-resolution sound at elevated sample rates. (and at CD rates, it works just like the original Energy, but with the CPU enhancement from not processing unused bands, plus the Inv/Dry/Wet is run at a higher word length than before, and uses modern Airwindows dithering to the floating point buss: that’s how old the original Energy was)If I make a special Airwindows 96k mixing kit, like Starter Kit but more for experts adopting my mixing system rather than beginners, Energy2 almost defines what that would be like. It’s a very strong way to get a more Airwindows-y sound. (It’s also a nifty sort of anti-Soothe: nothing will pop out vibey overtones, intensity, and sonority like this plugin)Hope ya like it. It’s one of the special ones. :)"
+    "Energy2 is energy boosts. Mostly treble, but you can also bring out aggression in the high-mids. These are NOT done through usual means. They’re a weird little algorithm that’s tied to the sample rate, and the big deal with Energy2 as an update is that it’s using my undersampling (which I just recently improved) to function as intended at high sample rates: it’s also more CPU-efficient than the original, but otherwise it’s the same (the original Energy might still be preferable for some, for instance if you absolutely must work at 48k and find it works better for you than Energy2 at that rate). When I say energy boosts, what I mean is: this is not a normal EQ. You could not make the Energy2 sound happen by mimicking the frequency curve using a pile of biquad filters, or worse yet phase accurate EQ. It’s an entirely different algorithm, and this is what you get. Energy2 has enormous edge and focus around attack transients, not smearing them with pre-ring or high-Q traditional filtering, even though it produces very steep curves and isolates specific tones. Energy2 also has a definite color in how it adds frequencies: if you’re boosting upper mids with one of the lower sliders, you also get a bunch of highs along with it. Part of the sound. Probably shouldn’t struggle to remove those overtones too hard. You can combine the sliders in weird ways to get very striking tone colors, but I think Energy2 is at its best when you focus on one color at a time, perhaps with a little of another color added or subtracted (less than zero means taking that tone color out: but remember, this is Energy2, it’s never completely tame or predictable). The breakthrough with Energy2 is that it’s designed to run at elevated sample rates, undersamples its boosts, but unlike the original Energy, it mixes that with a NON-undersampled Dry to get best of both worlds: the exact tone colors it ought to have, but against an unaltered, hi-res background. Since Energy’s generally able to get obnoxious levels of boost, the thing to do is get sounds where at least one slider is cranked out as far as it’ll go, and then use Inv/Dry/Wet to use only as much of that added energy as you need. You get high and upper mid boosts, all the way up into the highest of air bands, that are more like they’re part of the original sound and not even added using EQ at all… but complete control over how much of that is added to the fully high-resolution sound at elevated sample rates. (and at CD rates, it works just like the original Energy, but with the CPU enhancement from not processing unused bands, plus the Inv/Dry/Wet is run at a higher word length than before, and uses modern Airwindows dithering to the floating point buss: that’s how old the original Energy was) If I make a special Airwindows 96k mixing kit, like Starter Kit but more for experts adopting my mixing system rather than beginners, Energy2 almost defines what that would be like. It’s a very strong way to get a more Airwindows-y sound. (It’s also a nifty sort of anti-Soothe: nothing will pop out vibey overtones, intensity, and sonority like this plugin) Hope ya like it. It’s one of the special ones. :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Energy2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'enes';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -336,8 +340,7 @@ class Energy2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -347,15 +350,13 @@ class Energy2 final : public Effect<T>
             case kParamG: G = value; break;
             case kParamH: H = value; break;
             case kParamI: I = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -373,8 +374,7 @@ class Energy2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -392,8 +392,7 @@ class Energy2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "hiss"; break;
             case kParamB: return "glitter"; break;
             case kParamC: return "rat"; break;
@@ -402,7 +401,7 @@ class Energy2 final : public Effect<T>
             case kParamF: return "chug"; break;
             case kParamG: return "yowr"; break;
             case kParamH: return "snarl"; break;
-            case kParamI: return "i/dr/wt"; break;
+            case kParamI: return "idrwt"; break;
 
             default: break;
         }
@@ -411,8 +410,7 @@ class Energy2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Hiss"; break;
             case kParamB: return "Glitter"; break;
             case kParamC: return "Rat"; break;
@@ -430,40 +428,40 @@ class Energy2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string((D * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string((E * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string((F * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string((G * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string((H * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string((I * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -497,8 +495,7 @@ class Energy2 final : public Effect<T>
         double nintIntensity = -pow((H * 2.0) - 1.0, 3);
         double mix = (I * 2.0) - 1.0;
         // all types of air band are running in parallel, not series
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -516,8 +513,7 @@ class Energy2 final : public Effect<T>
                 if (fabs(duoIntensity) > 0.0001) {
                     duoFactorL = PrevAL - inputSampleL;
                     duoFactorR = PrevAR - inputSampleR;
-                    if (flip)
-                    {
+                    if (flip) {
                         duoEvenL += duoFactorL;
                         duoOddL -= duoFactorL;
                         duoFactorL = duoEvenL * duoIntensity;
@@ -525,8 +521,7 @@ class Energy2 final : public Effect<T>
                         duoOddR -= duoFactorR;
                         duoFactorR = duoEvenR * duoIntensity;
                     }
-                    else
-                    {
+                    else {
                         duoOddL += duoFactorL;
                         duoEvenL -= duoFactorL;
                         duoFactorL = duoOddL * duoIntensity;
@@ -546,8 +541,7 @@ class Energy2 final : public Effect<T>
                     if (countA < 1 || countA > 3) {
                         countA = 1;
                     }
-                    switch (countA)
-                    {
+                    switch (countA) {
                         case 1:
                             tripletFactorL = PrevBL - inputSampleL;
                             tripletAL += tripletFactorL;
@@ -593,8 +587,7 @@ class Energy2 final : public Effect<T>
                     if (countB < 1 || countB > 4) {
                         countB = 1;
                     }
-                    switch (countB)
-                    {
+                    switch (countB) {
                         case 1:
                             quadFactorL = PrevCL - inputSampleL;
                             quadAL += quadFactorL;
@@ -652,8 +645,7 @@ class Energy2 final : public Effect<T>
                     if (countC < 1 || countC > 5) {
                         countC = 1;
                     }
-                    switch (countC)
-                    {
+                    switch (countC) {
                         case 1:
                             quintFactorL = PrevDL - inputSampleL;
                             quintAL += quintFactorL;
@@ -723,8 +715,7 @@ class Energy2 final : public Effect<T>
                     if (countD < 1 || countD > 6) {
                         countD = 1;
                     }
-                    switch (countD)
-                    {
+                    switch (countD) {
                         case 1:
                             sextFactorL = PrevEL - inputSampleL;
                             sextAL += sextFactorL;
@@ -806,8 +797,7 @@ class Energy2 final : public Effect<T>
                     if (countE < 1 || countE > 7) {
                         countE = 1;
                     }
-                    switch (countE)
-                    {
+                    switch (countE) {
                         case 1:
                             septFactorL = PrevFL - inputSampleL;
                             septAL += septFactorL;
@@ -901,8 +891,7 @@ class Energy2 final : public Effect<T>
                     if (countF < 1 || countF > 8) {
                         countF = 1;
                     }
-                    switch (countF)
-                    {
+                    switch (countF) {
                         case 1:
                             octFactorL = PrevGL - inputSampleL;
                             octAL += octFactorL;
@@ -1008,8 +997,7 @@ class Energy2 final : public Effect<T>
                     if (countG < 1 || countG > 9) {
                         countG = 1;
                     }
-                    switch (countG)
-                    {
+                    switch (countG) {
                         case 1:
                             nintFactorL = PrevHL - inputSampleL;
                             nintAL += nintFactorL;

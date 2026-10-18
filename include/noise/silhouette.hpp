@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Silhouette replaces the sound with raw noise sculpted to match its dynamics."
 };
 constexpr std::string_view k_long_description{
-    "I thought I’d let people play with the precursor to Texturize, which so far has not made it into the Patreon era of Airwindows… meet Silhouette!Silhouette was created for playing finished music through and seeing if you could still make out a beat. It was an anti-loudness-war plugin, made long ago to illustrate that point. And it replaces the whole sound with a blast of noise which retains the dynamics of the underlying music… if there is any. Dynamics, that is.Texturize was this, tone-shaped to match the sound of the underlying music (mostly going a lot more bassy). And Texturize proved a lot of fun for people, some of whom asked, can we have that but brighter? So be careful what you wish for. Silhouette now comes with the same wet/dry control as Texturize, so you can use it as a subliminal noise generator. But it’s ALL bright, so you have to turn it down further in order for it to ‘hide’ behind the audio. And that means it can’t really do what Texturize does: it’ll stick out.But in sticking out, the subliminals it will generate are VERY different from what Texturize does. I’d describe it as hype and energy and tension. Be careful not to turn it up too high: it’ll be incredibly obvious anytime you do. Some sounds, some mixes, will just never work with it.But isn’t it fun sometimes to not care about that and just try out something wild to see what it does? Silhouette finds its use in that space. I hope you like it."
+    "I thought I’d let people play with the precursor to Texturize, which so far has not made it into the Patreon era of Airwindows… meet Silhouette! Silhouette was created for playing finished music through and seeing if you could still make out a beat. It was an anti-loudness-war plugin, made long ago to illustrate that point. And it replaces the whole sound with a blast of noise which retains the dynamics of the underlying music… if there is any. Dynamics, that is. Texturize was this, tone-shaped to match the sound of the underlying music (mostly going a lot more bassy). And Texturize proved a lot of fun for people, some of whom asked, can we have that but brighter? So be careful what you wish for. Silhouette now comes with the same wet/dry control as Texturize, so you can use it as a subliminal noise generator. But it’s ALL bright, so you have to turn it down further in order for it to ‘hide’ behind the audio. And that means it can’t really do what Texturize does: it’ll stick out. But in sticking out, the subliminals it will generate are VERY different from what Texturize does. I’d describe it as hype and energy and tension. Be careful not to turn it up too high: it’ll be incredibly obvious anytime you do. Some sounds, some mixes, will just never work with it. But isn’t it fun sometimes to not care about that and just try out something wild to see what it does? Silhouette finds its use in that space. I hope you like it."
 };
 constexpr std::string_view k_tags{
     "noise"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Silhouette final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'silh';
     double lastSampleL;
     double outSampleL;
     double lastSampleR;
@@ -56,18 +60,15 @@ class Silhouette final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -77,8 +78,7 @@ class Silhouette final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -88,9 +88,8 @@ class Silhouette final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dry/wet"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "drywet"; break;
 
             default: break;
         }
@@ -99,8 +98,7 @@ class Silhouette final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Dry/Wet"; break;
 
             default: break;
@@ -110,24 +108,24 @@ class Silhouette final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -138,8 +136,7 @@ class Silhouette final : public Effect<T>
         T* out2 = outputs[1];
 
         double wet = pow(A, 5);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

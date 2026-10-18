@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DeBez gives you retro sampley textures!"
 };
 constexpr std::string_view k_long_description{
-    "Here's a way-point along the path of me figuring out how to do things! DeBez is a little bit like previous DeRez plugins I've made, and a little bit like my reverbs, and a little bit like HipCrush. I got there from here, and you can add these sounds to your palette!It combines three things. First, bitcrush like in HipCrush where moving the control to the right gives you 'compressey' bitcrushes that will bring up noise floors and make them roar, and moving the control to the left gives you 'gated' textures where the bitcrush is offset so it'll cut out. This is more obvious on extreme bitcrushes, but it'll be the case even on subtler, 'texture changing' bitcrushes.The DeBez control is simply Bezier undersampling, just like in my reverbs. It's smoothing the edges of the bitcrushing, happening after the crush. To the right, you're getting a 'continuous' version which generates a weird digital-hell overtone. To the left, you get a 'stepped' version of the same thing, one that snaps to integer numbers to suppress (mostly) the overtone. That one might be what you want if you're going for an 'old sampler' effect, as it'll be less edgy, more solid.Then, instead of just a dry/wet you're getting an inv/dry/wet control. Turn that up all the way and you get the full DeBez effect, at the middle you have dry again, but to the left you are subtracting the crushed version from dry. This is gonna interact in curious ways as you do things like bitcrush in gatey mode, or roll off highs with DeBez, or play with that overtone.And what does it do when you do that? It exactly clones the vintage and unobtainable sampler of… haha no. It absolutely does not! Instead it makes sounds that have NOT been heard before. It's on you to see if they're useful, and I can't tell you what it's useful for because I don't often go for bitcrush effects in the first place so I'm not the one with a vision here. The point is, now you have a tiny plugin that can produce really unusual sounds along these lines, and when you include subtracting the crush version (which can also be a treble-cut, or overtone-added version) it's a tiny mad science lab just waiting to happen.Have fun! I have one more weekend before 2026 and plenty of stuff to do so I'll get back to work :)"
+    "Here's a way-point along the path of me figuring out how to do things! DeBez is a little bit like previous DeRez plugins I've made, and a little bit like my reverbs, and a little bit like HipCrush. I got there from here, and you can add these sounds to your palette! It combines three things. First, bitcrush like in HipCrush where moving the control to the right gives you 'compressey' bitcrushes that will bring up noise floors and make them roar, and moving the control to the left gives you 'gated' textures where the bitcrush is offset so it'll cut out. This is more obvious on extreme bitcrushes, but it'll be the case even on subtler, 'texture changing' bitcrushes. The DeBez control is simply Bezier undersampling, just like in my reverbs. It's smoothing the edges of the bitcrushing, happening after the crush. To the right, you're getting a 'continuous' version which generates a weird digital-hell overtone. To the left, you get a 'stepped' version of the same thing, one that snaps to integer numbers to suppress (mostly) the overtone. That one might be what you want if you're going for an 'old sampler' effect, as it'll be less edgy, more solid. Then, instead of just a dry/wet you're getting an inv/dry/wet control. Turn that up all the way and you get the full DeBez effect, at the middle you have dry again, but to the left you are subtracting the crushed version from dry. This is gonna interact in curious ways as you do things like bitcrush in gatey mode, or roll off highs with DeBez, or play with that overtone. And what does it do when you do that? It exactly clones the vintage and unobtainable sampler of… haha no. It absolutely does not! Instead it makes sounds that have NOT been heard before. It's on you to see if they're useful, and I can't tell you what it's useful for because I don't often go for bitcrush effects in the first place so I'm not the one with a vision here. The point is, now you have a tiny plugin that can produce really unusual sounds along these lines, and when you include subtracting the crush version (which can also be a treble-cut, or overtone-added version) it's a tiny mad science lab just waiting to happen. Have fun! I have one more weekend before 2026 and plenty of stuff to do so I'll get back to work :)"
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DeBez final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'debz';
     float A;
     float B;
     float C;
@@ -92,12 +96,11 @@ class DeBez final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -130,7 +133,7 @@ class DeBez final : public Effect<T>
         switch (static_cast<params>(index)) {
             case kParamA: return "debez"; break;
             case kParamB: return "derez"; break;
-            case kParamC: return "inv/wet"; break;
+            case kParamC: return "invwet"; break;
 
             default: break;
         }
@@ -151,26 +154,28 @@ class DeBez final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

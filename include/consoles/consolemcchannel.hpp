@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ConsoleMCChannel is the initial, bright take on the MCI console."
 };
 constexpr std::string_view k_long_description{
-    "ConsoleMC is replacing my fully analog mixing system, which I'm now looking to sell off. Technically, just the mixer, as I can re-use the Lavry for tracking, where I used to have it dedicated to re-capturing the mixdown from the Heritage Audio mixer. This is what it took, to retire that glorious beast.It's a channel strip that functions like a normal Console Channel, except it's got treble, a sweepable mid that only boosts (like the classic MCI mid boost), bass, a fader that runs before the EQ section like the classic MCI, and a special pan switching network that's like an evil cousin of LCR panning. And it's a summing buss that brings the summing character of the big MCI desks with a gnarly analog dirtiness that's not simply 'add a distortion box' but is actually a modification of other recent and unique work I've put out.ConsoleMC draws on the following recent plugins: Creature. SubTight. Sinew. ResEQ2. Pear. BitShiftPan. There is not a single normal DSP algorithm in this thing unless you count sin() and asin() functions. It is ALL built out of current, 2023 Airwindows plugins that have all been pretty well received, sometimes with a fair bit of excitement. I told you all this was working up to something. This is it.Specifically, this is the first 'it' to come together: I've got at least five other big console concepts that deserve this treatment, but ConsoleMC is right here for you to jump into, right now. There's a couple reverbs in the demo, including kCathedral which is a call-out to the corresponding Bricasti patch. Those are for later.ConsoleMC is designed around running at 96k (or possibly 192k if you're so inclined) but ought to work at 44.1k. If you're at low sample rate and seek to oversample it 2x or 4x it shouldn't do it any harm.ConsoleMC is NOT flat when set neutrally: use ConsoleMD for that. ConsoleMC, in its debugged form, uses the technique from SubTight to rein in subsonic bass, and this ends up applying a touch of very high-frequency 'air' that was unexpected. The original release also didn't scale this effect to sample rate (it's a very new algorithm that didn't seem to work that way at first) but the Redux version, which becomes the go-to version of ConsoleMC, does scale to high sample rates without losing additional bass. Again, for a DAWlike flat response use ConsoleMD, which has those 'inter-stage' highpasses stripped out. If you're okay with mixing into a slight presence lift and would like extra personality go with ConsoleMC."
+    "ConsoleMC is replacing my fully analog mixing system, which I'm now looking to sell off. Technically, just the mixer, as I can re-use the Lavry for tracking, where I used to have it dedicated to re-capturing the mixdown from the Heritage Audio mixer. This is what it took, to retire that glorious beast. It's a channel strip that functions like a normal Console Channel, except it's got treble, a sweepable mid that only boosts (like the classic MCI mid boost), bass, a fader that runs before the EQ section like the classic MCI, and a special pan switching network that's like an evil cousin of LCR panning. And it's a summing buss that brings the summing character of the big MCI desks with a gnarly analog dirtiness that's not simply 'add a distortion box' but is actually a modification of other recent and unique work I've put out. ConsoleMC draws on the following recent plugins: Creature. SubTight. Sinew. ResEQ2. Pear. BitShiftPan. There is not a single normal DSP algorithm in this thing unless you count sin() and asin() functions. It is ALL built out of current, 2023 Airwindows plugins that have all been pretty well received, sometimes with a fair bit of excitement. I told you all this was working up to something. This is it. Specifically, this is the first 'it' to come together: I've got at least five other big console concepts that deserve this treatment, but ConsoleMC is right here for you to jump into, right now. There's a couple reverbs in the demo, including kCathedral which is a call-out to the corresponding Bricasti patch. Those are for later. ConsoleMC is designed around running at 96k (or possibly 192k if you're so inclined) but ought to work at 44.1k. If you're at low sample rate and seek to oversample it 2x or 4x it shouldn't do it any harm. ConsoleMC is NOT flat when set neutrally: use ConsoleMD for that. ConsoleMC, in its debugged form, uses the technique from SubTight to rein in subsonic bass, and this ends up applying a touch of very high-frequency 'air' that was unexpected. The original release also didn't scale this effect to sample rate (it's a very new algorithm that didn't seem to work that way at first) but the Redux version, which becomes the go-to version of ConsoleMC, does scale to high sample rates without losing additional bass. Again, for a DAWlike flat response use ConsoleMD, which has those 'inter-stage' highpasses stripped out. If you're okay with mixing into a slight presence lift and would like extra personality go with ConsoleMC."
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ConsoleMCChannel final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cmcc';
     double avgAL;
     double avgAR;
     double avgBL;
@@ -105,23 +109,20 @@ class ConsoleMCChannel final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -136,8 +137,7 @@ class ConsoleMCChannel final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.25; break;
             case kParamC: return 0.0; break;
@@ -152,8 +152,7 @@ class ConsoleMCChannel final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "treble"; break;
             case kParamB: return "midfreq"; break;
             case kParamC: return "midpeak"; break;
@@ -168,8 +167,7 @@ class ConsoleMCChannel final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Treble"; break;
             case kParamB: return "MidFreq"; break;
             case kParamC: return "MidPeak"; break;
@@ -184,34 +182,34 @@ class ConsoleMCChannel final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -246,8 +244,7 @@ class ConsoleMCChannel final : public Effect<T>
         // there will be successive sin/cos stages w. dry/wet in these
         double freqTreble = 0.853;
         double freqMid = 0.026912;
-        switch (cycleEnd)
-        {
+        switch (cycleEnd) {
             case 1: // base sample rate, no change
                 break;
             case 2: // 96k tier
@@ -303,8 +300,7 @@ class ConsoleMCChannel final : public Effect<T>
         }
         double gainL = 1.0;
         double gainR = 1.0;
-        switch (bitshiftL)
-        {
+        switch (bitshiftL) {
             case 17: gainL = 0.0; break;
             case 16: gainL = 0.0000152587890625; break;
             case 15: gainL = 0.000030517578125; break;
@@ -324,8 +320,7 @@ class ConsoleMCChannel final : public Effect<T>
             case 1: gainL = 0.5; break;
             case 0: break;
         }
-        switch (bitshiftR)
-        {
+        switch (bitshiftR) {
             case 17: gainR = 0.0; break;
             case 16: gainR = 0.0000152587890625; break;
             case 15: gainR = 0.000030517578125; break;
@@ -349,8 +344,7 @@ class ConsoleMCChannel final : public Effect<T>
         gainB = F * 2.0; // smoothed master fader from Z2 filters
         // BitShiftGain pre gain trim goes here
         double subTrim = 0.0046999 / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -520,8 +514,7 @@ class ConsoleMCChannel final : public Effect<T>
             double midMPeakR = 0.0;
             for (int x = 0; x < maxMPeak; x++) {
                 int y = x * cycleEnd;
-                switch (cycleEnd)
-                {
+                switch (cycleEnd) {
                     case 1:
                         midMPeakL += (mpkL[(mpc - y) + ((mpc - y < 1) ? 2001 : 0)] * f[x]);
                         midMPeakR += (mpkR[(mpc - y) + ((mpc - y < 1) ? 2001 : 0)] * f[x]);

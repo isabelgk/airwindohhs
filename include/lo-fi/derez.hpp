@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DeRez is an analog-style bit and sample rate crusher with continuous adjustments. This entry includes the Patreon blurb from mid-2018, because the things it says about the build systems, what they target and why I'm doing it, are still relevant today. That makes that stuff its own sort of Airwindowspedia entry as part of the DeRez entry."
 };
 constexpr std::string_view k_long_description{
-    "What would an analog bitcrusher even be? It doesn’t even make sense. You’ve got sixteen bits, eight bits, twelve bits: you can’t have, like, eight and a half bits.Sure you can! DeRez is here! Its dark magic can be yours! If you don’t believe in dark magic, the source code can be and is yours under the MIT license. Folks who are constructing strange models of things like obscure old digital gear should find this useful: do whatever compansion thing you had in mind using for instance PurestConsole, then use DeRez to dial in the right amount of bitcrunch.Here’s how you use it: slide the Frequency control down, to continuously sweep the sample-rate crushing. Slide the Resolution control down, to continuously sweep the bit crushing. There are no transition points: the algorithm will always let you do just a tiny bit more, or less, of either, because it’s really a floating-point algorithm at very high resolution. It’s doing a fairly simple samplerate crush and softening the transitions just a tad for an analog feel, and it’s doing the bit crush by chopping away bit-sized amounts and then truncating once it can no longer take away a whole ‘bit’. Due to this decision, a ‘bit’ can be any size at all, so you can sweep it without having transition points. Obviously, you can also automate the controls in your DAW to program continuous sweeps.It should just work, and you’ll never have to lament, “But why can’t I set the bitcrusher to three and five-eighth bits?” Because now YOU CAN.I know there are a few audiophile ears out there who’ll pop a blood vessel over this nasty little toy, but I’m not a ‘bit’ sorry. Those of you who love this will know who you are right away. Those of you who think this is a really irritating and pointless idea, this one is not for you, and there will be things coming up that are more to your taste.This work is supported by Patreon, for those of you who like me making stuff even when I know it will get some flak and hate-comments: the whole point of being on Patreon for me is that I get freedom to do stuff that’s not popular. Mind you, it’s 2018, so this may well be one of the popular ones. Depends on whether bitcrushing and frequency crushing are ‘in’ or ‘out’. Another nice thing about keeping me around doing this stuff is that it stops mattering whether stuff is ‘in’ or ‘out’: I build the plugins on a Windows 7 VM and an OSX 10.6.8 system kept in a time capsule especially so that my stuff works EVERYWHERE, and by that I mean Mac, Windows, Linux and on machines so old they run PPC chips. Yep! The Mac builds are slightly larger because they’re triple binaries and run 32 bit, 64 bit, and PPC. They should probably also work on OSes older than 10.6.8 but I don’t even have any of those, it’s just build settings. So these plugins are as close as I can get to ‘Grandpa’s Tools’ levels of reliability, and you should never be forced to update, alter, or break your system just to keep up with compatibility with Airwindows plugins. This is in spite of Apple (for one) continuously breaking XCode w.r.t building for older OSes. Hence the old build system. Maybe one day I’ll be running that in a virtual machine that runs it ten times faster than the original laptop. Maybe I’ll run the Windows 7 virtual machine inside the 10.6.8 virtual machine inside the new computer. I will note that I have to keep the old Windows cut off from the internet, and have already had to do workarounds to stop Visual Studio breaking itself in a fit of pique that it can’t install Win10 over the Windows 7 and blow itself up, so it’s not only Apple that gets up to this stuff.Support my Patreon, so I can keep on expanding the pool of plugins that don’t break your system demanding updates and wrecking the joint. I know acting that way gets you more money… because I barely have any money, and the folks working that strategy have lots of money. And it’s not a good enough excuse as far as I’m concerned, so as always I will just not do the behavior that I don’t like to see in others. Vote with your dollars, that’s a somewhat practical way to be heard. It won’t fix the world, but it definitely is able to keep me going :)"
+    "What would an analog bitcrusher even be? It doesn’t even make sense. You’ve got sixteen bits, eight bits, twelve bits: you can’t have, like, eight and a half bits. Sure you can! DeRez is here! Its dark magic can be yours! If you don’t believe in dark magic, the source code can be and is yours under the MIT license. Folks who are constructing strange models of things like obscure old digital gear should find this useful: do whatever compansion thing you had in mind using for instance PurestConsole, then use DeRez to dial in the right amount of bitcrunch. Here’s how you use it: slide the Frequency control down, to continuously sweep the sample-rate crushing. Slide the Resolution control down, to continuously sweep the bit crushing. There are no transition points: the algorithm will always let you do just a tiny bit more, or less, of either, because it’s really a floating-point algorithm at very high resolution. It’s doing a fairly simple samplerate crush and softening the transitions just a tad for an analog feel, and it’s doing the bit crush by chopping away bit-sized amounts and then truncating once it can no longer take away a whole ‘bit’. Due to this decision, a ‘bit’ can be any size at all, so you can sweep it without having transition points. Obviously, you can also automate the controls in your DAW to program continuous sweeps. It should just work, and you’ll never have to lament, “But why can’t I set the bitcrusher to three and five-eighth bits?” Because now YOU CAN. I know there are a few audiophile ears out there who’ll pop a blood vessel over this nasty little toy, but I’m not a ‘bit’ sorry. Those of you who love this will know who you are right away. Those of you who think this is a really irritating and pointless idea, this one is not for you, and there will be things coming up that are more to your taste. This work is supported by Patreon, for those of you who like me making stuff even when I know it will get some flak and hate-comments: the whole point of being on Patreon for me is that I get freedom to do stuff that’s not popular. Mind you, it’s 2018, so this may well be one of the popular ones. Depends on whether bitcrushing and frequency crushing are ‘in’ or ‘out’. Another nice thing about keeping me around doing this stuff is that it stops mattering whether stuff is ‘in’ or ‘out’: I build the plugins on a Windows 7 VM and an OSX 10.6.8 system kept in a time capsule especially so that my stuff works EVERYWHERE, and by that I mean Mac, Windows, Linux and on machines so old they run PPC chips. Yep! The Mac builds are slightly larger because they’re triple binaries and run 32 bit, 64 bit, and PPC. They should probably also work on OSes older than 10.6.8 but I don’t even have any of those, it’s just build settings. So these plugins are as close as I can get to ‘Grandpa’s Tools’ levels of reliability, and you should never be forced to update, alter, or break your system just to keep up with compatibility with Airwindows plugins. This is in spite of Apple (for one) continuously breaking XCode w.r.t building for older OSes. Hence the old build system. Maybe one day I’ll be running that in a virtual machine that runs it ten times faster than the original laptop. Maybe I’ll run the Windows 7 virtual machine inside the 10.6.8 virtual machine inside the new computer. I will note that I have to keep the old Windows cut off from the internet, and have already had to do workarounds to stop Visual Studio breaking itself in a fit of pique that it can’t install Win10 over the Windows 7 and blow itself up, so it’s not only Apple that gets up to this stuff. Support my Patreon, so I can keep on expanding the pool of plugins that don’t break your system demanding updates and wrecking the joint. I know acting that way gets you more money… because I barely have any money, and the folks working that strategy have lots of money. And it’s not a good enough excuse as far as I’m concerned, so as always I will just not do the behavior that I don’t like to see in others. Vote with your dollars, that’s a somewhat practical way to be heard. It won’t fix the world, but it definitely is able to keep me going :)"
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DeRez final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'derz';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -65,19 +69,16 @@ class DeRez final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -88,8 +89,7 @@ class DeRez final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 1.0; break;
 
@@ -100,8 +100,7 @@ class DeRez final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "rate"; break;
             case kParamB: return "rez"; break;
 
@@ -112,8 +111,7 @@ class DeRez final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Rate"; break;
             case kParamB: return "Rez"; break;
 
@@ -124,26 +122,26 @@ class DeRez final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -163,8 +161,7 @@ class DeRez final : public Effect<T>
         double soften = (1.0 + targetA) / 2;
         double targetB = pow(1.0 - B, 3) / 3;
         targetA /= overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23 && (targetB == 0)) {
@@ -182,8 +179,7 @@ class DeRez final : public Effect<T>
             position += incrementA;
             double outputSampleL = heldSampleL;
             double outputSampleR = heldSampleR;
-            if (position > 1.0)
-            {
+            if (position > 1.0) {
                 position -= 1.0;
                 heldSampleL = (lastSampleL * position) + (inputSampleL * (1.0 - position));
                 outputSampleL = (outputSampleL * (1.0 - soften)) + (heldSampleL * soften);
@@ -195,10 +191,8 @@ class DeRez final : public Effect<T>
             inputSampleL = outputSampleL;
             inputSampleR = outputSampleR;
             double offset;
-            if (incrementB > 0.0005)
-            {
-                if (inputSampleL > 0)
-                {
+            if (incrementB > 0.0005) {
+                if (inputSampleL > 0) {
                     offset = inputSampleL;
                     while (offset > 0) {
                         offset -= incrementB;
@@ -206,8 +200,7 @@ class DeRez final : public Effect<T>
                     inputSampleL -= offset;
                     // it's below 0 so subtracting adds the remainder
                 }
-                if (inputSampleR > 0)
-                {
+                if (inputSampleR > 0) {
                     offset = inputSampleR;
                     while (offset > 0) {
                         offset -= incrementB;
@@ -215,8 +208,7 @@ class DeRez final : public Effect<T>
                     inputSampleR -= offset;
                     // it's below 0 so subtracting adds the remainder
                 }
-                if (inputSampleL < 0)
-                {
+                if (inputSampleL < 0) {
                     offset = inputSampleL;
                     while (offset < 0) {
                         offset += incrementB;
@@ -224,8 +216,7 @@ class DeRez final : public Effect<T>
                     inputSampleL -= offset;
                     // it's above 0 so subtracting subtracts the remainder
                 }
-                if (inputSampleR < 0)
-                {
+                if (inputSampleR < 0) {
                     offset = inputSampleR;
                     while (offset < 0) {
                         offset += incrementB;

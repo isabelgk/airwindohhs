@@ -1,11 +1,11 @@
 #pragma once
+#if defined(_MSC_VER)
+#pragma warning(push)
 #pragma warning(disable : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #endif
-
 #include "effect.hpp"
 #include <cmath>
 #include <cstdint>
@@ -18,7 +18,7 @@ constexpr std::string_view k_short_description{
     "Cabs is an Airwindows guitar speaker cabinet simulator."
 };
 constexpr std::string_view k_long_description{
-    "I’ve been asked for ITB guitar plugins before. Never been all that interested, because I like real amps and real tubes etc: have never found a lot of enthusiasm for going to great lengths to digitally fake all the colorations of some amp/speaker or other, because when the soul’s not there the color is irrelevant.This is different. I took on the challenge of updating my old Cabs plugin: originally dynamically convolved cab impulses, except they hadn’t been MADE with that in mind so it became a series of wild experiments. I wasn’t happy… then.Cabs completely overhauled everything I’d attempted. It’s undersampled, so it’ll run on whatever sample rate you like, efficiently. It’s got the same tricks of allowing you to heighten the particular speaker coloration it uses, or dial it right back to nothing.But around that core is a completely different approach to getting ITB amp tones. I’m using the cab size and ‘room loud’ controls to let you dial in the exact presentation you want, from clear and up front power-soaked clearness to complete wall-of-stacks meltdown, and beyond (in classic Airwindows fashion). This is done through an alternate approach to loudness emulation based on the destruction of audio signals through ultimate volume, such as a Space Shuttle takeoff, and what happens to the waveforms there.I think you should listen to it. Careful that you don’t jump for odd settings right away and get confused: for instance, settings of Room Loud beyond say 0.6 are not really real-world things. Settings of the cab tone intensity beyond 0.6 or 0.7 might be a bit weird. The way the cabs take on character and intensity is related to cab size: everything is basically related to everything else. You have to know what sound you’re trying to get, to clone something real-world. This is not a preset box, at all, at all. You have to be a real guitar tone maven to dial this in to convincing amp clone territory.OR… or… or!You can use the range of adjustment here, with the controls that give you a basic idea of ‘what you’re doing and how you want it’, combined with for instance Edge or the upcoming Dirt plugin (softer saturation) to get tones that DO NOT EXIST but act like real amps in significant ways. You can get tones that you can’t get in the real world, and dial them in to match what’s in your head: in some cases maybe to a point that the real world amps couldn’t reach.And track through them because the whole rig (when using entirely Airwindows plugins) runs NO LATENCY, so it’ll feel as close as it can to the real thing, and respond with electric immediacy.And then unlike any real amp situation… once you’ve got the final mix done, you can wiggle any of these parameters to where they need to be for THE SONG and tune the tones to best suit whatever else is there, even if it didn’t exist when you were tracking it. This is a freedom of the DAW experience (don’t go too overboard, make decisions!) and it might bring you the results you need.And all of this can be lightly applied to any other tone: real genuine amp-and-cab that was tracked too quietly or didn’t pick up enough mojo, synths, drums, you name it!"
+    "I’ve been asked for ITB guitar plugins before. Never been all that interested, because I like real amps and real tubes etc: have never found a lot of enthusiasm for going to great lengths to digitally fake all the colorations of some amp/speaker or other, because when the soul’s not there the color is irrelevant. This is different. I took on the challenge of updating my old Cabs plugin: originally dynamically convolved cab impulses, except they hadn’t been MADE with that in mind so it became a series of wild experiments. I wasn’t happy… then. Cabs completely overhauled everything I’d attempted. It’s undersampled, so it’ll run on whatever sample rate you like, efficiently. It’s got the same tricks of allowing you to heighten the particular speaker coloration it uses, or dial it right back to nothing. But around that core is a completely different approach to getting ITB amp tones. I’m using the cab size and ‘room loud’ controls to let you dial in the exact presentation you want, from clear and up front power-soaked clearness to complete wall-of-stacks meltdown, and beyond (in classic Airwindows fashion). This is done through an alternate approach to loudness emulation based on the destruction of audio signals through ultimate volume, such as a Space Shuttle takeoff, and what happens to the waveforms there. I think you should listen to it. Careful that you don’t jump for odd settings right away and get confused: for instance, settings of Room Loud beyond say 0.6 are not really real-world things. Settings of the cab tone intensity beyond 0.6 or 0.7 might be a bit weird. The way the cabs take on character and intensity is related to cab size: everything is basically related to everything else. You have to know what sound you’re trying to get, to clone something real-world. This is not a preset box, at all, at all. You have to be a real guitar tone maven to dial this in to convincing amp clone territory. OR… or… or! You can use the range of adjustment here, with the controls that give you a basic idea of ‘what you’re doing and how you want it’, combined with for instance Edge or the upcoming Dirt plugin (softer saturation) to get tones that DO NOT EXIST but act like real amps in significant ways. You can get tones that you can’t get in the real world, and dial them in to match what’s in your head: in some cases maybe to a point that the real world amps couldn’t reach. And track through them because the whole rig (when using entirely Airwindows plugins) runs NO LATENCY, so it’ll feel as close as it can to the real thing, and respond with electric immediacy. And then unlike any real amp situation… once you’ve got the final mix done, you can wiggle any of these parameters to where they need to be for THE SONG and tune the tones to best suit whatever else is there, even if it didn’t exist when you were tracking it. This is a freedom of the DAW experience (don’t go too overboard, make decisions!) and it might bring you the results you need. And all of this can be lightly applied to any other tone: real genuine amp-and-cab that was tracked too quietly or didn’t pick up enough mojo, synths, drums, you name it!"
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -27,6 +27,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Cabs final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kabz';
     double ataLast3SampleL; // begin L
     double ataLast2SampleL;
     double ataLast1SampleL;
@@ -172,23 +176,20 @@ class Cabs final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -203,8 +204,7 @@ class Cabs final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.66; break;
             case kParamC: return 0.33; break;
@@ -219,11 +219,10 @@ class Cabs final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "cabtype"; break;
             case kParamB: return "intense"; break;
-            case kParamC: return "rm loud"; break;
+            case kParamC: return "rmloud"; break;
             case kParamD: return "cabsize"; break;
             case kParamE: return "offaxis"; break;
             case kParamF: return "output"; break;
@@ -235,8 +234,7 @@ class Cabs final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "CabType"; break;
             case kParamB: return "Intense"; break;
             case kParamC: return "Rm Loud"; break;
@@ -251,34 +249,45 @@ class Cabs final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 5.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "HPStack", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Vintage", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Boutiqe", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Large C", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Small C", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "BassAmp", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // E as example 'popup' parameter with four values  */
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -321,8 +330,7 @@ class Cabs final : public Effect<T>
         dynamicconv *= pow(C, 2);
         // set constants for sag speed
         int offsetA = 4 + ((int)(D * 5.0));
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -584,8 +592,7 @@ class Cabs final : public Effect<T>
                 // load conv
                 double tempSampleL = 0.0; //---------
                 double tempSampleR = 0.0; // set up for applying the cab sound
-                switch (speaker)
-                {
+                switch (speaker) {
                     case 1:
                         // begin HighPowerStack conv L
                         tempSampleL += (bL[1] * (1.29550481610475132 + (0.19713872057074355 * applyconvL)));
@@ -1671,8 +1678,7 @@ class Cabs final : public Effect<T>
                 // begin raw sample- inputSample and ataDrySample handled separately here
                 double HeadBumpL;
                 double HeadBumpR;
-                if (flip)
-                {
+                if (flip) {
                     iirHeadBumpAL += (inputSampleL * HeadBumpFreq);
                     iirHeadBumpAL -= (iirHeadBumpAL * iirHeadBumpAL * iirHeadBumpAL * HeadBumpFreq);
                     if (iirHeadBumpAL > 0) {
@@ -1681,8 +1687,7 @@ class Cabs final : public Effect<T>
                     if (iirHeadBumpAL < 0) {
                         iirHeadBumpAL += dcblock;
                     }
-                    if (fabs(iirHeadBumpAL) > 100.0)
-                    {
+                    if (fabs(iirHeadBumpAL) > 100.0) {
                         iirHeadBumpAL = 0.0;
                         iirHeadBumpBL = 0.0;
                         iirHalfHeadBumpAL = 0.0;
@@ -1697,8 +1702,7 @@ class Cabs final : public Effect<T>
                     if (iirHeadBumpAR < 0) {
                         iirHeadBumpAR += dcblock;
                     }
-                    if (fabs(iirHeadBumpAR) > 100.0)
-                    {
+                    if (fabs(iirHeadBumpAR) > 100.0) {
                         iirHeadBumpAR = 0.0;
                         iirHeadBumpBR = 0.0;
                         iirHalfHeadBumpAR = 0.0;
@@ -1706,8 +1710,7 @@ class Cabs final : public Effect<T>
                     }
                     HeadBumpR = iirHeadBumpAR;
                 }
-                else
-                {
+                else {
                     iirHeadBumpBL += (inputSampleL * HeadBumpFreq);
                     iirHeadBumpBL -= (iirHeadBumpBL * iirHeadBumpBL * iirHeadBumpBL * HeadBumpFreq);
                     if (iirHeadBumpBL > 0) {
@@ -1716,8 +1719,7 @@ class Cabs final : public Effect<T>
                     if (iirHeadBumpBL < 0) {
                         iirHeadBumpBL += dcblock;
                     }
-                    if (fabs(iirHeadBumpBL) > 100.0)
-                    {
+                    if (fabs(iirHeadBumpBL) > 100.0) {
                         iirHeadBumpAL = 0.0;
                         iirHeadBumpBL = 0.0;
                         iirHalfHeadBumpAL = 0.0;
@@ -1732,8 +1734,7 @@ class Cabs final : public Effect<T>
                     if (iirHeadBumpBR < 0) {
                         iirHeadBumpBR += dcblock;
                     }
-                    if (fabs(iirHeadBumpBR) > 100.0)
-                    {
+                    if (fabs(iirHeadBumpBR) > 100.0) {
                         iirHeadBumpAR = 0.0;
                         iirHeadBumpBR = 0.0;
                         iirHalfHeadBumpAR = 0.0;
@@ -1747,8 +1748,7 @@ class Cabs final : public Effect<T>
                 inputSampleR = (inputSampleR * (1.0 - heavy)) + (HeadBumpR * heavy);
                 // end raw sample
                 // begin interpolated sample- change inputSample -> ataHalfwaySample, ataDrySample -> ataHalfDrySample
-                if (flip)
-                {
+                if (flip) {
                     iirHalfHeadBumpAL += (ataHalfwaySampleL * HeadBumpFreq);
                     iirHalfHeadBumpAL -= (iirHalfHeadBumpAL * iirHalfHeadBumpAL * iirHalfHeadBumpAL * HeadBumpFreq);
                     if (iirHalfHeadBumpAL > 0) {
@@ -1757,8 +1757,7 @@ class Cabs final : public Effect<T>
                     if (iirHalfHeadBumpAL < 0) {
                         iirHalfHeadBumpAL += dcblock;
                     }
-                    if (fabs(iirHalfHeadBumpAL) > 100.0)
-                    {
+                    if (fabs(iirHalfHeadBumpAL) > 100.0) {
                         iirHeadBumpAL = 0.0;
                         iirHeadBumpBL = 0.0;
                         iirHalfHeadBumpAL = 0.0;
@@ -1773,8 +1772,7 @@ class Cabs final : public Effect<T>
                     if (iirHalfHeadBumpAR < 0) {
                         iirHalfHeadBumpAR += dcblock;
                     }
-                    if (fabs(iirHalfHeadBumpAR) > 100.0)
-                    {
+                    if (fabs(iirHalfHeadBumpAR) > 100.0) {
                         iirHeadBumpAR = 0.0;
                         iirHeadBumpBR = 0.0;
                         iirHalfHeadBumpAR = 0.0;
@@ -1782,8 +1780,7 @@ class Cabs final : public Effect<T>
                     }
                     HeadBumpR = iirHalfHeadBumpAR;
                 }
-                else
-                {
+                else {
                     iirHalfHeadBumpBL += (ataHalfwaySampleL * HeadBumpFreq);
                     iirHalfHeadBumpBL -= (iirHalfHeadBumpBL * iirHalfHeadBumpBL * iirHalfHeadBumpBL * HeadBumpFreq);
                     if (iirHalfHeadBumpBL > 0) {
@@ -1792,8 +1789,7 @@ class Cabs final : public Effect<T>
                     if (iirHalfHeadBumpBL < 0) {
                         iirHalfHeadBumpBL += dcblock;
                     }
-                    if (fabs(iirHalfHeadBumpBL) > 100.0)
-                    {
+                    if (fabs(iirHalfHeadBumpBL) > 100.0) {
                         iirHeadBumpAL = 0.0;
                         iirHeadBumpBL = 0.0;
                         iirHalfHeadBumpAL = 0.0;
@@ -1808,8 +1804,7 @@ class Cabs final : public Effect<T>
                     if (iirHalfHeadBumpBR < 0) {
                         iirHalfHeadBumpBR += dcblock;
                     }
-                    if (fabs(iirHalfHeadBumpBR) > 100.0)
-                    {
+                    if (fabs(iirHalfHeadBumpBR) > 100.0) {
                         iirHeadBumpAR = 0.0;
                         iirHeadBumpBR = 0.0;
                         iirHalfHeadBumpAR = 0.0;
@@ -1983,8 +1978,8 @@ class Cabs final : public Effect<T>
     }
 };
 } // namespace airwindohhs::cabs
-#pragma warning(default : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif

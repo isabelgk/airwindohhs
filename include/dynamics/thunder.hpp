@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Thunder is a compressor that retains or exaggerates subsonic bass when you push it."
 };
 constexpr std::string_view k_long_description{
-    "Compressors are tricky little beasts: they tend to eat low-end, they react differently at low intensities than when you slam ’em, and each sort of compressor has a ‘voice’ that defines how it acts.There’s a crude way to deal with the low-end problem, which is to put in a crossover: either to split into multiband compression, or simply highpass the sense circuit so the compressor can’t compress extreme lows and just lets them through. I’ve been asked to do this and have actually tried it on PurestSquish, but I was never satisfied with the results. It seemed like just half-breaking the compressor and I felt there had to be a better way…Thunder is that better way. Instead of passing through the bass, it transforms it in a way similar to FathomFive, and uses that live, active signal to modulate what the compressor sees, where in turn the compressor’s output is modulated by the intense lows. It’s a little complicated, so you can watch the video or simply download it and try it. Thunder is free (bear in mind that my only compensation is the Patreon I’ve created. To do this onward into the future, that Patreon must succeed)If you’re auditioning Thunder, a word of warning. You’re going to have to monitor the extreme lows. This plugin can prepare music for the hugest sound systems or the finest audiophile playback, but if you can’t hear what it’s doing you may get in trouble with it. Decent headphones ought to suffice (not earbuds!). If you have subwoofers, this will test them. You can also use the mix-check plugin SubsOnly to test how you’re doing, that will spotlight the subs for you.The range of adjustment starts with gentle ‘glue’ compression as the subsonics begin to open up the mix. Then, a bottom octave will appear anchoring everything. Push beyond that and you start to get into more compressed 2-buss, with the extreme lows taking on a punchier, thumpier character. Add more Thunder and the bass gets frisky and aggressive and dominates. Then, when you go even beyond that, we’re talking about ridiculous monstrous mega-bass, and more or less wrecking the sound of everything else (it’s useful to be able to go to weird broken settings in case you want to step back just a bit and have a really extreme effect). This is not a multiband compressor (there’s only one stereo comp in the plugin) but when driven really hard it can go even more bonkers than a multiband compressor.Remember, the low Thunder settings are useful too as a glue comp, for a buss compressor that’s extremely transparent and true to the tone of the mix! The middle settings are just as functional. All of these settings have their own usefulness. Choose wisely (or unwisely, if you prefer)."
+    "Compressors are tricky little beasts: they tend to eat low-end, they react differently at low intensities than when you slam ’em, and each sort of compressor has a ‘voice’ that defines how it acts. There’s a crude way to deal with the low-end problem, which is to put in a crossover: either to split into multiband compression, or simply highpass the sense circuit so the compressor can’t compress extreme lows and just lets them through. I’ve been asked to do this and have actually tried it on PurestSquish, but I was never satisfied with the results. It seemed like just half-breaking the compressor and I felt there had to be a better way… Thunder is that better way. Instead of passing through the bass, it transforms it in a way similar to FathomFive, and uses that live, active signal to modulate what the compressor sees, where in turn the compressor’s output is modulated by the intense lows. It’s a little complicated, so you can watch the video or simply download it and try it. Thunder is free (bear in mind that my only compensation is the Patreon I’ve created. To do this onward into the future, that Patreon must succeed) If you’re auditioning Thunder, a word of warning. You’re going to have to monitor the extreme lows. This plugin can prepare music for the hugest sound systems or the finest audiophile playback, but if you can’t hear what it’s doing you may get in trouble with it. Decent headphones ought to suffice (not earbuds!). If you have subwoofers, this will test them. You can also use the mix-check plugin SubsOnly to test how you’re doing, that will spotlight the subs for you. The range of adjustment starts with gentle ‘glue’ compression as the subsonics begin to open up the mix. Then, a bottom octave will appear anchoring everything. Push beyond that and you start to get into more compressed 2-buss, with the extreme lows taking on a punchier, thumpier character. Add more Thunder and the bass gets frisky and aggressive and dominates. Then, when you go even beyond that, we’re talking about ridiculous monstrous mega-bass, and more or less wrecking the sound of everything else (it’s useful to be able to go to weird broken settings in case you want to step back just a bit and have a really extreme effect). This is not a multiband compressor (there’s only one stereo comp in the plugin) but when driven really hard it can go even more bonkers than a multiband compressor. Remember, the low Thunder settings are useful too as a glue comp, for a buss compressor that’s extremely transparent and true to the tone of the mix! The middle settings are just as functional. All of these settings have their own usefulness. Choose wisely (or unwisely, if you prefer)."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Thunder final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'thun';
     double muVary;
     double muAttack;
     double muNewSpeed;
@@ -84,19 +88,16 @@ class Thunder final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
-
-            default: break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -107,8 +108,7 @@ class Thunder final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
 
@@ -119,10 +119,9 @@ class Thunder final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "thunder"; break;
-            case kParamB: return "output trim"; break;
+            case kParamB: return "outputtrim"; break;
 
             default: break;
         }
@@ -131,8 +130,7 @@ class Thunder final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Thunder"; break;
             case kParamB: return "Output Trim"; break;
 
@@ -143,26 +141,26 @@ class Thunder final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: dB2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return "dB"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -198,8 +196,7 @@ class Thunder final : public Effect<T>
         double resultMR;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -279,25 +276,20 @@ class Thunder final : public Effect<T>
             }
             // we will take the greater of either channel and just use that, then apply the result
             // to both stereo channels.
-            if (flip)
-            {
-                if (inputSense > threshold)
-                {
+            if (flip) {
+                if (inputSense > threshold) {
                     muVary = threshold / inputSense;
                     muAttack = sqrt(fabs(muSpeedA));
                     muCoefficientA = muCoefficientA * (muAttack - 1.0);
-                    if (muVary < threshold)
-                    {
+                    if (muVary < threshold) {
                         muCoefficientA = muCoefficientA + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientA = muCoefficientA + muVary;
                     }
                     muCoefficientA = muCoefficientA / muAttack;
                 }
-                else
-                {
+                else {
                     muCoefficientA = muCoefficientA * ((muSpeedA * muSpeedA) - 1.0);
                     muCoefficientA = muCoefficientA + 1.0;
                     muCoefficientA = muCoefficientA / (muSpeedA * muSpeedA);
@@ -306,25 +298,20 @@ class Thunder final : public Effect<T>
                 muNewSpeed = muNewSpeed + fabs(inputSense * release) + fastest;
                 muSpeedA = muNewSpeed / muSpeedA;
             }
-            else
-            {
-                if (inputSense > threshold)
-                {
+            else {
+                if (inputSense > threshold) {
                     muVary = threshold / inputSense;
                     muAttack = sqrt(fabs(muSpeedB));
                     muCoefficientB = muCoefficientB * (muAttack - 1);
-                    if (muVary < threshold)
-                    {
+                    if (muVary < threshold) {
                         muCoefficientB = muCoefficientB + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientB = muCoefficientB + muVary;
                     }
                     muCoefficientB = muCoefficientB / muAttack;
                 }
-                else
-                {
+                else {
                     muCoefficientB = muCoefficientB * ((muSpeedB * muSpeedB) - 1.0);
                     muCoefficientB = muCoefficientB + 1.0;
                     muCoefficientB = muCoefficientB / (muSpeedB * muSpeedB);
@@ -334,14 +321,12 @@ class Thunder final : public Effect<T>
                 muSpeedB = muNewSpeed / muSpeedB;
             }
             // got coefficients, adjusted speeds
-            if (flip)
-            {
+            if (flip) {
                 coefficient = pow(muCoefficientA, 2);
                 inputSampleL *= coefficient;
                 inputSampleR *= coefficient;
             }
-            else
-            {
+            else {
                 coefficient = pow(muCoefficientB, 2);
                 inputSampleL *= coefficient;
                 inputSampleR *= coefficient;

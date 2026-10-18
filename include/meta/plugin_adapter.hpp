@@ -67,7 +67,7 @@ class PluginAdapter final : public IPlugin<T>
         return impl_.get_parameter_display(index);
     }
 
-    std::string_view parameter_label(int index) override
+    std::string parameter_label(int index) override
     {
         return impl_.get_parameter_label(index);
     }

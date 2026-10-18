@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DubSub is a fully featured bass doctor."
 };
 constexpr std::string_view k_long_description{
-    "Be careful what you wish for. I like making plugins with very few controls, but when you have to use ALL the controls…Here’s how it works. The top section, Treble Grind, is like a bass guitar presence circuit. You shouldn’t use that for hi-fi purposes, if you want clean pass-through use the Dry/Wet. Treble Grind works like a distortion, and has an Inverse/Out control allowing you to subtract it as well as add it. ‘zero’ is in the middle.Crossover determines what goes to the Treble Grind, and what goes to the bass sections. To make it track bass better, set the crossover low.Bass Drive is how hard you’re pushing the main bass section. It’s essentially an adjustable Head Bump control like in ToTape. Bass Voicing controls the depth of the bass boost: setting it higher up sounds more like overdriving a bass amp. Bass Inv/Out is the same as in the Treble Grind section, an ‘attenuverter’ like in certain Eurorack modules: it lets you subtract the bass, not just add it.Sub Drive, Sub Voicing, and Sub Inv/Out are much like the bass section, except they work on an octave-divided version of the bass section. This helps it get good octave-down sounds some of the time, but it’s not anything like a digital suboctave synthesizer: it’s working crudely like an analog octave divider, which means it can make horrible noises if it doesn’t have clean signal to work with. This is of course intentional :) if you want it to do a recognizable sub-note, feed it a carefully controlled signal off a single track. Or, you can set it very deep and not mix in all that much of it, and get an interesting effect sound. For cleaner deep bass, work with the main bass section, or voice both of them very deep in hopes of cleaning up the sub-bass section a little by refusing to let it have more complicated signals."
+    "Be careful what you wish for. I like making plugins with very few controls, but when you have to use ALL the controls… Here’s how it works. The top section, Treble Grind, is like a bass guitar presence circuit. You shouldn’t use that for hi-fi purposes, if you want clean pass-through use the Dry/Wet. Treble Grind works like a distortion, and has an Inverse/Out control allowing you to subtract it as well as add it. ‘zero’ is in the middle. Crossover determines what goes to the Treble Grind, and what goes to the bass sections. To make it track bass better, set the crossover low. Bass Drive is how hard you’re pushing the main bass section. It’s essentially an adjustable Head Bump control like in ToTape. Bass Voicing controls the depth of the bass boost: setting it higher up sounds more like overdriving a bass amp. Bass Inv/Out is the same as in the Treble Grind section, an ‘attenuverter’ like in certain Eurorack modules: it lets you subtract the bass, not just add it. Sub Drive, Sub Voicing, and Sub Inv/Out are much like the bass section, except they work on an octave-divided version of the bass section. This helps it get good octave-down sounds some of the time, but it’s not anything like a digital suboctave synthesizer: it’s working crudely like an analog octave divider, which means it can make horrible noises if it doesn’t have clean signal to work with. This is of course intentional :) if you want it to do a recognizable sub-note, feed it a carefully controlled signal off a single track. Or, you can set it very deep and not mix in all that much of it, and get an interesting effect sound. For cleaner deep bass, work with the main bass section, or voice both of them very deep in hopes of cleaning up the sub-bass section a little by refusing to let it have more complicated signals."
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DubSub final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dbsb';
     double iirDriveSampleAL;
     double iirDriveSampleBL;
     double iirDriveSampleCL;
@@ -251,8 +255,7 @@ class DubSub final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -263,15 +266,13 @@ class DubSub final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -290,8 +291,7 @@ class DubSub final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.9; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.74; break;
@@ -310,10 +310,9 @@ class DubSub final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "tgrind"; break;
-            case kParamB: return "grd/out"; break;
+            case kParamB: return "grdout"; break;
             case kParamC: return "xover"; break;
             case kParamD: return "bsdrive"; break;
             case kParamE: return "bsvoice"; break;
@@ -321,7 +320,7 @@ class DubSub final : public Effect<T>
             case kParamG: return "sbdrive"; break;
             case kParamH: return "sbvoice"; break;
             case kParamI: return "subout"; break;
-            case kParamJ: return "dry/wet"; break;
+            case kParamJ: return "drywet"; break;
 
             default: break;
         }
@@ -330,8 +329,7 @@ class DubSub final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "TGrind"; break;
             case kParamB: return "Grd/Out"; break;
             case kParamC: return "XOver"; break;
@@ -350,42 +348,42 @@ class DubSub final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string((F * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string((I * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string(J, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-            case kParamJ: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -429,8 +427,7 @@ class DubSub final : public Effect<T>
         double glitch = 0.60;
         double tempSampleL;
         double tempSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             static int noisesourceL = 0;
@@ -506,14 +503,13 @@ class DubSub final : public Effect<T>
             if (oscGateR < 0) {
                 oscGateR = 0;
             }
-            // got a value that only goes down low when there's silence or near silence on input
+            // got a value that only goes down low when there's silence or nearVal silence on input
             clampL = 1.0 - oscGateL;
             clampL *= 0.00001;
             clampR = 1.0 - oscGateR;
             clampR *= 0.00001;
             // set up the thing to choke off oscillations- belt and suspenders affair
-            if (flip)
-            {
+            if (flip) {
                 tempSampleL = inputSampleL;
                 iirDriveSampleAL = (iirDriveSampleAL * (1 - iirAmount)) + (inputSampleL * iirAmount);
                 inputSampleL -= iirDriveSampleAL;
@@ -531,8 +527,7 @@ class DubSub final : public Effect<T>
                 inputSampleR -= iirDriveSampleER;
                 ataLowpassR = tempSampleR - inputSampleR;
             }
-            else
-            {
+            else {
                 tempSampleL = inputSampleL;
                 iirDriveSampleBL = (iirDriveSampleBL * (1 - iirAmount)) + (inputSampleL * iirAmount);
                 inputSampleL -= iirDriveSampleBL;
@@ -564,8 +559,7 @@ class DubSub final : public Effect<T>
                 inputSampleR = -1.0;
             }
             out = driveone;
-            while (out > glitch)
-            {
+            while (out > glitch) {
                 out -= glitch;
                 inputSampleL -= (inputSampleL * (fabs(inputSampleL) * glitch) * (fabs(inputSampleL) * glitch));
                 inputSampleR -= (inputSampleR * (fabs(inputSampleR) * glitch) * (fabs(inputSampleR) * glitch));
@@ -577,8 +571,7 @@ class DubSub final : public Effect<T>
             inputSampleR -= (inputSampleR * (fabs(inputSampleR) * out) * (fabs(inputSampleR) * out));
             inputSampleL *= (1.0 + out);
             inputSampleR *= (1.0 + out);
-            if (ataLowpassL > 0)
-            {
+            if (ataLowpassL > 0) {
                 if (WasNegativeL) {
                     SubOctaveL = !SubOctaveL;
                 }
@@ -587,8 +580,7 @@ class DubSub final : public Effect<T>
             else {
                 WasNegativeL = true;
             }
-            if (ataLowpassR > 0)
-            {
+            if (ataLowpassR > 0) {
                 if (WasNegativeR) {
                     SubOctaveR = !SubOctaveR;
                 }
@@ -693,8 +685,7 @@ class DubSub final : public Effect<T>
             ataLowpassR -= iirSampleUR;
             iirSampleVR = (iirSampleVR * altBmount) + (ataLowpassR * iirBmount);
             ataLowpassR -= iirSampleVR;
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     iirHeadBumpAL += (ataLowpassL * BassGain);
                     iirHeadBumpAL -= (iirHeadBumpAL * iirHeadBumpAL * iirHeadBumpAL * HeadBumpFreq);
@@ -784,8 +775,7 @@ class DubSub final : public Effect<T>
             if (SubOctaveR == false) {
                 SubBumpR = -SubBumpR;
             }
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     iirSubBumpAL += (SubBumpL * SubGain);
                     iirSubBumpAL -= (iirSubBumpAL * iirSubBumpAL * iirSubBumpAL * SubBumpFreq);

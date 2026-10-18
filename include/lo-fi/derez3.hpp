@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DeRez3 reinvents retro digital tones."
 };
 constexpr std::string_view k_long_description{
-    "I've long been interested in old school lo-fi digital.It's partly because I've had ancient reverbs and things, stuff that produced a vibe far better than newer replacements, and it's partly because all my own efforts have been so much the opposite: working out how to dither 32-bit floating point and using it in all plugins, turning to 96k sampling rate and working out distributed filtering so the processing can be simpler than the wild overprocessing of oversampling: I've gone farther and farther towards ultra-resolution and learned how to adapt it musically so it doesn't just sound super-DAW-y and clinical.But all the time, I've known of the great retro samplers. Some I've even bought, but not really known what to do with, a rock/prog guy like me. Some are out of my range and I can't afford them. I've even picked up some seminal records done with old samplers like that, or discovered they played a role in stuff I loved.And then I started trying to improve on my undersampling for reverbs… and made a breakthrough that changed everything.You see, when I undersample a reverb, I'm taking a sample only every two or four samples, and interpolating the result to give a high output sample rate. I've been sticking to exactly 2x or 4x sampling rate, and doing a linear reconstruction: you can hear what that sounds like in CrunchCoat, which is also fun to play with… but in essence it's taking the idea of interpolating, and going 'let's just take a reverb sample every X samples. What's X? Anything!'So you got to swoop the reverb down to a gritty, low-fi mess. So far so good (or bad: but that's the point, it was called 'cursed retro digital' by my livestream and obviously I had to put it out as a plugin) But then, what would you do if you had a sequence of lo-fi samples, irregularly spaced, and you wanted to draw a smooth line through them, not a pointy line?Graphics has a handy technique called Bezier curves. It lets you draw a smooth line between points. Depending on the Bezier curve, you might go through the points, or around them, depending on how you set it up. But the important thing is, it's not an audio calculation. The higher harmonics you might generate have nothing to do with the sound. It doesn't know it is a sound. It's just trying to draw the seamless, smoothest curve between some points.Initial experiments with the reverbs went strangely. It would act like a cursed brickwall filter, but with a strange resonance unlike anything I'd heard before. In the ballpark, but always ruining the cleanness of the reverb and making horrible (but very smooth) artifacts… until I hit on using perfectly even divisors of the sample rate and that got me a plugin called CreamCoat and a whole batch of new reverbs I'm already beginning to use for everything.But then… what happened to the horrible but very smooth artifacts? The Bezier curve reconstruction that isn't so careful to sound nice, that throws out strange artifacts never before experienced, but always very mellow and smooth like some kind of cursed brickwall or isolator filter?Meet DeRez3. That's your Rate control. Unlike CrunchCoat it doesn't click when taken to zero, largely because it just goes to subsonics and never really to zero so it can't trap energy by mistake. Every parameter is control-smoothed because I expect this thing to be played like a synth filter… It's got a Rez control that's tweaked so at extreme low bit, it throws in a gating behavior that can be used in conjunction with the Rate to produce strange gatey effects on sounds. It's got a Dry/Wet that is actually set up like my Wetness controls: with full dry you can sneak in small amounts of DeRez without affecting dry level, with full wet you can sneak in traces of dry without cutting wet level. 0.5 gives you both.This is an alternate way of dialing in those retro digital sounds without 'emulation' of all that analog stuff. No added noise, no simulated analog stages. Instead, it is the refinement of a concept for reconstructing lo-fi using Bezier curves, and only gets better the more rez you've got to hold it. 96k, double precision? Bring it on, it will just further optimize the vibe being produced by the algorithm. It's HI-FI low-fi.I'm still working on the rock/prog dream of perfecting ConsoleX, with all those filters and things, tailored to get the most out of music that doesn't often sound great in the ordinary DAW… but this is a window onto something else. Where, it seems, there might be another kind of Console that could exist in the worlds of samples and low-bit and lo-fi, the isolator filters and digital overtones taking the place of detailed parametrics and guitar amp tweakings. It used to be that there was a big difference between golden age hip-hop and the newer stuff as more advanced samplers started to come out. It's a big enough deal that I really cannot get, say, an SP-1200. It'd be easier for me to get a Marshall Stack.Thing is, I bet it's possible to set up a Console system so it gives you everything you'd enjoy out of a real-deal SP-1200, possibly even including the delicate timing of the pads (very fine-grained quantization of time that is not quite as finely grained as sample-accurate DAWs…) but free and open source.For now, I hope you enjoy DeRez3, because it's a glimpse into that future, and it might just be a window into a hi-fi lo-fi that perfectly fits your sound. I mean, I'm a rock guy with no sampler experience and even I am tempted. I feel like this one might really break out of my prog-rock box. Give it a try :)"
+    "I've long been interested in old school lo-fi digital. It's partly because I've had ancient reverbs and things, stuff that produced a vibe far better than newer replacements, and it's partly because all my own efforts have been so much the opposite: working out how to dither 32-bit floating point and using it in all plugins, turning to 96k sampling rate and working out distributed filtering so the processing can be simpler than the wild overprocessing of oversampling: I've gone farther and farther towards ultra-resolution and learned how to adapt it musically so it doesn't just sound super-DAW-y and clinical. But all the time, I've known of the great retro samplers. Some I've even bought, but not really known what to do with, a rock/prog guy like me. Some are out of my range and I can't afford them. I've even picked up some seminal records done with old samplers like that, or discovered they played a role in stuff I loved. And then I started trying to improve on my undersampling for reverbs… and made a breakthrough that changed everything. You see, when I undersample a reverb, I'm taking a sample only every two or four samples, and interpolating the result to give a high output sample rate. I've been sticking to exactly 2x or 4x sampling rate, and doing a linear reconstruction: you can hear what that sounds like in CrunchCoat, which is also fun to play with… but in essence it's taking the idea of interpolating, and going 'let's just take a reverb sample every X samples. What's X? Anything!' So you got to swoop the reverb down to a gritty, low-fi mess. So far so good (or bad: but that's the point, it was called 'cursed retro digital' by my livestream and obviously I had to put it out as a plugin) But then, what would you do if you had a sequence of lo-fi samples, irregularly spaced, and you wanted to draw a smooth line through them, not a pointy line? Graphics has a handy technique called Bezier curves. It lets you draw a smooth line between points. Depending on the Bezier curve, you might go through the points, or around them, depending on how you set it up. But the important thing is, it's not an audio calculation. The higher harmonics you might generate have nothing to do with the sound. It doesn't know it is a sound. It's just trying to draw the seamless, smoothest curve between some points. Initial experiments with the reverbs went strangely. It would act like a cursed brickwall filter, but with a strange resonance unlike anything I'd heard before. In the ballpark, but always ruining the cleanness of the reverb and making horrible (but very smooth) artifacts… until I hit on using perfectly even divisors of the sample rate and that got me a plugin called CreamCoat and a whole batch of new reverbs I'm already beginning to use for everything. But then… what happened to the horrible but very smooth artifacts? The Bezier curve reconstruction that isn't so careful to sound nice, that throws out strange artifacts never before experienced, but always very mellow and smooth like some kind of cursed brickwall or isolator filter? Meet DeRez3. That's your Rate control. Unlike CrunchCoat it doesn't click when taken to zero, largely because it just goes to subsonics and never really to zero so it can't trap energy by mistake. Every parameter is control-smoothed because I expect this thing to be played like a synth filter… It's got a Rez control that's tweaked so at extreme low bit, it throws in a gating behavior that can be used in conjunction with the Rate to produce strange gatey effects on sounds. It's got a Dry/Wet that is actually set up like my Wetness controls: with full dry you can sneak in small amounts of DeRez without affecting dry level, with full wet you can sneak in traces of dry without cutting wet level. 0.5 gives you both. This is an alternate way of dialing in those retro digital sounds without 'emulation' of all that analog stuff. No added noise, no simulated analog stages. Instead, it is the refinement of a concept for reconstructing lo-fi using Bezier curves, and only gets better the more rez you've got to hold it. 96k, double precision? Bring it on, it will just further optimize the vibe being produced by the algorithm. It's HI-FI low-fi. I'm still working on the rock/prog dream of perfecting ConsoleX, with all those filters and things, tailored to get the most out of music that doesn't often sound great in the ordinary DAW… but this is a window onto something else. Where, it seems, there might be another kind of Console that could exist in the worlds of samples and low-bit and lo-fi, the isolator filters and digital overtones taking the place of detailed parametrics and guitar amp tweakings. It used to be that there was a big difference between golden age hip-hop and the newer stuff as more advanced samplers started to come out. It's a big enough deal that I really cannot get, say, an SP-1200. It'd be easier for me to get a Marshall Stack. Thing is, I bet it's possible to set up a Console system so it gives you everything you'd enjoy out of a real-deal SP-1200, possibly even including the delicate timing of the pads (very fine-grained quantization of time that is not quite as finely grained as sample-accurate DAWs…) but free and open source. For now, I hope you enjoy DeRez3, because it's a glimpse into that future, and it might just be a window into a hi-fi lo-fi that perfectly fits your sound. I mean, I'm a rock guy with no sampler experience and even I am tempted. I feel like this one might really break out of my prog-rock box. Give it a try :)"
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DeRez3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'drzz';
     double rezA;
     double rezB;
     double bitA;
@@ -44,11 +48,9 @@ class DeRez3 final : public Effect<T>
         bez_total
     }; // the new undersampling. bez signifies the bezier curve reconstruction
     double bez[bez_total];
-
     float A;
     float B;
     float C;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -90,20 +92,17 @@ class DeRez3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -115,8 +114,7 @@ class DeRez3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 1.0; break;
             case kParamC: return 1.0; break;
@@ -128,11 +126,10 @@ class DeRez3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "rate"; break;
             case kParamB: return "rez"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -141,8 +138,7 @@ class DeRez3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Rate"; break;
             case kParamB: return "Rez"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -154,28 +150,28 @@ class DeRez3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -195,8 +191,7 @@ class DeRez3 final : public Effect<T>
         bitB = (B * 15.0) + 1.0;
         wetA = wetB;
         wetB = C * 2.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

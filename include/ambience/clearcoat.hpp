@@ -11,32 +11,35 @@ constexpr std::string_view k_short_description{
     "ClearCoat is an array of bright ambience reverbs."
 };
 constexpr std::string_view k_long_description{
-    "So, after months of work on refining Householder reverb matrices and realism and depth, and getting started on the huge tasks of mastering the tones of Bricasti reverbs and million-dollar analog recording consoles… I make a dual-mono bright ambience.What's that for? First of all, it's for me. I'm using it immediately on album mixes. But beyond that, it's an example of something very Airwindows-like: once I get access to something, I share it. I wasn't able to do sounds like these when I did the kPlate reverbs. I tried. My tools for making the Householder matrix stuff hadn't evolved enough yet: this is why kChamberAR sounds the way it does. I had bright ambiences, but they were very artificial (though, nifty in their own right)And this is what I'm sharing now: I got it to work. Next stage unlocked, with not one but effectively seventeen bright ambiences in one. ClearCoat is the one-stop shop for sparkle and atmosphere. It's not about lingering verb tails: the space it produces is dual-mono and remains tied to the sound that's creating it, and while there is feedback in the algorithm, it's calculated to be exactly halfway between the purity of infinite sustain, and the purity of BitShiftGain in the feedback path cutting the feedback by 6.08 dB. The idea there is to produce a consistent tone in the feedback path while allowing it to bloom a little. Basically more Chris from Airwindows experimentation: see if you like the results in the sense of space the plugin creates.On top of that, I'm exploring a refinement of SubTight, the same plugin that backfired on me in ConsoleMC. I think if I scale it to sample rate a certain way, that might tame it, and the kind of energy it brought is perfect for this plugin. The brightening and subs-cutting is happening after the reverb matrix, to enliven the space.It's simple to use: top slider picks a setting, bottom slider is your dry/wet. Add just a bit for in-line air on an instrument or submix, go all-wet for use on an aux. I'm using it as my Verb 1, with the upcoming kCathedral for Verb 2.Why go for specifically this effect? The theory here is simple: you get better mixes when you're serving a purpose rather than throwing tone colors around just to make them happen. ClearCoat is there to be an extremely refined and intense form of 'nearfield reflections', like singing in a bathroom, or drumming in a live drum room. Yes, you can turn it way up and it'll sound like a really bright reverb, like a small (to medium) room with tile or stone walls. But what you can also do is turn it right down once you have the tone color you want… and then HINT at that tone color, with it.And if you do that, ClearCoat ought to give you the gloss you're looking for, while minimally affecting the rest of the mix. No clutter, no excess energy, no trace of a tone character beyond what you need, and a cleaner mix as a result.Let me know if ClearCoat works for you, and especially whether it's acting OK at diverse sample rates with the changes I made in SubTight. If so, I can and will update the actual SubTight plugin AND ConsoleMC to correspond (if you're working at 1x sample rates there will be no change for you, but if you're working 2x or 4x or oversampling 2x or 4x, you might not have to compensate for the brightness as much to get your sound)"
+    "So, after months of work on refining Householder reverb matrices and realism and depth, and getting started on the huge tasks of mastering the tones of Bricasti reverbs and million-dollar analog recording consoles… I make a dual-mono bright ambience. What's that for? First of all, it's for me. I'm using it immediately on album mixes. But beyond that, it's an example of something very Airwindows-like: once I get access to something, I share it. I wasn't able to do sounds like these when I did the kPlate reverbs. I tried. My tools for making the Householder matrix stuff hadn't evolved enough yet: this is why kChamberAR sounds the way it does. I had bright ambiences, but they were very artificial (though, nifty in their own right) And this is what I'm sharing now: I got it to work. Next stage unlocked, with not one but effectively seventeen bright ambiences in one. ClearCoat is the one-stop shop for sparkle and atmosphere. It's not about lingering verb tails: the space it produces is dual-mono and remains tied to the sound that's creating it, and while there is feedback in the algorithm, it's calculated to be exactly halfway between the purity of infinite sustain, and the purity of BitShiftGain in the feedback path cutting the feedback by 6.08 dB. The idea there is to produce a consistent tone in the feedback path while allowing it to bloom a little. Basically more Chris from Airwindows experimentation: see if you like the results in the sense of space the plugin creates. On top of that, I'm exploring a refinement of SubTight, the same plugin that backfired on me in ConsoleMC. I think if I scale it to sample rate a certain way, that might tame it, and the kind of energy it brought is perfect for this plugin. The brightening and subs-cutting is happening after the reverb matrix, to enliven the space. It's simple to use: top slider picks a setting, bottom slider is your dry/wet. Add just a bit for in-line air on an instrument or submix, go all-wet for use on an aux. I'm using it as my Verb 1, with the upcoming kCathedral for Verb 2. Why go for specifically this effect? The theory here is simple: you get better mixes when you're serving a purpose rather than throwing tone colors around just to make them happen. ClearCoat is there to be an extremely refined and intense form of 'nearfield reflections', like singing in a bathroom, or drumming in a live drum room. Yes, you can turn it way up and it'll sound like a really bright reverb, like a small (to medium) room with tile or stone walls. But what you can also do is turn it right down once you have the tone color you want… and then HINT at that tone color, with it. And if you do that, ClearCoat ought to give you the gloss you're looking for, while minimally affecting the rest of the mix. No clutter, no excess energy, no trace of a tone character beyond what you need, and a cleaner mix as a result. Let me know if ClearCoat works for you, and especially whether it's acting OK at diverse sample rates with the changes I made in SubTight. If so, I can and will update the actual SubTight plugin AND ConsoleMC to correspond (if you're working at 1x sample rates there will be no change for you, but if you're working 2x or 4x or oversampling 2x or 4x, you might not have to compensate for the brightness as much to get your sound)"
 };
 constexpr std::string_view k_tags{
     "ambience"
 };
 
-const int kshortA = 350;
-const int kshortB = 1710;
-const int kshortC = 1610;
-const int kshortD = 835;
-const int kshortE = 700;
-const int kshortF = 1260;
-const int kshortG = 1110;
-const int kshortH = 1768;
-const int kshortI = 280;
-const int kshortJ = 2645;
-const int kshortK = 1410;
-const int kshortL = 1175;
-const int kshortM = 12;
-const int kshortN = 3110;
-const int kshortO = 120;
-const int kshortP = 2370;
-
 template <typename T>
 class ClearCoat final : public Effect<T>
 {
+    static constexpr int kshortA = 350;
+    static constexpr int kshortB = 1710;
+    static constexpr int kshortC = 1610;
+    static constexpr int kshortD = 835;
+    static constexpr int kshortE = 700;
+    static constexpr int kshortF = 1260;
+    static constexpr int kshortG = 1110;
+    static constexpr int kshortH = 1768;
+    static constexpr int kshortI = 280;
+    static constexpr int kshortJ = 2645;
+    static constexpr int kshortK = 1410;
+    static constexpr int kshortL = 1175;
+    static constexpr int kshortM = 12;
+    static constexpr int kshortN = 3110;
+    static constexpr int kshortO = 120;
+    static constexpr int kshortP = 2370;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'clco';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -323,19 +326,16 @@ class ClearCoat final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -346,8 +346,7 @@ class ClearCoat final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 1.0; break;
 
@@ -358,10 +357,9 @@ class ClearCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "select"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -370,8 +368,7 @@ class ClearCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Select"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -382,26 +379,26 @@ class ClearCoat final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((VstInt32)(A * 16.999), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -523,8 +520,7 @@ class ClearCoat final : public Effect<T>
             countNR = 1;
             countOR = 1;
             countPR = 1;
-            switch (clearcoat)
-            {
+            switch (clearcoat) {
                 case 0:
                     shortA = 65;
                     shortB = 124;
@@ -870,8 +866,7 @@ class ClearCoat final : public Effect<T>
         // this reverb makes 50% full dry AND full wet, not crossfaded.
         // that's so it can be on submixes without cutting back dry channel when adjusted:
         // unless you go super heavy, you are only adjusting the added verb loudness.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

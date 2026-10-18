@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Drive is the angry distortion!"
 };
 constexpr std::string_view k_long_description{
-    "If you know how to use Airwindows Density, you know how to use this. It’s exactly the same layout, except that it doesn’t go to negative values: this one’s just for slam.Why bother with such a similar plugin? Because of the tone!Density gets a thick, full, fluid tone because it’s got a super-smooth transfer function. In fact it’s the theoretical optimum distortion transfer function for having no grit or crunch: it ‘hides’ the distortion very well.Drive hides nothing. It’s all about grit and crunch, not smooth. Go ahead and try it and see. If your sole purpose for an overdrive plugin is to make stuff ‘big and fat and thick’ then you want Density. But if you’re reaching for a distortion because you have some sound, a bass, a snaredrum, and you just want to make it sound ANGRY: not so much fat or forward or gritty or edgy, but just plain straight up pissed off… then you may want to have Drive around.It does have the highpass, the output trim, the dry/wet just like Density does. That means it can be adapted to different contexts. But the sound remains the same: angry overdrive, a real nasty bark. Neither too smooth, nor too edgy and trebly. Drive will work on pretty much anything you want to make really mad, and the ease of getting that tone color will make you the opposite of mad. :DNote: you can get this algorithm in the Distortion plugin, smoothed out with averaging filters."
+    "If you know how to use Airwindows Density, you know how to use this. It’s exactly the same layout, except that it doesn’t go to negative values: this one’s just for slam. Why bother with such a similar plugin? Because of the tone! Density gets a thick, full, fluid tone because it’s got a super-smooth transfer function. In fact it’s the theoretical optimum distortion transfer function for having no grit or crunch: it ‘hides’ the distortion very well. Drive hides nothing. It’s all about grit and crunch, not smooth. Go ahead and try it and see. If your sole purpose for an overdrive plugin is to make stuff ‘big and fat and thick’ then you want Density. But if you’re reaching for a distortion because you have some sound, a bass, a snaredrum, and you just want to make it sound ANGRY: not so much fat or forward or gritty or edgy, but just plain straight up pissed off… then you may want to have Drive around. It does have the highpass, the output trim, the dry/wet just like Density does. That means it can be adapted to different contexts. But the sound remains the same: angry overdrive, a real nasty bark. Neither too smooth, nor too edgy and trebly. Drive will work on pretty much anything you want to make really mad, and the ease of getting that tone color will make you the opposite of mad. :D Note: you can get this algorithm in the Distortion plugin, smoothed out with averaging filters."
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Drive final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'driv';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -67,21 +71,18 @@ class Drive final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
             case kParamC: C = value; break;
-            case kParamD: D = value; break;
-
-            default: break;
+            case kParamD: D = value; break; // this is the popup, stored as a float
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -94,8 +95,7 @@ class Drive final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -108,12 +108,11 @@ class Drive final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drive"; break;
             case kParamB: return "highpass"; break;
-            case kParamC: return "out level"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamC: return "outlevel"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -122,8 +121,7 @@ class Drive final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drive"; break;
             case kParamB: return "Highpass"; break;
             case kParamC: return "Out Level"; break;
@@ -136,30 +134,30 @@ class Drive final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 100.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "%"; break;
-            case kParamB: return " "; break;
-            case kParamC: return " "; break;
-            case kParamD: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "%", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the popup
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -183,8 +181,7 @@ class Drive final : public Effect<T>
         double inputSampleR;
         double drySampleL;
         double drySampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -195,15 +192,13 @@ class Drive final : public Effect<T>
             }
             drySampleL = inputSampleL;
             drySampleR = inputSampleR;
-            if (fpFlip)
-            {
+            if (fpFlip) {
                 iirSampleAL = (iirSampleAL * (1.0 - iirAmount)) + (inputSampleL * iirAmount);
                 inputSampleL -= iirSampleAL;
                 iirSampleAR = (iirSampleAR * (1.0 - iirAmount)) + (inputSampleR * iirAmount);
                 inputSampleR -= iirSampleAR;
             }
-            else
-            {
+            else {
                 iirSampleBL = (iirSampleBL * (1.0 - iirAmount)) + (inputSampleL * iirAmount);
                 inputSampleL -= iirSampleBL;
                 iirSampleBR = (iirSampleBR * (1.0 - iirAmount)) + (inputSampleR * iirAmount);
@@ -224,8 +219,7 @@ class Drive final : public Effect<T>
                 inputSampleR = -1.0;
             }
             out = driveone;
-            while (out > glitch)
-            {
+            while (out > glitch) {
                 out -= glitch;
                 inputSampleL -= (inputSampleL * (fabs(inputSampleL) * glitch) * (fabs(inputSampleL) * glitch));
                 inputSampleL *= (1.0 + glitch);

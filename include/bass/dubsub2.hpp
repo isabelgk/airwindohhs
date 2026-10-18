@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DubSub2 is the essence of the Airwindows head bump."
 };
 constexpr std::string_view k_long_description{
-    "The final element for reinventing ToTape is in place, with DubSub2!I've always used this one particular algorithm, both for ToTape and for various bass-emphasis plugins. It acts like a combination between an IIR filter and a saturation. And it's got fantastic sound, but with a catch: it has to be controlled in the higher frequencies or it'll sound growly and distorted if you push it, and it's unstable.That's literal. I have to do stuff to control it or it will throw bass so hard that it sits around pushing DC. The algorithm has to be filtered because it's unstable, it'll constantly bring up deep bass no matter what. The sound of it is intrinsically tied to this behavior.So, what if I tried the technique I use in Parametric, and set up some biquad filters as bandpasses, and then stack them (slightly staggered, for tone purposes) to get better rejection of unwanted DC energy? What could go wrong? Well… it's tricky. If you do that, phase shifts will cause there to be a cancellation around the bandpass frequency. You'll get notches, the placement depending on what your filter bandwidth is.But hang on. Jack Endino's got a webpage where he's measured lots of real analog tape machines, showing the head bumps. And the thing is, on his measurements there's consistently a notch there, too. It's exactly an octave above the head bump, and that's part of the sound.So what's the bandpass resonance, when you're using two of them stacked, and then you want the notch produced by the phase shifting (already an unusual choice) to line up exactly an octave over the head bump resonance, so that your DubSub2 head bump will consistently behave like the real thing? You can set the head bump frequency to whatever you like (Jack finds that doubling the track width halves the head bump frequency, and of course going from 15 ips to 30 ips doubles the head bump frequency, and the notch stays exactly an octave higher). But the Q is what positions that notch. Since there is clearly no correct value for such a bizarre experiment, since super-shallow Q won't work, since using Butterworth (0.7071) is slightly too tight… what's the resonance number for the two stacked bandpasses?The golden ratio.…hope you enjoy DubSub2, and this is what will become the head bump for ToTape7 :)"
+    "The final element for reinventing ToTape is in place, with DubSub2! I've always used this one particular algorithm, both for ToTape and for various bass-emphasis plugins. It acts like a combination between an IIR filter and a saturation. And it's got fantastic sound, but with a catch: it has to be controlled in the higher frequencies or it'll sound growly and distorted if you push it, and it's unstable. That's literal. I have to do stuff to control it or it will throw bass so hard that it sits around pushing DC. The algorithm has to be filtered because it's unstable, it'll constantly bring up deep bass no matter what. The sound of it is intrinsically tied to this behavior. So, what if I tried the technique I use in Parametric, and set up some biquad filters as bandpasses, and then stack them (slightly staggered, for tone purposes) to get better rejection of unwanted DC energy? What could go wrong? Well… it's tricky. If you do that, phase shifts will cause there to be a cancellation around the bandpass frequency. You'll get notches, the placement depending on what your filter bandwidth is. But hang on. Jack Endino's got a webpage where he's measured lots of real analog tape machines, showing the head bumps. And the thing is, on his measurements there's consistently a notch there, too. It's exactly an octave above the head bump, and that's part of the sound. So what's the bandpass resonance, when you're using two of them stacked, and then you want the notch produced by the phase shifting (already an unusual choice) to line up exactly an octave over the head bump resonance, so that your DubSub2 head bump will consistently behave like the real thing? You can set the head bump frequency to whatever you like (Jack finds that doubling the track width halves the head bump frequency, and of course going from 15 ips to 30 ips doubles the head bump frequency, and the notch stays exactly an octave higher). But the Q is what positions that notch. Since there is clearly no correct value for such a bizarre experiment, since super-shallow Q won't work, since using Butterworth (0.7071) is slightly too tight… what's the resonance number for the two stacked bandpasses? The golden ratio. …hope you enjoy DubSub2, and this is what will become the head bump for ToTape7 :)"
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DubSub2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dbsc';
     float A;
     float B;
     float C;
@@ -42,7 +46,6 @@ class DubSub2 final : public Effect<T>
     }; // fixed frequency biquad filter for ultrasonics, stereo
     double hdbA[hdb_total];
     double hdbB[hdb_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -81,20 +84,17 @@ class DubSub2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -106,8 +106,7 @@ class DubSub2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -119,11 +118,10 @@ class DubSub2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "headbmp"; break;
             case kParamB: return "headfrq"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -132,8 +130,7 @@ class DubSub2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "HeadBmp"; break;
             case kParamB: return "HeadFrq"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -145,28 +142,28 @@ class DubSub2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(((B * B) * 175.0) + 25.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return "hz"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -197,8 +194,7 @@ class DubSub2 final : public Effect<T>
         hdbB[hdb_b1] = 2.0 * (K * K - 1.0) * norm;
         hdbB[hdb_b2] = (1.0 - K / hdbB[hdb_reso] + K * K) * norm;
         double headWet = C;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Hermepass is a mastering highpass to set by ear only."
 };
 constexpr std::string_view k_long_description{
-    "This is specially by request from Gregg of Hermetech Mastering: it’s my try at a specific plugin he wanted. He wasn’t able to find a fantastic-sounding highpass with JUST a frequency control and slope, no bling, no other stuff, as small as possible.This is of course right up my alley :)All the more when he responded warmly to my idea of having both the cutoff and slope have NO LABELING to guide you: just 0-1 sliders. You have to listen. That’s the whole point, and I delighted in taking it that one stage further.Two stages further, because I worked out how to make the slope control continuous. It uses up to six poles (staggered, an idea that Gregg and I independently came up with: it’s present in my ToVinyl2 and ToVinyl3) but as each pole is added it gets its own little dry/wet internally, so you can have two and a half or four and a third poles. Smooth continuous adjustment of how many poles (and how steep the slope), much like my bit-crusher has continuous sample rate crush and bit depth crush.Three stages since it uses Airwindows interleaved IIR filtering for the very first stage to start off at a slope even shallower than one pole of IIR: sort of ‘half a pole of filtering’ to start off.The controls are set up to give useful results around the middle of their travel. I’m not sure exactly how many poles that is, or what frequency: use your ears, says me and Gregg (for whom I made this). I do know that depending on how you set it, the transparent cutting of extreme low frequencies WILL give rise to higher peaks, so either gain stage it or use limiting or clipping. This plugin is not a loudenator. It’s a tone shaper, for retaining every possible bit of tonality while reshaping the extreme lows to trim the lowest frequencies: it’s sound balancing, not ‘make louder-ing’."
+    "This is specially by request from Gregg of Hermetech Mastering: it’s my try at a specific plugin he wanted. He wasn’t able to find a fantastic-sounding highpass with JUST a frequency control and slope, no bling, no other stuff, as small as possible. This is of course right up my alley :) All the more when he responded warmly to my idea of having both the cutoff and slope have NO LABELING to guide you: just 0-1 sliders. You have to listen. That’s the whole point, and I delighted in taking it that one stage further. Two stages further, because I worked out how to make the slope control continuous. It uses up to six poles (staggered, an idea that Gregg and I independently came up with: it’s present in my ToVinyl2 and ToVinyl3) but as each pole is added it gets its own little dry/wet internally, so you can have two and a half or four and a third poles. Smooth continuous adjustment of how many poles (and how steep the slope), much like my bit-crusher has continuous sample rate crush and bit depth crush. Three stages since it uses Airwindows interleaved IIR filtering for the very first stage to start off at a slope even shallower than one pole of IIR: sort of ‘half a pole of filtering’ to start off. The controls are set up to give useful results around the middle of their travel. I’m not sure exactly how many poles that is, or what frequency: use your ears, says me and Gregg (for whom I made this). I do know that depending on how you set it, the transparent cutting of extreme low frequencies WILL give rise to higher peaks, so either gain stage it or use limiting or clipping. This plugin is not a loudenator. It’s a tone shaper, for retaining every possible bit of tonality while reshaping the extreme lows to trim the lowest frequencies: it’s sound balancing, not ‘make louder-ing’."
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Hermepass final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'herm';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -85,19 +89,16 @@ class Hermepass final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -108,8 +109,7 @@ class Hermepass final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
 
@@ -120,8 +120,7 @@ class Hermepass final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "cutoff"; break;
             case kParamB: return "slope"; break;
 
@@ -132,8 +131,7 @@ class Hermepass final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Cutoff"; break;
             case kParamB: return "Slope"; break;
 
@@ -144,26 +142,26 @@ class Hermepass final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -263,8 +261,7 @@ class Hermepass final : public Effect<T>
         double tempSampleL;
         double tempSampleR;
         double correction;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,31 +11,35 @@ constexpr std::string_view k_short_description{
     "Galactic2 is a super-reverb REdesigned specially for pads and space ambient."
 };
 constexpr std::string_view k_long_description{
-    "Galactic has been a huge success, no pun intended. It might be the most popular of my first batch of feedforward reverbs, and it's still available, from its banks of 4-wide householder matrix delay lines, to its pitch shift stereo widening.So, why revisit Galactic? What is there to even improve? Well, it's a matter of taste. My newer big reverbs and realistic reverbs go for a bigger reverb matrix with a distinct, more organic texture to it. And I wasn't really satisfied with how you worked with Galactic: I'd imagined a thing where you'd have reverb space going, and then you'd 'paint' in other sound, perhaps with a slider, or just by overloading the existing space with other stuff.And so, here we are. Galactic2. Drive, Sustain, Darken and Wetness. And a tone that owes more to the K series plate reverbs, than Infinity or Verbity. Sustain starts to feed back forever a little ways past two-thirds up, with halfway being long decays, and very short sustain being your kill switch. It'll creep up in gain at full crank, so be careful with that. Drive is how you feed in new audio while it's going, Wetness is probably going to be full crank for most use cases, and Darken goes from totally, scintillatingly bright to mellow and distant-sounding, both as part of the total output of the reverb, and as part of the feedback loop (so if you have bright stuff going, and you Darken, your sustain will start to get darker as it continues, which can add realism).I keep saying it's like the kPlate reverbs, but I checked the code and it's still 4-wide Householder matrixes, like the original. So what makes this so different? Its handling of stereo, is what. Either you'll love or hate it. This is why you should love it. Unlike the original Galactic, this isn't a pair of matched reverbs using pitch bends to stereo-ize them for mono things. Galactic2 is a SINGLE giant stereo reverb that uses all the same delay values, but uses them crossways: one channel accesses the matrix vertically, the other accesses the matrix horizontally. It's 'the same', but all the echoes are arranged differently. These are way harder to come up with but it's what was used on the kPlate reverbs, except those are 5x5 matrixes and this is still a 4x4. There's just a teeny bit of crossmodulation to round it out.What this means is, if you put stuff in the left, it makes a sort of cloud of reverb sound that's also mostly on the left. If you put stuff in on the right, likewise: you'll get 'space' happening mix right.And if you put stuff in mono… you get WIDE center content. The whole texture is wider than what original Galactic can do, without use of chorusing or pitch shifting to widen it. That gives it a completely different character, which is why you've still got original Galactic to use if you want. This is a second bite of the apple. It's about trying to get even deeper into space, and I hope you enjoy it :)"
+    "Galactic has been a huge success, no pun intended. It might be the most popular of my first batch of feedforward reverbs, and it's still available, from its banks of 4-wide householder matrix delay lines, to its pitch shift stereo widening. So, why revisit Galactic? What is there to even improve? Well, it's a matter of taste. My newer big reverbs and realistic reverbs go for a bigger reverb matrix with a distinct, more organic texture to it. And I wasn't really satisfied with how you worked with Galactic: I'd imagined a thing where you'd have reverb space going, and then you'd 'paint' in other sound, perhaps with a slider, or just by overloading the existing space with other stuff. And so, here we are. Galactic2. Drive, Sustain, Darken and Wetness. And a tone that owes more to the K series plate reverbs, than Infinity or Verbity. Sustain starts to feed back forever a little ways past two-thirds up, with halfway being long decays, and very short sustain being your kill switch. It'll creep up in gain at full crank, so be careful with that. Drive is how you feed in new audio while it's going, Wetness is probably going to be full crank for most use cases, and Darken goes from totally, scintillatingly bright to mellow and distant-sounding, both as part of the total output of the reverb, and as part of the feedback loop (so if you have bright stuff going, and you Darken, your sustain will start to get darker as it continues, which can add realism). I keep saying it's like the kPlate reverbs, but I checked the code and it's still 4-wide Householder matrixes, like the original. So what makes this so different? Its handling of stereo, is what. Either you'll love or hate it. This is why you should love it. Unlike the original Galactic, this isn't a pair of matched reverbs using pitch bends to stereo-ize them for mono things. Galactic2 is a SINGLE giant stereo reverb that uses all the same delay values, but uses them crossways: one channel accesses the matrix vertically, the other accesses the matrix horizontally. It's 'the same', but all the echoes are arranged differently. These are way harder to come up with but it's what was used on the kPlate reverbs, except those are 5x5 matrixes and this is still a 4x4. There's just a teeny bit of crossmodulation to round it out. What this means is, if you put stuff in the left, it makes a sort of cloud of reverb sound that's also mostly on the left. If you put stuff in on the right, likewise: you'll get 'space' happening mix right. And if you put stuff in mono… you get WIDE center content. The whole texture is wider than what original Galactic can do, without use of chorusing or pitch shifting to widen it. That gives it a completely different character, which is why you've still got original Galactic to use if you want. This is a second bite of the apple. It's about trying to get even deeper into space, and I hope you enjoy it :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
 };
-constexpr int shortA = 683;
-constexpr int shortB = 2339;
-constexpr int shortC = 2381;
-constexpr int shortD = 887;
-constexpr int shortE = 743;
-constexpr int shortF = 1823;
-constexpr int shortG = 1151;
-constexpr int shortH = 2833;
-constexpr int shortI = 521;
-constexpr int shortJ = 3331;
-constexpr int shortK = 2851;
-constexpr int shortL = 1747;
-constexpr int shortM = 3389;
-constexpr int shortN = 83;
-constexpr int shortO = 443;
-constexpr int shortP = 3221; // 290 ms, 10004 seat stadium. Scarcity, 1 in 55796
 
 template <typename T>
 class Galactic2 final : public Effect<T>
 {
+    static constexpr int shortA = 683;
+    static constexpr int shortB = 2339;
+    static constexpr int shortC = 2381;
+    static constexpr int shortD = 887;
+    static constexpr int shortE = 743;
+    static constexpr int shortF = 1823;
+    static constexpr int shortG = 1151;
+    static constexpr int shortH = 2833;
+    static constexpr int shortI = 521;
+    static constexpr int shortJ = 3331;
+    static constexpr int shortK = 2851;
+    static constexpr int shortL = 1747;
+    static constexpr int shortM = 3389;
+    static constexpr int shortN = 83;
+    static constexpr int shortO = 443;
+    static constexpr int shortP = 3221;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'galb';
     double feedbackA;
     double feedbackB;
     double feedbackC;
@@ -258,7 +262,7 @@ class Galactic2 final : public Effect<T>
             aPR[count] = 0.0;
         }
         feedbackA = feedbackB = feedbackC = feedbackD = 1.0;
-        iirA = iirB = iirC = iirD = 0.0;
+        iirA = iirB = iirC = iirD = iirE = iirF = iirG = iirH = 0.0;
         feedbackAL = 0.0;
         feedbackBL = 0.0;
         feedbackCL = 0.0;
@@ -368,10 +372,6 @@ class Galactic2 final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
-        iirE = 0.0;
-        iirF = 0.0;
-        iirG = 0.0;
-        iirH = 0.0;
     }
 
     enum params
@@ -385,21 +385,18 @@ class Galactic2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -412,8 +409,7 @@ class Galactic2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -426,8 +422,7 @@ class Galactic2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drive"; break;
             case kParamB: return "sustain"; break;
             case kParamC: return "darken"; break;
@@ -440,8 +435,7 @@ class Galactic2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drive"; break;
             case kParamB: return "Sustain"; break;
             case kParamC: return "Darken"; break;
@@ -454,30 +448,30 @@ class Galactic2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -509,8 +503,7 @@ class Galactic2 final : public Effect<T>
         double stages = C;
         wetA = wetB;
         wetB = 1.0 - (pow(1.0 - D, 4));
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

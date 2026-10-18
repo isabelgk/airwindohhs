@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Edge is a seven-stage distortion with Hypersonic filtering and tone shaping controls."
 };
 constexpr std::string_view k_long_description{
-    "With all the talk I’ve done about Hypersonic (composite filtering making very steep Butterworth slopes from sets of biquads), one must ask: what if you just made a distortion out of it?This is Edge. It’s seven stages of hard clipping with Hypersonic-style filtering between each one. It’s real bright and has silly high gain, and it’s going to become real useful.That’s because it’s one piece in the DI Guitar system I’m devising: a set of plugins that combine my style of aliasing reduction (using biquads, so zero latency) with guitar-grade distortion and a reissue of a classic old plugin of mine that’s totally revitalized for the modern day, Cabs. (it can also be run into the Airwindows amp sims, of course)Suffice to say Edge is the high-gain distortion stage of such a system. It should run pretty efficiently, and it’s got a carefully designed set of controls. The gain of course is obvious.Lowpass is basically your cutoff frequency: this isn’t designed to be swept (though you could if you’re OK with some crackles) but is a very efficient Hypersonic-style lowpass that you can set from 25k right down into the deep bass. Since it doubles as the ultrasonic filter, dialing back on the extreme highs will give you even better aliasing performance (run at elevated sample rates to use this properly) and also gives you an interesting tonality at the cutoff which isn’t exactly resonance, but it’s a bit like it. The way the phase shifts going into successive stages of gain boost and clipping produces a distinctive tone.Highpass is your secret weapon for when you use it as a guitar amp: get the rest of the system huge and beefy, and then dial in the lows using this input highpass, for maximum texture.Output and Dry/Wet are for use when you’re just making it be a hard clipper. It’s never going to be exactly a hard clip because of all the stages and the way the EQ interacts with the sound, but between the highpass, lowpass and the gain on tap you’ll get many sounds out of this one. Unlike stuff like ‘Tube’ this is never intended to be smooth. It’s just edgy in a distinctive way that might come in handy."
+    "With all the talk I’ve done about Hypersonic (composite filtering making very steep Butterworth slopes from sets of biquads), one must ask: what if you just made a distortion out of it? This is Edge. It’s seven stages of hard clipping with Hypersonic-style filtering between each one. It’s real bright and has silly high gain, and it’s going to become real useful. That’s because it’s one piece in the DI Guitar system I’m devising: a set of plugins that combine my style of aliasing reduction (using biquads, so zero latency) with guitar-grade distortion and a reissue of a classic old plugin of mine that’s totally revitalized for the modern day, Cabs. (it can also be run into the Airwindows amp sims, of course) Suffice to say Edge is the high-gain distortion stage of such a system. It should run pretty efficiently, and it’s got a carefully designed set of controls. The gain of course is obvious. Lowpass is basically your cutoff frequency: this isn’t designed to be swept (though you could if you’re OK with some crackles) but is a very efficient Hypersonic-style lowpass that you can set from 25k right down into the deep bass. Since it doubles as the ultrasonic filter, dialing back on the extreme highs will give you even better aliasing performance (run at elevated sample rates to use this properly) and also gives you an interesting tonality at the cutoff which isn’t exactly resonance, but it’s a bit like it. The way the phase shifts going into successive stages of gain boost and clipping produces a distinctive tone. Highpass is your secret weapon for when you use it as a guitar amp: get the rest of the system huge and beefy, and then dial in the lows using this input highpass, for maximum texture. Output and Dry/Wet are for use when you’re just making it be a hard clipper. It’s never going to be exactly a hard clip because of all the stages and the way the EQ interacts with the sound, but between the highpass, lowpass and the gain on tap you’ll get many sounds out of this one. Unlike stuff like ‘Tube’ this is never intended to be smooth. It’s just edgy in a distinctive way that might come in handy."
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Edge final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'edge';
     enum
     {
         fix_freq,
@@ -44,16 +48,15 @@ class Edge final : public Effect<T>
     double fixG[fix_total];
     double iirSampleL;
     double iirSampleR;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
+
   public:
     Edge()
     {
@@ -96,22 +99,19 @@ class Edge final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -125,8 +125,7 @@ class Edge final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.1; break;
             case kParamB: return 1.0; break;
             case kParamC: return 0.0; break;
@@ -140,13 +139,12 @@ class Edge final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "gain"; break;
             case kParamB: return "lowpass"; break;
             case kParamC: return "highpass"; break;
             case kParamD: return "output"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -155,8 +153,7 @@ class Edge final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Gain"; break;
             case kParamB: return "Lowpass"; break;
             case kParamC: return "Highpass"; break;
@@ -170,32 +167,32 @@ class Edge final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -280,8 +277,7 @@ class Edge final : public Effect<T>
         fixG[fix_a2] = fixG[fix_a0];
         fixG[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixG[fix_b2] = (1.0 - K / fixG[fix_reso] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             double drySampleL = inputSampleL;

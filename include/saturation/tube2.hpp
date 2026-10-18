@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Tube2 extends Tube, with more sophisticated processing and input trim."
 };
 constexpr std::string_view k_long_description{
-    "Hi again! :DI took such a beating over TUUUBBEEEE!!!11!! that I’m following up immediately with another version. Not as a replacement, but just pursuing a LOT of the things people were talking about… while retaining some of the bloody-mindedness that makes people so mad at me.Folks who actually know what they’re talking about had me digging up copies of the RCA Receiving Tube Manual, to study how the electron field’s impedance can fluctuate changing the behavior of preceding stages, and how this is affected by unavoidable time delays as the electrons transit from cathode to plate through grid. (If I have that backwards, please turn your DAW upside down to compensate). There’s good reason to expect second harmonics both on the low end and as higher harmonics: all that’s in there. I did my best to find algorithms that’d sharpen corners going one direction and loosen them going the other. It’s been quite a ride. It did motivate me to code an update to Monitoring that you’ll be seeing pretty soon: adding the ‘Tube used as a safety clipper) tiny pad for appropriate output levels, and switching the new Monitoring to use Dark as its wordlength reducer. You’re hearing all that in the video too.Most of all: this is the version of Tube that’s pretty close to level matched if you have the input trim at 0.5. You can pad it more if you like. Tube2 still lets you make the audio REALLY BIG, because that’s what it’s for: I needed a safety clipper stage before I needed anything else, and it’s still designed to accurately top out at 0dB exactly, and anything you hit it with from well below to quite a bit above should all sound right.If you need more gain than you can get from cranking the input pad until it’s wide open, THAT is when you should break out Tube (1) and use it as a feeder for Tube (2). I don’t think there’s much to be gained from running Tube2 into Tube2, though I’m not your Mom and you can do as you like. I’m just saying the whole thing’s designed around finishing up in Tube2, with whatever degree of ‘Tube’ you see fit, and similar behaviors of the control: regardless of what your levels are doing, more TUBE means softer and more saturated distortion, plus all the new behaviors making stuff interesting. When you back off the TUBE control, you’re going for more linearity in every sense, and you should be able to dial in the right vibe without trouble.I have no idea whether this is gonna get me a fresh new wave of, uh, criticism :) I’m not even sure whether that would be good or whether it’s more likely to be SO good for people that they rush off and use it as intended, don’t find time to get mad, and then the whole thing dies a media death. It is said that scandal drives page views… but my own drives are rather simpler.I just want to make stuff that sounds good, along the lines I’ve been developing over more than ten years working on getting digital audio to not sound like DAW hell.This is an upgrade. Hope you like it :)"
+    "Hi again! :D I took such a beating over TUUUBBEEEE!!!11!! that I’m following up immediately with another version. Not as a replacement, but just pursuing a LOT of the things people were talking about… while retaining some of the bloody-mindedness that makes people so mad at me. Folks who actually know what they’re talking about had me digging up copies of the RCA Receiving Tube Manual, to study how the electron field’s impedance can fluctuate changing the behavior of preceding stages, and how this is affected by unavoidable time delays as the electrons transit from cathode to plate through grid. (If I have that backwards, please turn your DAW upside down to compensate). There’s good reason to expect second harmonics both on the low end and as higher harmonics: all that’s in there. I did my best to find algorithms that’d sharpen corners going one direction and loosen them going the other. It’s been quite a ride. It did motivate me to code an update to Monitoring that you’ll be seeing pretty soon: adding the ‘Tube used as a safety clipper) tiny pad for appropriate output levels, and switching the new Monitoring to use Dark as its wordlength reducer. You’re hearing all that in the video too. Most of all: this is the version of Tube that’s pretty close to level matched if you have the input trim at 0.5. You can pad it more if you like. Tube2 still lets you make the audio REALLY BIG, because that’s what it’s for: I needed a safety clipper stage before I needed anything else, and it’s still designed to accurately top out at 0dB exactly, and anything you hit it with from well below to quite a bit above should all sound right. If you need more gain than you can get from cranking the input pad until it’s wide open, THAT is when you should break out Tube (1) and use it as a feeder for Tube (2). I don’t think there’s much to be gained from running Tube2 into Tube2, though I’m not your Mom and you can do as you like. I’m just saying the whole thing’s designed around finishing up in Tube2, with whatever degree of ‘Tube’ you see fit, and similar behaviors of the control: regardless of what your levels are doing, more TUBE means softer and more saturated distortion, plus all the new behaviors making stuff interesting. When you back off the TUBE control, you’re going for more linearity in every sense, and you should be able to dial in the right vibe without trouble. I have no idea whether this is gonna get me a fresh new wave of, uh, criticism :) I’m not even sure whether that would be good or whether it’s more likely to be SO good for people that they rush off and use it as intended, don’t find time to get mad, and then the whole thing dies a media death. It is said that scandal drives page views… but my own drives are rather simpler. I just want to make stuff that sounds good, along the lines I’ve been developing over more than ten years working on getting digital audio to not sound like DAW hell. This is an upgrade. Hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Tube2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tubf';
     double previousSampleA;
     double previousSampleB;
     double previousSampleC;
@@ -63,19 +67,16 @@ class Tube2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -86,8 +87,7 @@ class Tube2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
 
@@ -98,8 +98,7 @@ class Tube2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "tube"; break;
 
@@ -110,8 +109,7 @@ class Tube2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Tube"; break;
 
@@ -122,26 +120,26 @@ class Tube2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -160,8 +158,7 @@ class Tube2 final : public Effect<T>
         double asymPad = (double)powerfactor;
         double gainscaling = 1.0 / (double)(powerfactor + 1);
         double outputscaling = 1.0 + (1.0 / (double)(powerfactor));
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

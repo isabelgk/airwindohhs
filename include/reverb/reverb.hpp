@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Reverb is simplified and tuned MatrixVerb, adjusting everything for each optimum verb size."
 };
 constexpr std::string_view k_long_description{
-    "In some ways I think this is even better, but I know people like to fiddle with knobs, so MatrixVerb had to go first. And yet…Reverb is my new go-to reverb. Why? Because it takes all the interactivity of MatrixVerb and boils it down to ONE slider, and a dry/wet. It does all the same things: centered sounds spread, there’s a subtle detune as if sound was passing through temperature differences in the room, high frequency stuff falls away accurate to the sound of real air in reference concrete cavern recordings: it IS MatrixVerb, in every detail. Except it’s adapting all of that, on the fly, to best suit whatever size of reverb space you seek. Think in terms of ‘bigness’ and just go: if things are too cavernous, get smaller, if they’re not reverberant enough get bigger. Reverb always does its best for whatever size of space you’re making. If you need to get crazier, MatrixVerb still exists. You’ll get results faster with Reverb… so much so, that I’ve replaced MV in the Airwindows Starter Kit with Reverb. That’s how much I like it: it’s the space-maker I would show newcomers first, the most approachable way to audio ambience.(followup: subsequent reverbs like Verbity, Galactic and Chamber employed a feedforward configuration and got a richer sound. Reverb and Matrixverb turn out to be the 'plugin-style' reverb options, which is not to say they can't be useful too)"
+    "In some ways I think this is even better, but I know people like to fiddle with knobs, so MatrixVerb had to go first. And yet… Reverb is my new go-to reverb. Why? Because it takes all the interactivity of MatrixVerb and boils it down to ONE slider, and a dry/wet. It does all the same things: centered sounds spread, there’s a subtle detune as if sound was passing through temperature differences in the room, high frequency stuff falls away accurate to the sound of real air in reference concrete cavern recordings: it IS MatrixVerb, in every detail. Except it’s adapting all of that, on the fly, to best suit whatever size of reverb space you seek. Think in terms of ‘bigness’ and just go: if things are too cavernous, get smaller, if they’re not reverberant enough get bigger. Reverb always does its best for whatever size of space you’re making. If you need to get crazier, MatrixVerb still exists. You’ll get results faster with Reverb… so much so, that I’ve replaced MV in the Airwindows Starter Kit with Reverb. That’s how much I like it: it’s the space-maker I would show newcomers first, the most approachable way to audio ambience. (followup: subsequent reverbs like Verbity, Galactic and Chamber employed a feedforward configuration and got a richer sound. Reverb and Matrixverb turn out to be the 'plugin-style' reverb options, which is not to say they can't be useful too)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Reverb final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'revb';
     double biquadA[11];
     double biquadB[11];
     double biquadC[11];
@@ -219,19 +223,16 @@ class Reverb final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -242,10 +243,9 @@ class Reverb final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return 1.0; break;
-            case kParamB: return 1.0; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return 0.5; break;
+            case kParamB: return 0.5; break;
 
             default: break;
         }
@@ -254,8 +254,7 @@ class Reverb final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "big"; break;
             case kParamB: return "wet"; break;
 
@@ -266,8 +265,7 @@ class Reverb final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Big"; break;
             case kParamB: return "Wet"; break;
 
@@ -278,26 +276,26 @@ class Reverb final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -353,8 +351,7 @@ class Reverb final : public Effect<T>
         biquadC[4] = biquadC[2];
         biquadC[5] = 2.0 * (K * K - 1.0) * norm;
         biquadC[6] = (1.0 - K / biquadC[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

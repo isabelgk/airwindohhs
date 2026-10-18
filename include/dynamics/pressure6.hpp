@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Pressure6 refines the Pressure compressor and how it moves."
 };
 constexpr std::string_view k_long_description{
-    "Until now, the most recent compressor I've made was BeziComp, which takes compression and applies Bezier curves to clean up the dynamics until there are no artifacts at all… which is not what you usually get with compressors and limiters! I put it out as a plugin, and I used it in ChimeyGuitar, where it modulates things with perfect smoothness… and yet. Turns out it just doesn't seem to move right. Yes, perfect smoothness and freeness from artifact, but the way it moves seems odd.Back to the drawing board! (though as always, the previous try remains available to all, because who knows when it'll come in handy.)Pressure6 is the result of refactoring the Pressure compression algorithm as it's never been refactored before. It probably runs more efficiently on modern CPUs (which are happier doing math than they are keeping around extra variables). It also has an entirely new sound, from having isolated some of the strangest and trickiest qualities of the original Pressure. No longer is it as much of a mystery: in fact, I can probably do more variations on the theme. But this time around, my target was '2-buss Compressor'.This isn't the same as 'limiter' or 'loudenator'. It's more like 'glue' compressor. You can get it to squish things radically… if you drive it fully into dynamic inversion, as it's still a variation on Vari-Mu. But the ability to control its internal attack and release speeds (which has always been a distinguishing factor for Pressure) meant I could control how it imposed movement into a mix, way better than I'd ever been able to before.When used as a glue compressor, Pressure6 imparts dramatic movement to, and inside, a mix. Across all kinds of transient attacks, Pressure6 has a springy force that lets the music pounce forward eagerly, clarifying and heightening attacks. It highlights peak energy in a way compressors don't often manage. Used on drums, it lets sustaining elements of the kit hang steady, hypes dense parts of the beat like the snare, and heightens the impact of the kick.When you move towards lower ratios (this is a modified dry/wet) it blends in the dry signal but also starts to pad the output of the compressor, before it hits a soft saturation (like the original Pressure) to manage attack spikes. Doing this subtly raises the energy of those spikes even as you merge them with the dry signal using Ratio. The result is a compressor fit for 2-buss duties (for many, possibly not all, genres) which has a slightly touchy Compres control (as its behavior is dependent on you setting that just right) but an extremely forgiving and useful Ratio control, in which a broad range of settings sound good.I think this'll be useful and I hope you enjoy it :)"
+    "Until now, the most recent compressor I've made was BeziComp, which takes compression and applies Bezier curves to clean up the dynamics until there are no artifacts at all… which is not what you usually get with compressors and limiters! I put it out as a plugin, and I used it in ChimeyGuitar, where it modulates things with perfect smoothness… and yet. Turns out it just doesn't seem to move right. Yes, perfect smoothness and freeness from artifact, but the way it moves seems odd. Back to the drawing board! (though as always, the previous try remains available to all, because who knows when it'll come in handy.) Pressure6 is the result of refactoring the Pressure compression algorithm as it's never been refactored before. It probably runs more efficiently on modern CPUs (which are happier doing math than they are keeping around extra variables). It also has an entirely new sound, from having isolated some of the strangest and trickiest qualities of the original Pressure. No longer is it as much of a mystery: in fact, I can probably do more variations on the theme. But this time around, my target was '2-buss Compressor'. This isn't the same as 'limiter' or 'loudenator'. It's more like 'glue' compressor. You can get it to squish things radically… if you drive it fully into dynamic inversion, as it's still a variation on Vari-Mu. But the ability to control its internal attack and release speeds (which has always been a distinguishing factor for Pressure) meant I could control how it imposed movement into a mix, way better than I'd ever been able to before. When used as a glue compressor, Pressure6 imparts dramatic movement to, and inside, a mix. Across all kinds of transient attacks, Pressure6 has a springy force that lets the music pounce forward eagerly, clarifying and heightening attacks. It highlights peak energy in a way compressors don't often manage. Used on drums, it lets sustaining elements of the kit hang steady, hypes dense parts of the beat like the snare, and heightens the impact of the kick. When you move towards lower ratios (this is a modified dry/wet) it blends in the dry signal but also starts to pad the output of the compressor, before it hits a soft saturation (like the original Pressure) to manage attack spikes. Doing this subtly raises the energy of those spikes even as you merge them with the dry signal using Ratio. The result is a compressor fit for 2-buss duties (for many, possibly not all, genres) which has a slightly touchy Compres control (as its behavior is dependent on you setting that just right) but an extremely forgiving and useful Ratio control, in which a broad range of settings sound good. I think this'll be useful and I hope you enjoy it :)"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Pressure6 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'prs6';
     float A;
     float B;
     double muComp;
@@ -55,11 +59,10 @@ class Pressure6 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -109,24 +112,26 @@ class Pressure6 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

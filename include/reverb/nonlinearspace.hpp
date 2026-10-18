@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "NonlinearSpace is a flexible reverb plugin."
 };
 constexpr std::string_view k_long_description{
-    "Nonlinear Space is special because it’s got filter controls and acoustic space simulation in the loops: the usual allpasses and comb filters are just a little different here, designed to produce a deeper sound that’ll blend into the mix better. It’s the peak (so far) of all my efforts with reverb, it has its own sound, and it’s free Mac/Windows/Linux AU/VST!It’s also got a nonlinearity control, which besides the easter egg polymorph duties can do two things: one, it can make louder sounds sustain longer. This is a bit tricky to set up and you’ll want to feed it with consistent loudness, but you can get that ‘sort of 80s gated’ sound if you set it just right, especially if you’re driving it from just a snare track or something sparse like that. Two, it can make louder sounds sustain less, which is the opposite. Using it that way lets you set it up as a reverb bed which doesn’t die away, but you can replace the stuff in it by overlaying more sounds. It’s the opposite of the first nonlinearity but it might come in handy for ambient purposes.The sample rate thing really just tells it what buffer lengths to use: shorter buffers make tighter spaces. It should give a roughly consistent sound if you use the buffer corresponding to your sample rate, but then you can also be at 44.1K and set it to 96K just to have a huge stadium soundscape. Half the fun here is using it inappropriately, so I wouldn’t dream of telling you how to use Nonlinear Space: I hope it’s easy to get normal sounds with, and for everything else, just have fun."
+    "Nonlinear Space is special because it’s got filter controls and acoustic space simulation in the loops: the usual allpasses and comb filters are just a little different here, designed to produce a deeper sound that’ll blend into the mix better. It’s the peak (so far) of all my efforts with reverb, it has its own sound, and it’s free Mac/Windows/Linux AU/VST! It’s also got a nonlinearity control, which besides the easter egg polymorph duties can do two things: one, it can make louder sounds sustain longer. This is a bit tricky to set up and you’ll want to feed it with consistent loudness, but you can get that ‘sort of 80s gated’ sound if you set it just right, especially if you’re driving it from just a snare track or something sparse like that. Two, it can make louder sounds sustain less, which is the opposite. Using it that way lets you set it up as a reverb bed which doesn’t die away, but you can replace the stuff in it by overlaying more sounds. It’s the opposite of the first nonlinearity but it might come in handy for ambient purposes. The sample rate thing really just tells it what buffer lengths to use: shorter buffers make tighter spaces. It should give a roughly consistent sound if you use the buffer corresponding to your sample rate, but then you can also be at 44.1K and set it to 96K just to have a huge stadium soundscape. Half the fun here is using it inappropriately, so I wouldn’t dream of telling you how to use Nonlinear Space: I hope it’s easy to get normal sounds with, and for everything else, just have fun."
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class NonlinearSpace final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'nspc';
     double avgInputL;
     double avgOutputL;
     double avg2InputL;
@@ -544,23 +548,20 @@ class NonlinearSpace final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -575,8 +576,7 @@ class NonlinearSpace final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.3; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -591,14 +591,13 @@ class NonlinearSpace final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "smprate"; break;
             case kParamB: return "livenes"; break;
             case kParamC: return "treble"; break;
             case kParamD: return "bass"; break;
             case kParamE: return "nonlin"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -607,8 +606,7 @@ class NonlinearSpace final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "SmpRate"; break;
             case kParamB: return "Livenes"; break;
             case kParamC: return "Treble"; break;
@@ -623,34 +621,46 @@ class NonlinearSpace final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 6.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "16K", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "32K", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "44.1K", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "48K", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "64K", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "88.2K", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "96K", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // E as example 'popup' parameter with four values  */
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string((E * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -668,8 +678,7 @@ class NonlinearSpace final : public Effect<T>
         double side;
         double overallscale = 1.0;
         int samplerate = (int)(A * 6.999) + 1;
-        switch (samplerate)
-        {
+        switch (samplerate) {
             case 1: overallscale *= (16.0 / 44.1); break; // 16
             case 2: overallscale *= (32.0 / 44.1); break; // 32
             case 3: overallscale *= 1.0; break; // 44.1
@@ -747,8 +756,7 @@ class NonlinearSpace final : public Effect<T>
         delayLeft = (int(maxdelayLeft * roomsize));
         delayRight = (int(maxdelayRight * roomsize));
         delaypre = (int(maxdelaypre * predelay));
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -1671,8 +1679,7 @@ class NonlinearSpace final : public Effect<T>
             inputSampleL = verboutL;
             inputSampleR = verboutR;
             // EQ lowpass is after all processing like the compressor that might produce hash
-            if (flip)
-            {
+            if (flip) {
                 lowpassSampleAA = (lowpassSampleAA * (1 - iirAmountC)) + (inputSampleL * iirAmountC);
                 inputSampleL = lowpassSampleAA;
                 lowpassSampleBA = (lowpassSampleBA * (1 - iirAmountC)) + (inputSampleL * iirAmountC);
@@ -1684,8 +1691,7 @@ class NonlinearSpace final : public Effect<T>
                 lowpassSampleE = (lowpassSampleE * (1 - iirAmountC)) + (inputSampleL * iirAmountC);
                 inputSampleL = lowpassSampleE;
             }
-            else
-            {
+            else {
                 lowpassSampleAB = (lowpassSampleAB * (1 - iirAmountC)) + (inputSampleL * iirAmountC);
                 inputSampleL = lowpassSampleAB;
                 lowpassSampleBB = (lowpassSampleBB * (1 - iirAmountC)) + (inputSampleL * iirAmountC);
@@ -1699,8 +1705,7 @@ class NonlinearSpace final : public Effect<T>
             }
             lowpassSampleG = (lowpassSampleG * (1 - iirAmountC)) + (inputSampleL * iirAmountC);
             inputSampleL = (lowpassSampleG * (1 - iirAmountC)) + (inputSampleL * iirAmountC);
-            if (flip)
-            {
+            if (flip) {
                 rowpassSampleAA = (rowpassSampleAA * (1 - iirAmountC)) + (inputSampleR * iirAmountC);
                 inputSampleR = rowpassSampleAA;
                 rowpassSampleBA = (rowpassSampleBA * (1 - iirAmountC)) + (inputSampleR * iirAmountC);
@@ -1712,8 +1717,7 @@ class NonlinearSpace final : public Effect<T>
                 rowpassSampleE = (rowpassSampleE * (1 - iirAmountC)) + (inputSampleR * iirAmountC);
                 inputSampleR = rowpassSampleE;
             }
-            else
-            {
+            else {
                 rowpassSampleAB = (rowpassSampleAB * (1 - iirAmountC)) + (inputSampleR * iirAmountC);
                 inputSampleR = rowpassSampleAB;
                 rowpassSampleBB = (rowpassSampleBB * (1 - iirAmountC)) + (inputSampleR * iirAmountC);

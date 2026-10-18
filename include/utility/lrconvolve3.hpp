@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "LRConvolve3 gates one channel by the other, roughly or cleanly."
 };
 constexpr std::string_view k_long_description{
-    "So the LRConvolve plugins are all audio manglers, capable of doing awful things to a sound, or turning an innocent voice into the Swedish Chef just by inverting that voice at audio rates. It's inherent to the convolution that you can flip the phase of a sound with another sound, and this is where things get most gnarly, even if you're convolving stuff with simple sine tones.But what if you wanted to do that, but cleanly?Well, there's degrees of 'cleanly', but LRConvolve3 exists to sit alongside the other two, looking cute, for when the full convolution is just too intense. And it does just that: the same, but 'cleanly'. How? You pick one of the sides, and full-wave rectify it. There's another control simply named 'smooth' (not the same as the Bezier control-smoothers I've been coming up with, this is from the same time I was doing the original LRConvolve) and all it does is add a time constant, turning your sound from full-wave rectified into basically an envelope that decays.And that's all you need to get the effect of 'one side turns into the gate for the other', either responding very crisply with Smooth turned all the way down, or using Smooth to make it a trigger input for the gating of the other. I demo it on a guitar taking the shape of drums, and then on a racecar fly-by also taking the shape of drums. You'll probably look to more percussive sounds to supply the gating, but you can do whatever you like: for instance, do something extra through passing a sustained chord on the 'sound' side, and then routing a bass part or whatever into the gate, and you've got some extra overtones that are attached to the bass part and follow its attacks and dynamics. Or a drum spot mic, or a literal timing click: if you have to stretch a too-brief sound, that's what Smooth is for.While I work on more glamorous and dramatic plugins, it's nice to drop a little widget that just does what it's supposed to. Hope if it ever finds a need, it comes in handy. Like many utilities, LRConvolve3 could find many surprising uses, and it's nice how it ties its effects so completely to other sounds you have around. That helps make each use unique :)"
+    "So the LRConvolve plugins are all audio manglers, capable of doing awful things to a sound, or turning an innocent voice into the Swedish Chef just by inverting that voice at audio rates. It's inherent to the convolution that you can flip the phase of a sound with another sound, and this is where things get most gnarly, even if you're convolving stuff with simple sine tones. But what if you wanted to do that, but cleanly? Well, there's degrees of 'cleanly', but LRConvolve3 exists to sit alongside the other two, looking cute, for when the full convolution is just too intense. And it does just that: the same, but 'cleanly'. How? You pick one of the sides, and full-wave rectify it. There's another control simply named 'smooth' (not the same as the Bezier control-smoothers I've been coming up with, this is from the same time I was doing the original LRConvolve) and all it does is add a time constant, turning your sound from full-wave rectified into basically an envelope that decays. And that's all you need to get the effect of 'one side turns into the gate for the other', either responding very crisply with Smooth turned all the way down, or using Smooth to make it a trigger input for the gating of the other. I demo it on a guitar taking the shape of drums, and then on a racecar fly-by also taking the shape of drums. You'll probably look to more percussive sounds to supply the gating, but you can do whatever you like: for instance, do something extra through passing a sustained chord on the 'sound' side, and then routing a bass part or whatever into the gate, and you've got some extra overtones that are attached to the bass part and follow its attacks and dynamics. Or a drum spot mic, or a literal timing click: if you have to stretch a too-brief sound, that's what Smooth is for. While I work on more glamorous and dramatic plugins, it's nice to drop a little widget that just does what it's supposed to. Hope if it ever finds a need, it comes in handy. Like many utilities, LRConvolve3 could find many surprising uses, and it's nice how it ties its effects so completely to other sounds you have around. That helps make each use unique :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class LRConvolve3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'lrcx';
     float A;
     float B;
     double iirSample;
@@ -53,11 +57,10 @@ class LRConvolve3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -107,24 +110,26 @@ class LRConvolve3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

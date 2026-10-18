@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PointyGuitar is a supremely adaptable instrument amp."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes the best way to get the performance of a very analog thing in a very digital format is to accentuate, not the spirit of the analog, but the capacities of the digital. What you get then is not fake gutless imitations of the artifacts of the analog thing, but the heart of why we go for that analog thing. Meet PointyGuitar, which is all amps. Just adjust… if, that is, you know what the analog sound is made of.Here's how it works. SmoothEQ was a sort of breakthrough: the ability to get very steep EQ crossovers while still zeroing out at perfect, unaltered fidelity. It sounds the way it does because it reconstitutes the original source between every stage, rather than doing independent EQ bands and trusting that they'll be 'just as good' because the gains and EQ slopes match up closely enough.Then there's AngleEQ, a sort of disaster: a very heavily colored EQ where the crossovers are so phasey that it's like running stuff through a speaker. The opposite: whether as a highpass or a lowpass, it produces a weird physicality and scrambles the sound pretty good.PointyGuitar is both, in series, with a basic distortion (as found in FireAmp) between every EQ stage. There can be lots of these EQ stages, so there can be lots of stages of this simple softclip, but it's always on the full sound, not a 'multiband'.What happens? Any given section might add small amounts of overdrive. It's not an electrical circuit and it's run at double precision so there is no thermal noise/Johnson noise: it's just a bit of overdrive if you're boosting a band. Otherwise, if it's flat it's extremely flat (interestingly, inside the flat EQ it's still using the AngleEQ math, but in such a way that it sums to perfectly flat. Using biquads would've got steeper crossovers, but requiring more stages turned out perfect here)As it's passed on to the next stage, any distortion harmonic that doesn't fit into the following band just plain gets filtered out. This is most notable in the amount you can crank the 'High' band. It's around 3K for guitar chug, but it's resisting aliasing super hard considering the amount of gain you can add. Same applies for every band except Presnce. You get that, High, Mid, Low and Sub. For high gain '5150' type sounds, you boost High and cut Low.Once you have your sound, be it super high gain or clean Fendery stuff (again, boosting High often helps things sound more amp-like) it's over to the highpass and lowpass. HSpeakr cuts off the bright, and LSpeakr limits the size of your virtual cabinet. They're pure AngleEQ and combine to produce a bandlimited sound without use of a cabinet impulse, harnessing the intensity of the EQ/saturation stages so that the tone sits right. Very delicate adjustments are what you want here, but both those controls have pretty much full range adjustability. 50 foot speaker, or clock radio, are available if you should need them.In this way, first building a sound out of identifying which frequency bands need most saturation and which to back off, and then channeling that very saturated but very clean sound through extremely colorful bandpassing, you produce an amplike sound (guitar or bass, any amp of any kind, it just depends how you adjust it) which fits immediately into whatever space in the mix you need, with the right tone colorings……at ZERO LATENCY.It runs without oversampling, and all the EQs operate directly without pre-ring, as analog circuits do. So you can track directly with PointyGuitar, set any way you like, dial in the basic sound of any sort of amp no matter how clean or dirty, and have it respond so immediately that you'll notice if anything else in your recording chain is adding latency. It'll feed back like any real amp, it'll feel connected to your fingers, and you can dial it to do anything you want, pretty much. If there's a cabinet honk or something that you actually want to add (rather than just remove) you can run the whole thing into ConsoleX and dial that on the parametric, perhaps in conjunction with the Speakr controls.I may have just replaced my little tube amp and iso cab and new speaker DI box at a stroke. Didn't expect that, but both my ears and Airwindows Meter tell me PointyGuitar is in the zone, even for really difficult sought-after guitar tones. The range is pretty shocking: it ought to do bass amps, Plexis on Variacs, ratty little Peaveys, you name it.Oh, and you get a gate (basically DigitalBlack) that triggers off the input before the distortion, but gates between the 'amp' and Speakr so that even if you've got it firing really staccato and quick, it'll merge with your string-damping and act like part of your playing, for guitar OR bass.Enjoy. This should work both for vintage tone guys AND Reznorian madmen. :)"
+    "Sometimes the best way to get the performance of a very analog thing in a very digital format is to accentuate, not the spirit of the analog, but the capacities of the digital. What you get then is not fake gutless imitations of the artifacts of the analog thing, but the heart of why we go for that analog thing. Meet PointyGuitar, which is all amps. Just adjust… if, that is, you know what the analog sound is made of. Here's how it works. SmoothEQ was a sort of breakthrough: the ability to get very steep EQ crossovers while still zeroing out at perfect, unaltered fidelity. It sounds the way it does because it reconstitutes the original source between every stage, rather than doing independent EQ bands and trusting that they'll be 'just as good' because the gains and EQ slopes match up closely enough. Then there's AngleEQ, a sort of disaster: a very heavily colored EQ where the crossovers are so phasey that it's like running stuff through a speaker. The opposite: whether as a highpass or a lowpass, it produces a weird physicality and scrambles the sound pretty good. PointyGuitar is both, in series, with a basic distortion (as found in FireAmp) between every EQ stage. There can be lots of these EQ stages, so there can be lots of stages of this simple softclip, but it's always on the full sound, not a 'multiband'. What happens? Any given section might add small amounts of overdrive. It's not an electrical circuit and it's run at double precision so there is no thermal noise/Johnson noise: it's just a bit of overdrive if you're boosting a band. Otherwise, if it's flat it's extremely flat (interestingly, inside the flat EQ it's still using the AngleEQ math, but in such a way that it sums to perfectly flat. Using biquads would've got steeper crossovers, but requiring more stages turned out perfect here) As it's passed on to the next stage, any distortion harmonic that doesn't fit into the following band just plain gets filtered out. This is most notable in the amount you can crank the 'High' band. It's around 3K for guitar chug, but it's resisting aliasing super hard considering the amount of gain you can add. Same applies for every band except Presnce. You get that, High, Mid, Low and Sub. For high gain '5150' type sounds, you boost High and cut Low. Once you have your sound, be it super high gain or clean Fendery stuff (again, boosting High often helps things sound more amp-like) it's over to the highpass and lowpass. HSpeakr cuts off the bright, and LSpeakr limits the size of your virtual cabinet. They're pure AngleEQ and combine to produce a bandlimited sound without use of a cabinet impulse, harnessing the intensity of the EQ/saturation stages so that the tone sits right. Very delicate adjustments are what you want here, but both those controls have pretty much full range adjustability. 50 foot speaker, or clock radio, are available if you should need them. In this way, first building a sound out of identifying which frequency bands need most saturation and which to back off, and then channeling that very saturated but very clean sound through extremely colorful bandpassing, you produce an amplike sound (guitar or bass, any amp of any kind, it just depends how you adjust it) which fits immediately into whatever space in the mix you need, with the right tone colorings… …at ZERO LATENCY. It runs without oversampling, and all the EQs operate directly without pre-ring, as analog circuits do. So you can track directly with PointyGuitar, set any way you like, dial in the basic sound of any sort of amp no matter how clean or dirty, and have it respond so immediately that you'll notice if anything else in your recording chain is adding latency. It'll feed back like any real amp, it'll feel connected to your fingers, and you can dial it to do anything you want, pretty much. If there's a cabinet honk or something that you actually want to add (rather than just remove) you can run the whole thing into ConsoleX and dial that on the parametric, perhaps in conjunction with the Speakr controls. I may have just replaced my little tube amp and iso cab and new speaker DI box at a stroke. Didn't expect that, but both my ears and Airwindows Meter tell me PointyGuitar is in the zone, even for really difficult sought-after guitar tones. The range is pretty shocking: it ought to do bass amps, Plexis on Variacs, ratty little Peaveys, you name it. Oh, and you get a gate (basically DigitalBlack) that triggers off the input before the distortion, but gates between the 'amp' and Speakr so that even if you've got it firing really staccato and quick, it'll merge with your string-damping and act like part of your playing, for guitar OR bass. Enjoy. This should work both for vintage tone guys AND Reznorian madmen. :)"
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PointyGuitar final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pugt';
     float A;
     float B;
     float C;
@@ -30,6 +34,27 @@ class PointyGuitar final : public Effect<T>
     float H;
     float I;
     float J;
+    enum
+    {
+        bip_dvLA,
+        bip_dvLB,
+        bip_dvLC,
+        bip_dvLD,
+        bip_pvLA,
+        bip_pvLB,
+        bip_pvLC,
+        bip_pvLD,
+        bip_dvRA,
+        bip_dvRB,
+        bip_dvRC,
+        bip_dvRD,
+        bip_pvRA,
+        bip_pvRB,
+        bip_pvRC,
+        bip_pvRD,
+        bip_total // each distortion section can have one of these, it stacks well
+    }; // not remotely elliptic BLEP antialiasing, instead it is derivative BIP :D
+    double bip[bip_total][12];
     double angSL[18][12];
     double angAL[18][12];
     double iirHPositionL[37];
@@ -58,16 +83,16 @@ class PointyGuitar final : public Effect<T>
   public:
     PointyGuitar()
     {
-        A = 0.6;
-        B = 0.5;
+        A = 0.7;
+        B = 0.1;
         C = 0.8;
         D = 0.6;
         E = 0.4;
-        F = 0.5;
-        G = 0.7;
-        H = 0.4;
+        F = 0.1;
+        G = 0.8;
+        H = 0.5;
         I = 0.0;
-        J = 0.7;
+        J = 0.3;
         for (int x = 0; x < 17; x++) {
             for (int y = 0; y < 11; y++) {
                 angSL[x][y] = 0.0;
@@ -78,6 +103,9 @@ class PointyGuitar final : public Effect<T>
         }
         for (int y = 0; y < 11; y++) {
             angG[y] = 0.0;
+            for (int x = 0; x < bip_total; x++) {
+                bip[x][y] = 0.0;
+            }
         }
         for (int count = 0; count < 36; count++) {
             iirHPositionL[count] = 0.0;
@@ -125,7 +153,7 @@ class PointyGuitar final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -136,8 +164,7 @@ class PointyGuitar final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -163,16 +190,16 @@ class PointyGuitar final : public Effect<T>
     T get_parameter_default(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return 0.6; break;
-            case kParamB: return 0.5; break;
+            case kParamA: return 0.7; break;
+            case kParamB: return 0.1; break;
             case kParamC: return 0.8; break;
             case kParamD: return 0.6; break;
             case kParamE: return 0.4; break;
-            case kParamF: return 0.5; break;
-            case kParamG: return 0.7; break;
-            case kParamH: return 0.4; break;
+            case kParamF: return 0.1; break;
+            case kParamG: return 0.8; break;
+            case kParamH: return 0.5; break;
             case kParamI: return 0.0; break;
-            case kParamJ: return 0.7; break;
+            case kParamJ: return 0.3; break;
 
             default: break;
         }
@@ -219,40 +246,42 @@ class PointyGuitar final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string(J, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-            case kParamJ: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -356,7 +385,42 @@ class PointyGuitar final : public Effect<T>
                 }
                 inputSampleL += (band * angG[9]);
                 inputSampleL *= drive;
-                inputSampleL -= fmin(fmax((inputSampleL * (fabs(inputSampleL) * 0.654) * (fabs(inputSampleL) * 0.654)), -1.0), 1.0);
+                double bip_delta = inputSampleL; // delta can be just local and re-used
+                inputSampleL = fmin(fmax(inputSampleL, -M_PI_2), M_PI_2);
+                long double X = inputSampleL;
+                X *= X; // long double for even
+                long double temp = inputSampleL * X; // the initial multiplies
+                inputSampleL -= temp * 0.16666666666666666666666666666666666;
+                temp *= X;
+                inputSampleL += temp * 0.00833333333333333333333333333333333;
+                temp *= X;
+                inputSampleL -= temp * 0.00019841269841269841269841269841269;
+                temp *= X;
+                inputSampleL += temp * 0.00000275573192239858906525573192239;
+                temp *= X;
+                inputSampleL -= temp * 0.00000002505210838544171877521083854;
+                temp *= X;
+                inputSampleL += temp * 0.00000000016059043836821614599392377;
+                temp *= X;
+                inputSampleL -= temp * 0.00000000000076471637318198164759011;
+                temp *= X;
+                inputSampleL += temp * 0.00000000000000281145725434552076319;
+                temp *= X;
+                inputSampleL -= temp * 0.00000000000000000822063524662432971;
+                temp *= X;
+                inputSampleL += temp * 0.00000000000000000001957294106339126;
+                // retain mantissa of a long double increasing power function
+                // long double probably doesn't handle more than 36 digits or so
+                bip[bip_dvLA][x] = bip_delta - inputSampleL; // these are derivatives: raw clip is position
+                bip[bip_dvLB][x] = bip[bip_pvLA][x] - bip[bip_dvLA][x];
+                bip[bip_pvLA][x] = bip[bip_dvLA][x]; // velocity
+                bip[bip_dvLC][x] = bip[bip_pvLB][x] - bip[bip_dvLB][x];
+                bip[bip_pvLB][x] = bip[bip_dvLB][x]; // acceleration
+                bip[bip_dvLD][x] = bip[bip_pvLC][x] - bip[bip_dvLC][x];
+                bip[bip_pvLC][x] = bip[bip_dvLC][x]; // jerk
+                double bip_dvE = bip[bip_pvLD][x] - bip[bip_dvLD][x];
+                bip[bip_pvLD][x] = bip[bip_dvLD][x]; // snap
+                inputSampleL *= (1.0 + (fabs(bip[bip_dvLC][x]) * 0.0618) + (fabs(bip[bip_dvLD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
             }
             if (gaterollerL < 1.0) {
                 gateL = gaterollerL;
@@ -449,7 +513,42 @@ class PointyGuitar final : public Effect<T>
                 }
                 inputSampleR += (band * angG[9]);
                 inputSampleR *= drive;
-                inputSampleR -= fmin(fmax((inputSampleR * (fabs(inputSampleR) * 0.654) * (fabs(inputSampleR) * 0.654)), -1.0), 1.0);
+                double bip_delta = inputSampleR; // delta can be just local and re-used
+                inputSampleR = fmin(fmax(inputSampleR, -M_PI_2), M_PI_2);
+                long double X = inputSampleR;
+                X *= X; // long double for even
+                long double temp = inputSampleR * X; // the initial multiplies
+                inputSampleR -= temp * 0.16666666666666666666666666666666666;
+                temp *= X;
+                inputSampleR += temp * 0.00833333333333333333333333333333333;
+                temp *= X;
+                inputSampleR -= temp * 0.00019841269841269841269841269841269;
+                temp *= X;
+                inputSampleR += temp * 0.00000275573192239858906525573192239;
+                temp *= X;
+                inputSampleR -= temp * 0.00000002505210838544171877521083854;
+                temp *= X;
+                inputSampleR += temp * 0.00000000016059043836821614599392377;
+                temp *= X;
+                inputSampleR -= temp * 0.00000000000076471637318198164759011;
+                temp *= X;
+                inputSampleR += temp * 0.00000000000000281145725434552076319;
+                temp *= X;
+                inputSampleR -= temp * 0.00000000000000000822063524662432971;
+                temp *= X;
+                inputSampleR += temp * 0.00000000000000000001957294106339126;
+                // retain mantissa of a long double increasing power function
+                // long double probably doesn't handle more than 36 digits or so
+                bip[bip_dvRA][x] = bip_delta - inputSampleR; // these are derivatives: raw clip is position
+                bip[bip_dvRB][x] = bip[bip_pvRA][x] - bip[bip_dvRA][x];
+                bip[bip_pvRA][x] = bip[bip_dvRA][x]; // velocity
+                bip[bip_dvRC][x] = bip[bip_pvRB][x] - bip[bip_dvRB][x];
+                bip[bip_pvRB][x] = bip[bip_dvRB][x]; // acceleration
+                bip[bip_dvRD][x] = bip[bip_pvRC][x] - bip[bip_dvRC][x];
+                bip[bip_pvRC][x] = bip[bip_dvRC][x]; // jerk
+                double bip_dvE = bip[bip_pvRD][x] - bip[bip_dvRD][x];
+                bip[bip_pvRD][x] = bip[bip_dvRD][x]; // snap
+                inputSampleR *= (1.0 + (fabs(bip[bip_dvRC][x]) * 0.0618) + (fabs(bip[bip_dvRD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
             }
             if (gaterollerR < 1.0) {
                 gateR = gaterollerR;
@@ -486,12 +585,17 @@ class PointyGuitar final : public Effect<T>
             fpdL ^= fpdL << 13;
             fpdL ^= fpdL >> 17;
             fpdL ^= fpdL << 5;
-            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 3.553e-44l * pow(2,expon+62));
             // frexp((double)inputSampleR, &expon);
             fpdR ^= fpdR << 13;
             fpdR ^= fpdR >> 17;
             fpdR ^= fpdR << 5;
-            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            if (fpdL - fpdR < 1073741824 || fpdR - fpdL < 1073741824) {
+                fpdR ^= fpdR << 13;
+                fpdR ^= fpdR >> 17;
+                fpdR ^= fpdR << 5;
+            }
+            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 3.553e-44l * pow(2,expon+62));
             // end 64 bit stereo floating point dither
             *out1 = inputSampleL;
             *out2 = inputSampleR;

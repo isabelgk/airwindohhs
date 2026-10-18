@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Gatelope is a special gate that applies filters."
 };
 constexpr std::string_view k_long_description{
-    "Gatelope was initially developed for Ola Sonmark, to solve the following problem: can you gate a tom mic in such a way that it rejects cymbal bleed, but lets the lows sustain longer, and then transitions into silence gracefully?It just so happens that in developing that, I also wanted to do the opposite: reject low frequency rumble and sustain the highs more. I thought it might be useful for tightening up spot mics on kick drums. And the result… does both those things, and anywhere in between, and various other effects besides. It’s existed as a secret, Mac-only, AU-only weapon for long enough. I didn’t want to wait any longer, so enjoy Gatelope now (the Mac AU build contains an extra plugin, Gatelinked, which works like the VSTs: Gatelope in AU is ‘N to N’ and meant to be used on mono tracks, and the VSTs and Gatelinked are exactly the same, but linked stereo to prevent the stereo image from going to the side randomly)The way to use Gatelope is, find the proper gating threshold with the top slider. Attack Speed might help depending on where you find that point. Then, Treble Sustain and Bass Sustain can be reduced to let the gate start gating. If you reduce Treble Sustain, it will be opening fully on an attack and then rolling off the treble as it closes. If you reduce Bass Sustain, it'll be rolling off bass as it closes. When these two roll-offs sweep past each other, your signal is gated and quiet: use the dry/wet to make the effect be at a lower ratio and let through some natural sound."
+    "Gatelope was initially developed for Ola Sonmark, to solve the following problem: can you gate a tom mic in such a way that it rejects cymbal bleed, but lets the lows sustain longer, and then transitions into silence gracefully? It just so happens that in developing that, I also wanted to do the opposite: reject low frequency rumble and sustain the highs more. I thought it might be useful for tightening up spot mics on kick drums. And the result… does both those things, and anywhere in between, and various other effects besides. It’s existed as a secret, Mac-only, AU-only weapon for long enough. I didn’t want to wait any longer, so enjoy Gatelope now (the Mac AU build contains an extra plugin, Gatelinked, which works like the VSTs: Gatelope in AU is ‘N to N’ and meant to be used on mono tracks, and the VSTs and Gatelinked are exactly the same, but linked stereo to prevent the stereo image from going to the side randomly) The way to use Gatelope is, find the proper gating threshold with the top slider. Attack Speed might help depending on where you find that point. Then, Treble Sustain and Bass Sustain can be reduced to let the gate start gating. If you reduce Treble Sustain, it will be opening fully on an attack and then rolling off the treble as it closes. If you reduce Bass Sustain, it'll be rolling off bass as it closes. When these two roll-offs sweep past each other, your signal is gated and quiet: use the dry/wet to make the effect be at a lower ratio and let through some natural sound."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Gatelope final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'gtlp';
     double iirLowpassAR;
     double iirLowpassBR;
     double iirHighpassAR;
@@ -82,22 +86,19 @@ class Gatelope final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -111,8 +112,7 @@ class Gatelope final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
             case kParamC: return 0.5; break;
@@ -126,13 +126,12 @@ class Gatelope final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "thresh"; break;
             case kParamB: return "trebsus"; break;
             case kParamC: return "basssus"; break;
             case kParamD: return "attacks"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -141,8 +140,7 @@ class Gatelope final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Thresh"; break;
             case kParamB: return "TrebSus"; break;
             case kParamC: return "BassSus"; break;
@@ -156,32 +154,32 @@ class Gatelope final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -210,8 +208,7 @@ class Gatelope final : public Effect<T>
         double highestSample;
         // this VST version comes from the AU, Gatelinked, because it's stereo.
         // if used on a mono track it'll act like the mono N to N
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -234,10 +231,8 @@ class Gatelope final : public Effect<T>
                 attackSpeed = 0.0;
             }
             // softening onset click depending on how hard we're getting it
-            if (flip)
-            {
-                if (highestSample > threshold)
-                {
+            if (flip) {
+                if (highestSample > threshold) {
                     treblefreq += attackSpeed;
                     if (treblefreq > 2.0) {
                         treblefreq = 2.0;
@@ -252,8 +247,7 @@ class Gatelope final : public Effect<T>
                     iirLowpassAR = iirLowpassBR = inputSampleR;
                     iirHighpassAR = iirHighpassBR = 0.0;
                 }
-                else
-                {
+                else {
                     treblefreq -= bassfreq;
                     treblefreq /= trebledecay;
                     treblefreq += bassfreq;
@@ -289,10 +283,8 @@ class Gatelope final : public Effect<T>
                     inputSampleR = 0.0;
                 }
             }
-            else
-            {
-                if (highestSample > threshold)
-                {
+            else {
+                if (highestSample > threshold) {
                     treblefreq += attackSpeed;
                     if (treblefreq > 2.0) {
                         treblefreq = 2.0;
@@ -307,8 +299,7 @@ class Gatelope final : public Effect<T>
                     iirLowpassAR = iirLowpassBR = inputSampleR;
                     iirHighpassAR = iirHighpassBR = 0.0;
                 }
-                else
-                {
+                else {
                     treblefreq -= bassfreq;
                     treblefreq /= trebledecay;
                     treblefreq += bassfreq;

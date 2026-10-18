@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Acceleration is an acceleration limiter that tames edge, leaves brightness."
 };
 constexpr std::string_view k_long_description{
-    "As requested, I’ve made a dedicated acceleration limiter, like the one in ToVinyl4. You don’t have to mess with Groove Wear, or highpass anything: as a result, this ends up being the ‘high end’ acceleration limiter, mastering grade and useful in situations where ToVinyl might be overkill (ToVinyl was made in an era where I still had to make ‘amazing marketable plugins with lots of features so people would pay $50 quickly before it got all pirated etc’)Ah, I remember those days ;PBut now, it’s different because Acceleration is free! AU, Mac and PC VST (stay tuned for a surprise on that front) and if you can’t pay, go ahead and use it anyway. If you can, please do because I think the usefulness of me doing this work will become increasingly obvious, and the usefulness of me opensourcing plugin code has also become increasingly obvious. And it’s brought you Acceleration, here and now.The reason to be excited about that is, Acceleration’s not a simple filter. It pretty much targets exactly the digital behavior that creates Gibb effect overshoots (the reason you often have to pad heavily limited material down to stop it being crackly and glare-y) and would probably work very well as literally an acceleration limiter for record cutting heads. But, in a largely digital world, it might be even more useful because you can feed it any old ITB mix, any weird edgy source material, and it’ll clean up the nasty digital brightness while not sounding like it’s doing anything. Check the video (it should be relatively obvious if you’ve got half decent tweeters) and try it out. The key is to not try and get the apparent volume of the highs to be less: instead, you’re going after the character, or the presentation. If highs seem to be coming forward with nasty spikey extra energy, Acceleration will fix that tonal problem without altering the basic mix balance."
+    "As requested, I’ve made a dedicated acceleration limiter, like the one in ToVinyl4. You don’t have to mess with Groove Wear, or highpass anything: as a result, this ends up being the ‘high end’ acceleration limiter, mastering grade and useful in situations where ToVinyl might be overkill (ToVinyl was made in an era where I still had to make ‘amazing marketable plugins with lots of features so people would pay $50 quickly before it got all pirated etc’) Ah, I remember those days ;P But now, it’s different because Acceleration is free! AU, Mac and PC VST (stay tuned for a surprise on that front) and if you can’t pay, go ahead and use it anyway. If you can, please do because I think the usefulness of me doing this work will become increasingly obvious, and the usefulness of me opensourcing plugin code has also become increasingly obvious. And it’s brought you Acceleration, here and now. The reason to be excited about that is, Acceleration’s not a simple filter. It pretty much targets exactly the digital behavior that creates Gibb effect overshoots (the reason you often have to pad heavily limited material down to stop it being crackly and glare-y) and would probably work very well as literally an acceleration limiter for record cutting heads. But, in a largely digital world, it might be even more useful because you can feed it any old ITB mix, any weird edgy source material, and it’ll clean up the nasty digital brightness while not sounding like it’s doing anything. Check the video (it should be relatively obvious if you’ve got half decent tweeters) and try it out. The key is to not try and get the apparent volume of the highs to be less: instead, you’re going after the character, or the presentation. If highs seem to be coming forward with nasty spikey extra energy, Acceleration will fix that tonal problem without altering the basic mix balance."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Acceleration final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'acel';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -79,19 +83,16 @@ class Acceleration final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -102,8 +103,7 @@ class Acceleration final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.32; break;
             case kParamB: return 1.0; break;
 
@@ -114,10 +114,9 @@ class Acceleration final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "limit"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -126,8 +125,7 @@ class Acceleration final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Limit"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -138,26 +136,26 @@ class Acceleration final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -182,8 +180,7 @@ class Acceleration final : public Effect<T>
         double drySampleR;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

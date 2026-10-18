@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Isolator3 is Isolator2, but on one slider, with a band-narrower control."
 };
 constexpr std::string_view k_long_description{
-    "Isolator3 is basically a request. I got asked for an isolator filter 'on one knob', which I've seen around but I've not used myself. Basically it means middle is full-range, to the left you're lowpassing and to the right you're highpassing.Turns out you need to run it as two filters because it's impossible to 'switch' the biquads inside it, from one role to the other. So you constantly run two filters one of which you can't hear the effect of.Except then there's the Q control, which does not actually control the Q of the filters. They're still steep, stacked-up filters without special resonances of their own. But when you turn up the Q slider, the cutoffs approach each other, turn into something like a bandpass on the fly. Full up, it should act a little like a resonance. To go back to full range, turn Q back down to zero and Iso to 0.5 (the middle).Lastly, this is lots and lots of filter stages all of which are smoothed for better modulation… but it's made of biquad filters, which don't like being modulated, and then it's two types of filter run into each other. I've put in safety clipping because it turns out that if you yank the control around real crazy, it's easy to get Isolator to glitch out. The glitches aren't always useful sounding but now and then it emits really weird synthetic burps and frills and so I've just made sure it can't blow up the output too bad, and then left it to its own devices. So, use Isolator3 with smooth intentional motions for traditional effects, yank it around madly if you want it to spit digits and sparks at you, have fun is the most important instruction.Hope it works as I got COVID returning from my vacation and it is heavily still with me so I've lost a bunch of steps. Not ideas, it's just that this is a good time for me to work through the backlog a bit. May or may not livestream in the upcoming week and if I do I won't be talking for eight hours at a stretch: probably won't need to go to the hospital but will check with a doctor. I'm in my space, Chris's 'hunting for ideas mountaintop' and it's no biggie for me to hole up for a few weeks. See ya again next week with something else from the backlog! :)"
+    "Isolator3 is basically a request. I got asked for an isolator filter 'on one knob', which I've seen around but I've not used myself. Basically it means middle is full-range, to the left you're lowpassing and to the right you're highpassing. Turns out you need to run it as two filters because it's impossible to 'switch' the biquads inside it, from one role to the other. So you constantly run two filters one of which you can't hear the effect of. Except then there's the Q control, which does not actually control the Q of the filters. They're still steep, stacked-up filters without special resonances of their own. But when you turn up the Q slider, the cutoffs approach each other, turn into something like a bandpass on the fly. Full up, it should act a little like a resonance. To go back to full range, turn Q back down to zero and Iso to 0.5 (the middle). Lastly, this is lots and lots of filter stages all of which are smoothed for better modulation… but it's made of biquad filters, which don't like being modulated, and then it's two types of filter run into each other. I've put in safety clipping because it turns out that if you yank the control around real crazy, it's easy to get Isolator to glitch out. The glitches aren't always useful sounding but now and then it emits really weird synthetic burps and frills and so I've just made sure it can't blow up the output too bad, and then left it to its own devices. So, use Isolator3 with smooth intentional motions for traditional effects, yank it around madly if you want it to spit digits and sparks at you, have fun is the most important instruction. Hope it works as I got COVID returning from my vacation and it is heavily still with me so I've lost a bunch of steps. Not ideas, it's just that this is a good time for me to work through the backlog a bit. May or may not livestream in the upcoming week and if I do I won't be talking for eight hours at a stretch: probably won't need to go to the hospital but will check with a doctor. I'm in my space, Chris's 'hunting for ideas mountaintop' and it's no biggie for me to hole up for a few weeks. See ya again next week with something else from the backlog! :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Isolator3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'ison';
     float A;
     float B;
     enum
@@ -61,7 +65,6 @@ class Isolator3 final : public Effect<T>
     double hiquadE[biq_total];
     double hiquadF[biq_total];
     double hiquadG[biq_total];
-
     double lastSampleL;
     double intermediateL[16];
     bool wasPosClipL;
@@ -70,7 +73,6 @@ class Isolator3 final : public Effect<T>
     double intermediateR[16];
     bool wasPosClipR;
     bool wasNegClipR;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -126,19 +128,16 @@ class Isolator3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -149,8 +148,7 @@ class Isolator3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
 
@@ -161,8 +159,7 @@ class Isolator3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "iso"; break;
             case kParamB: return "q"; break;
 
@@ -173,8 +170,7 @@ class Isolator3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Iso"; break;
             case kParamB: return "Q"; break;
 
@@ -185,26 +181,26 @@ class Isolator3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -422,8 +418,7 @@ class Isolator3 final : public Effect<T>
         hiquadG[biq_aB2] = hiquadG[biq_aB0];
         hiquadG[biq_bB1] = 2.0 * (K * K - 1.0) * norm;
         hiquadG[biq_bB2] = (1.0 - K / hiquadG[biq_reso] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Focus brings out clarity by distorting. Aggressive, subtle, flexible."
 };
 constexpr std::string_view k_long_description{
-    "Focus creates two audio paths, one of them a bandpass and the other, everything BUT the bandpass. Then, you distort what's in the bandpass, which will help the result avoid aliasing even if you're not at high sample rates. The reference to UnBox is because I wrote that one first, and then extended it into Focus. Here's the original post.What if you took UnBox, with its aliasing-resistant distortion, and revised it around a band pass? Not so much an EQ thing, more a ‘Fletcher Munson Loudness Curve’ thing, where you could zero in on just that most sensitive area, and add distortion to just that? And use the UnBox tech so you’d still have undistorted clear super-lows and highs, as much as you wanted? And set an output level so that if you DID end up driving the mids real hard, you could dial it back so that you got your focussing effect but without apparent mids boost? Or mids boost if you like, whichever. And a dry/wet on the end for added subtlety and flexibility. And then, how about if you could pick between Density, Drive, Spiral, Mojo and Dyno distortion algorithms?Here’s Focus. If you keep the Focus control real low, it’ll act like a broad-based overdrive, five different ways. Kill the Output level control, and you’ll hear what’s left over from the UnBox tech. Start to bring up Focus to about halfway, and you will rapidly start narrowing the distortion band and letting through lots more lows and highs, while also (if you turn Output back up) tightening and purifying what you distort in the mids. Focus even more, and you’ll get to where it’s an ultra-focussed mid laser that you can distort, that’ll cut through anything. if you want to start tuning it, dial Focus back: this is not about that, it’s exactly targetting the Fletcher-Munson loudness curves, think of it in terms of focussing the midrange and making it more intense. At low Focus settings, tuning it would be almost meaningless.This is ‘dial an ultimate distortion, ITB’. Even more than the ‘swiss army knife’ one I’ll likely still make later. This becomes the recommended one. It replaces Density, Drive, all versions of Spiral, etc… because its principle of operation gives you essential Airwindows distortions, using UnBox tech to resist aliasing and allow for clean bass, and because the way it’s set up you can immediately go to whatever you’re trying to achieve. Big roaring fuzzy? Density with very low Focus, or possibly Mojo. Gritty? Drive. Cleaner overdrive? Spiral. Need to clean things up but still have that pungent, fierce energy from an amazing distortion? Start increasing Focus, carefully. Trying to do an insanely focussed searing-hot distortion with high Focus but things are too saturated? Reach for Dyno and its distinctive overtones. Pretty much anything you want, in one plugin, but with very approachable controls plus you can do things like kill Output Level to quickly check how much clean audio is getting through in the highs and lows.Don’t think of it like an EQ, think of it like an extension of your ears. Whether it’s on tracks, submixes, or the 2-buss, Focus can locate anything accurately in your listeners’ attention, because we all have the same sensitivities and loudness curves to our hearing (most likely). Use with caution (unless you don’t want to!) and enjoy a real power tool for mix clarity, with Focus.(followup: the reference to 'swiss army knife' distortion is to the plugin Distortion, which is also available now)"
+    "Focus creates two audio paths, one of them a bandpass and the other, everything BUT the bandpass. Then, you distort what's in the bandpass, which will help the result avoid aliasing even if you're not at high sample rates. The reference to UnBox is because I wrote that one first, and then extended it into Focus. Here's the original post. What if you took UnBox, with its aliasing-resistant distortion, and revised it around a band pass? Not so much an EQ thing, more a ‘Fletcher Munson Loudness Curve’ thing, where you could zero in on just that most sensitive area, and add distortion to just that? And use the UnBox tech so you’d still have undistorted clear super-lows and highs, as much as you wanted? And set an output level so that if you DID end up driving the mids real hard, you could dial it back so that you got your focussing effect but without apparent mids boost? Or mids boost if you like, whichever. And a dry/wet on the end for added subtlety and flexibility. And then, how about if you could pick between Density, Drive, Spiral, Mojo and Dyno distortion algorithms? Here’s Focus. If you keep the Focus control real low, it’ll act like a broad-based overdrive, five different ways. Kill the Output level control, and you’ll hear what’s left over from the UnBox tech. Start to bring up Focus to about halfway, and you will rapidly start narrowing the distortion band and letting through lots more lows and highs, while also (if you turn Output back up) tightening and purifying what you distort in the mids. Focus even more, and you’ll get to where it’s an ultra-focussed mid laser that you can distort, that’ll cut through anything. if you want to start tuning it, dial Focus back: this is not about that, it’s exactly targetting the Fletcher-Munson loudness curves, think of it in terms of focussing the midrange and making it more intense. At low Focus settings, tuning it would be almost meaningless. This is ‘dial an ultimate distortion, ITB’. Even more than the ‘swiss army knife’ one I’ll likely still make later. This becomes the recommended one. It replaces Density, Drive, all versions of Spiral, etc… because its principle of operation gives you essential Airwindows distortions, using UnBox tech to resist aliasing and allow for clean bass, and because the way it’s set up you can immediately go to whatever you’re trying to achieve. Big roaring fuzzy? Density with very low Focus, or possibly Mojo. Gritty? Drive. Cleaner overdrive? Spiral. Need to clean things up but still have that pungent, fierce energy from an amazing distortion? Start increasing Focus, carefully. Trying to do an insanely focussed searing-hot distortion with high Focus but things are too saturated? Reach for Dyno and its distinctive overtones. Pretty much anything you want, in one plugin, but with very approachable controls plus you can do things like kill Output Level to quickly check how much clean audio is getting through in the highs and lows. Don’t think of it like an EQ, think of it like an extension of your ears. Whether it’s on tracks, submixes, or the 2-buss, Focus can locate anything accurately in your listeners’ attention, because we all have the same sensitivities and loudness curves to our hearing (most likely). Use with caution (unless you don’t want to!) and enjoy a real power tool for mix clarity, with Focus. (followup: the reference to 'swiss army knife' distortion is to the plugin Distortion, which is also available now)"
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Focus final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'focs';
     double figureL[9];
     double figureR[9];
     uint32_t fpdL;
@@ -66,22 +70,19 @@ class Focus final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -95,8 +96,7 @@ class Focus final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -110,13 +110,12 @@ class Focus final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "boost"; break;
             case kParamB: return "focus"; break;
             case kParamC: return "mode"; break;
             case kParamD: return "output"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -125,8 +124,7 @@ class Focus final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Boost"; break;
             case kParamB: return "Focus"; break;
             case kParamC: return "Mode"; break;
@@ -140,32 +138,42 @@ class Focus final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 12.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC:
+                switch ((VstInt32)(C * 4.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Density", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Drive", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Spiral", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Mojo", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Dyno", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -175,7 +183,7 @@ class Focus final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
+        //[0] is frequency: 0.000001 to 0.499999 is nearVal-zero to nearVal-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         double boost = pow(10.0, (A * 12.0) / 20.0);
         figureL[0] = figureR[0] = 3515.775 / Effect<T>::getSampleRate(); // fixed frequency, 3.515775k
@@ -189,8 +197,7 @@ class Focus final : public Effect<T>
         figureL[4] = figureR[4] = -figureR[2];
         figureL[5] = figureR[5] = 2.0 * (K * K - 1.0) * norm;
         figureL[6] = figureR[6] = (1.0 - K / figureR[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -232,8 +239,7 @@ class Focus final : public Effect<T>
             double groundSampleR = drySampleR - inputSampleR; // set up UnBox
             inputSampleL *= boost; // now, focussed area gets cranked before distort
             inputSampleR *= boost; // now, focussed area gets cranked before distort
-            switch (mode)
-            {
+            switch (mode) {
                 case 0: // Density
                     if (inputSampleL > 1.570796326794897) {
                         inputSampleL = 1.570796326794897;

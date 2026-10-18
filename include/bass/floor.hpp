@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Floor is fake bottom octave for fun and profit!"
 };
 constexpr std::string_view k_long_description{
-    "So this is one of those weird ‘considered harmful’ plugins… the ‘Don’t do this’ plugins. I don’t really advocate for this one as I don’t entirely approve: it’s kind of like some of the loudenators in that respect, and indeed it has similar characteristics.Floor does an odd thing that’s like trying to synthesize fake harmonics related to the real bass content, to make you think there’s a lower octave there when there isn’t. It might not be the most perfect implementation of this (I understand there’s a Waves plugin that does this type of processing and I think I must have modeled it on that) but it’s the Airwindows take on reverse-engineering that type of processing, while knowing nothing but the desired effect and the general category of what’s happening.This means it’s now part of the open source toolkit and can find its way into other stuff: here’s hoping real bass continues to be a thing (honestly, so much of what I do with Airwindows serves to improve linearity in the tiny micro-modulations that help us hear extended bass as a satisfying, resonant thing) even with an expanded toolkit around these frequencies. A lot of my recent work around DubSub and BassKit has been about introducing extended bass frequencies in a desirable way. I could’ve tacked the Floor algorithm onto there, and I decided that wasn’t good to do.Why would you want to do fake bass?Because you can get more loudness out of it. (also, maybe you’re just doing something interesting with tonalities, or exploiting the algorithm to make a different sound…) Mostly, it’s just about making it seem like you can go louder with the same content. It’s not really the same, it’s altered, but it’s simulating/faking the effect of an extended bottom octave and restricting the ‘swing’ of those frequencies so they cover the smaller range taken up by a higher frequency, because they’re really NOT the extended frequencies anymore, just some rearranged energy trying to pretend it’s deep bass. (I’m not sure how Floor will work as a DC blocker for RawConsole5 fans: seems like it might have undesirable effects? How do you even fake DC energy?)"
+    "So this is one of those weird ‘considered harmful’ plugins… the ‘Don’t do this’ plugins. I don’t really advocate for this one as I don’t entirely approve: it’s kind of like some of the loudenators in that respect, and indeed it has similar characteristics. Floor does an odd thing that’s like trying to synthesize fake harmonics related to the real bass content, to make you think there’s a lower octave there when there isn’t. It might not be the most perfect implementation of this (I understand there’s a Waves plugin that does this type of processing and I think I must have modeled it on that) but it’s the Airwindows take on reverse-engineering that type of processing, while knowing nothing but the desired effect and the general category of what’s happening. This means it’s now part of the open source toolkit and can find its way into other stuff: here’s hoping real bass continues to be a thing (honestly, so much of what I do with Airwindows serves to improve linearity in the tiny micro-modulations that help us hear extended bass as a satisfying, resonant thing) even with an expanded toolkit around these frequencies. A lot of my recent work around DubSub and BassKit has been about introducing extended bass frequencies in a desirable way. I could’ve tacked the Floor algorithm onto there, and I decided that wasn’t good to do. Why would you want to do fake bass? Because you can get more loudness out of it. (also, maybe you’re just doing something interesting with tonalities, or exploiting the algorithm to make a different sound…) Mostly, it’s just about making it seem like you can go louder with the same content. It’s not really the same, it’s altered, but it’s simulating/faking the effect of an extended bottom octave and restricting the ‘swing’ of those frequencies so they cover the smaller range taken up by a higher frequency, because they’re really NOT the extended frequencies anymore, just some rearranged energy trying to pretend it’s deep bass. (I’m not sure how Floor will work as a DC blocker for RawConsole5 fans: seems like it might have undesirable effects? How do you even fake DC energy?)"
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Floor final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'flor';
     bool flip; // end defining of antialiasing variables
     double iirSample1AL;
     double iirSample1BL;
@@ -96,20 +100,17 @@ class Floor final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -121,8 +122,7 @@ class Floor final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -134,11 +134,10 @@ class Floor final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "floor"; break;
             case kParamB: return "drive"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -147,8 +146,7 @@ class Floor final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Floor"; break;
             case kParamB: return "Drive"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -160,28 +158,28 @@ class Floor final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -212,8 +210,7 @@ class Floor final : public Effect<T>
             iirAmount = 1.0;
         }
         double wet = C;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

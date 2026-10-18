@@ -11,36 +11,39 @@ constexpr std::string_view k_short_description{
     "Monitoring2 is Monitoring, but with Dark as the wordlength reducer."
 };
 constexpr std::string_view k_long_description{
-    "Here’s a little update for users of Monitoring! Monitoring is the end-of-2-buss plugin that allows you to check your mix in lots of different ways. You can get 24 or 16 bit output out of it (as in, direct to CD format for saving as 16 bit), lots of reference sounds like SubsOnly, SlewOnly, PeaksOnly that will let you hear your mix in a very different way (if it’s way out of balance when you can only hear the deepest subs, or the brightest highs, you can re-adjust things.) PeaksOnly shows you a fake and unnatural sound that will enhance the inaudible peak energy and highlight anything that might be too loud because it’s heavy on peak energy. You’ve got four variations on Cans for headphone mixing (which gives you crossfeed in the form of allpassed, blurred audio a bit like what PeaksOnly does), you’ve got mono and side checks, narrowed-bandwidth checks like Aurat (including one-side mono versions to more closely resemble use of a real mono mix-check speaker) and even utilities like VoiceTrick, which gives you mono with one speaker out of phase: position a mic exactly between the speakers and you can lay vocal tracks without headphones if you need to (not perfect, but it should work).In short, Monitoring, but with one little change. Everything is the same, but now Monitoring2 uses Airwindows Dark for the wordlength reducer. This is different from the original Not Just Another Dither, in that it will give you deeper blacks in your silences and darker, warmer tones than the original NJAD would do. Dark is not really a dither: it makes its choices (for wordlength reducing) based only on what will create less hiss, noise and highs in the final output. This won’t be right for everybody, and is subtle no matter who you are, but it might be just the thing if you have a retro aesthetic, are into the whole cassette-release scene, or just want to produce music that sounds as unlike the modern DAW scene as you can get."
+    "Here’s a little update for users of Monitoring! Monitoring is the end-of-2-buss plugin that allows you to check your mix in lots of different ways. You can get 24 or 16 bit output out of it (as in, direct to CD format for saving as 16 bit), lots of reference sounds like SubsOnly, SlewOnly, PeaksOnly that will let you hear your mix in a very different way (if it’s way out of balance when you can only hear the deepest subs, or the brightest highs, you can re-adjust things.) PeaksOnly shows you a fake and unnatural sound that will enhance the inaudible peak energy and highlight anything that might be too loud because it’s heavy on peak energy. You’ve got four variations on Cans for headphone mixing (which gives you crossfeed in the form of allpassed, blurred audio a bit like what PeaksOnly does), you’ve got mono and side checks, narrowed-bandwidth checks like Aurat (including one-side mono versions to more closely resemble use of a real mono mix-check speaker) and even utilities like VoiceTrick, which gives you mono with one speaker out of phase: position a mic exactly between the speakers and you can lay vocal tracks without headphones if you need to (not perfect, but it should work). In short, Monitoring, but with one little change. Everything is the same, but now Monitoring2 uses Airwindows Dark for the wordlength reducer. This is different from the original Not Just Another Dither, in that it will give you deeper blacks in your silences and darker, warmer tones than the original NJAD would do. Dark is not really a dither: it makes its choices (for wordlength reducing) based only on what will create less hiss, noise and highs in the final output. This won’t be right for everybody, and is subtle no matter who you are, but it might be just the thing if you have a retro aesthetic, are into the whole cassette-release scene, or just want to produce music that sounds as unlike the modern DAW scene as you can get."
 };
 constexpr std::string_view k_tags{
     "utility"
 };
 
-enum
-{
-    kDKAD,
-    kDKCD,
-    kPEAK,
-    kSLEW,
-    kSUBS,
-    kMONO,
-    kSIDE,
-    kVINYL,
-    kAURAT,
-    kMONORAT,
-    kMONOLAT,
-    kPHONE,
-    kCANSA,
-    kCANSB,
-    kCANSC,
-    kCANSD,
-    kTRICK,
-};
-
 template <typename T>
 class Monitoring2 final : public Effect<T>
 {
+    enum
+    {
+        kDKAD,
+        kDKCD,
+        kPEAK,
+        kSLEW,
+        kSUBS,
+        kMONO,
+        kSIDE,
+        kVINYL,
+        kAURAT,
+        kMONORAT,
+        kMONOLAT,
+        kPHONE,
+        kCANSA,
+        kCANSB,
+        kCANSC,
+        kCANSD,
+        kTRICK,
+    };
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'monj';
     enum
     {
         fix_freq,
@@ -58,10 +61,8 @@ class Monitoring2 final : public Effect<T>
     };
     double biquad[fix_total];
     // Bandpasses
-
     float darkSampleL[100];
     float darkSampleR[100];
-
     double aL[1503], bL[1503], cL[1503], dL[1503];
     double aR[1503], bR[1503], cR[1503], dR[1503];
     int ax, bx, cx, dx;
@@ -73,18 +74,15 @@ class Monitoring2 final : public Effect<T>
     double iirSampleQL, iirSampleRL, iirSampleSL;
     double iirSampleTL, iirSampleUL, iirSampleVL;
     double iirSampleWL, iirSampleXL, iirSampleYL, iirSampleZL;
-
     double iirSampleAR, iirSampleBR, iirSampleCR, iirSampleDR, iirSampleER, iirSampleFR, iirSampleGR;
     double iirSampleHR, iirSampleIR, iirSampleJR, iirSampleKR, iirSampleLR, iirSampleMR, iirSampleNR, iirSampleOR, iirSamplePR;
     double iirSampleQR, iirSampleRR, iirSampleSR;
     double iirSampleTR, iirSampleUR, iirSampleVR;
     double iirSampleWR, iirSampleXR, iirSampleYR, iirSampleZR; // o/`
     // SubsOnly
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
 
   public:
@@ -189,18 +187,15 @@ class Monitoring2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -210,8 +205,7 @@ class Monitoring2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -221,8 +215,7 @@ class Monitoring2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "monitor"; break;
 
             default: break;
@@ -232,8 +225,7 @@ class Monitoring2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Monitor"; break;
 
             default: break;
@@ -243,24 +235,46 @@ class Monitoring2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 16.999)) // 0 to almost edge of # of params
+                {
+                    case kDKAD: vst_strncpy(text, "Out24", kVstMaxParamStrLen); break;
+                    case kDKCD: vst_strncpy(text, "Out16", kVstMaxParamStrLen); break;
+                    case kPEAK: vst_strncpy(text, "Peaks", kVstMaxParamStrLen); break;
+                    case kSLEW: vst_strncpy(text, "Slew", kVstMaxParamStrLen); break;
+                    case kSUBS: vst_strncpy(text, "Subs", kVstMaxParamStrLen); break;
+                    case kMONO: vst_strncpy(text, "Mono", kVstMaxParamStrLen); break;
+                    case kSIDE: vst_strncpy(text, "Side", kVstMaxParamStrLen); break;
+                    case kVINYL: vst_strncpy(text, "Vinyl", kVstMaxParamStrLen); break;
+                    case kAURAT: vst_strncpy(text, "Aurat", kVstMaxParamStrLen); break;
+                    case kMONORAT: vst_strncpy(text, "MonoRat", kVstMaxParamStrLen); break;
+                    case kMONOLAT: vst_strncpy(text, "MonoLat", kVstMaxParamStrLen); break;
+                    case kPHONE: vst_strncpy(text, "Phone", kVstMaxParamStrLen); break;
+                    case kCANSA: vst_strncpy(text, "Cans A", kVstMaxParamStrLen); break;
+                    case kCANSB: vst_strncpy(text, "Cans B", kVstMaxParamStrLen); break;
+                    case kCANSC: vst_strncpy(text, "Cans C", kVstMaxParamStrLen); break;
+                    case kCANSD: vst_strncpy(text, "Cans D", kVstMaxParamStrLen); break;
+                    case kTRICK: vst_strncpy(text, "V Trick", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -304,8 +318,7 @@ class Monitoring2 final : public Effect<T>
         biquad[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         biquad[fix_b2] = (1.0 - K / biquad[fix_reso] + K * K) * norm;
         // for Bandpasses
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -321,8 +334,7 @@ class Monitoring2 final : public Effect<T>
             fpdR ^= fpdR >> 17;
             fpdR ^= fpdR << 5;
             // we need to make our dither run up here, there's no spot on the end to do it
-            switch (processing)
-            {
+            switch (processing) {
                 case kDKAD:
                 case kDKCD:
                     break;
@@ -1173,7 +1185,7 @@ class Monitoring2 final : public Effect<T>
                     // a darkened Midiverb-style allpass, which is stretching the previous one even more
                     inputSampleL *= 0.25;
                     inputSampleR *= 0.25;
-                    // for all versions of Cans the second level of bloom is this far down
+                    // for all versions of Cans the second level of bloom is this farVal down
                     // and, remains on the opposite speaker rather than crossing again to the original side
                     drySampleL += inputSampleR;
                     drySampleR += inputSampleL; // add the crossfeed and very faint extra verbyness

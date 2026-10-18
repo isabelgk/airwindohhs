@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Ensemble is a weird flangey little modulation effect."
 };
 constexpr std::string_view k_long_description{
-    "Here’s a further experiment along the lines of Chorus and ChorusEnsemble! This one is more in the ‘unique because it’s kind of lame’ category. I like being able to do this sort of thing, because in this 2017 plugin business, everything you do has to be the hippest trendiest most popular thing or you’re basically doomed to get squished like a bug.But hey! I’m doing a Patreon, not a ‘business’ of selling ‘hit plugins’ that are ‘the best plugins’. And therefore, nothing’s stopping me from putting out something that’s not an emulation of some famous hardware manufacturer’s property (and putting them out of business, eventually). My stuff doesn’t have to be the target market for what people have learned to want the most over the years (often for good reason). Heck, my plugins don’t have to have a reason! And most importantly, my plugins don’t have to succeed. They can exist (and be updated, etc) even if only a few people out there like them… or even if unpopular people like them.Kind of punk, or something (stay tuned for some major DIY Airwindows stuff coming down the pike along those lines).So, here’s Ensemble. It’s a weird, unique little sound. It was meant to be a big pad thickener with great richness and depth. Well, you can throw on a bunch of bass, but it’s more like ‘cheesey string ensemble synthesizer from the 70s’, and that by accident, so it’s not even a specific (branded!) string ensemble synthesizer from the 70s. It’s kind of an annoying sound, I think.It’s free, so if you think you might have use for that, have fun with it! I’m off to make something else :)"
+    "Here’s a further experiment along the lines of Chorus and ChorusEnsemble! This one is more in the ‘unique because it’s kind of lame’ category. I like being able to do this sort of thing, because in this 2017 plugin business, everything you do has to be the hippest trendiest most popular thing or you’re basically doomed to get squished like a bug. But hey! I’m doing a Patreon, not a ‘business’ of selling ‘hit plugins’ that are ‘the best plugins’. And therefore, nothing’s stopping me from putting out something that’s not an emulation of some famous hardware manufacturer’s property (and putting them out of business, eventually). My stuff doesn’t have to be the target market for what people have learned to want the most over the years (often for good reason). Heck, my plugins don’t have to have a reason! And most importantly, my plugins don’t have to succeed. They can exist (and be updated, etc) even if only a few people out there like them… or even if unpopular people like them. Kind of punk, or something (stay tuned for some major DIY Airwindows stuff coming down the pike along those lines). So, here’s Ensemble. It’s a weird, unique little sound. It was meant to be a big pad thickener with great richness and depth. Well, you can throw on a bunch of bass, but it’s more like ‘cheesey string ensemble synthesizer from the 70s’, and that by accident, so it’s not even a specific (branded!) string ensemble synthesizer from the 70s. It’s kind of an annoying sound, I think. It’s free, so if you think you might have use for that, have fun with it! I’m off to make something else :)"
 };
 constexpr std::string_view k_tags{
     "ambience"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Ensemble final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'ensm';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -88,21 +92,18 @@ class Ensemble final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -115,8 +116,7 @@ class Ensemble final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -129,12 +129,11 @@ class Ensemble final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "ensemble"; break;
             case kParamB: return "fullness"; break;
             case kParamC: return "brighten"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -143,8 +142,7 @@ class Ensemble final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Ensemble"; break;
             case kParamB: return "Fullness"; break;
             case kParamC: return "Brighten"; break;
@@ -157,30 +155,30 @@ class Ensemble final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(floor((A * 46.0) + 2.9), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "vox"; break;
-            case kParamB: return " "; break;
-            case kParamC: return " "; break;
-            case kParamD: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "vox", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -216,15 +214,13 @@ class Ensemble final : public Effect<T>
         double drySampleL;
         double drySampleR;
         // now we'll precalculate some stuff that needn't be in every sample
-        for (count = 1; count <= taps; count++)
-        {
+        for (count = 1; count <= taps; count++) {
             start[count] = depth * count;
             sinoffset[count] = hapi * (count - 1);
             speed[count] = spd / (1 + (count / taps));
         }
         // that's for speeding up things in the sample-processing area
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -275,8 +271,7 @@ class Ensemble final : public Effect<T>
             dL[count + 32767] = dL[count] = tempL = inputSampleL;
             dR[count + 32767] = dR[count] = tempR = inputSampleR;
             // double buffer
-            for (ensemble = 1; ensemble <= taps; ensemble++)
-            {
+            for (ensemble = 1; ensemble <= taps; ensemble++) {
                 offset = start[ensemble] + (depth * sin(sweep[ensemble] + sinoffset[ensemble]));
                 floffset = offset - floor(offset);
                 count = gcount + (int)floor(offset);

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BassKit is centered bass reinforcement with subs fill. Clean and controllable."
 };
 constexpr std::string_view k_long_description{
-    "This is much like DubSub or DubCenter, except it’s strictly mono bass and is designed to be super controllable. The controls are simplified and kind of optimized so only good-sounding results come out. You need to have good subwoofers (or use SubsOnly to test) to use the Sub output, otherwise you may not be able to hear what you’re doing as it’s much deeper and more filtered than you get with most DubSub patches (the filters are somewhat rearranged).The Bass reinforcement works like if you were using the head bump in ToTape, except it’s mono-only so it will only reinforce usefully. Because BassKit is meant for mastering and 2-buss duties, and not the full range of madness available in DubSub/DubCenter, it uses the bass and sub augmentation ONLY as additions to dry: never ‘wet only’. You can exaggerate it, but the intention is to make it easy to add bass and subs in a sensible, controlled way. I hope it proves useful, and I know it will be more well-behaved than DubSub in case that one was too unmanageable for normal use :)"
+    "This is much like DubSub or DubCenter, except it’s strictly mono bass and is designed to be super controllable. The controls are simplified and kind of optimized so only good-sounding results come out. You need to have good subwoofers (or use SubsOnly to test) to use the Sub output, otherwise you may not be able to hear what you’re doing as it’s much deeper and more filtered than you get with most DubSub patches (the filters are somewhat rearranged). The Bass reinforcement works like if you were using the head bump in ToTape, except it’s mono-only so it will only reinforce usefully. Because BassKit is meant for mastering and 2-buss duties, and not the full range of madness available in DubSub/DubCenter, it uses the bass and sub augmentation ONLY as additions to dry: never ‘wet only’. You can exaggerate it, but the intention is to make it easy to add bass and subs in a sensible, controlled way. I hope it proves useful, and I know it will be more well-behaved than DubSub in case that one was too unmanageable for normal use :)"
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BassKit final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bskt';
     double iirDriveSampleA;
     double iirDriveSampleB;
     double iirDriveSampleC;
@@ -147,21 +151,18 @@ class BassKit final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -174,8 +175,7 @@ class BassKit final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -188,8 +188,7 @@ class BassKit final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drive"; break;
             case kParamB: return "voicing"; break;
             case kParamC: return "bassout"; break;
@@ -202,8 +201,7 @@ class BassKit final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drive"; break;
             case kParamB: return "Voicing"; break;
             case kParamC: return "BassOut"; break;
@@ -216,30 +214,30 @@ class BassKit final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string((D * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -264,8 +262,7 @@ class BassKit final : public Effect<T>
         double SubOutGain = ((D * 2.0) - 1.0) * fabs(((D * 2.0) - 1.0)) * 4.0;
         double clamp = 0.0;
         double fuzz = 0.111;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -287,12 +284,11 @@ class BassKit final : public Effect<T>
             if (oscGate < 0) {
                 oscGate = 0;
             }
-            // got a value that only goes down low when there's silence or near silence on input
+            // got a value that only goes down low when there's silence or nearVal silence on input
             clamp = 1.0 - oscGate;
             clamp *= 0.00001;
             // set up the thing to choke off oscillations- belt and suspenders affair
-            if (ataLowpass > 0)
-            {
+            if (ataLowpass > 0) {
                 if (WasNegative) {
                     SubOctave = !SubOctave;
                 }
@@ -350,8 +346,7 @@ class BassKit final : public Effect<T>
             ataLowpass -= iirSampleU;
             iirSampleV = (iirSampleV * (1.0 - iirAmount)) + (ataLowpass * iirAmount);
             ataLowpass -= iirSampleV;
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     iirHeadBumpA += (ataLowpass * BassGain);
                     iirHeadBumpA -= (iirHeadBumpA * iirHeadBumpA * iirHeadBumpA * HeadBumpFreq);
@@ -404,8 +399,7 @@ class BassKit final : public Effect<T>
             if (SubOctave == false) {
                 SubBump = -SubBump;
             }
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     iirSubBumpA += SubBump; // * BassGain);
                     iirSubBumpA -= (iirSubBumpA * iirSubBumpA * iirSubBumpA * HeadBumpFreq);

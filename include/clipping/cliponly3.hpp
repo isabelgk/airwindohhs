@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ClipOnly3 is just plain stinkin' loud."
 };
 constexpr std::string_view k_long_description{
-    "Turns out you can go harder than ClipOnly2, through the power of noise!This plugin takes an idea currently rocking its way through bass music loudenation, the idea of covering up the sound of hardclipping through using noise, and runs in a completely different direction with it, to substantially upgrade ClipOnly while still not working quite the same as anything else.There's still the ClipOnly behavior of softening the onsets and exits from clipping. Still the total not-changing of any sample below the threshold. Still an ability to not add edgy digital glare to clipped highs like cymbals.But now, delicately clipped stuff gets a delicate tinge of noise. Hitting the clip harder begins to produce more noise… and then as you blow past that limit in turn, the noise gets replaced with purely hard clipping to a greater and greater extent, so that hyper-slamming restricts the noise part to only the onset and departure edges of the clips. And then there's an intersample peaking stage that was put in to deal with super-high-frequency test tones, which lets the maximum clip amplitude go insanely high without triggering analog peaking.So, like all ClipOnly, it's a tiny featureless plugin that will pass most audio untouched. It's just that when you slam it, there's practically no limit to what you can get away with. It's a clipper, so if you need a limiter this is probably not for you. But if you already knew you were going to be getting some clipping, or if your sounds mask it, or if you were just looking for total meltdown… have fun :)"
+    "Turns out you can go harder than ClipOnly2, through the power of noise! This plugin takes an idea currently rocking its way through bass music loudenation, the idea of covering up the sound of hardclipping through using noise, and runs in a completely different direction with it, to substantially upgrade ClipOnly while still not working quite the same as anything else. There's still the ClipOnly behavior of softening the onsets and exits from clipping. Still the total not-changing of any sample below the threshold. Still an ability to not add edgy digital glare to clipped highs like cymbals. But now, delicately clipped stuff gets a delicate tinge of noise. Hitting the clip harder begins to produce more noise… and then as you blow past that limit in turn, the noise gets replaced with purely hard clipping to a greater and greater extent, so that hyper-slamming restricts the noise part to only the onset and departure edges of the clips. And then there's an intersample peaking stage that was put in to deal with super-high-frequency test tones, which lets the maximum clip amplitude go insanely high without triggering analog peaking. So, like all ClipOnly, it's a tiny featureless plugin that will pass most audio untouched. It's just that when you slam it, there's practically no limit to what you can get away with. It's a clipper, so if you need a limiter this is probably not for you. But if you already knew you were going to be getting some clipping, or if your sounds mask it, or if you were just looking for total meltdown… have fun :)"
 };
 constexpr std::string_view k_tags{
     "clipping"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ClipOnly3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'clo3';
     double lastSampleL;
     double intermediateL[18];
     double slewL[34];
@@ -69,9 +73,8 @@ class ClipOnly3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -113,20 +116,22 @@ class ClipOnly3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

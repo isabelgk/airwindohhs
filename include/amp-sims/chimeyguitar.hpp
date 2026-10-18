@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ChimeyGuitar is a supremely compressible instrument amp."
 };
 constexpr std::string_view k_long_description{
-    "Here's a followup to PointyGuitar. What if, instead of distort, the imaginary amp compressed?The tone stack works the same: in fact, it's exactly as it was in PointyGuitar, as is the cab simulation (a highpass and lowpass made out of AngleEQ, which is able to be very resonant and colorful). That's on purpose. I want it to be familiar, so the way the tone shaping works is exactly like PointyGuitar, and if you can dial one in, you can dial the other.But instead of the basic distortion as found in 'FireAmp', what's there? BeziComp. Not even a normal compressor, no, it's the new experimental one that turns the amplification factor into a Bezier curve… but BeziComp has one instance of itself in play. ChimeyGuitar?ChimeyGuitar has eight, at full crank.Stacking compressors like this isn't unheard of: the FMR Really Nice Compressor has 'Super Nice' mode, which cascades three compressors in series. It's just that ChimeyGuitar does eight, of a new design which I don't think existed until I started it. That also means it's on me to sort out what the strengths and weaknesses of this new kind of compression are, seeing as we have as many as eight of them in between every EQ stage now.First, it can react very quickly, but refuses to alias since it will not apply a volume 'corner' above its minimum radius. This matters less used inside ChimeyGuitar because plugins like this repeatedly filter out aliasing harmonics anyhow, but it's significant because usually as you have compression kick in you hear continued interaction between the sound, and the speed of attack. That lets you dial in a squished, unvarying sound by hearing that overtone as if it was a form of distortion (which it is), but BeziComp and ChimeyGuitar don't have any of that compression artifact at all.Instead, you'll hear an odd warble when you push ChimeyGuitar too far. It's similar to when you're using DeRez3: while Bezier curves can sound like a brickwall filter, there's an strange resonance associated with it. In a compressor, when pushed hard, we hear this as tremblings of the loudness, as if trying to squish the signal makes it more jittery. It can come off like an old Arp Pro Soloist trying to imitate a trombone, but the thing to bear in mind is that you can always back off the Compres control until it cleans up again. The transparency of BeziComp means it'll clean up a whole bunch while still being compressed.This is my go-to for articulate guitars and basses that don't seem to have saturation or distortion. It's got the flexibility of PointyGuitar, but super clean, or with strange new forms of saturation that are like derezzing. Hope you like it!"
+    "Here's a followup to PointyGuitar. What if, instead of distort, the imaginary amp compressed? The tone stack works the same: in fact, it's exactly as it was in PointyGuitar, as is the cab simulation (a highpass and lowpass made out of AngleEQ, which is able to be very resonant and colorful). That's on purpose. I want it to be familiar, so the way the tone shaping works is exactly like PointyGuitar, and if you can dial one in, you can dial the other. But instead of the basic distortion as found in 'FireAmp', what's there? BeziComp. Not even a normal compressor, no, it's the new experimental one that turns the amplification factor into a Bezier curve… but BeziComp has one instance of itself in play. ChimeyGuitar? ChimeyGuitar has eight, at full crank. Stacking compressors like this isn't unheard of: the FMR Really Nice Compressor has 'Super Nice' mode, which cascades three compressors in series. It's just that ChimeyGuitar does eight, of a new design which I don't think existed until I started it. That also means it's on me to sort out what the strengths and weaknesses of this new kind of compression are, seeing as we have as many as eight of them in between every EQ stage now. First, it can react very quickly, but refuses to alias since it will not apply a volume 'corner' above its minimum radius. This matters less used inside ChimeyGuitar because plugins like this repeatedly filter out aliasing harmonics anyhow, but it's significant because usually as you have compression kick in you hear continued interaction between the sound, and the speed of attack. That lets you dial in a squished, unvarying sound by hearing that overtone as if it was a form of distortion (which it is), but BeziComp and ChimeyGuitar don't have any of that compression artifact at all. Instead, you'll hear an odd warble when you push ChimeyGuitar too far. It's similar to when you're using DeRez3: while Bezier curves can sound like a brickwall filter, there's an strange resonance associated with it. In a compressor, when pushed hard, we hear this as tremblings of the loudness, as if trying to squish the signal makes it more jittery. It can come off like an old Arp Pro Soloist trying to imitate a trombone, but the thing to bear in mind is that you can always back off the Compres control until it cleans up again. The transparency of BeziComp means it'll clean up a whole bunch while still being compressed. This is my go-to for articulate guitars and basses that don't seem to have saturation or distortion. It's got the flexibility of PointyGuitar, but super clean, or with strange new forms of saturation that are like derezzing. Hope you like it!"
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ChimeyGuitar final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cgtr';
     float A;
     float B;
     float C;
@@ -135,7 +139,7 @@ class ChimeyGuitar final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -146,8 +150,7 @@ class ChimeyGuitar final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -229,40 +232,42 @@ class ChimeyGuitar final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string(J, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-            case kParamJ: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

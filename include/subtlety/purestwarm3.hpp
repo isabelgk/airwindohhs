@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PurestWarm3 is a subtle tone shaper and warmth adder."
 };
 constexpr std::string_view k_long_description{
-    "It's been some years since PurestWarm saw any attention. It's always been a bit tricky: proper second harmonic distortion is 'warmth' but it's very hard to hear. But that's just the start of it…Every version of PurestWarm ever (OK, so that's just the original and v2) has had a flaw that I didn't fully understand in 2022, and have come to respect. Freya Holmer's video on spline continuity tipped me off, but I learned about it years earlier with an ill-fated Channel 'upgrade' that I had to roll back as if it was 'New Coke'. People respond to sudden changes in derivatives even when the waveform seems to have perfectly good continuity.The crossover through zero in an audio waveform counts.So, the previous versions of PurestWarm do an abrupt switch between 'dry' and 'effect' at the zero cross. That's nearly as bad as what a sine does (abruptly changing from positive to negative curvature at zero) and even though it's fairly hard to hear the largely even harmonics this produces, it's still a limited approach. And so, PurestWarm3 is here… but what's it doing that's different?An odd little use of 'FMA' (fused multiply-add) to produce a super high resolution version of a continuous asymmetrical distortion. One that can scale up and down to produce more or less of an effect. One that's already been heard in RetroBass, in ChannelX… now you've got it standalone, in a stripped-down and minimal plugin that only does that one thing.And it's so much purer and smoother than even the previous two, that you damn near can't hear it at all.That's the trouble with these. PurestWarm3 actually throws two harmonics, a second and a fourth. It doesn't matter much, you still can barely hear it. I've set it up so it can be exaggerated wildly, just to be heard. The challenge there (not present with the previous two) is, this is a continuous algorithm. It just reshapes everything. So what it takes from one side of the wave, it adds as peakiness to the other side, and so it will distort enthusiastically if you push it too hard, and then if you don't push it too hard you kinda can't hear what it's doing, much.Add to that the same derivative BIP tech I've been developing, and it really really stays out of the way sonically. A puzzle.So, this is not really a 'slather on thicc warmth!' effect. If you have sounds that are already asymmetrical, such as certain basses, it can reshape those to ironically make them LESS warm but cleaner. Or, you can exaggerate the effect and make it more striking. Push it too far and you're messing with a kind of expansion that won't play nicely with mixing.I hope to make use of this in a future console plugin where it'll convey the exaggerated transient spikes of certain late-70s noise reduction, so it's not like there's no use for it. Just don't expect an 'EQ-like' activity out of PurestWarm. It is rearranging energy, almost losslessly, to be a subtly different shape, and leaving next to no trace it was ever there. To some of you, this might be of great interest if that got your attention…"
+    "It's been some years since PurestWarm saw any attention. It's always been a bit tricky: proper second harmonic distortion is 'warmth' but it's very hard to hear. But that's just the start of it… Every version of PurestWarm ever (OK, so that's just the original and v2) has had a flaw that I didn't fully understand in 2022, and have come to respect. Freya Holmer's video on spline continuity tipped me off, but I learned about it years earlier with an ill-fated Channel 'upgrade' that I had to roll back as if it was 'New Coke'. People respond to sudden changes in derivatives even when the waveform seems to have perfectly good continuity. The crossover through zero in an audio waveform counts. So, the previous versions of PurestWarm do an abrupt switch between 'dry' and 'effect' at the zero cross. That's nearly as bad as what a sine does (abruptly changing from positive to negative curvature at zero) and even though it's fairly hard to hear the largely even harmonics this produces, it's still a limited approach. And so, PurestWarm3 is here… but what's it doing that's different? An odd little use of 'FMA' (fused multiply-add) to produce a super high resolution version of a continuous asymmetrical distortion. One that can scale up and down to produce more or less of an effect. One that's already been heard in RetroBass, in ChannelX… now you've got it standalone, in a stripped-down and minimal plugin that only does that one thing. And it's so much purer and smoother than even the previous two, that you damn near can't hear it at all. That's the trouble with these. PurestWarm3 actually throws two harmonics, a second and a fourth. It doesn't matter much, you still can barely hear it. I've set it up so it can be exaggerated wildly, just to be heard. The challenge there (not present with the previous two) is, this is a continuous algorithm. It just reshapes everything. So what it takes from one side of the wave, it adds as peakiness to the other side, and so it will distort enthusiastically if you push it too hard, and then if you don't push it too hard you kinda can't hear what it's doing, much. Add to that the same derivative BIP tech I've been developing, and it really really stays out of the way sonically. A puzzle. So, this is not really a 'slather on thicc warmth!' effect. If you have sounds that are already asymmetrical, such as certain basses, it can reshape those to ironically make them LESS warm but cleaner. Or, you can exaggerate the effect and make it more striking. Push it too far and you're messing with a kind of expansion that won't play nicely with mixing. I hope to make use of this in a future console plugin where it'll convey the exaggerated transient spikes of certain late-70s noise reduction, so it's not like there's no use for it. Just don't expect an 'EQ-like' activity out of PurestWarm. It is rearranging energy, almost losslessly, to be a subtly different shape, and leaving next to no trace it was ever there. To some of you, this might be of great interest if that got your attention…"
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -76,18 +76,15 @@ class PurestWarm3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -97,8 +94,7 @@ class PurestWarm3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -108,8 +104,7 @@ class PurestWarm3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "asym"; break;
 
             default: break;
@@ -119,8 +114,7 @@ class PurestWarm3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Asym"; break;
 
             default: break;
@@ -130,24 +124,24 @@ class PurestWarm3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -158,8 +152,7 @@ class PurestWarm3 final : public Effect<T>
         T* out2 = outputs[1];
 
         double asym = (A - 0.5) * 8.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

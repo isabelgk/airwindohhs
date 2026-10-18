@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Pop3 is the dynamics from ConsoleX."
 };
 constexpr std::string_view k_long_description{
-    "As I work on all the things that go into ConsoleX, now and then it becomes useful to give you a little preview. Pop3 is like that. It's the latest Airwindows compressor, but also gate, this time.I hope it's pretty simple to understand, because in ConsoleX you get two of them per channel/buss, one for the Fire band and one for the Stone band. (if needed, I'll put out a StoneFire compressor to help you practice that). In this case, it's a fullrange dynamics processor tailored to my needs with ConsoleX.For the compression section, Threshold brings down the squish. It doesn't use makeup gain, so you use it to restrain the sound. Attack and Release work as you'd expect, though Pop3 runs a new sense circuit that's very transparent in action. The Ratio control is simply a dry/wet: if you have signals peaking really hot, over 0dB, you'll have to set Ratio to 0 to truly bypass the compression. Since this'll be available in multiple places on multiple bands it's designed to be more a 'glue' type, though you can run audio really hot into it in order to get an exaggerated result. In the final version you use the Stone and Fire controls to boost post-compression if you want.The gate section had to be designed into Pop3, like it is in ConsoleX. It triggers off the uncompressed signal, so whatever you do with compression has no effect. It uses its own threshold (coming up from zero) with a release that goes from slow to brutally fast, and a handy Sustain control which stretches out the gating to control whether it's sputtery or crisp. This gate is good at tightening things up, especially with the sustain feature there as a primary control, and again: works totally independently of the compressor, so you can sculpt those dynamics (or put percussive bumps on things using the gate ratio to dial in the spike and then blend it with the regular signal) and then shape your primary audio to make it more squishy. I found that just kicking in the compressor slightly gives a huge change in texture compared to only using the gate.I wanted it to be extremely approachable because you deal with two of them in parallel in ConsoleX, and not even with a normal crossover, instead with multiple Kalman filters and a set of parametrics that bypass all the compression (but which are in fact gated, but the different parametrics and the Air band respond to different gates).The glimpse of ConsoleX interface is only a rough draft: in particular, I gotta add user control over whether that 3D effect is on the knobs at top and bottom. Some people will prefer it flat, some will like the extra room provided by some of the knobs being seen edge-on. Also I have a lot of work to do on the dynamic positioning and reflowing of controls, perhaps with some divider lines to help highlight which knobs went where. Suffice to say, all my days and all my attention are focussed on this now, and I hope it comes out (right now it's not running properly in my DAW Reaper, so there's bugfixing too)Talk to ya later, and I hope you enjoy the chance to come to grips with Pop3."
+    "As I work on all the things that go into ConsoleX, now and then it becomes useful to give you a little preview. Pop3 is like that. It's the latest Airwindows compressor, but also gate, this time. I hope it's pretty simple to understand, because in ConsoleX you get two of them per channel/buss, one for the Fire band and one for the Stone band. (if needed, I'll put out a StoneFire compressor to help you practice that). In this case, it's a fullrange dynamics processor tailored to my needs with ConsoleX. For the compression section, Threshold brings down the squish. It doesn't use makeup gain, so you use it to restrain the sound. Attack and Release work as you'd expect, though Pop3 runs a new sense circuit that's very transparent in action. The Ratio control is simply a dry/wet: if you have signals peaking really hot, over 0dB, you'll have to set Ratio to 0 to truly bypass the compression. Since this'll be available in multiple places on multiple bands it's designed to be more a 'glue' type, though you can run audio really hot into it in order to get an exaggerated result. In the final version you use the Stone and Fire controls to boost post-compression if you want. The gate section had to be designed into Pop3, like it is in ConsoleX. It triggers off the uncompressed signal, so whatever you do with compression has no effect. It uses its own threshold (coming up from zero) with a release that goes from slow to brutally fast, and a handy Sustain control which stretches out the gating to control whether it's sputtery or crisp. This gate is good at tightening things up, especially with the sustain feature there as a primary control, and again: works totally independently of the compressor, so you can sculpt those dynamics (or put percussive bumps on things using the gate ratio to dial in the spike and then blend it with the regular signal) and then shape your primary audio to make it more squishy. I found that just kicking in the compressor slightly gives a huge change in texture compared to only using the gate. I wanted it to be extremely approachable because you deal with two of them in parallel in ConsoleX, and not even with a normal crossover, instead with multiple Kalman filters and a set of parametrics that bypass all the compression (but which are in fact gated, but the different parametrics and the Air band respond to different gates). The glimpse of ConsoleX interface is only a rough draft: in particular, I gotta add user control over whether that 3D effect is on the knobs at top and bottom. Some people will prefer it flat, some will like the extra room provided by some of the knobs being seen edge-on. Also I have a lot of work to do on the dynamic positioning and reflowing of controls, perhaps with some divider lines to help highlight which knobs went where. Suffice to say, all my days and all my attention are focussed on this now, and I hope it comes out (right now it's not running properly in my DAW Reaper, so there's bugfixing too) Talk to ya later, and I hope you enjoy the chance to come to grips with Pop3."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Pop3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'popf';
     float A;
     float B;
     float C;
@@ -75,8 +79,7 @@ class Pop3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -85,15 +88,13 @@ class Pop3 final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -110,8 +111,7 @@ class Pop3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -128,16 +128,15 @@ class Pop3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "thresld"; break;
-            case kParamB: return "c ratio"; break;
-            case kParamC: return "c atk"; break;
-            case kParamD: return "c rls"; break;
+            case kParamB: return "cratio"; break;
+            case kParamC: return "catk"; break;
+            case kParamD: return "crls"; break;
             case kParamE: return "thresld"; break;
-            case kParamF: return "g ratio"; break;
-            case kParamG: return "g sust"; break;
-            case kParamH: return "g rls"; break;
+            case kParamF: return "gratio"; break;
+            case kParamG: return "gsust"; break;
+            case kParamH: return "grls"; break;
 
             default: break;
         }
@@ -146,8 +145,7 @@ class Pop3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Thresld"; break;
             case kParamB: return "C Ratio"; break;
             case kParamC: return "C Atk"; break;
@@ -164,38 +162,38 @@ class Pop3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -216,8 +214,7 @@ class Pop3 final : public Effect<T>
         double gateRatio = 1.0 - pow(1.0 - F, 2);
         double gateSustain = M_PI_2 * pow(G + 1.0, 4.0);
         double gateRelease = 1.0 / (((pow(H, 5) * 500000.0) + 500.0) * overallscale);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

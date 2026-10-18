@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Pressure4 is a compressor adjustable between vari-mu and ‘new york’ peak-retaining behaviors."
 };
 constexpr std::string_view k_long_description{
-    "What can I even say? This is the golden ear favorite. Version 4 brings new functionality that has never existed in Pressure before: the stereo version (default for VST, and the Audio Unit that doesn’t specifically say ‘Mono’) uses a special linked mode based on diade bridges in hardware compressors. That’s not to say that it is ‘analog modeling’ because it isn’t. From the beginning, Pressure has been made out of a lucky algorithm with a particular organic, pleasing quality, and part of Pressure4 is knowing what to strip down, how to simplify that algorithm until it lets all the music through.But then, when you explore the way Pressure4 squishes up depending on how hard you drive it, and then start listening to the textures of different speed control settings and what that does, and then begin exploring what the ‘µ-iness’ control does… and it turns out that each one of those things gives specific and controllable shapings of the sound, but in ways very difficult to put into words, yet you can learn what it does and make the plugin do what you intend even if it’s tough to articulate exactly what you’re going for…This is why we turn to odd little tools like this. The whole character of Pressure4 can change with tiny adjustments of the controls. It can do about twelve wholly distinct things when set up right, but they’re all inherent in that one curiously simple, but chaotically strange, algorithm. And now the linked stereo form of Pressure does all that with a naturalness and fluidity never before seen with this plugin."
+    "What can I even say? This is the golden ear favorite. Version 4 brings new functionality that has never existed in Pressure before: the stereo version (default for VST, and the Audio Unit that doesn’t specifically say ‘Mono’) uses a special linked mode based on diade bridges in hardware compressors. That’s not to say that it is ‘analog modeling’ because it isn’t. From the beginning, Pressure has been made out of a lucky algorithm with a particular organic, pleasing quality, and part of Pressure4 is knowing what to strip down, how to simplify that algorithm until it lets all the music through. But then, when you explore the way Pressure4 squishes up depending on how hard you drive it, and then start listening to the textures of different speed control settings and what that does, and then begin exploring what the ‘µ-iness’ control does… and it turns out that each one of those things gives specific and controllable shapings of the sound, but in ways very difficult to put into words, yet you can learn what it does and make the plugin do what you intend even if it’s tough to articulate exactly what you’re going for… This is why we turn to odd little tools like this. The whole character of Pressure4 can change with tiny adjustments of the controls. It can do about twelve wholly distinct things when set up right, but they’re all inherent in that one curiously simple, but chaotically strange, algorithm. And now the linked stereo form of Pressure does all that with a naturalness and fluidity never before seen with this plugin."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Pressure4 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'prs4';
     double muVary;
     double muAttack;
     double muNewSpeed;
@@ -72,21 +76,23 @@ class Pressure4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
-            case kParamC: C = value; break;
-            case kParamD: D = value; break;
-
-            default: break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
+            case kParamC: C = value; break; // this is the popup, stored as a float
+            case kParamD: D = value; break; // this is the popup, stored as a float
+            default: break; // unknown parameter, shouldn't happen!
         }
+        // we can also set other defaults here, and do calculations that only have to happen
+        // once when parameters actually change. Here is the 'popup' setting its (global) values.
+        // variables can also be set in the processreplacing loop, and there they'll be set every buffersize
+        // here they're set when a parameter's actually changed, which should be less frequent, but
+        // you must use global variables in the Pressure4.h file to do it.
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -99,8 +105,7 @@ class Pressure4 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.2; break;
             case kParamC: return 1.0; break;
@@ -113,12 +118,11 @@ class Pressure4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "pressure"; break;
             case kParamB: return "speed"; break;
             case kParamC: return "mewiness"; break;
-            case kParamD: return "output gain"; break;
+            case kParamD: return "outputgain"; break;
 
             default: break;
         }
@@ -127,8 +131,7 @@ class Pressure4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Pressure"; break;
             case kParamB: return "Speed"; break;
             case kParamC: return "Mewiness"; break;
@@ -141,39 +144,43 @@ class Pressure4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break; // also display 0-1 as percent
+            case kParamC: float2string((C * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return " "; break;
-            case kParamC: return " "; break;
-            case kParamD: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
     {
+        T* in1 = inputs[0];
+        T* in2 = inputs[1];
+        T* out1 = outputs[0];
+        T* out2 = outputs[1];
+
         T* inputL = inputs[0];
         T* inputR = inputs[1];
         T* outputL = outputs[0];
         T* outputR = outputs[1];
-
         double overallscale = 1.0;
         overallscale /= 44100.0;
         overallscale *= Effect<T>::getSampleRate();
@@ -191,13 +198,11 @@ class Pressure4 final : public Effect<T>
         double unmewiness;
         double outputGain = D;
         bool positivemu;
-        if (mewiness >= 0)
-        {
+        if (mewiness >= 0) {
             positivemu = true;
             unmewiness = 1.0 - mewiness;
         }
-        else
-        {
+        else {
             positivemu = false;
             mewiness = -mewiness;
             unmewiness = 1.0 - mewiness;
@@ -205,8 +210,7 @@ class Pressure4 final : public Effect<T>
         // µ µ µ µ µ µ µ µ µ µ µ µ is the kitten song o/~
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *inputL;
             inputSampleR = *inputR;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -223,25 +227,20 @@ class Pressure4 final : public Effect<T>
             }
             // we will take the greater of either channel and just use that, then apply the result
             // to both stereo channels.
-            if (flip)
-            {
-                if (inputSense > threshold)
-                {
+            if (flip) {
+                if (inputSense > threshold) {
                     muVary = threshold / inputSense;
                     muAttack = sqrt(fabs(muSpeedA));
                     muCoefficientA = muCoefficientA * (muAttack - 1.0);
-                    if (muVary < threshold)
-                    {
+                    if (muVary < threshold) {
                         muCoefficientA = muCoefficientA + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientA = muCoefficientA + muVary;
                     }
                     muCoefficientA = muCoefficientA / muAttack;
                 }
-                else
-                {
+                else {
                     muCoefficientA = muCoefficientA * ((muSpeedA * muSpeedA) - 1.0);
                     muCoefficientA = muCoefficientA + 1.0;
                     muCoefficientA = muCoefficientA / (muSpeedA * muSpeedA);
@@ -250,25 +249,20 @@ class Pressure4 final : public Effect<T>
                 muNewSpeed = muNewSpeed + fabs(inputSense * release) + fastest;
                 muSpeedA = muNewSpeed / muSpeedA;
             }
-            else
-            {
-                if (inputSense > threshold)
-                {
+            else {
+                if (inputSense > threshold) {
                     muVary = threshold / inputSense;
                     muAttack = sqrt(fabs(muSpeedB));
                     muCoefficientB = muCoefficientB * (muAttack - 1);
-                    if (muVary < threshold)
-                    {
+                    if (muVary < threshold) {
                         muCoefficientB = muCoefficientB + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientB = muCoefficientB + muVary;
                     }
                     muCoefficientB = muCoefficientB / muAttack;
                 }
-                else
-                {
+                else {
                     muCoefficientB = muCoefficientB * ((muSpeedB * muSpeedB) - 1.0);
                     muCoefficientB = muCoefficientB + 1.0;
                     muCoefficientB = muCoefficientB / (muSpeedB * muSpeedB);
@@ -278,8 +272,7 @@ class Pressure4 final : public Effect<T>
                 muSpeedB = muNewSpeed / muSpeedB;
             }
             // got coefficients, adjusted speeds
-            if (flip)
-            {
+            if (flip) {
                 if (positivemu) {
                     coefficient = pow(muCoefficientA, 2);
                 }
@@ -290,8 +283,7 @@ class Pressure4 final : public Effect<T>
                 inputSampleL *= coefficient;
                 inputSampleR *= coefficient;
             }
-            else
-            {
+            else {
                 if (positivemu) {
                     coefficient = pow(muCoefficientB, 2);
                 }

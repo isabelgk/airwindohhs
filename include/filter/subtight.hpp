@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SubTight uses a variation on the Creature algorithm to tighten sub-lows."
 };
 constexpr std::string_view k_long_description{
-    "So here's another interesting little tool that's not been seen before.Creature has a special mode where you can set the dry/wet to 'inverse', cancelling out what the algorithm produces. It's a soft slew clipper, not a normal algorithm or a simple filter, so what it cancels isn't easily controllable. However, for the most part it darkens and distorts the sound, and then when you stack up multiple poles of it, it becomes uncontrollable, particularly as frequency drops.So, in theory, you could use it as an increasingly steep lowpass… and subtract it from dry, to make something that acts like a highpass.The thing is, it's not really increasingly steep, not at all. And it's not even a lowpass, because its behavior is so dynamics-dependent. But it's not a saturation (or anti-saturation) either, because it's slew that's being softclipped, not amplitude. This is why I initially released it believing it shouldn't be scaled by sample rate: it's a very odd sort of processing.Having put out a Redux version that applies corrections to make it consistent across sample rates, what do we get? SubTight does NOT get steeper as you increase the 'steep' control, unless you think of it as 'low settings are pretty weak tea, and cranking it up gets you a much stronger and more intense brew'.What you'll get is a behavior: as you increase the trim on SubTight, the weakness and flabbiness will get sucked out of the bass. With very low Steep settings it's pretty across the board, really. It's not hyping the highs so much as it is pulling softness and 'glue' out of all the frequencies, more as it goes lower. Super nonlinear, super tricky to interpret, but dramatic and energetic.As you increase Steepness, it gets more aggressive about this. It's like you're defining a little 'nega-zone' inside the bass and the solidness of the sound, and then making it vanish, so the transients hit with full power from a more silent, empty backdrop. Probably handy on spot drum mics in general, where you'd use gating to make them punch more! The farther you push Steep, the more it tries to refine that 'empty space' down into a tiny intense core at the center of the sub-bass… but it will continue to affect everything, because it's not a filter and Steep isn't a crossover. It's sort of a strength control. I've generally got my use out of it between 0.2 and 0.4, but I provide more extreme settings because of course I do that, you should know me by now ;)I admit this is still a strange plugin, but hopefully it is both more adaptable and better explained now. If it's no use to you directly, you may still appreciate the way it brings a distinct lifelike sound to ConsoleMC, and other things like that :)"
+    "So here's another interesting little tool that's not been seen before. Creature has a special mode where you can set the dry/wet to 'inverse', cancelling out what the algorithm produces. It's a soft slew clipper, not a normal algorithm or a simple filter, so what it cancels isn't easily controllable. However, for the most part it darkens and distorts the sound, and then when you stack up multiple poles of it, it becomes uncontrollable, particularly as frequency drops. So, in theory, you could use it as an increasingly steep lowpass… and subtract it from dry, to make something that acts like a highpass. The thing is, it's not really increasingly steep, not at all. And it's not even a lowpass, because its behavior is so dynamics-dependent. But it's not a saturation (or anti-saturation) either, because it's slew that's being softclipped, not amplitude. This is why I initially released it believing it shouldn't be scaled by sample rate: it's a very odd sort of processing. Having put out a Redux version that applies corrections to make it consistent across sample rates, what do we get? SubTight does NOT get steeper as you increase the 'steep' control, unless you think of it as 'low settings are pretty weak tea, and cranking it up gets you a much stronger and more intense brew'. What you'll get is a behavior: as you increase the trim on SubTight, the weakness and flabbiness will get sucked out of the bass. With very low Steep settings it's pretty across the board, really. It's not hyping the highs so much as it is pulling softness and 'glue' out of all the frequencies, more as it goes lower. Super nonlinear, super tricky to interpret, but dramatic and energetic. As you increase Steepness, it gets more aggressive about this. It's like you're defining a little 'nega-zone' inside the bass and the solidness of the sound, and then making it vanish, so the transients hit with full power from a more silent, empty backdrop. Probably handy on spot drum mics in general, where you'd use gating to make them punch more! The farther you push Steep, the more it tries to refine that 'empty space' down into a tiny intense core at the center of the sub-bass… but it will continue to affect everything, because it's not a filter and Steep isn't a crossover. It's sort of a strength control. I've generally got my use out of it between 0.2 and 0.4, but I provide more extreme settings because of course I do that, you should know me by now ;) I admit this is still a strange plugin, but hopefully it is both more adaptable and better explained now. If it's no use to you directly, you may still appreciate the way it brings a distinct lifelike sound to ConsoleMC, and other things like that :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SubTight final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sbtg';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -57,19 +61,16 @@ class SubTight final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -80,8 +81,7 @@ class SubTight final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.3; break;
             case kParamB: return 0.5; break;
 
@@ -92,8 +92,7 @@ class SubTight final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "trim"; break;
             case kParamB: return "steep"; break;
 
@@ -104,8 +103,7 @@ class SubTight final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Trim"; break;
             case kParamB: return "Steep"; break;
 
@@ -116,26 +114,26 @@ class SubTight final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -155,8 +153,7 @@ class SubTight final : public Effect<T>
         double subTrim = pow((A * 0.3) + (pow(B, 2) * 0.2), subStages) / overallscale;
         // to use this as an analog modeler for restricting digital lows, find set values that still show bass
         // Note that this is best used sparingly, on the 'not enough subtraction' side of the node.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

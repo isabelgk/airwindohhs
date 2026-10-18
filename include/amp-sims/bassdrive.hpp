@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BassDrive is an old secret weapon, like a kind of bass amp."
 };
 constexpr std::string_view k_long_description{
-    "There was this plugin called BassDrive… and it was a secret weapon. It was unlike any Airwindows plugin because it ran on painfully hard-coded biquad filter code, looked up from calculators online: which also meant it was locked to 44.1K (at least, to get the expected behavior). But it was also unlike anyone else’s plugin of that nature, because it used lots of Airwindows overdrive inside it. The controls seemed to say normal EQ things like ‘bass, mid, treble’, but they didn’t give you those things, they gave you funny bands voiced in a weird way.And this is because it was the eccentric Airwindows way of trying to mimic the SansAmp Bass DI. Not the pedal form… the rackmount RBI version.The weird part is I ended up not liking that one (I came to prefer the pedal-form VT Bass) but before I got rid of it, I’d gone and shaped biquad filters to its voicings. But then, I implemented them strangely (note the intense notch at 10K, not present in the real one!) and made ’em overdrive a lot more. So it’s a lot LIKE a SansAmp RBI, but then again it’s totally not because it turned into its own thing.And then, even though this could be used for bass guitars, I started to hear about how it was working as a secret weapon on heavy guitar sounds…So this is exactly how the ‘secret weapon’ plugin was. It’s the blast from the past, now also available for Mac, Windows and Linux VST. And I know how eccentric it is, but sometimes that’s the point. I’m working on a bunch of stuff that’s meant to be normal (or at least flexible). This ain’t. It’s just weird. If you hate it, it’s not getting any better, abandon it with a clear conscience. On the other hand if its dark magic speaks to you… then hey, enjoy the new weapon. And rest assured that people who need good behavior out of their plugins will not be finding your secret, because BassDrive will scare them away first."
+    "There was this plugin called BassDrive… and it was a secret weapon. It was unlike any Airwindows plugin because it ran on painfully hard-coded biquad filter code, looked up from calculators online: which also meant it was locked to 44.1K (at least, to get the expected behavior). But it was also unlike anyone else’s plugin of that nature, because it used lots of Airwindows overdrive inside it. The controls seemed to say normal EQ things like ‘bass, mid, treble’, but they didn’t give you those things, they gave you funny bands voiced in a weird way. And this is because it was the eccentric Airwindows way of trying to mimic the SansAmp Bass DI. Not the pedal form… the rackmount RBI version. The weird part is I ended up not liking that one (I came to prefer the pedal-form VT Bass) but before I got rid of it, I’d gone and shaped biquad filters to its voicings. But then, I implemented them strangely (note the intense notch at 10K, not present in the real one!) and made ’em overdrive a lot more. So it’s a lot LIKE a SansAmp RBI, but then again it’s totally not because it turned into its own thing. And then, even though this could be used for bass guitars, I started to hear about how it was working as a secret weapon on heavy guitar sounds… So this is exactly how the ‘secret weapon’ plugin was. It’s the blast from the past, now also available for Mac, Windows and Linux VST. And I know how eccentric it is, but sometimes that’s the point. I’m working on a bunch of stuff that’s meant to be normal (or at least flexible). This ain’t. It’s just weird. If you hate it, it’s not getting any better, abandon it with a clear conscience. On the other hand if its dark magic speaks to you… then hey, enjoy the new weapon. And rest assured that people who need good behavior out of their plugins will not be finding your secret, because BassDrive will scare them away first."
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BassDrive final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bsdr';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -70,8 +74,7 @@ class BassDrive final : public Effect<T>
         C = 0.5;
         D = 0.5;
         E = 0.5;
-        for (int fcount = 0; fcount < 7; fcount++)
-        {
+        for (int fcount = 0; fcount < 7; fcount++) {
             presenceInAL[fcount] = 0.0;
             presenceOutAL[fcount] = 0.0;
             highInAL[fcount] = 0.0;
@@ -129,22 +132,19 @@ class BassDrive final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -158,8 +158,7 @@ class BassDrive final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -173,8 +172,7 @@ class BassDrive final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "presnce"; break;
             case kParamB: return "high"; break;
             case kParamC: return "mid"; break;
@@ -188,8 +186,7 @@ class BassDrive final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Presnce"; break;
             case kParamB: return "High"; break;
             case kParamC: return "Mid"; break;
@@ -203,32 +200,32 @@ class BassDrive final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -246,8 +243,7 @@ class BassDrive final : public Effect<T>
         double low = D / 4.0;
         double drive = E * 2.0;
         double bridgerectifier;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -258,8 +254,7 @@ class BassDrive final : public Effect<T>
             }
             sumL = 0.0;
             sumR = 0.0;
-            if (flip)
-            {
+            if (flip) {
                 presenceInAL[0] = presenceInAL[1];
                 presenceInAL[1] = presenceInAL[2];
                 presenceInAL[2] = presenceInAL[3];
@@ -503,8 +498,7 @@ class BassDrive final : public Effect<T>
                 sumR += lowOutAR[6];
                 // low section R
             }
-            else
-            {
+            else {
                 presenceInBL[0] = presenceInBL[1];
                 presenceInBL[1] = presenceInBL[2];
                 presenceInBL[2] = presenceInBL[3];

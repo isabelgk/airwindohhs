@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PodcastDeluxe is a pile of compressors (curve style) and phase rotators."
 };
 constexpr std::string_view k_long_description{
-    "PodcastDeluxe is the precursor to curve, along with its counterpart Podcast. Both of them have five curve-like compressors in series (slightly less refined), but PodcastDeluxe has five phase rotators and an ADClip-style output stage. The idea is that it would be radio station style processing. The reason it didn’t show up sooner is that it didn’t really work to my satisfaction. It’s still not perfect, but it’s different! I demonstrate it on house-type music, and on raw drums. It’s not really clean, not really dirty, not really squish-capable thanks to the curve-style compression (even five stages doesn’t give you ‘compression pumping’) but it’ll give a perhaps interesting, definitely processed-sounding effect.Maybe you’ll like it on a mix because you’re not fussy about distorting, maybe you’ll find some useful place for it elsewhere. I think it’s got a knack for high-impact drum busses without distorting them too obviously. At any rate, there’s nothing quite like it. Enjoy!"
+    "PodcastDeluxe is the precursor to curve, along with its counterpart Podcast. Both of them have five curve-like compressors in series (slightly less refined), but PodcastDeluxe has five phase rotators and an ADClip-style output stage. The idea is that it would be radio station style processing. The reason it didn’t show up sooner is that it didn’t really work to my satisfaction. It’s still not perfect, but it’s different! I demonstrate it on house-type music, and on raw drums. It’s not really clean, not really dirty, not really squish-capable thanks to the curve-style compression (even five stages doesn’t give you ‘compression pumping’) but it’ll give a perhaps interesting, definitely processed-sounding effect. Maybe you’ll like it on a mix because you’re not fussy about distorting, maybe you’ll find some useful place for it elsewhere. I think it’s got a knack for high-impact drum busses without distorting them too obviously. At any rate, there’s nothing quite like it. Enjoy!"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PodcastDeluxe final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'podd';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -110,18 +114,15 @@ class PodcastDeluxe final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -131,8 +132,7 @@ class PodcastDeluxe final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -142,8 +142,7 @@ class PodcastDeluxe final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "boost"; break;
 
             default: break;
@@ -153,8 +152,7 @@ class PodcastDeluxe final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Boost"; break;
 
             default: break;
@@ -164,24 +162,24 @@ class PodcastDeluxe final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -214,8 +212,7 @@ class PodcastDeluxe final : public Effect<T>
         double invsoft = 0.56;
         double outsoft = 0.545;
         double trigger;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -504,40 +501,32 @@ class PodcastDeluxe final : public Effect<T>
                 inputSampleR /= compress;
             }
             // Begin L ADClip
-            if (lastSampleL >= refclip)
-            {
-                if (inputSampleL < refclip)
-                {
+            if (lastSampleL >= refclip) {
+                if (inputSampleL < refclip) {
                     lastSampleL = (outsoft + (inputSampleL * softness));
                 }
                 else {
                     lastSampleL = refclip;
                 }
             }
-            if (lastSampleL <= -refclip)
-            {
-                if (inputSampleL > -refclip)
-                {
+            if (lastSampleL <= -refclip) {
+                if (inputSampleL > -refclip) {
                     lastSampleL = (-outsoft + (inputSampleL * softness));
                 }
                 else {
                     lastSampleL = -refclip;
                 }
             }
-            if (inputSampleL > refclip)
-            {
-                if (lastSampleL < refclip)
-                {
+            if (inputSampleL > refclip) {
+                if (lastSampleL < refclip) {
                     inputSampleL = (invsoft + (lastSampleL * softness));
                 }
                 else {
                     inputSampleL = refclip;
                 }
             }
-            if (inputSampleL < -refclip)
-            {
-                if (lastSampleL > -refclip)
-                {
+            if (inputSampleL < -refclip) {
+                if (lastSampleL > -refclip) {
                     inputSampleL = (-invsoft + (lastSampleL * softness));
                 }
                 else {
@@ -546,40 +535,32 @@ class PodcastDeluxe final : public Effect<T>
             }
             // Completed L ADClip
             // Begin R ADClip
-            if (lastSampleR >= refclip)
-            {
-                if (inputSampleR < refclip)
-                {
+            if (lastSampleR >= refclip) {
+                if (inputSampleR < refclip) {
                     lastSampleR = (outsoft + (inputSampleR * softness));
                 }
                 else {
                     lastSampleR = refclip;
                 }
             }
-            if (lastSampleR <= -refclip)
-            {
-                if (inputSampleR > -refclip)
-                {
+            if (lastSampleR <= -refclip) {
+                if (inputSampleR > -refclip) {
                     lastSampleR = (-outsoft + (inputSampleR * softness));
                 }
                 else {
                     lastSampleR = -refclip;
                 }
             }
-            if (inputSampleR > refclip)
-            {
-                if (lastSampleR < refclip)
-                {
+            if (inputSampleR > refclip) {
+                if (lastSampleR < refclip) {
                     inputSampleR = (invsoft + (lastSampleR * softness));
                 }
                 else {
                     inputSampleR = refclip;
                 }
             }
-            if (inputSampleR < -refclip)
-            {
-                if (lastSampleR > -refclip)
-                {
+            if (inputSampleR < -refclip) {
+                if (lastSampleR > -refclip) {
                     inputSampleR = (-invsoft + (lastSampleR * softness));
                 }
                 else {

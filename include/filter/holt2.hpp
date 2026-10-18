@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Holt2 is a bass-cab-like resonant lowpass filter."
 };
 constexpr std::string_view k_long_description{
-    "Holt2 extends what I did with Holt, to produce an astonishing effect like Aura for bass.How is this? Simple: Holt is a method you can use in Excel for predicting sales figures based on trends. It basically uses two variables each of which chase each other to try and cut through the noise of realworld data and produce useful predictive results. My friend from the livestream thought it might make a lowpass that was more fuzzy in tonality. It did not do that thing.Instead, I got something like a low-frequency version of Aura: a resonant lowpass like a synth filter with huge control over the extreme lows. I had to do weird things to get it to track fairly consistently over different resonance settings, because the Holt method doesn’t really have anything like that at all: turning it into a synth filter is strictly my deal. So is the multipole arrangement: this thing morphs seamlessly from no poles (dry) to eight poles (48 dB per octave) with intense resonance or no resonance at all, based on how you set it.The changes from the original Holt are, it's got more poles of filtering, and no longer has the Spiral soft-clip built in. So, if you're incautious with this it might blow stuff up real good. It won't quite self-resonate but it sure throws out a lot of resonance, which is sometimes just the ticket for making amplike tones out of beefy sounds.I'm going to be using this as a go-to bass sound, which makes use of DI bass immediately less studio-y. It'll also handle automation nicely (except the Poles control doesn't like to be automated) opening up modern electronic music effects on what might seem like a set-and-forget bass amp. But since there's the dry/wet control, you might also find Holt2 just the ticket for taking guitar sounds (either real or plugin) and throwing thunderous cab weight behind them. Dial in the desired huge rumbling low-end, and then go all dry, crank the output level and sneak in just enough of the super-lows to expand your guitar tone. It might also find other uses: let me know if anything really clicks for you!"
+    "Holt2 extends what I did with Holt, to produce an astonishing effect like Aura for bass. How is this? Simple: Holt is a method you can use in Excel for predicting sales figures based on trends. It basically uses two variables each of which chase each other to try and cut through the noise of realworld data and produce useful predictive results. My friend from the livestream thought it might make a lowpass that was more fuzzy in tonality. It did not do that thing. Instead, I got something like a low-frequency version of Aura: a resonant lowpass like a synth filter with huge control over the extreme lows. I had to do weird things to get it to track fairly consistently over different resonance settings, because the Holt method doesn’t really have anything like that at all: turning it into a synth filter is strictly my deal. So is the multipole arrangement: this thing morphs seamlessly from no poles (dry) to eight poles (48 dB per octave) with intense resonance or no resonance at all, based on how you set it. The changes from the original Holt are, it's got more poles of filtering, and no longer has the Spiral soft-clip built in. So, if you're incautious with this it might blow stuff up real good. It won't quite self-resonate but it sure throws out a lot of resonance, which is sometimes just the ticket for making amplike tones out of beefy sounds. I'm going to be using this as a go-to bass sound, which makes use of DI bass immediately less studio-y. It'll also handle automation nicely (except the Poles control doesn't like to be automated) opening up modern electronic music effects on what might seem like a set-and-forget bass amp. But since there's the dry/wet control, you might also find Holt2 just the ticket for taking guitar sounds (either real or plugin) and throwing thunderous cab weight behind them. Dial in the desired huge rumbling low-end, and then go all dry, crank the output level and sneak in just enough of the super-lows to expand your guitar tone. It might also find other uses: let me know if anything really clicks for you!"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Holt2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'holu';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -124,22 +128,19 @@ class Holt2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -153,8 +154,7 @@ class Holt2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -168,13 +168,12 @@ class Holt2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "freq"; break;
             case kParamB: return "reso"; break;
             case kParamC: return "poles"; break;
             case kParamD: return "output"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -183,8 +182,7 @@ class Holt2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Freq"; break;
             case kParamB: return "Reso"; break;
             case kParamC: return "Poles"; break;
@@ -198,32 +196,32 @@ class Holt2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 8.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -304,8 +302,7 @@ class Holt2 final : public Effect<T>
         // which lets you fall through to simpler processing at lower settings.
         double gain = D;
         double wet = E;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

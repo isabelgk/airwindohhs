@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PhaseNudge is a phase rotator/allpass filter."
 };
 constexpr std::string_view k_long_description{
-    "Here’s a simple little utility plugin, Airwindows-ized. Except, it seems like this isn’t part of typical DAWs and plugin collections. Can’t see why, it’s a pretty basic tool.In radio, there was the need for a phase rotator, to make waveforms more symmetrical for loudness maximizing. In reverbs, you get a thing called an allpass filter (a kind of feedback delay at a specific calibration) which diffuses the sound so it can be fed to delay banks and seem more spatial. Turns out these are the same basic thing! It’s also in phase shifters (mixing the phase-shifted part against dry, or inverse dry).What happens? When you use an allpass filter, what you get is all the frequencies exactly as loud as they were before, but the phases of the frequencies are all different. Specifically, lows get delayed relative to the highs producing an effect where tones are ‘smeared’ across a time stretch, even though the spectral contents are exactly the same. The frequency information’s unaltered (nothing’s out of tune or darkened/brightened) but there’s a blur, possibly a large blur. PhaseNudge is set up to produce delays from really short (normal for a phase rotator) to unusually long, in case you’d like to treat it as a kind of slapback/echo effect.The calibration of PhaseNudge is finer than you usually find in an allpass: 0.618 is the customary number but when I see that I think ‘golden ratio’, so that’s what PhaseNudge is using, to very high accuracy. Also, PhaseNudge uses a variation on the operating principle of Console to expand and deepen the sound. Though typical allpasses use very short delays, I think PhaseNudge does its thing quite well across a broad range of delays. Anywhere you need a ‘defocus’ or ‘blur’ plugin, PhaseNudge should come in handy, whether it’s diffuse pads, overly pointy percussive elements, or even the effects loop of a lead guitar sound (phase shifters have been used for decades, to make the textures of leads more fluid before they hit the actual amp. You’ve heard this on ‘Eruption’ and may not have even known it, because it’s very subtle there)This is a real fundamental building-block tool in digital audio, and if DAW makers will not include it as part of standard equipment, I will. ;)"
+    "Here’s a simple little utility plugin, Airwindows-ized. Except, it seems like this isn’t part of typical DAWs and plugin collections. Can’t see why, it’s a pretty basic tool. In radio, there was the need for a phase rotator, to make waveforms more symmetrical for loudness maximizing. In reverbs, you get a thing called an allpass filter (a kind of feedback delay at a specific calibration) which diffuses the sound so it can be fed to delay banks and seem more spatial. Turns out these are the same basic thing! It’s also in phase shifters (mixing the phase-shifted part against dry, or inverse dry). What happens? When you use an allpass filter, what you get is all the frequencies exactly as loud as they were before, but the phases of the frequencies are all different. Specifically, lows get delayed relative to the highs producing an effect where tones are ‘smeared’ across a time stretch, even though the spectral contents are exactly the same. The frequency information’s unaltered (nothing’s out of tune or darkened/brightened) but there’s a blur, possibly a large blur. PhaseNudge is set up to produce delays from really short (normal for a phase rotator) to unusually long, in case you’d like to treat it as a kind of slapback/echo effect. The calibration of PhaseNudge is finer than you usually find in an allpass: 0.618 is the customary number but when I see that I think ‘golden ratio’, so that’s what PhaseNudge is using, to very high accuracy. Also, PhaseNudge uses a variation on the operating principle of Console to expand and deepen the sound. Though typical allpasses use very short delays, I think PhaseNudge does its thing quite well across a broad range of delays. Anywhere you need a ‘defocus’ or ‘blur’ plugin, PhaseNudge should come in handy, whether it’s diffuse pads, overly pointy percussive elements, or even the effects loop of a lead guitar sound (phase shifters have been used for decades, to make the textures of leads more fluid before they hit the actual amp. You’ve heard this on ‘Eruption’ and may not have even known it, because it’s very subtle there) This is a real fundamental building-block tool in digital audio, and if DAW makers will not include it as part of standard equipment, I will. ;)"
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PhaseNudge final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'psng';
     double dL[1503];
     double dR[1503];
     int one, maxdelay;
@@ -60,19 +64,16 @@ class PhaseNudge final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
-
-            default: break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -83,8 +84,7 @@ class PhaseNudge final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
 
@@ -95,10 +95,9 @@ class PhaseNudge final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "phase nudge"; break;
-            case kParamB: return "dry/wet"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "phasenudge"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -107,8 +106,7 @@ class PhaseNudge final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Phase Nudge"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -119,26 +117,26 @@ class PhaseNudge final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -159,8 +157,7 @@ class PhaseNudge final : public Effect<T>
         double inputSampleR;
         double drySampleL;
         double drySampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

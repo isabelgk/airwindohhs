@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Channel6 uses the Spiral algorithm."
 };
 constexpr std::string_view k_long_description{
-    "I use the plugin Channel to test out my latest code regarding things like how to prevent denormalized numbers, what’s the best noise shaping to return to the floating point buss, and so on. That’s because after a fairly brief debug period (at first, the model-choosing popup wasn’t actually changing anything and you always got SSL behavior) the plugin was established as a totally complete plugin: it always used the same ‘Density’ algorithm for the saturation, it always blended that with dry signal using a drive control that was really a dry/wet control (which gave it its openness at partial settings), and it always used the same slew clipping and simple IIR highpass code each time, which was so simple that it couldn’t be improved.And it’s always been ‘one’ of my most popular and successful plugins, through all those variations. Once there was a big blind shootout on the most popular plugin forum (back when people did that) and someone put up my stuff against several contenders including the most hyped plugins out there. At the time I was selling plugins for $50 a pop, and I’d hoped someone would pick BussColors and do a comparison against my flagship tone-emulator, and have it clobber its rivals in blind testing.Instead they picked the latest Channel, and used its settings of ‘API’ and ‘Neve’ and ‘SSL’ (in other words ‘slew clipping and a simple highpass and Density’, no real ’emulation’ just shaping set to calibrated amounts), and that free plugin was the one that clobbered the pricey rivals. And soon blind testing went out of fashion, because such shenanigans get embarrassing I guess :) And I didn’t get any sales out of it as Channel was free, but it was fun to watch.So will this be…Channel is back in version 6, and there’s one key change. The distortion algorithm which I thought was unbeatable has now been beaten by Spiral… so now Channel uses Spiral, not Density, for its distortion model! For once this should be a plainly audible change: Spiral’s less fat-sounding than the Density algorithm. (I fixed the bug with the dry/wet control in the video: now dry doesn’t clip)What won’t change is this: you’d be surprised how little ‘processing’ can give you a great, analog-style sound. Literally all Channel does is apply a very simple IIR highpass, add a distortion that’s very clear and pure-sounding, and do a slew clipping set so high that it will almost never kick in. The highpass isn’t very steep, because it’s just one stage of interleaved IIR filter (a trick I use in a more complicated way in Capacitor). These are subtle, gentle differences… but they’re done with absolutely minimal processing, not tons of processing, and the data integrity is kept pristine through long double math and noise shaping to the floating point buss. In simpler terms: this doesn’t suck your tone like heavy digital processing does, this applies ‘hardware-like’ changes calibrated to measurements of real hardware, and this does it at impressively low CPU compared to other plugins of this type."
+    "I use the plugin Channel to test out my latest code regarding things like how to prevent denormalized numbers, what’s the best noise shaping to return to the floating point buss, and so on. That’s because after a fairly brief debug period (at first, the model-choosing popup wasn’t actually changing anything and you always got SSL behavior) the plugin was established as a totally complete plugin: it always used the same ‘Density’ algorithm for the saturation, it always blended that with dry signal using a drive control that was really a dry/wet control (which gave it its openness at partial settings), and it always used the same slew clipping and simple IIR highpass code each time, which was so simple that it couldn’t be improved. And it’s always been ‘one’ of my most popular and successful plugins, through all those variations. Once there was a big blind shootout on the most popular plugin forum (back when people did that) and someone put up my stuff against several contenders including the most hyped plugins out there. At the time I was selling plugins for $50 a pop, and I’d hoped someone would pick BussColors and do a comparison against my flagship tone-emulator, and have it clobber its rivals in blind testing. Instead they picked the latest Channel, and used its settings of ‘API’ and ‘Neve’ and ‘SSL’ (in other words ‘slew clipping and a simple highpass and Density’, no real ’emulation’ just shaping set to calibrated amounts), and that free plugin was the one that clobbered the pricey rivals. And soon blind testing went out of fashion, because such shenanigans get embarrassing I guess :) And I didn’t get any sales out of it as Channel was free, but it was fun to watch. So will this be… Channel is back in version 6, and there’s one key change. The distortion algorithm which I thought was unbeatable has now been beaten by Spiral… so now Channel uses Spiral, not Density, for its distortion model! For once this should be a plainly audible change: Spiral’s less fat-sounding than the Density algorithm. (I fixed the bug with the dry/wet control in the video: now dry doesn’t clip) What won’t change is this: you’d be surprised how little ‘processing’ can give you a great, analog-style sound. Literally all Channel does is apply a very simple IIR highpass, add a distortion that’s very clear and pure-sounding, and do a slew clipping set so high that it will almost never kick in. The highpass isn’t very steep, because it’s just one stage of interleaved IIR filter (a trick I use in a more complicated way in Capacitor). These are subtle, gentle differences… but they’re done with absolutely minimal processing, not tons of processing, and the data integrity is kept pristine through long double math and noise shaping to the floating point buss. In simpler terms: this doesn’t suck your tone like heavy digital processing does, this applies ‘hardware-like’ changes calibrated to measurements of real hardware, and this does it at impressively low CPU compared to other plugins of this type."
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Channel6 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cha6';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -72,12 +76,31 @@ class Channel6 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: consoletype = value; break;
             case kParamB: drive = value; break;
             case kParamC: output = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
+        }
+        // we can also set other defaults here, and do calculations that only have to happen
+        // once when parameters actually change. Here is the 'popup' setting its (global) values.
+        // variables can also be set in the processreplacing loop, and there they'll be set every buffersize
+        // here they're set when a parameter's actually changed, which should be less frequent, but
+        // you must use global variables in the Channel4.h file to do it.
+        switch ((VstInt32)(consoletype * 2.999)) {
+            case 0:
+                iirAmount = 0.005832;
+                threshold = 0.33362176;
+                break; // Neve
+            case 1:
+                iirAmount = 0.004096;
+                threshold = 0.59969536;
+                break; // API
+            case 2:
+                iirAmount = 0.004913;
+                threshold = 0.84934656;
+                break; // SSL
+            default: break; // should not happen
         }
     }
 
@@ -108,7 +131,7 @@ class Channel6 final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "console type"; break;
+            case kParamA: return "consoletype"; break;
             case kParamB: return "drive"; break;
             case kParamC: return "output"; break;
 
@@ -131,26 +154,36 @@ class Channel6 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(consoletype); break;
-            case kParamB: return std::to_string(drive); break;
-            case kParamC: return std::to_string(output); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(consoletype * 2.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Neve", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "API", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SSL", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: int2string((VstInt32)(drive * 100), text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(output, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return "%"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "%", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

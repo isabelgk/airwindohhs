@@ -1,11 +1,11 @@
 #pragma once
+#if defined(_MSC_VER)
+#pragma warning(push)
 #pragma warning(disable : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #endif
-
 #include "effect.hpp"
 #include <cmath>
 #include <cstdint>
@@ -18,7 +18,7 @@ constexpr std::string_view k_short_description{
     "Biquad2 is the Airwindows biquad filter that's more sweepable and synthy."
 };
 constexpr std::string_view k_long_description{
-    "This time, it’s time for the impossible!As in, there was a reason nobody was doing sweepable, ‘synthy’ biquad filters…Turns out it simply doesn’t work. One uses a different type, like state variable filters, for the synthy stuff. The reason is that, while biquads can sound pretty great (especially implemented like I do ’em), they fundamentally can’t cope with changing the filter coefficients mid-calculation. They flip out: you’ll hear some of that, especially at the frequency extremes. Low Q makes low frequency motions flip out, and high Q (and boy do I have a high Q for you this time) makes ultra-high frequency motions flip out in a really wild. glitchy way.So obviously I gave up.:Dnope! Instead, I just kind of forced the filter into zones where it mostly is controllable. This is partly through REALLY smoothing the filter cutoff, especially at low Q and low frequencies. If you try and update biquad coefficients every sample (and I already changed the form from the more CPU-efficient to the more stable form: didn’t help much at all) the algorithm gets super twitchy, so part of what I’ve done is just stabilizing things. I tried for ages to come up with some bizarre hack to force the filter back into stability: no dice. So, the range has been limited a little, the Q doesn’t adjust below a Q of 1, and it reacts really slowly, because that was the only way I could get it to behave at all. (the original Biquad can sometimes be better behaved, because it’s only recalculating coefficients every new buffer. So, zipper noise. When you get rid of that your troubles get infinitely worse, with biquads)I’ve also got the resonance (on low and highpass) working differently. I’m scaling back loudness, but I’m also applying a distortion, then averaging after that, to try and get an ‘overdriving filter effect’ not present in the purer original Biquad. You can go quieter into Biquad2 and avoid this, or not use as much resonance: I feel it’s kind of like the Roland Alpha Juno filter resonance distortion, not an everyday thing but when it pops up it has its own distinct quality that’s interesting.Anyway here’s Biquad2 ;)"
+    "This time, it’s time for the impossible! As in, there was a reason nobody was doing sweepable, ‘synthy’ biquad filters… Turns out it simply doesn’t work. One uses a different type, like state variable filters, for the synthy stuff. The reason is that, while biquads can sound pretty great (especially implemented like I do ’em), they fundamentally can’t cope with changing the filter coefficients mid-calculation. They flip out: you’ll hear some of that, especially at the frequency extremes. Low Q makes low frequency motions flip out, and high Q (and boy do I have a high Q for you this time) makes ultra-high frequency motions flip out in a really wild. glitchy way. So obviously I gave up. :D nope! Instead, I just kind of forced the filter into zones where it mostly is controllable. This is partly through REALLY smoothing the filter cutoff, especially at low Q and low frequencies. If you try and update biquad coefficients every sample (and I already changed the form from the more CPU-efficient to the more stable form: didn’t help much at all) the algorithm gets super twitchy, so part of what I’ve done is just stabilizing things. I tried for ages to come up with some bizarre hack to force the filter back into stability: no dice. So, the range has been limited a little, the Q doesn’t adjust below a Q of 1, and it reacts really slowly, because that was the only way I could get it to behave at all. (the original Biquad can sometimes be better behaved, because it’s only recalculating coefficients every new buffer. So, zipper noise. When you get rid of that your troubles get infinitely worse, with biquads) I’ve also got the resonance (on low and highpass) working differently. I’m scaling back loudness, but I’m also applying a distortion, then averaging after that, to try and get an ‘overdriving filter effect’ not present in the purer original Biquad. You can go quieter into Biquad2 and avoid this, or not use as much resonance: I feel it’s kind of like the Roland Alpha Juno filter resonance distortion, not an everyday thing but when it pops up it has its own distinct quality that’s interesting. Anyway here’s Biquad2 ;)"
 };
 constexpr std::string_view k_tags{
     "biquads"
@@ -27,6 +27,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Biquad2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'biqe';
     double biquad[15]; // note that this stereo form doesn't require L and R forms!
     // This is because so much of it is coefficients etc. that are the same on both channels.
     // So the stored samples are in 7-8-9-10 and 11-12-13-14, and freq/res/coefficients serve both.
@@ -99,22 +103,19 @@ class Biquad2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -128,8 +129,7 @@ class Biquad2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -143,13 +143,12 @@ class Biquad2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "type"; break;
             case kParamB: return "freq"; break;
             case kParamC: return "q"; break;
             case kParamD: return "output"; break;
-            case kParamE: return "inv/wet"; break;
+            case kParamE: return "invwet"; break;
 
             default: break;
         }
@@ -158,8 +157,7 @@ class Biquad2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Type"; break;
             case kParamB: return "Freq"; break;
             case kParamC: return "Q"; break;
@@ -173,32 +171,32 @@ class Biquad2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((float)ceil((A * 3.999) + 0.00001), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * B * 0.9999) + 0.0001, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * C * 49.99) + 0.01, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string((E * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -228,7 +226,7 @@ class Biquad2 final : public Effect<T>
         }
         double wettarget = (E * 2.0) - 1.0; // wet, goes -1.0 to 1.0
         // biquad contains these values:
-        //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
+        //[0] is frequency: 0.000001 to 0.499999 is nearVal-zero to nearVal-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         //[2] is a0 but you need distinct ones for additional biquad instances so it's here
         //[3] is a1 but you need distinct ones for additional biquad instances so it's here
@@ -343,8 +341,7 @@ class Biquad2 final : public Effect<T>
         f[9] /= average;
         // and now it's neatly scaled, too
         // finished setting up average
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -526,8 +523,8 @@ class Biquad2 final : public Effect<T>
     }
 };
 } // namespace airwindohhs::biquad2
-#pragma warning(default : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif

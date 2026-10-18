@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kWoodRoom is a small wooden performing space."
 };
 constexpr std::string_view k_long_description{
-    "This concludes a series of plugin releases around Xmas and thereabouts! First there was ChimeyDeluxe, then ConsoleX2 with a bit of music to go along with it, and now the final shoe to drop is the unreleased reverb that was used to make what was seemingly a Dead show from 1972 or so!kWoodRoom was more stumbled upon than searched for. I'm continuing to pursue reverb things, doing better and better at delivering a really convincing virtual place to be in, but kWoodRoom popped up when searching for something else, and it's the last example of where my reverb work stood in 2025.It's got all the same controls as recent Airwindows reverbs, and it's the tone that is unusual. From the first instant I heard it I went 'oh hey a wood paneled room, that's weird'. It didn't seem special in any other way, didn't max out any of the things I was aiming for, but there it was, sounding like a thing. I've learned to pay attention to that, especially when there's no real explanation for it.That's because the reverbs I make search through hundreds of millions of possible delay time options to find optimal settings that balance many different requirements. They're purely Householder matrixes using comb filters alone, and relying upon matrix size to produce a smooth sound… unless I'm guiding them towards a rough sound, or a sound like a series of concrete arches, or what have you. I get to seek out all kinds of different qualities in the countless hours of computer time spent running genetic algorithms and permutations of delay lines.And then in the middle of all that, there'll be a kWoodRoom, more recognized than created. It just had a personality. Will it be a personality you like? I don't know, but if you give it a shot you will probably hear what it's like right away, and then it's up to you :)"
+    "This concludes a series of plugin releases around Xmas and thereabouts! First there was ChimeyDeluxe, then ConsoleX2 with a bit of music to go along with it, and now the final shoe to drop is the unreleased reverb that was used to make what was seemingly a Dead show from 1972 or so! kWoodRoom was more stumbled upon than searched for. I'm continuing to pursue reverb things, doing better and better at delivering a really convincing virtual place to be in, but kWoodRoom popped up when searching for something else, and it's the last example of where my reverb work stood in 2025. It's got all the same controls as recent Airwindows reverbs, and it's the tone that is unusual. From the first instant I heard it I went 'oh hey a wood paneled room, that's weird'. It didn't seem special in any other way, didn't max out any of the things I was aiming for, but there it was, sounding like a thing. I've learned to pay attention to that, especially when there's no real explanation for it. That's because the reverbs I make search through hundreds of millions of possible delay time options to find optimal settings that balance many different requirements. They're purely Householder matrixes using comb filters alone, and relying upon matrix size to produce a smooth sound… unless I'm guiding them towards a rough sound, or a sound like a series of concrete arches, or what have you. I get to seek out all kinds of different qualities in the countless hours of computer time spent running genetic algorithms and permutations of delay lines. And then in the middle of all that, there'll be a kWoodRoom, more recognized than created. It just had a personality. Will it be a personality you like? I don't know, but if you give it a shot you will probably hear what it's like right away, and then it's up to you :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -432,15 +432,14 @@ class kWoodRoom final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -482,7 +481,7 @@ class kWoodRoom final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "positin"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -506,32 +505,34 @@ class kWoodRoom final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

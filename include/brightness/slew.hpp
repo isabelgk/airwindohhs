@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Slew is a slew clipper, which darkens treble in an unusual way."
 };
 constexpr std::string_view k_long_description{
-    "Slew is the very first plugin I made for Airwindows (or at least the first one listed on this website).Slew is a simple plugin to let you do slew clipping. You can use it to morph and transform percussive sounds or hats, you can give a unique and interesting ‘grind’ to instruments or glue stuff together into a retro, old-school-sampler, grungey grind, or you can use it on things like reverb sends to really amp up the sense of distant loud sound in a room or space."
+    "Slew is the very first plugin I made for Airwindows (or at least the first one listed on this website). Slew is a simple plugin to let you do slew clipping. You can use it to morph and transform percussive sounds or hats, you can give a unique and interesting ‘grind’ to instruments or glue stuff together into a retro, old-school-sampler, grungey grind, or you can use it on things like reverb sends to really amp up the sense of distant loud sound in a room or space."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -55,18 +55,18 @@ class Slew final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: gain = value; break;
-
-            default: break;
+        switch (index) {
+            case kParamA:
+                gain = value;
+                break;
+            default: // unknown parameter, shouldn't happen!
+                break;
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return gain; break;
 
             default: break;
@@ -76,8 +76,7 @@ class Slew final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -87,8 +86,7 @@ class Slew final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "clamping"; break;
 
             default: break;
@@ -98,8 +96,7 @@ class Slew final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Clamping"; break;
 
             default: break;
@@ -109,24 +106,30 @@ class Slew final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(gain); break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                float2string(gain, text, kVstMaxParamStrLen);
+                break;
+            default: // unknown parameter, shouldn't happen!
+                break;
         }
-        return {};
+
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                vst_strncpy(text, "", kVstMaxParamStrLen);
+                break;
+            default: // unknown parameter, shouldn't happen!
+                break;
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -145,8 +148,7 @@ class Slew final : public Effect<T>
         double outputSampleR;
         double clamp;
         double threshold = pow((1 - gain), 4) / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Console7Channel adds anti-alias filtering and special saturation curves tied to the slider position."
 };
 constexpr std::string_view k_long_description{
-    "If you don’t already know what Console is: it’s the Airwindows digital mix buss. You put the channel plugin on every channel, feeding directly (at unity gain) into the 2-buss where the buss plugin lives. It applies saturation and anti-saturation functions so that, for individual sounds, there is no change, but when there’s two signals interfering with each other, it makes the channels saturate easier if the buss’s ‘input impedance’ is fluctuating based on other signals coming in. You set it up, and then mix with gain trim controls or the controls on the plugins because to change the faders would violate the need for unity gain between the plugins.That’s been the case for six previous versions of Console, and now it’s Console7. Here’s what’s new, that I didn’t have before.Every stage of the Console system now runs ultrasonic filtering. Not ‘the Ultrasonic filter’, which is heavier in CPU and steeper: it’s a system designed and built for Console, optimised for use with Console. It’s a gentler, less phase-smeary version equivalent to the Isolator filter across the entire Console system, but set up backwards: the Channel plugins lead off with the steepest stage of filtering, causing highs to hit the saturation in a particular way. Then, on the Buss plugins, the remaining two stages use decreasing resonances, so the end result is as flat as Isolator’s fifth-order Butterworth filtering: but one stage runs before the processing, and one after. Doing this causes aliasing to be repeatedly removed at every step it might occur, rather than trying to whack it completely on input and then expecting the whole chain to be clean. You can still drop Ultrasonic in there, anyplace that you think needs extra attention… but this is actually better. Especially if you’re working at 192k (but it’s designed to be fantastic at 96k).Every channel and the buss now gets a dedicated seed value for the dithering to the floating point buss. This might seem (and in fact is) a mighty subtle point, but it turned out to be fine to do at no cost to the CPU of the actual mix (it’s just a little extra getting done as each plugin loads). In a (real, though kind of theoretical) sense, that means every single channel produces its own dedicated noise for dithering, even though it’s just to the floating point buss. No previous Airwindows plugin has done this, but it worked so well that it’s now the new standard for how they’re built.Every channel and the buss now has a dedicated saturation/anti-saturation algorithm that ONLY exists in Console7. It’s based off of a blend of Spiral, and Density, with the first instance of Spiral run as a ConsoleBuss algorithm, ever. They go to the trouble of blending between this new Spiral/antiSpiral sort of Console, and the Density-based one as seen in Console5 and PurestConsole, because doing this allowed a tweak in the way channels hit saturation, where the harmonics are generated in a balanced way, a smoother onset of saturation than I’ve ever had before in a plugin. Console7 channels saturate in an incredibly sweet, non-edgy way, and that’s before the ultrasonic filtering.All the channel plugins now default to 0.772 on the gain control. That, not 1.0, is ‘unity gain’. Why? Because you can now push Console channels into the red in a special way. For the first time, the gain staging is flexible and tied to the Fader controls on the plugins (the Master control on the buss also does this in its own way, but that’s normally kept at 1.0). Unlike any previous Console, and opposite to what you get if you use the DAW faders, these channels saturate MORE as you push them, and saturate LESS if you pull them back. By the way the Density algorithm works, that means stuff tends to come forward as you nudge the gain up, and drop back into the soundstage if you pull the gain back. It opens up in a very literal way when you pull channels back, like some idealized analog console. What that means is, if you use these controls (they are smoothed for zero zipper noise) stuff will practically mix itself: the mix ought to fall into place more easily and quickly, plus if you’re whacking around the controls in some mad dubby way it ought to romp with you quite delightfully! They are simple 0-1 controls specifically to get you to set them by ear: there is no such thing as ‘dB’ with these, and even if there was, you’re adjusting the saturation curves so it’s completely down to what sounds right. I recommend using control surfaces to ride these Fader controls in the plugins: this is another way to get back to (automatable) analog console days."
+    "If you don’t already know what Console is: it’s the Airwindows digital mix buss. You put the channel plugin on every channel, feeding directly (at unity gain) into the 2-buss where the buss plugin lives. It applies saturation and anti-saturation functions so that, for individual sounds, there is no change, but when there’s two signals interfering with each other, it makes the channels saturate easier if the buss’s ‘input impedance’ is fluctuating based on other signals coming in. You set it up, and then mix with gain trim controls or the controls on the plugins because to change the faders would violate the need for unity gain between the plugins. That’s been the case for six previous versions of Console, and now it’s Console7. Here’s what’s new, that I didn’t have before. Every stage of the Console system now runs ultrasonic filtering. Not ‘the Ultrasonic filter’, which is heavier in CPU and steeper: it’s a system designed and built for Console, optimised for use with Console. It’s a gentler, less phase-smeary version equivalent to the Isolator filter across the entire Console system, but set up backwards: the Channel plugins lead off with the steepest stage of filtering, causing highs to hit the saturation in a particular way. Then, on the Buss plugins, the remaining two stages use decreasing resonances, so the end result is as flat as Isolator’s fifth-order Butterworth filtering: but one stage runs before the processing, and one after. Doing this causes aliasing to be repeatedly removed at every step it might occur, rather than trying to whack it completely on input and then expecting the whole chain to be clean. You can still drop Ultrasonic in there, anyplace that you think needs extra attention… but this is actually better. Especially if you’re working at 192k (but it’s designed to be fantastic at 96k). Every channel and the buss now gets a dedicated seed value for the dithering to the floating point buss. This might seem (and in fact is) a mighty subtle point, but it turned out to be fine to do at no cost to the CPU of the actual mix (it’s just a little extra getting done as each plugin loads). In a (real, though kind of theoretical) sense, that means every single channel produces its own dedicated noise for dithering, even though it’s just to the floating point buss. No previous Airwindows plugin has done this, but it worked so well that it’s now the new standard for how they’re built. Every channel and the buss now has a dedicated saturation/anti-saturation algorithm that ONLY exists in Console7. It’s based off of a blend of Spiral, and Density, with the first instance of Spiral run as a ConsoleBuss algorithm, ever. They go to the trouble of blending between this new Spiral/antiSpiral sort of Console, and the Density-based one as seen in Console5 and PurestConsole, because doing this allowed a tweak in the way channels hit saturation, where the harmonics are generated in a balanced way, a smoother onset of saturation than I’ve ever had before in a plugin. Console7 channels saturate in an incredibly sweet, non-edgy way, and that’s before the ultrasonic filtering. All the channel plugins now default to 0.772 on the gain control. That, not 1.0, is ‘unity gain’. Why? Because you can now push Console channels into the red in a special way. For the first time, the gain staging is flexible and tied to the Fader controls on the plugins (the Master control on the buss also does this in its own way, but that’s normally kept at 1.0). Unlike any previous Console, and opposite to what you get if you use the DAW faders, these channels saturate MORE as you push them, and saturate LESS if you pull them back. By the way the Density algorithm works, that means stuff tends to come forward as you nudge the gain up, and drop back into the soundstage if you pull the gain back. It opens up in a very literal way when you pull channels back, like some idealized analog console. What that means is, if you use these controls (they are smoothed for zero zipper noise) stuff will practically mix itself: the mix ought to fall into place more easily and quickly, plus if you’re whacking around the controls in some mad dubby way it ought to romp with you quite delightfully! They are simple 0-1 controls specifically to get you to set them by ear: there is no such thing as ‘dB’ with these, and even if there was, you’re adjusting the saturation curves so it’s completely down to what sounds right. I recommend using control surfaces to ride these Fader controls in the plugins: this is another way to get back to (automatable) analog console days."
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Console7Channel final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'conq';
     double gainchase;
     double chasespeed;
     double biquadA[15];
@@ -56,18 +60,15 @@ class Console7Channel final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -77,8 +78,7 @@ class Console7Channel final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.772; break;
 
             default: break;
@@ -88,8 +88,7 @@ class Console7Channel final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "fader"; break;
 
             default: break;
@@ -99,8 +98,7 @@ class Console7Channel final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Fader"; break;
 
             default: break;
@@ -110,24 +108,24 @@ class Console7Channel final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -160,8 +158,7 @@ class Console7Channel final : public Effect<T>
         biquadA[4] = biquadA[2];
         biquadA[5] = 2.0 * (K * K - 1.0) * norm;
         biquadA[6] = (1.0 - K / biquadA[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

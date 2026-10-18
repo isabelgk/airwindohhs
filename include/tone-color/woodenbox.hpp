@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "WoodenBox is like a miniature reverb for converting DI to acoustic."
 };
 constexpr std::string_view k_long_description{
-    "The request was for a plugin to convert an electric guitar sound (presumably DI?) to the sound of an acoustic.In a very abstract way, this might be the answer for that?It's more complicated, though, because as usual I'm exploring the larger ideas around that. The very most obvious thing to do would be 'take the impulse response of an acoustic guitar, maybe if you're feeling ambitious try to strip out the original electric's tone quality or put big tone controls on or something, done'. But it might not be that simple…What's an acoustic guitar sound, anyway? Vibrations of wood, extra sonorities, resonances. Except those are called 'wolf tones' and are always bad. And anything we add along those lines will be other forms of wolf tones or resonator-guitar clangs, and will be bad. So what then?One thing about an acoustic guitar is, it's also a miniature room made out of wood. It vibrates, but also it reverberates. And I've been putting all this work into reverbs over the years… so what if I run the same grueling search for interesting, well-balanced rooms, but on miniature spaces? (never mind that I've only recently discovered new ways for the rooms to be better balanced!)And so we have WoodenBox. Like the older reverbs based on ClearCoat, it has a bunch of different spaces/colors on tap. But they're all extremely tiny compared to even a small room. There's enough going on in them to produce a vague stereo-ish quality, but not so much that it's a chorus effect. The tone is dense, confined: it doesn't replace the need for a room or chamber sound. But it doctors and reshapes the tone in the way that a simple room reverb never would. And it can be used on many things beyond guitars… for instance, synth patches, or perhaps electronic drums.I don't know quite where this leads, but it's an interesting start to have made. People who were asking to get smaller rooms out of me… well, you're still getting those, but first you get stuck in a wooden box :)"
+    "The request was for a plugin to convert an electric guitar sound (presumably DI?) to the sound of an acoustic. In a very abstract way, this might be the answer for that? It's more complicated, though, because as usual I'm exploring the larger ideas around that. The very most obvious thing to do would be 'take the impulse response of an acoustic guitar, maybe if you're feeling ambitious try to strip out the original electric's tone quality or put big tone controls on or something, done'. But it might not be that simple… What's an acoustic guitar sound, anyway? Vibrations of wood, extra sonorities, resonances. Except those are called 'wolf tones' and are always bad. And anything we add along those lines will be other forms of wolf tones or resonator-guitar clangs, and will be bad. So what then? One thing about an acoustic guitar is, it's also a miniature room made out of wood. It vibrates, but also it reverberates. And I've been putting all this work into reverbs over the years… so what if I run the same grueling search for interesting, well-balanced rooms, but on miniature spaces? (never mind that I've only recently discovered new ways for the rooms to be better balanced!) And so we have WoodenBox. Like the older reverbs based on ClearCoat, it has a bunch of different spaces/colors on tap. But they're all extremely tiny compared to even a small room. There's enough going on in them to produce a vague stereo-ish quality, but not so much that it's a chorus effect. The tone is dense, confined: it doesn't replace the need for a room or chamber sound. But it doctors and reshapes the tone in the way that a simple room reverb never would. And it can be used on many things beyond guitars… for instance, synth patches, or perhaps electronic drums. I don't know quite where this leads, but it's an interesting start to have made. People who were asking to get smaller rooms out of me… well, you're still getting those, but first you get stuck in a wooden box :)"
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -235,12 +235,11 @@ class WoodenBox final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -294,26 +293,28 @@ class WoodenBox final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((int)(A * 16.999), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

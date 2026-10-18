@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "StereoFX is an aggressive stereo widener. Historical note: this post included in full as it's right after my Dad died, and includes my thanks to Airwindows folks for supporting me through that:"
 };
 constexpr std::string_view k_long_description{
-    "Here’s the last plugin I had in the pipeline, ready to post: no reason not to take the effort to post it now. Thank you all for the well wishes: I’m really touched, you’re all so sweet I can hardly believe it’s the internet :) (but then, people might well say the same about me!)StereoFX is a classic Airwindows plugin brought up to date and VSTified: it does three things that can contour the stereo image. None of them are as well behaved as Wider, but they’re interestingly different.Stereo Wide basically runs the code from High Impact on the side channel. It gives a really aggressive widening effect (which will cancel in mono of course) and can bring an edgy quality to the wideness of your stereo channel.Mono Bass is simply a highpass on the side channel: adjust to taste, by ear. It’s a very simple highpass, not that steep.Center Squish is a neat twist on ‘widening’. Instead of touching the side channel, it does a simple sine-based saturation or distortion (Density style, not Spiral style) on the mid channel only. If you engage it, it progressively steps on the output of the mid channel but leaves side untouched. That means you can squash a stereo track slightly, giving it a little distortion, and let it squirt out to the sides a bit. You can combine this with a touch of the Stereo Wide, which works on a different algorithm. So it’s some unique tone colorings and techniques to serve the purpose of stereo widening. I hope you like it.I got a new video light (well, a $30 lightbox to go on one of my existing LED lightbulbs) so I’m kind of excited to make more videos and stuff, and I’ve got a backlog of plugins to try, but understandably (see the DrumSlam post) I’m a little distracted. I want to bring my best for you guys but I also want to honor your kind wishes, so I will post StereoFX and then see if anything comes to mind that I can do, if not immediately for the end of July, then early August: I am also doing the occasional music livestreaming and find that I can express my feelings that way, even if it’s ‘skronk guitar over techno’. So I won’t try and force the plugins (they won’t run out, I promise) and soon I’ll be back in the swing of things. Oh, and the Patreon is doing OK, I won’t worry about that right now but that too is appreciated. If not for that, I wouldn’t have been able to go and support my sister when all this went down, because it made me able to drop everything and zip off to Pennsylvania: without the Patreon, I would struggle to have that much gas covered, and I wouldn’t have been free to go right then, and then I wouldn’t have seen my Dad alive for the last time. So I owe you guys things that can’t be expressed in software or money: thank you."
+    "Here’s the last plugin I had in the pipeline, ready to post: no reason not to take the effort to post it now. Thank you all for the well wishes: I’m really touched, you’re all so sweet I can hardly believe it’s the internet :) (but then, people might well say the same about me!) StereoFX is a classic Airwindows plugin brought up to date and VSTified: it does three things that can contour the stereo image. None of them are as well behaved as Wider, but they’re interestingly different. Stereo Wide basically runs the code from High Impact on the side channel. It gives a really aggressive widening effect (which will cancel in mono of course) and can bring an edgy quality to the wideness of your stereo channel. Mono Bass is simply a highpass on the side channel: adjust to taste, by ear. It’s a very simple highpass, not that steep. Center Squish is a neat twist on ‘widening’. Instead of touching the side channel, it does a simple sine-based saturation or distortion (Density style, not Spiral style) on the mid channel only. If you engage it, it progressively steps on the output of the mid channel but leaves side untouched. That means you can squash a stereo track slightly, giving it a little distortion, and let it squirt out to the sides a bit. You can combine this with a touch of the Stereo Wide, which works on a different algorithm. So it’s some unique tone colorings and techniques to serve the purpose of stereo widening. I hope you like it. I got a new video light (well, a $30 lightbox to go on one of my existing LED lightbulbs) so I’m kind of excited to make more videos and stuff, and I’ve got a backlog of plugins to try, but understandably (see the DrumSlam post) I’m a little distracted. I want to bring my best for you guys but I also want to honor your kind wishes, so I will post StereoFX and then see if anything comes to mind that I can do, if not immediately for the end of July, then early August: I am also doing the occasional music livestreaming and find that I can express my feelings that way, even if it’s ‘skronk guitar over techno’. So I won’t try and force the plugins (they won’t run out, I promise) and soon I’ll be back in the swing of things. Oh, and the Patreon is doing OK, I won’t worry about that right now but that too is appreciated. If not for that, I wouldn’t have been able to go and support my sister when all this went down, because it made me able to drop everything and zip off to Pennsylvania: without the Patreon, I would struggle to have that much gas covered, and I wouldn’t have been free to go right then, and then I wouldn’t have seen my Dad alive for the last time. So I owe you guys things that can’t be expressed in software or money: thank you."
 };
 constexpr std::string_view k_tags{
     "stereo"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class StereoFX final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'stfx';
     double iirSampleA;
     double iirSampleB;
     uint32_t fpdL;
@@ -60,20 +64,17 @@ class StereoFX final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -85,8 +86,7 @@ class StereoFX final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.0; break;
@@ -98,8 +98,7 @@ class StereoFX final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "wide"; break;
             case kParamB: return "monobs"; break;
             case kParamC: return "csquish"; break;
@@ -111,8 +110,7 @@ class StereoFX final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Wide"; break;
             case kParamB: return "MonoBs"; break;
             case kParamC: return "CSquish"; break;
@@ -124,28 +122,28 @@ class StereoFX final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -176,8 +174,7 @@ class StereoFX final : public Effect<T>
         double offset;
         // we are setting it up so that to either extreme we can get an audible sound,
         // but sort of scaled so small adjustments don't shift the cutoff frequency yet.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -191,8 +188,7 @@ class StereoFX final : public Effect<T>
             side = inputSampleL - inputSampleR;
             // assign mid and side. Now, High Impact code
             count = density;
-            while (count > 1.0)
-            {
+            while (count > 1.0) {
                 bridgerectifier = fabs(side) * 1.57079633;
                 if (bridgerectifier > 1.57079633) {
                     bridgerectifier = 1.57079633;
@@ -242,13 +238,11 @@ class StereoFX final : public Effect<T>
             if (offset > 1) {
                 offset = 1;
             }
-            if (flip)
-            {
+            if (flip) {
                 iirSampleA = (iirSampleA * (1 - (offset * iirAmount))) + (side * (offset * iirAmount));
                 side = side - iirSampleA;
             }
-            else
-            {
+            else {
                 iirSampleB = (iirSampleB * (1 - (offset * iirAmount))) + (side * (offset * iirAmount));
                 side = side - iirSampleB;
             }

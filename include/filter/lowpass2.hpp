@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Lowpass2 is an unusual-sounding variable-slope lowpass filter."
 };
 constexpr std::string_view k_long_description{
-    "This new version of Lowpass exists to fix a bug, but then I added stuff to it that makes it entirely a new animal!The existing Lowpass tries to produce the same cutoff no matter what sample rate you use, but doing that meant high sample rates can never use a fully opened filter. Instead, you got roll-off no matter what. Lowpass2 no longer does that: the filter control goes from complete silence to wide open no matter what sample rate you’re at.But there’s more: Lowpass2 still uses the interleaved IIR filters the original Lowpass pioneered (you’ll notice subtle bleed-through of information near the Nyquist frequency, beyond human hearing, but also the open and involving sound) but now it can use from zero to four poles of filter: so you get a stronger effect, and a sharper roll-off!And that’s important because with four poles of filter you REALLY hear what the Soft/Hard slider does. This interacts with the filter control (don’t expect the cutoff frequency to stay the same) but what it does is vary the cutoff based on what sample value the input is. So you can either roll off harder for the peaks of the sound… or let ’em through more. Since it’s an IIR filter the effect is gradual, but at four poles it’s really noticeable.That gives you two distinct tone colors for your lowpassing, plus special effects: in the video I demonstrate how cranking the control to Hard on pink noise can make it sound like wind noise where you’re going incredibly fast. Lowpass2 is ideal for experimental tone shaping, and for sound design."
+    "This new version of Lowpass exists to fix a bug, but then I added stuff to it that makes it entirely a new animal! The existing Lowpass tries to produce the same cutoff no matter what sample rate you use, but doing that meant high sample rates can never use a fully opened filter. Instead, you got roll-off no matter what. Lowpass2 no longer does that: the filter control goes from complete silence to wide open no matter what sample rate you’re at. But there’s more: Lowpass2 still uses the interleaved IIR filters the original Lowpass pioneered (you’ll notice subtle bleed-through of information near the Nyquist frequency, beyond human hearing, but also the open and involving sound) but now it can use from zero to four poles of filter: so you get a stronger effect, and a sharper roll-off! And that’s important because with four poles of filter you REALLY hear what the Soft/Hard slider does. This interacts with the filter control (don’t expect the cutoff frequency to stay the same) but what it does is vary the cutoff based on what sample value the input is. So you can either roll off harder for the peaks of the sound… or let ’em through more. Since it’s an IIR filter the effect is gradual, but at four poles it’s really noticeable. That gives you two distinct tone colors for your lowpassing, plus special effects: in the video I demonstrate how cranking the control to Hard on pink noise can make it sound like wind noise where you’re going incredibly fast. Lowpass2 is ideal for experimental tone shaping, and for sound design."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Lowpass2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'lowt';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -91,21 +95,18 @@ class Lowpass2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -118,8 +119,7 @@ class Lowpass2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.25; break;
@@ -132,12 +132,11 @@ class Lowpass2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "lowpass"; break;
-            case kParamB: return "sft/hrd"; break;
+            case kParamB: return "sfthrd"; break;
             case kParamC: return "poles"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -146,8 +145,7 @@ class Lowpass2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Lowpass"; break;
             case kParamB: return "Sft/Hrd"; break;
             case kParamC: return "Poles"; break;
@@ -160,30 +158,30 @@ class Lowpass2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 4.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -235,8 +233,7 @@ class Lowpass2 final : public Effect<T>
         // beyond that point: this is a way to progressively add a 'black box' sound processing
         // which lets you fall through to simpler processing at lower settings.
         double wet = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -271,8 +268,7 @@ class Lowpass2 final : public Effect<T>
             if (offsetR > 1) {
                 offsetR = 1;
             }
-            if (fpFlip)
-            {
+            if (fpFlip) {
                 if (aWet > 0.0) {
                     iirSampleAL = (iirSampleAL * (1 - (offsetL * iirAmount))) + (inputSampleL * (offsetL * iirAmount));
                     inputSampleL = (iirSampleAL * aWet) + (inputSampleL * (1.0 - aWet));
@@ -298,8 +294,7 @@ class Lowpass2 final : public Effect<T>
                     inputSampleR = (iirSampleGR * dWet) + (inputSampleR * (1.0 - dWet));
                 }
             }
-            else
-            {
+            else {
                 if (aWet > 0.0) {
                     iirSampleBL = (iirSampleBL * (1 - (offsetL * iirAmount))) + (inputSampleL * (offsetL * iirAmount));
                     inputSampleL = (iirSampleBL * aWet) + (inputSampleL * (1.0 - aWet));

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Logical4 is a classic 2-buss compressor."
 };
 constexpr std::string_view k_long_description{
-    "Logical’s a compressor. It was designed from the start to work on the 2-buss in the most demanding conditions: people are really picky about their 2-buss compressors, and you can’t mess around. The tone has to be spot-on and it’s got to be transparent and able to let the music through. Additionally, when we’re talking about ‘tone’ and something called ‘Logical’ you can see that it’s going to be in the SSL style: there’s a sparkliness which requires some extra coding attention.You can approach compression duties from several directions with Logical. It has three distinct stages, and will entirely bypass stages it’s not using. It’ll go from 1/1 compression, up to 2/1 using just a single stage (for the utmost transparency): keep it below 2/1 ratio and use the threshold control to bring in the compression. This is a traditional 2-buss natural-sounding compression. From 2/1 to 4/1 ratio, you can get various behaviors and the two stages in use still sound very clean: the speed control will give you different kinds of ‘swing’ and spring-back out of the compression.Then as you pass 4/1 ratio and go off to a max of 16/1 (approximate, but that’s the basic idea) there’s a tone change, and as you get into crazy high ratios, Logical goes a little bonkers. This was NOT available in previous Logicals. The issue was, if you rely heavily on that final compression stage, things can get messy. You can push Logical until it’s nasty and so full of energy it’s forcing you to use the makeup gain to PAD the output, just to handle all the madness.This time, and in honor of Logical going free VST format, it’s not set up for only good behavior. This time, it’s your responsibility to not blow up your outputs by thoughtlessly cranking the ratio. Consider it an audio chainsaw made of silk and glorious victories. Not every top-selling plugin got this much better when I revisited it. I’m very pleased with how Logical4 came out, and I hope to see it talked about a whole bunch. This one’s worth a lot of ‘did you hear?’."
+    "Logical’s a compressor. It was designed from the start to work on the 2-buss in the most demanding conditions: people are really picky about their 2-buss compressors, and you can’t mess around. The tone has to be spot-on and it’s got to be transparent and able to let the music through. Additionally, when we’re talking about ‘tone’ and something called ‘Logical’ you can see that it’s going to be in the SSL style: there’s a sparkliness which requires some extra coding attention. You can approach compression duties from several directions with Logical. It has three distinct stages, and will entirely bypass stages it’s not using. It’ll go from 1/1 compression, up to 2/1 using just a single stage (for the utmost transparency): keep it below 2/1 ratio and use the threshold control to bring in the compression. This is a traditional 2-buss natural-sounding compression. From 2/1 to 4/1 ratio, you can get various behaviors and the two stages in use still sound very clean: the speed control will give you different kinds of ‘swing’ and spring-back out of the compression. Then as you pass 4/1 ratio and go off to a max of 16/1 (approximate, but that’s the basic idea) there’s a tone change, and as you get into crazy high ratios, Logical goes a little bonkers. This was NOT available in previous Logicals. The issue was, if you rely heavily on that final compression stage, things can get messy. You can push Logical until it’s nasty and so full of energy it’s forcing you to use the makeup gain to PAD the output, just to handle all the madness. This time, and in honor of Logical going free VST format, it’s not set up for only good behavior. This time, it’s your responsibility to not blow up your outputs by thoughtlessly cranking the ratio. Consider it an audio chainsaw made of silk and glorious victories. Not every top-selling plugin got this much better when I revisited it. I’m very pleased with how Logical4 came out, and I hope to see it talked about a whole bunch. This one’s worth a lot of ‘did you hear?’."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Logical4 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'logv';
     // begin ButterComp
     double controlAposL;
     double controlAnegL;
@@ -204,22 +208,19 @@ class Logical4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -233,8 +234,7 @@ class Logical4 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.2; break;
             case kParamC: return 0.192020202020202; break;
@@ -248,13 +248,12 @@ class Logical4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "threshold"; break;
             case kParamB: return "ratio"; break;
             case kParamC: return "speed"; break;
             case kParamD: return "makeupgn"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -263,8 +262,7 @@ class Logical4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Threshold"; break;
             case kParamB: return "Ratio"; break;
             case kParamC: return "Speed"; break;
@@ -278,32 +276,32 @@ class Logical4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 40.0) - 20.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(((B * B) * 15.0) + 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(((C * C) * 99.0) + 1.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string((D * 40.0) - 20.0, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return "/1"; break;
-            case kParamC: return "ms"; break;
-            case kParamD: return "dB"; break;
-            case kParamE: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "/1", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "ms", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -415,8 +413,7 @@ class Logical4 final : public Effect<T>
         double outputgain = pow(10.0, ((D * 40.0) - 20.0) / 20.0);
         double wet = E;
         // removed extra dry variable
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -565,10 +562,8 @@ class Logical4 final : public Effect<T>
             // each calc is a blowed up chased target from tiny (at high levels of that polarity) to 1 at no input
             // calc is the one we want to react differently: go tiny quick,
             // outputpos and outputneg go from 0 to 1
-            if (inputSampleL > 0)
-            { // working on pos
-                if (true == fpFlip)
-                {
+            if (inputSampleL > 0) { // working on pos
+                if (true == fpFlip) {
                     controlAposL *= divisor;
                     controlAposL += (calcpos * remainder);
                     if (controlAposR > controlAposL) {
@@ -577,8 +572,7 @@ class Logical4 final : public Effect<T>
                     // this part makes the compressor linked: both channels will converge towards whichever
                     // is the most compressed at the time.
                 }
-                else
-                {
+                else {
                     controlBposL *= divisor;
                     controlBposL += (calcpos * remainder);
                     if (controlBposR > controlBposL) {
@@ -586,18 +580,15 @@ class Logical4 final : public Effect<T>
                     }
                 }
             }
-            else
-            { // working on neg
-                if (true == fpFlip)
-                {
+            else { // working on neg
+                if (true == fpFlip) {
                     controlAnegL *= divisor;
                     controlAnegL += (calcneg * remainder);
                     if (controlAnegR > controlAnegL) {
                         controlAnegR = (controlAnegR + controlAnegL) * 0.5;
                     }
                 }
-                else
-                {
+                else {
                     controlBnegL *= divisor;
                     controlBnegL += (calcneg * remainder);
                     if (controlBnegR > controlBnegL) {
@@ -606,12 +597,10 @@ class Logical4 final : public Effect<T>
                 }
             }
             // this causes each of the four to update only when active and in the correct 'fpFlip'
-            if (true == fpFlip)
-            {
+            if (true == fpFlip) {
                 totalmultiplier = (controlAposL * outputpos) + (controlAnegL * outputneg);
             }
-            else
-            {
+            else {
                 totalmultiplier = (controlBposL * outputpos) + (controlBnegL * outputneg);
             }
             // this combines the sides according to fpFlip, blending relative to the input value
@@ -678,10 +667,8 @@ class Logical4 final : public Effect<T>
             // each calc is a blowed up chased target from tiny (at high levels of that polarity) to 1 at no input
             // calc is the one we want to react differently: go tiny quick,
             // outputpos and outputneg go from 0 to 1
-            if (inputSampleR > 0)
-            { // working on pos
-                if (true == fpFlip)
-                {
+            if (inputSampleR > 0) { // working on pos
+                if (true == fpFlip) {
                     controlAposR *= divisor;
                     controlAposR += (calcpos * remainder);
                     if (controlAposL > controlAposR) {
@@ -690,8 +677,7 @@ class Logical4 final : public Effect<T>
                     // this part makes the compressor linked: both channels will converge towards whichever
                     // is the most compressed at the time.
                 }
-                else
-                {
+                else {
                     controlBposR *= divisor;
                     controlBposR += (calcpos * remainder);
                     if (controlBposL > controlBposR) {
@@ -699,18 +685,15 @@ class Logical4 final : public Effect<T>
                     }
                 }
             }
-            else
-            { // working on neg
-                if (true == fpFlip)
-                {
+            else { // working on neg
+                if (true == fpFlip) {
                     controlAnegR *= divisor;
                     controlAnegR += (calcneg * remainder);
                     if (controlAnegL > controlAnegR) {
                         controlAnegL = (controlAnegR + controlAnegL) * 0.5;
                     }
                 }
-                else
-                {
+                else {
                     controlBnegR *= divisor;
                     controlBnegR += (calcneg * remainder);
                     if (controlBnegL > controlBnegR) {
@@ -719,12 +702,10 @@ class Logical4 final : public Effect<T>
                 }
             }
             // this causes each of the four to update only when active and in the correct 'fpFlip'
-            if (true == fpFlip)
-            {
+            if (true == fpFlip) {
                 totalmultiplier = (controlAposR * outputpos) + (controlAnegR * outputneg);
             }
-            else
-            {
+            else {
                 totalmultiplier = (controlBposR * outputpos) + (controlBnegR * outputneg);
             }
             // this combines the sides according to fpFlip, blending relative to the input value
@@ -869,10 +850,8 @@ class Logical4 final : public Effect<T>
                 calcneg = pow((1.0 / targetnegBL), 2);
                 // now we have mirrored targets for comp
                 // outputpos and outputneg go from 0 to 1
-                if (inputSampleL > 0)
-                { // working on pos
-                    if (true == fpFlip)
-                    {
+                if (inputSampleL > 0) { // working on pos
+                    if (true == fpFlip) {
                         controlAposBL *= divisorB;
                         controlAposBL += (calcpos * remainderB);
                         if (controlAposBR > controlAposBL) {
@@ -881,8 +860,7 @@ class Logical4 final : public Effect<T>
                         // this part makes the compressor linked: both channels will converge towards whichever
                         // is the most compressed at the time.
                     }
-                    else
-                    {
+                    else {
                         controlBposBL *= divisorB;
                         controlBposBL += (calcpos * remainderB);
                         if (controlBposBR > controlBposBL) {
@@ -890,18 +868,15 @@ class Logical4 final : public Effect<T>
                         }
                     }
                 }
-                else
-                { // working on neg
-                    if (true == fpFlip)
-                    {
+                else { // working on neg
+                    if (true == fpFlip) {
                         controlAnegBL *= divisorB;
                         controlAnegBL += (calcneg * remainderB);
                         if (controlAnegBR > controlAnegBL) {
                             controlAnegBR = (controlAnegBR + controlAnegBL) * 0.5;
                         }
                     }
-                    else
-                    {
+                    else {
                         controlBnegBL *= divisorB;
                         controlBnegBL += (calcneg * remainderB);
                         if (controlBnegBR > controlBnegBL) {
@@ -910,12 +885,10 @@ class Logical4 final : public Effect<T>
                     }
                 }
                 // this causes each of the four to update only when active and in the correct 'fpFlip'
-                if (true == fpFlip)
-                {
+                if (true == fpFlip) {
                     totalmultiplier = (controlAposBL * outputpos) + (controlAnegBL * outputneg);
                 }
-                else
-                {
+                else {
                     totalmultiplier = (controlBposBL * outputpos) + (controlBnegBL * outputneg);
                 }
                 // this combines the sides according to fpFlip, blending relative to the input value
@@ -975,10 +948,8 @@ class Logical4 final : public Effect<T>
                 calcneg = pow((1.0 / targetnegBR), 2);
                 // now we have mirrored targets for comp
                 // outputpos and outputneg go from 0 to 1
-                if (inputSampleR > 0)
-                { // working on pos
-                    if (true == fpFlip)
-                    {
+                if (inputSampleR > 0) { // working on pos
+                    if (true == fpFlip) {
                         controlAposBR *= divisorB;
                         controlAposBR += (calcpos * remainderB);
                         if (controlAposBL > controlAposBR) {
@@ -987,8 +958,7 @@ class Logical4 final : public Effect<T>
                         // this part makes the compressor linked: both channels will converge towards whichever
                         // is the most compressed at the time.
                     }
-                    else
-                    {
+                    else {
                         controlBposBR *= divisorB;
                         controlBposBR += (calcpos * remainderB);
                         if (controlBposBL > controlBposBR) {
@@ -996,18 +966,15 @@ class Logical4 final : public Effect<T>
                         }
                     }
                 }
-                else
-                { // working on neg
-                    if (true == fpFlip)
-                    {
+                else { // working on neg
+                    if (true == fpFlip) {
                         controlAnegBR *= divisorB;
                         controlAnegBR += (calcneg * remainderB);
                         if (controlAnegBL > controlAnegBR) {
                             controlAnegBL = (controlAnegBR + controlAnegBL) * 0.5;
                         }
                     }
-                    else
-                    {
+                    else {
                         controlBnegBR *= divisorB;
                         controlBnegBR += (calcneg * remainderB);
                         if (controlBnegBL > controlBnegBR) {
@@ -1016,12 +983,10 @@ class Logical4 final : public Effect<T>
                     }
                 }
                 // this causes each of the four to update only when active and in the correct 'fpFlip'
-                if (true == fpFlip)
-                {
+                if (true == fpFlip) {
                     totalmultiplier = (controlAposBR * outputpos) + (controlAnegBR * outputneg);
                 }
-                else
-                {
+                else {
                     totalmultiplier = (controlBposBR * outputpos) + (controlBnegBR * outputneg);
                 }
                 // this combines the sides according to fpFlip, blending relative to the input value
@@ -1166,10 +1131,8 @@ class Logical4 final : public Effect<T>
                     calcneg = pow((1.0 / targetnegCL), 2);
                     // now we have mirrored targets for comp
                     // outputpos and outputneg go from 0 to 1
-                    if (inputSampleL > 0)
-                    { // working on pos
-                        if (true == fpFlip)
-                        {
+                    if (inputSampleL > 0) { // working on pos
+                        if (true == fpFlip) {
                             controlAposCL *= divisorC;
                             controlAposCL += (calcpos * remainderC);
                             if (controlAposCR > controlAposCL) {
@@ -1178,8 +1141,7 @@ class Logical4 final : public Effect<T>
                             // this part makes the compressor linked: both channels will converge towards whichever
                             // is the most compressed at the time.
                         }
-                        else
-                        {
+                        else {
                             controlBposCL *= divisorC;
                             controlBposCL += (calcpos * remainderC);
                             if (controlBposCR > controlBposCL) {
@@ -1187,18 +1149,15 @@ class Logical4 final : public Effect<T>
                             }
                         }
                     }
-                    else
-                    { // working on neg
-                        if (true == fpFlip)
-                        {
+                    else { // working on neg
+                        if (true == fpFlip) {
                             controlAnegCL *= divisorC;
                             controlAnegCL += (calcneg * remainderC);
                             if (controlAnegCR > controlAnegCL) {
                                 controlAnegCR = (controlAnegCR + controlAnegCL) * 0.5;
                             }
                         }
-                        else
-                        {
+                        else {
                             controlBnegCL *= divisorC;
                             controlBnegCL += (calcneg * remainderC);
                             if (controlBnegCR > controlBnegCL) {
@@ -1207,12 +1166,10 @@ class Logical4 final : public Effect<T>
                         }
                     }
                     // this causes each of the four to update only when active and in the correct 'fpFlip'
-                    if (true == fpFlip)
-                    {
+                    if (true == fpFlip) {
                         totalmultiplier = (controlAposCL * outputpos) + (controlAnegCL * outputneg);
                     }
-                    else
-                    {
+                    else {
                         totalmultiplier = (controlBposCL * outputpos) + (controlBnegCL * outputneg);
                     }
                     // this combines the sides according to fpFlip, blending relative to the input value
@@ -1272,10 +1229,8 @@ class Logical4 final : public Effect<T>
                     calcneg = pow((1.0 / targetnegCR), 2);
                     // now we have mirrored targets for comp
                     // outputpos and outputneg go from 0 to 1
-                    if (inputSampleR > 0)
-                    { // working on pos
-                        if (true == fpFlip)
-                        {
+                    if (inputSampleR > 0) { // working on pos
+                        if (true == fpFlip) {
                             controlAposCR *= divisorC;
                             controlAposCR += (calcpos * remainderC);
                             if (controlAposCL > controlAposCR) {
@@ -1284,8 +1239,7 @@ class Logical4 final : public Effect<T>
                             // this part makes the compressor linked: both channels will converge towards whichever
                             // is the most compressed at the time.
                         }
-                        else
-                        {
+                        else {
                             controlBposCR *= divisorC;
                             controlBposCR += (calcpos * remainderC);
                             if (controlBposCL > controlBposCR) {
@@ -1293,18 +1247,15 @@ class Logical4 final : public Effect<T>
                             }
                         }
                     }
-                    else
-                    { // working on neg
-                        if (true == fpFlip)
-                        {
+                    else { // working on neg
+                        if (true == fpFlip) {
                             controlAnegCR *= divisorC;
                             controlAnegCR += (calcneg * remainderC);
                             if (controlAnegCL > controlAnegCR) {
                                 controlAnegCL = (controlAnegCR + controlAnegCL) * 0.5;
                             }
                         }
-                        else
-                        {
+                        else {
                             controlBnegCR *= divisorC;
                             controlBnegCR += (calcneg * remainderC);
                             if (controlBnegCL > controlBnegCR) {
@@ -1313,12 +1264,10 @@ class Logical4 final : public Effect<T>
                         }
                     }
                     // this causes each of the four to update only when active and in the correct 'fpFlip'
-                    if (true == fpFlip)
-                    {
+                    if (true == fpFlip) {
                         totalmultiplier = (controlAposCR * outputpos) + (controlAnegCR * outputneg);
                     }
-                    else
-                    {
+                    else {
                         totalmultiplier = (controlBposCR * outputpos) + (controlBnegCR * outputneg);
                     }
                     // this combines the sides according to fpFlip, blending relative to the input value

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Tape is simplified, all-purpose tape mojo: my personal jam."
 };
 constexpr std::string_view k_long_description{
-    "This one’s for me. It’s very similar to last week’s ToTape, but with the following differences:-simpler name-overdrive uses Spiral, not the Mojo algorithm-simpler controls (not exactly ‘input gain’ but close)-changes to the Head Bump algorithm-no flutterThis is what I WANTED to do with ToTape6, and didn’t. In some ways, that’s good: if I’d axed flutter I would not have spent all day struggling with it and coming up with a better algorithm that more closely resembles real physical tape, something that could come in handy for future echo plugins etc. If I’d done the things I’ve done with Tape, to ToTape6, then ToTape6 wouldn’t be as adjustable as it is. There’s room for both, and I gave people the complicated many-knobs version because I know you too well ;) and I know what people like, and I’m there for you.But I also have dreams of my own. So, the plugin (first ever from Airwindows) that carries just the generic name ‘Tape’ is Airwindows tape emulation MY way.I’ve heard a lot of tape in my time, being over 50 years old. I’ve dubbed and re-dubbed tapes a lot. So I dialed in (and re-programmed) Tape by loading up eight instances of it, in a row, and making it behave itself as well as could be expected while running audio through eight instances of Tape. It’s not meant to be clean if you do that: it’s meant to be eightfold trash, but the right kind of trash I’m familiar with when you’ve got that much generation loss and head bump buildup. I knew that if I could get that right, if I could get it to behave okay under that kind of duress, I could rely on it as a go-to output stage (going just before Monitoring) that would condition the sound in the right kind of way.And so it does.Tape will be heard from again, but much as ToTape5 bore the standard for Airwindows tape emulation for years, Tape is my personal choice for ‘mix into’ DAW output stage and it’ll stand for a while, I think. If you need more phat or more flutter or more controls etc etc, use ToTape6, which is just as good in many ways. This is just my ‘director’s cut’ version, designed to my tastes, for if you trust my ears and my choices. Since it’s Airwindows, ToTape6 (and 5) still works and you can have both. This one is for those of you who pursue the simple creed: I have a (virtual) tape machine. I record to my tape machine. I am happy. :)This plugin came out with an original version and then had a Redux update in which I added a control: a slider for the head bump, as people were finding the head bump excessive. Cranking it up all the way gave you the original behavior, but I defaulted it to 0.5."
+    "This one’s for me. It’s very similar to last week’s ToTape, but with the following differences: -simpler name -overdrive uses Spiral, not the Mojo algorithm -simpler controls (not exactly ‘input gain’ but close) -changes to the Head Bump algorithm -no flutter This is what I WANTED to do with ToTape6, and didn’t. In some ways, that’s good: if I’d axed flutter I would not have spent all day struggling with it and coming up with a better algorithm that more closely resembles real physical tape, something that could come in handy for future echo plugins etc. If I’d done the things I’ve done with Tape, to ToTape6, then ToTape6 wouldn’t be as adjustable as it is. There’s room for both, and I gave people the complicated many-knobs version because I know you too well ;) and I know what people like, and I’m there for you. But I also have dreams of my own. So, the plugin (first ever from Airwindows) that carries just the generic name ‘Tape’ is Airwindows tape emulation MY way. I’ve heard a lot of tape in my time, being over 50 years old. I’ve dubbed and re-dubbed tapes a lot. So I dialed in (and re-programmed) Tape by loading up eight instances of it, in a row, and making it behave itself as well as could be expected while running audio through eight instances of Tape. It’s not meant to be clean if you do that: it’s meant to be eightfold trash, but the right kind of trash I’m familiar with when you’ve got that much generation loss and head bump buildup. I knew that if I could get that right, if I could get it to behave okay under that kind of duress, I could rely on it as a go-to output stage (going just before Monitoring) that would condition the sound in the right kind of way. And so it does. Tape will be heard from again, but much as ToTape5 bore the standard for Airwindows tape emulation for years, Tape is my personal choice for ‘mix into’ DAW output stage and it’ll stand for a while, I think. If you need more phat or more flutter or more controls etc etc, use ToTape6, which is just as good in many ways. This is just my ‘director’s cut’ version, designed to my tastes, for if you trust my ears and my choices. Since it’s Airwindows, ToTape6 (and 5) still works and you can have both. This one is for those of you who pursue the simple creed: I have a (virtual) tape machine. I record to my tape machine. I am happy. :) This plugin came out with an original version and then had a Redux update in which I added a control: a slider for the head bump, as people were finding the head bump excessive. Cranking it up all the way gave you the original behavior, but I defaulted it to 0.5."
 };
 constexpr std::string_view k_tags{
     "tape"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Tape final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tape';
     double iirMidRollerAL;
     double iirMidRollerBL;
     double iirHeadBumpAL;
@@ -91,19 +95,16 @@ class Tape final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -114,8 +115,7 @@ class Tape final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
 
@@ -126,8 +126,7 @@ class Tape final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "slam"; break;
             case kParamB: return "bump"; break;
 
@@ -138,8 +137,7 @@ class Tape final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Slam"; break;
             case kParamB: return "Bump"; break;
 
@@ -150,26 +148,26 @@ class Tape final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A - 0.5) * 24.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -187,7 +185,7 @@ class Tape final : public Effect<T>
         double HeadBumpFreq = 0.12 / overallscale;
         double softness = 0.618033988749894848204586;
         double RollAmount = (1.0 - softness) / overallscale;
-        //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
+        //[0] is frequency: 0.000001 to 0.499999 is nearVal-zero to nearVal-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         biquadAL[0] = biquadBL[0] = biquadAR[0] = biquadBR[0] = 0.0072 / overallscale;
         biquadAL[1] = biquadBL[1] = biquadAR[1] = biquadBR[1] = 0.0009;
@@ -205,8 +203,7 @@ class Tape final : public Effect<T>
         biquadCL[4] = biquadDL[4] = biquadCR[4] = biquadDR[4] = -biquadDR[2];
         biquadCL[5] = biquadDL[5] = biquadCR[5] = biquadDR[5] = 2.0 * (K * K - 1.0) * norm;
         biquadCL[6] = biquadDL[6] = biquadCR[6] = biquadDR[6] = (1.0 - K / biquadDR[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -226,8 +223,7 @@ class Tape final : public Effect<T>
             double NonHighsSampleL = 0.0;
             double NonHighsSampleR = 0.0;
             double tempSample;
-            if (flip)
-            {
+            if (flip) {
                 iirMidRollerAL = (iirMidRollerAL * (1.0 - RollAmount)) + (inputSampleL * RollAmount);
                 iirMidRollerAR = (iirMidRollerAR * (1.0 - RollAmount)) + (inputSampleR * RollAmount);
                 HighsSampleL = inputSampleL - iirMidRollerAL;
@@ -428,8 +424,7 @@ class Tape final : public Effect<T>
             inputSampleR += groundSampleR; // apply UnBox processing
             inputSampleL += ((iirHeadBumpAL + iirHeadBumpBL) * bumpgain); // and head bump
             inputSampleR += ((iirHeadBumpAR + iirHeadBumpBR) * bumpgain); // and head bump
-            if (lastSampleL >= 0.99)
-            {
+            if (lastSampleL >= 0.99) {
                 if (inputSampleL < 0.99) {
                     lastSampleL = ((0.99 * softness) + (inputSampleL * (1.0 - softness)));
                 }
@@ -437,8 +432,7 @@ class Tape final : public Effect<T>
                     lastSampleL = 0.99;
                 }
             }
-            if (lastSampleL <= -0.99)
-            {
+            if (lastSampleL <= -0.99) {
                 if (inputSampleL > -0.99) {
                     lastSampleL = ((-0.99 * softness) + (inputSampleL * (1.0 - softness)));
                 }
@@ -446,8 +440,7 @@ class Tape final : public Effect<T>
                     lastSampleL = -0.99;
                 }
             }
-            if (inputSampleL > 0.99)
-            {
+            if (inputSampleL > 0.99) {
                 if (lastSampleL < 0.99) {
                     inputSampleL = ((0.99 * softness) + (lastSampleL * (1.0 - softness)));
                 }
@@ -455,8 +448,7 @@ class Tape final : public Effect<T>
                     inputSampleL = 0.99;
                 }
             }
-            if (inputSampleL < -0.99)
-            {
+            if (inputSampleL < -0.99) {
                 if (lastSampleL > -0.99) {
                     inputSampleL = ((-0.99 * softness) + (lastSampleL * (1.0 - softness)));
                 }
@@ -465,8 +457,7 @@ class Tape final : public Effect<T>
                 }
             }
             lastSampleL = inputSampleL; // end ADClip L
-            if (lastSampleR >= 0.99)
-            {
+            if (lastSampleR >= 0.99) {
                 if (inputSampleR < 0.99) {
                     lastSampleR = ((0.99 * softness) + (inputSampleR * (1.0 - softness)));
                 }
@@ -474,8 +465,7 @@ class Tape final : public Effect<T>
                     lastSampleR = 0.99;
                 }
             }
-            if (lastSampleR <= -0.99)
-            {
+            if (lastSampleR <= -0.99) {
                 if (inputSampleR > -0.99) {
                     lastSampleR = ((-0.99 * softness) + (inputSampleR * (1.0 - softness)));
                 }
@@ -483,8 +473,7 @@ class Tape final : public Effect<T>
                     lastSampleR = -0.99;
                 }
             }
-            if (inputSampleR > 0.99)
-            {
+            if (inputSampleR > 0.99) {
                 if (lastSampleR < 0.99) {
                     inputSampleR = ((0.99 * softness) + (lastSampleR * (1.0 - softness)));
                 }
@@ -492,8 +481,7 @@ class Tape final : public Effect<T>
                     inputSampleR = 0.99;
                 }
             }
-            if (inputSampleR < -0.99)
-            {
+            if (inputSampleR < -0.99) {
                 if (lastSampleR > -0.99) {
                     inputSampleR = ((-0.99 * softness) + (lastSampleR * (1.0 - softness)));
                 }

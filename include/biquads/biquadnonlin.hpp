@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BiquadNonLin is Capacitor2, but for biquad filtering."
 };
 constexpr std::string_view k_long_description{
-    "A biquad filter is a very basic piece of typical DAW EQs. If you were going to think of the most ordinary, normal, non-special digital EQ that would sound like every other digital EQ, you're probably going to be stacking up biquad filters. It is the most boring of digital filters, at least ones that are kind of flexible.Let's break it!BiquadNonLin takes the traditional biquad filter, complete with cutoff and Q factor, and applies the same technique used in Capacitor2. That was the one where I read about Murata ceramic capacitors showing striking variations in value, based upon how much voltage pressure was against them. Which is not to say all capacitors do that… but knowing this has happened in the real world suggests that it's an avenue to pursue. And so, Capacitor2 brought in this interesting nonlinearity based on real-world stuff, like a (in fact literally a) frequency modulation… and then it sat for a while. Because how would you even apply that to a carefully worked out algorithm like a biquad?The answer is 'you just do'. Does it produce a clean result? Nope. You can break things pretty thoroughly, especially up near the Nyquist frequency. But you can apply less… I find 0.5 tends to work quite well… and you can get the same kind of nonlinearity.It's just that this time, you can do it on a steep, resonant filter, and get that more analog texture on something that's otherwise very controllable. I'm looking to use this on many things: I think it'll make for a better-sounding distributed ultrasonic filter, and I'd also like to make a multistage version to use as the guts of a future ConsoleSL… because it should work more like a steeper but less vibey filter, except with the analogification.Anyway, here's BiquadNonLin: one biquad filter, lightly broken for your sonic pleasure. Type at 0 is a lowpass, Type at 1 is a bandpass. The biquad tended to explode when I tried to make it do highpasses or notches, but it turned out I could just make the dry/wet an Inv/Wet control, so that means you just use Inv instead, and Type at 0 becomes the highpass (it's subtracted) and Type at 1 is the notch. If you have a hard time hearing the nonlinearity, setting it to highpass and sweeping it up at high NonLin should make it real obvious.Oh, one more thing…Today, the first VST3 is out… kind of. I have it up on GitHub at https://github.com/airwindows/Meter and you see it in the video for BiquadDouble. The thing is, I can't build it anywhere else except a single VST3 on my own machine, for Mac Apple Silicon only. The project on GitHub is all the code, up to date, and it's supposed to be able to build all sorts of different versions.You can fork it, you can download it, you can try to get it to compile just like I did. There's lots of people smarter than me about computers and they didn't make this meter, so I had to. So, if you can make a Pamplejuce project compile, Meter is yours today, no matter what sort of computer you're on or what platform you're targeting. VST3? AU for iPad? AAX? Knock yourself out.If you get anything to work, tell me how you did it, and everyone can have the result. Otherwise, I will keep plugging away, and eventually I'll get this stuff sorted out. But if you're impatient… the GPLed code is there, it compiled for me, let me know how you do :)"
+    "A biquad filter is a very basic piece of typical DAW EQs. If you were going to think of the most ordinary, normal, non-special digital EQ that would sound like every other digital EQ, you're probably going to be stacking up biquad filters. It is the most boring of digital filters, at least ones that are kind of flexible. Let's break it! BiquadNonLin takes the traditional biquad filter, complete with cutoff and Q factor, and applies the same technique used in Capacitor2. That was the one where I read about Murata ceramic capacitors showing striking variations in value, based upon how much voltage pressure was against them. Which is not to say all capacitors do that… but knowing this has happened in the real world suggests that it's an avenue to pursue. And so, Capacitor2 brought in this interesting nonlinearity based on real-world stuff, like a (in fact literally a) frequency modulation… and then it sat for a while. Because how would you even apply that to a carefully worked out algorithm like a biquad? The answer is 'you just do'. Does it produce a clean result? Nope. You can break things pretty thoroughly, especially up near the Nyquist frequency. But you can apply less… I find 0.5 tends to work quite well… and you can get the same kind of nonlinearity. It's just that this time, you can do it on a steep, resonant filter, and get that more analog texture on something that's otherwise very controllable. I'm looking to use this on many things: I think it'll make for a better-sounding distributed ultrasonic filter, and I'd also like to make a multistage version to use as the guts of a future ConsoleSL… because it should work more like a steeper but less vibey filter, except with the analogification. Anyway, here's BiquadNonLin: one biquad filter, lightly broken for your sonic pleasure. Type at 0 is a lowpass, Type at 1 is a bandpass. The biquad tended to explode when I tried to make it do highpasses or notches, but it turned out I could just make the dry/wet an Inv/Wet control, so that means you just use Inv instead, and Type at 0 becomes the highpass (it's subtracted) and Type at 1 is the notch. If you have a hard time hearing the nonlinearity, setting it to highpass and sweeping it up at high NonLin should make it real obvious. Oh, one more thing… Today, the first VST3 is out… kind of. I have it up on GitHub at https://github.com/airwindows/Meter and you see it in the video for BiquadDouble. The thing is, I can't build it anywhere else except a single VST3 on my own machine, for Mac Apple Silicon only. The project on GitHub is all the code, up to date, and it's supposed to be able to build all sorts of different versions. You can fork it, you can download it, you can try to get it to compile just like I did. There's lots of people smarter than me about computers and they didn't make this meter, so I had to. So, if you can make a Pamplejuce project compile, Meter is yours today, no matter what sort of computer you're on or what platform you're targeting. VST3? AU for iPad? AAX? Knock yourself out. If you get anything to work, tell me how you did it, and everyone can have the result. Otherwise, I will keep plugging away, and eventually I'll get this stuff sorted out. But if you're impatient… the GPLed code is there, it compiled for me, let me know how you do :)"
 };
 constexpr std::string_view k_tags{
     "biquads"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BiquadNonLin final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'binl';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -49,12 +53,12 @@ class BiquadNonLin final : public Effect<T>
         biq_total
     };
     double biquad[biq_total];
-
     float A;
     float B;
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
+
   public:
     BiquadNonLin()
     {
@@ -89,22 +93,19 @@ class BiquadNonLin final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -118,8 +119,7 @@ class BiquadNonLin final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.7071; break;
@@ -133,13 +133,12 @@ class BiquadNonLin final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "type"; break;
             case kParamB: return "freq"; break;
             case kParamC: return "q"; break;
             case kParamD: return "nonlin"; break;
-            case kParamE: return "inv/wet"; break;
+            case kParamE: return "invwet"; break;
 
             default: break;
         }
@@ -148,8 +147,7 @@ class BiquadNonLin final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Type"; break;
             case kParamB: return "Freq"; break;
             case kParamC: return "Q"; break;
@@ -163,32 +161,32 @@ class BiquadNonLin final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * B * B * 0.9999) + 0.0001, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * C * C * 29.99) + 0.01, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string((E * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -218,7 +216,7 @@ class BiquadNonLin final : public Effect<T>
         // if you're using a 0.5 for a lowpass fixed frequency, value is 0.25
         double wet = (E * 2.0) - 1.0;
         // biquad contains these values:
-        //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
+        //[0] is frequency: 0.000001 to 0.499999 is nearVal-zero to nearVal-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         //[2] is a0 but you need distinct ones for additional biquad instances so it's here
         //[3] is a1 but you need distinct ones for additional biquad instances so it's here
@@ -265,8 +263,7 @@ class BiquadNonLin final : public Effect<T>
             biquad[biq_bA1] = biquad[biq_bB1];
             biquad[biq_bA2] = biquad[biq_bB2];
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

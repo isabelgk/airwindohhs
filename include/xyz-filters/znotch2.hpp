@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ZNotch2 acts more like the Emu e6400 Ultra phaser in motion, with coefficient interpolation."
 };
 constexpr std::string_view k_long_description{
-    "This completes the reboot of my original Z-style filters! These are all based on study of a real hardware Emu e6400 sampler. (If my Patreon does well, I’ll be able to study more interesting hardware gear like I did this one). ZNotch is based on the ‘phaser’ settings, and ZNotch2 brings the coefficient interpolation people longed to have in this filter.Bear in mind, ZNotch also has its place. It’s meant to sound exactly the same (I may possibly have improved the tone a tiny bit with ZNotch2, not sure of that) but the original ZNotch does NOT have coefficient smoothing. That means it started out less than the real hardware filter, ‘not as good yet’, BUT if you’re not modulating the controls, you can get the same tone with a lot less CPU by choosing the Z filter that is not the 2 version. The originals will use less CPU because they’re not recalculating so much every sample, and that means you should probably have both installed if you like this type of filter. I demonstrate ZNotch2 on an electronic kick drum to great effect, and there’s nothing I’m doing there which I couldn’t do with the original ZNotch at lower CPU cost.That said, this one will move more fluidly, and the ‘Phaser’ sound is very special in motion! I hope you like it. We’re starting 2022 with the full DnB arsenal available ITB: Mackity, MackEQ, and the Z-style filters! I hope people have a lot of fun with this."
+    "This completes the reboot of my original Z-style filters! These are all based on study of a real hardware Emu e6400 sampler. (If my Patreon does well, I’ll be able to study more interesting hardware gear like I did this one). ZNotch is based on the ‘phaser’ settings, and ZNotch2 brings the coefficient interpolation people longed to have in this filter. Bear in mind, ZNotch also has its place. It’s meant to sound exactly the same (I may possibly have improved the tone a tiny bit with ZNotch2, not sure of that) but the original ZNotch does NOT have coefficient smoothing. That means it started out less than the real hardware filter, ‘not as good yet’, BUT if you’re not modulating the controls, you can get the same tone with a lot less CPU by choosing the Z filter that is not the 2 version. The originals will use less CPU because they’re not recalculating so much every sample, and that means you should probably have both installed if you like this type of filter. I demonstrate ZNotch2 on an electronic kick drum to great effect, and there’s nothing I’m doing there which I couldn’t do with the original ZNotch at lower CPU cost. That said, this one will move more fluidly, and the ‘Phaser’ sound is very special in motion! I hope you like it. We’re starting 2022 with the full DnB arsenal available ITB: Mackity, MackEQ, and the Z-style filters! I hope people have a lot of fun with this."
 };
 constexpr std::string_view k_tags{
     "xyz-filters"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ZNotch2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'znou';
     double iirSampleAL;
     double iirSampleAR;
     enum
@@ -57,7 +61,6 @@ class ZNotch2 final : public Effect<T>
     double outTrimB;
     double wetA;
     double wetB;
-
     enum
     {
         fix_freq,
@@ -75,11 +78,9 @@ class ZNotch2 final : public Effect<T>
     }; // fixed frequency biquad filter for ultrasonics, stereo
     double fixA[fix_total];
     double fixB[fix_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
@@ -132,21 +133,18 @@ class ZNotch2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -159,8 +157,7 @@ class ZNotch2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.1; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -173,8 +170,7 @@ class ZNotch2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "freq"; break;
             case kParamC: return "output"; break;
@@ -187,8 +183,7 @@ class ZNotch2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Freq"; break;
             case kParamC: return "Output"; break;
@@ -201,30 +196,30 @@ class ZNotch2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -276,8 +271,7 @@ class ZNotch2 final : public Effect<T>
         fixA[fix_b2] = fixB[fix_b2] = (1.0 - K / fixB[fix_reso] + K * K) * norm;
         // end opamp stuff
         double trim = 0.1 + (3.712 * biquadA[biq_freq]);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

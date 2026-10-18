@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "GlitchShifter is a really gnarly, raw-sounding pitch shifter with a dose of insanity!"
 };
 constexpr std::string_view k_long_description{
-    "And then some days it’s NOT BORING… :DThis is one of the craziest secret weapons I’ve ever done. In fact, I’ve got plans for refining this one and making it do subtler things that are of use in pop mixing… but right now, this is Glitch Shifter! It is an audio monster, and it’s all yours.You can do equal-temperament pitch shifting, unquantized, or both. You can tell it to feed back, or keep it as a tightly tracked subtle dry/wet blend. But that’s just the start… that’s the top two sliders, the top one being Note (in semitones) and the bottom being trim (unquantized: if you’re on VST and can’t reset it to its default easily, be careful not to change it unless you want detuned effects). That gives you the base pitch shifting, like any pitch shifter plugin. Its tone comes from the algorithm: instead of smoothing the transitions, it always tries to find a spot where it can switch inside the position of its buffer in just a sample or two, seamlessly. That gives it a distinctive raw tone, less processed, but still essentially a pitch shifter plugin.Except this is NOT like other pitch shifter plugins, because it’s got that Tightness control, and that takes Glitch Shifter into full glitch in two different ways. If you’re trying to do a ‘nice’ pitch shift you’ll be wanting to tune this to your underlying track, but if you want to create sonic mayhem here is how you do it.Turning up Tightness all the way shortens the buffer zone in which the plugin finds its transitions. It makes the pitch shifted sound track the underlying sound more tightly… or MUCH more tightly… or so tightly that it glitches out and turns into a harsh de-rezzing bitscrunch sound, because the buffer’s not nearly long enough to contain a seamless loop of the underlying sound. Back off the Tightness, to get back to a ‘nice’ pitch shift, or turn it up for tightly tracked, robotic, nasty artifacts. All the way up and the pitch shifting is totally defeated.Turning DOWN Tightness has yet another effect. Since the larger buffer occupies more time, it’s easier and easier for the pitch shifter to find spots to seamlessly transition, so you can quickly get smooth legato effects without grind, and the lower the Tightness the smoother the pitch shift effect. Except, it’s not that simple. As the buffer size expands ever outward, the pitch shifter loses track of where it is. It decouples, unhooks from the underlying sound, and begins to delay and sample-chop the audio randomly. Not really randomly: it’s finding the most seamless transitions. But it starts acting like a granular effect… except it is NOT a granular effect, because those fade their grains in and out (typically) and GlitchShifter works entirely by splicing audio WITHOUT fades to smooth things. So when you drop Tightness super low, you get an uncontrollable pitch-delay thing going on. And then, if you add feedback, you’ve got many layers of stacked pitch-delay going on, unpredictably…"
+    "And then some days it’s NOT BORING… :D This is one of the craziest secret weapons I’ve ever done. In fact, I’ve got plans for refining this one and making it do subtler things that are of use in pop mixing… but right now, this is Glitch Shifter! It is an audio monster, and it’s all yours. You can do equal-temperament pitch shifting, unquantized, or both. You can tell it to feed back, or keep it as a tightly tracked subtle dry/wet blend. But that’s just the start… that’s the top two sliders, the top one being Note (in semitones) and the bottom being trim (unquantized: if you’re on VST and can’t reset it to its default easily, be careful not to change it unless you want detuned effects). That gives you the base pitch shifting, like any pitch shifter plugin. Its tone comes from the algorithm: instead of smoothing the transitions, it always tries to find a spot where it can switch inside the position of its buffer in just a sample or two, seamlessly. That gives it a distinctive raw tone, less processed, but still essentially a pitch shifter plugin. Except this is NOT like other pitch shifter plugins, because it’s got that Tightness control, and that takes Glitch Shifter into full glitch in two different ways. If you’re trying to do a ‘nice’ pitch shift you’ll be wanting to tune this to your underlying track, but if you want to create sonic mayhem here is how you do it. Turning up Tightness all the way shortens the buffer zone in which the plugin finds its transitions. It makes the pitch shifted sound track the underlying sound more tightly… or MUCH more tightly… or so tightly that it glitches out and turns into a harsh de-rezzing bitscrunch sound, because the buffer’s not nearly long enough to contain a seamless loop of the underlying sound. Back off the Tightness, to get back to a ‘nice’ pitch shift, or turn it up for tightly tracked, robotic, nasty artifacts. All the way up and the pitch shifting is totally defeated. Turning DOWN Tightness has yet another effect. Since the larger buffer occupies more time, it’s easier and easier for the pitch shifter to find spots to seamlessly transition, so you can quickly get smooth legato effects without grind, and the lower the Tightness the smoother the pitch shift effect. Except, it’s not that simple. As the buffer size expands ever outward, the pitch shifter loses track of where it is. It decouples, unhooks from the underlying sound, and begins to delay and sample-chop the audio randomly. Not really randomly: it’s finding the most seamless transitions. But it starts acting like a granular effect… except it is NOT a granular effect, because those fade their grains in and out (typically) and GlitchShifter works entirely by splicing audio WITHOUT fades to smooth things. So when you drop Tightness super low, you get an uncontrollable pitch-delay thing going on. And then, if you add feedback, you’ve got many layers of stacked pitch-delay going on, unpredictably…"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class GlitchShifter final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'glit';
     VstInt32 pL[131076];
     VstInt32 offsetL[258];
     VstInt32 pastzeroL[258];
@@ -146,22 +150,19 @@ class GlitchShifter final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -175,8 +176,7 @@ class GlitchShifter final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -190,13 +190,12 @@ class GlitchShifter final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "note"; break;
             case kParamB: return "trim"; break;
             case kParamC: return "tighten"; break;
             case kParamD: return "feedbck"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -205,8 +204,7 @@ class GlitchShifter final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Note"; break;
             case kParamB: return "Trim"; break;
             case kParamC: return "Tighten"; break;
@@ -220,32 +218,32 @@ class GlitchShifter final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string(((int)(A * 24.999) - 12), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "semi"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "semi", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -266,8 +264,7 @@ class GlitchShifter final : public Effect<T>
         double bias = pow(C, 3);
         double feedback = D / 1.5;
         double wet = E;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DeEss is the best de-essing solution there is. A go-to utility plugin."
 };
 constexpr std::string_view k_long_description{
-    "The Airwindows DeEss works by tracking slew rates, not by filtering and frequencies. It keeps a string of recent slew rates, and if it sees high slews that keep going back and forth (flipping direction) that’s how it triggers. It doesn’t trigger on things like square wave or sawtooth waves, because those aren’t going back and forth fast enough to be an ess. It’s purely mechanical: the trigger for DeEss happens instantly and way more powerfully on real esses, making it extremely easy to set. It’s not fiddly, just crank up the effect so you can plainly hear where it hits and use that (don’t overtrigger, for the bad esses you’ll get a HUGE powerful trigger even when everything else is totally clear of de-essing)Then you use the ducking control and the treble rolloff to tailor the kind of esses you do want. The tone thing lets you have darker esses that are still very audible, and the ducking control means you can retain the original sound but duck it as much as you like. It should be possible to template it: since it triggers so powerfully on real esses, if you’ve got a working setting it should always work. De-essing is now a solved problem, for good. Use good taste (avoid ‘lisping’ effects) and de-essing is easy."
+    "The Airwindows DeEss works by tracking slew rates, not by filtering and frequencies. It keeps a string of recent slew rates, and if it sees high slews that keep going back and forth (flipping direction) that’s how it triggers. It doesn’t trigger on things like square wave or sawtooth waves, because those aren’t going back and forth fast enough to be an ess. It’s purely mechanical: the trigger for DeEss happens instantly and way more powerfully on real esses, making it extremely easy to set. It’s not fiddly, just crank up the effect so you can plainly hear where it hits and use that (don’t overtrigger, for the bad esses you’ll get a HUGE powerful trigger even when everything else is totally clear of de-essing) Then you use the ducking control and the treble rolloff to tailor the kind of esses you do want. The tone thing lets you have darker esses that are still very audible, and the ducking control means you can retain the original sound but duck it as much as you like. It should be possible to template it: since it triggers so powerfully on real esses, if you’ve got a working setting it should always work. De-essing is now a solved problem, for good. Use good taste (avoid ‘lisping’ effects) and de-essing is easy."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DeEss final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dess';
     double s1L;
     double s2L;
     double s3L;
@@ -112,20 +116,17 @@ class DeEss final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -137,8 +138,7 @@ class DeEss final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -150,10 +150,9 @@ class DeEss final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "intense"; break;
-            case kParamB: return "max ds"; break;
+            case kParamB: return "maxds"; break;
             case kParamC: return "freq"; break;
 
             default: break;
@@ -163,8 +162,7 @@ class DeEss final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Intense"; break;
             case kParamB: return "Max DS"; break;
             case kParamC: return "Freq"; break;
@@ -176,28 +174,28 @@ class DeEss final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B - 1.0) * 48.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -217,8 +215,7 @@ class DeEss final : public Effect<T>
         double sense;
         double recovery;
         double attackspeed;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             static int noisesourceL = 0;
@@ -284,12 +281,10 @@ class DeEss final : public Effect<T>
             offset = 1.0 - fabs(inputSampleL);
             if (flip) {
                 iirSampleAL = (iirSampleAL * (1 - (offset * iirAmount))) + (inputSampleL * (offset * iirAmount));
-                if (ratioAL < sense)
-                {
+                if (ratioAL < sense) {
                     ratioAL = ((ratioAL * attackspeed) + sense) / (attackspeed + 1.0);
                 }
-                else
-                {
+                else {
                     ratioAL = 1.0 + ((ratioAL - 1.0) / recovery);
                 }
                 // returny to 1/1 code
@@ -300,12 +295,10 @@ class DeEss final : public Effect<T>
             }
             else {
                 iirSampleBL = (iirSampleBL * (1 - (offset * iirAmount))) + (inputSampleL * (offset * iirAmount));
-                if (ratioBL < sense)
-                {
+                if (ratioBL < sense) {
                     ratioBL = ((ratioBL * attackspeed) + sense) / (attackspeed + 1.0);
                 }
-                else
-                {
+                else {
                     ratioBL = 1.0 + ((ratioBL - 1.0) / recovery);
                 }
                 // returny to 1/1 code
@@ -333,12 +326,10 @@ class DeEss final : public Effect<T>
             offset = 1.0 - fabs(inputSampleR);
             if (flip) {
                 iirSampleAR = (iirSampleAR * (1 - (offset * iirAmount))) + (inputSampleR * (offset * iirAmount));
-                if (ratioAR < sense)
-                {
+                if (ratioAR < sense) {
                     ratioAR = ((ratioAR * attackspeed) + sense) / (attackspeed + 1.0);
                 }
-                else
-                {
+                else {
                     ratioAR = 1.0 + ((ratioAR - 1.0) / recovery);
                 }
                 // returny to 1/1 code
@@ -349,12 +340,10 @@ class DeEss final : public Effect<T>
             }
             else {
                 iirSampleBR = (iirSampleBR * (1 - (offset * iirAmount))) + (inputSampleR * (offset * iirAmount));
-                if (ratioBR < sense)
-                {
+                if (ratioBR < sense) {
                     ratioBR = ((ratioBR * attackspeed) + sense) / (attackspeed + 1.0);
                 }
-                else
-                {
+                else {
                     ratioBR = 1.0 + ((ratioBR - 1.0) / recovery);
                 }
                 // returny to 1/1 code

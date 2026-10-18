@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Distance is a sound design or reverb far-away-izer."
 };
 constexpr std::string_view k_long_description{
-    "Here’s another utility plugin: Distance is specifically set up to mimic through-air high frequency attenuation. It’s from my initial wave of Airwindows plugins, come to VST and with a new twist: though in the video it’s a one-knobber, when you download it you’ll find that it’s got a Dry/Wet control, just to expand the things you can do with it. That’s new! I try to listen to people, even when it’s tempting to make it a super-dedicated one-trick pony.As you can see from how it behaves, Distance is a lot more complicated than just running a shelf. For that reason, I suggest this plugin for sound design and creative mixing purposes. Don’t try to use it for mastering or 2-buss, I feel it’s too intensely colored. However, for creative use it’s exactly what it says on the tin! Stick it on anything that’s supposed to ‘read’ sonically like it’s super far away, and you’ll be able to hear for miles and miles. Works on anything from pads to thunder to basses to reverb returns (I suggest using it on reverb returns rather than sends: it will be able to add thunder and size to the output of the reverb algorithm)"
+    "Here’s another utility plugin: Distance is specifically set up to mimic through-air high frequency attenuation. It’s from my initial wave of Airwindows plugins, come to VST and with a new twist: though in the video it’s a one-knobber, when you download it you’ll find that it’s got a Dry/Wet control, just to expand the things you can do with it. That’s new! I try to listen to people, even when it’s tempting to make it a super-dedicated one-trick pony. As you can see from how it behaves, Distance is a lot more complicated than just running a shelf. For that reason, I suggest this plugin for sound design and creative mixing purposes. Don’t try to use it for mastering or 2-buss, I feel it’s too intensely colored. However, for creative use it’s exactly what it says on the tin! Stick it on anything that’s supposed to ‘read’ sonically like it’s super far away, and you’ll be able to hear for miles and miles. Works on anything from pads to thunder to basses to reverb returns (I suggest using it on reverb returns rather than sends: it will be able to add thunder and size to the output of the reverb algorithm)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Distance final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dist';
     double lastclampL;
     double clampL;
     double changeL;
@@ -65,19 +69,16 @@ class Distance final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
-
-            default: break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -88,8 +89,7 @@ class Distance final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
 
@@ -100,10 +100,9 @@ class Distance final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "distance"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -112,8 +111,7 @@ class Distance final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Distance"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -124,26 +122,26 @@ class Distance final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 2.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "miles"; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "miles", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -169,8 +167,7 @@ class Distance final : public Effect<T>
         double inputSampleR;
         double drySampleL;
         double drySampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Slew4 is tape compression without the tape, for brightness control."
 };
 constexpr std::string_view k_long_description{
-    "You've heard of a cat without a grin and a grin without a cat, and you've heard of plenty of tape plugins without tape compression… but how about the compression without the tape?Slew4 does just one thing, but it does it incredibly well. It finds digital edges and glare and high frequency tizz, and it wipes out JUST that, to whatever extent you like, using new filtering ideas I don't think have been used before in this way. The Airwindows Slew plugins have long been a secret weapon for just this purpose, but this takes it completely beyond anything I had.That's why this is the technology in TapeHack2, and what got included in ConsoleH and ConsoleX2 as hasty updates soon after they came out, and why it's a significant part of ToTape9 which I'm doing everything I can to finish up. Now it's there for you to use and control, without any sort of saturation stage or any other sort of tape modeling, in its purest possible form.One thing that means is, if your sound isn't bright enough, there is no chance you'll ever hear it do anything. With the right kind of vocal track this is a de-esser all by itself. For other vocal tracks, even ones with pronounced esses, you'll find it does absolutely nothing. It ONLY cares about the very highest highs, and excises them so neatly you'd never know they were there.Slew4 runs two samples of lookahead to do what it does, and makes its filter by stacking up averaging filters with even numbers of samples in them. These produce stopbands with big cancellation nodes in them, but when you stack them up, each new cancellation node targets a bump (between nodes) from the previous one… so it becomes a very steep roll-off with good filtering past the cutoff, and no pre-ripple meaning it has incredible time domain performance for something that steep. The strangeness of the stop-band response is probably why this wouldn't have found use before, but it turns out to sound fantastic, especially when it's just reining in the highest highs without touching anything else.If you liked TapeHack2, you already like this! Enjoy playing with it as a dedicated brightness tamer :)"
+    "You've heard of a cat without a grin and a grin without a cat, and you've heard of plenty of tape plugins without tape compression… but how about the compression without the tape? Slew4 does just one thing, but it does it incredibly well. It finds digital edges and glare and high frequency tizz, and it wipes out JUST that, to whatever extent you like, using new filtering ideas I don't think have been used before in this way. The Airwindows Slew plugins have long been a secret weapon for just this purpose, but this takes it completely beyond anything I had. That's why this is the technology in TapeHack2, and what got included in ConsoleH and ConsoleX2 as hasty updates soon after they came out, and why it's a significant part of ToTape9 which I'm doing everything I can to finish up. Now it's there for you to use and control, without any sort of saturation stage or any other sort of tape modeling, in its purest possible form. One thing that means is, if your sound isn't bright enough, there is no chance you'll ever hear it do anything. With the right kind of vocal track this is a de-esser all by itself. For other vocal tracks, even ones with pronounced esses, you'll find it does absolutely nothing. It ONLY cares about the very highest highs, and excises them so neatly you'd never know they were there. Slew4 runs two samples of lookahead to do what it does, and makes its filter by stacking up averaging filters with even numbers of samples in them. These produce stopbands with big cancellation nodes in them, but when you stack them up, each new cancellation node targets a bump (between nodes) from the previous one… so it becomes a very steep roll-off with good filtering past the cutoff, and no pre-ripple meaning it has incredible time domain performance for something that steep. The strangeness of the stop-band response is probably why this wouldn't have found use before, but it turns out to sound fantastic, especially when it's just reining in the highest highs without touching anything else. If you liked TapeHack2, you already like this! Enjoy playing with it as a dedicated brightness tamer :)"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Slew4 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'slw4';
     float A;
     double slewL[24][12];
     double sustainSlewL;
@@ -70,10 +74,9 @@ class Slew4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -119,22 +122,24 @@ class Slew4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "MultiBandDistortion is an old weird gnarly sound wrecker :)"
 };
 constexpr std::string_view k_long_description{
-    "Some plugins just want to watch the world burn :)I don’t have all that much to say about this one. I’ve been needing to post it: I’ve got folks who ask me for soundgoodizer/OTT type things and try to get a ‘slammed’, deeply unnatural, multiband kind of effect going… and all my life I’ve been learning how to get AWAY from that kind of sonic disassociation and audio gibberish towards stuff with a very different texture. So I’m not a natural match for that kind of thing, and yet I get asked for my take on plugins like that.So, long ago, I made MultiBandDistortion. I figured if you were going to wreck your sound, let’s REALLY wreck it, and I did some very gnarly things in there that I now don’t entirely understand. I know that if you turn ‘stable’ down, you get a choppy effect not unlike the ZVex Fuzz Factory pedal, only not: the interaction between the bands can get sketchy. Again, I don’t remember how this worked and don’t expect to be revising it or making it more controllable or cleaner: that kind of misses the point. If you’re trying to get a slick version of this kind of thing you start by not using this kind of thing :)"
+    "Some plugins just want to watch the world burn :) I don’t have all that much to say about this one. I’ve been needing to post it: I’ve got folks who ask me for soundgoodizer/OTT type things and try to get a ‘slammed’, deeply unnatural, multiband kind of effect going… and all my life I’ve been learning how to get AWAY from that kind of sonic disassociation and audio gibberish towards stuff with a very different texture. So I’m not a natural match for that kind of thing, and yet I get asked for my take on plugins like that. So, long ago, I made MultiBandDistortion. I figured if you were going to wreck your sound, let’s REALLY wreck it, and I did some very gnarly things in there that I now don’t entirely understand. I know that if you turn ‘stable’ down, you get a choppy effect not unlike the ZVex Fuzz Factory pedal, only not: the interaction between the bands can get sketchy. Again, I don’t remember how this worked and don’t expect to be revising it or making it more controllable or cleaner: that kind of misses the point. If you’re trying to get a slick version of this kind of thing you start by not using this kind of thing :)"
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class MultiBandDistortion final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'mbdt';
     double ataLast3SampleL;
     double ataLast2SampleL;
     double ataLast1SampleL;
@@ -120,8 +124,7 @@ class MultiBandDistortion final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -131,15 +134,13 @@ class MultiBandDistortion final : public Effect<T>
             case kParamG: G = value; break;
             case kParamH: H = value; break;
             case kParamI: I = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -157,8 +158,7 @@ class MultiBandDistortion final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.0; break;
@@ -176,15 +176,14 @@ class MultiBandDistortion final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "freqcy"; break;
-            case kParamB: return "h gain"; break;
-            case kParamC: return "l gain"; break;
-            case kParamD: return "h hard"; break;
-            case kParamE: return "l hard"; break;
-            case kParamF: return "h mtrx"; break;
-            case kParamG: return "l mtrx"; break;
+            case kParamB: return "hgain"; break;
+            case kParamC: return "lgain"; break;
+            case kParamD: return "hhard"; break;
+            case kParamE: return "lhard"; break;
+            case kParamF: return "hmtrx"; break;
+            case kParamG: return "lmtrx"; break;
             case kParamH: return "stable"; break;
             case kParamI: return "output"; break;
 
@@ -195,8 +194,7 @@ class MultiBandDistortion final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Freqcy"; break;
             case kParamB: return "H Gain"; break;
             case kParamC: return "L Gain"; break;
@@ -214,40 +212,40 @@ class MultiBandDistortion final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B * 48.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 48.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string((I - 1.0) * 48.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return "dB"; break;
-            case kParamC: return "dB"; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return "dB"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -293,8 +291,7 @@ class MultiBandDistortion final : public Effect<T>
         double tempLL;
         double tempHR;
         double tempLR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -324,8 +321,7 @@ class MultiBandDistortion final : public Effect<T>
             tempHR = ataHalfwaySampleR - iirSampleAR;
             // highpass section
             tempHL *= gainH;
-            if (fabs(tempHL) > thresholdH)
-            {
+            if (fabs(tempHL) > thresholdH) {
                 bridgerectifier = (fabs(tempHL) - thresholdH) * hardnessH;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {
@@ -343,8 +339,7 @@ class MultiBandDistortion final : public Effect<T>
                 }
             }
             tempHR *= gainH;
-            if (fabs(tempHR) > thresholdH)
-            {
+            if (fabs(tempHR) > thresholdH) {
                 bridgerectifier = (fabs(tempHR) - thresholdH) * hardnessH;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {
@@ -362,8 +357,7 @@ class MultiBandDistortion final : public Effect<T>
                 }
             }
             tempLL *= gainL;
-            if (fabs(tempLL) > thresholdL)
-            {
+            if (fabs(tempLL) > thresholdL) {
                 bridgerectifier = (fabs(tempLL) - thresholdL) * hardnessL;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {
@@ -381,8 +375,7 @@ class MultiBandDistortion final : public Effect<T>
                 }
             }
             tempLR *= gainL;
-            if (fabs(tempLR) > thresholdL)
-            {
+            if (fabs(tempLR) > thresholdL) {
                 bridgerectifier = (fabs(tempLR) - thresholdL) * hardnessL;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {
@@ -410,8 +403,7 @@ class MultiBandDistortion final : public Effect<T>
             tempHR = inputSampleR - iirSampleBR;
             // highpass section
             tempHL *= gainH;
-            if (fabs(tempHL) > thresholdH)
-            {
+            if (fabs(tempHL) > thresholdH) {
                 bridgerectifier = (fabs(tempHL) - thresholdH) * hardnessH;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {
@@ -429,8 +421,7 @@ class MultiBandDistortion final : public Effect<T>
                 }
             }
             tempHR *= gainH;
-            if (fabs(tempHR) > thresholdH)
-            {
+            if (fabs(tempHR) > thresholdH) {
                 bridgerectifier = (fabs(tempHR) - thresholdH) * hardnessH;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {
@@ -448,8 +439,7 @@ class MultiBandDistortion final : public Effect<T>
                 }
             }
             tempLL *= gainL;
-            if (fabs(tempLL) > thresholdL)
-            {
+            if (fabs(tempLL) > thresholdL) {
                 bridgerectifier = (fabs(tempLL) - thresholdL) * hardnessL;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {
@@ -467,8 +457,7 @@ class MultiBandDistortion final : public Effect<T>
                 }
             }
             tempLR *= gainL;
-            if (fabs(tempLR) > thresholdL)
-            {
+            if (fabs(tempLR) > thresholdL) {
                 bridgerectifier = (fabs(tempLR) - thresholdL) * hardnessL;
                 // skip flat area if any, scale to distortion limit
                 if (bridgerectifier > breakup) {

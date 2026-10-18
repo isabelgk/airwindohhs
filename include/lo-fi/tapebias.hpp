@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "TapeBias is a new piece of ToTape allowing you to underbias or overbias."
 };
 constexpr std::string_view k_long_description{
-    "Closing in on the big update to ToTape, and here's a helpful detail, that's not existed in ToTape before. I've been doing recalls and rebuilds of the big ToTape7 for weeks, but this little aspect more or less worked right away.Biasing a tape means adding a really high frequency to the sound, a supersonic frequency like 40k. You record to the tape, and this frequency being there means the iron oxide (or whatever metals are in use) gets jostled around, enough that slow gradual changes can be represented properly. Without it, signals kinda get stuck, It's like dither for tiny metal chunks stuck to plastic!So there are two ways to go about figuring this one out.One is to painstakingly model the whole system, in mathematical perfection, while overprocessing the heck out of everything, and then stick a virtual faceplate on it. And presumably charge a bunch of money. Not my jam.The other is to HACK AWAY like mad until you can make noises that SOUND LIKE what's happening, ideally with nice simple algorithms that will retain the digital tone better. But what even is happening?TapeBias is bypassed at 0.5. Perfect bias here means it applies NONE of the processing. In fact in the final ToTape7 (next week if all goes well!) you can literally bypass the processing at 0.5 to save CPU: it won't be doing anything anyway.If you overbias, which is commonly suggested as a good practice within reason, you're applying this high frequency tone louder and louder. That will record onto the tape too, in fact you can de-flutter using it, but it's also eating up headroom: maybe, lots of headroom. If all your tape headroom is used up trying to record a supersonic tone, and bear in mind there's a boost/cut dynamic for treble already to try and minimize noise (not even counting Dubly!) then you'll be clipping the real highs more easily if the bias is too intense.In comparison with test files recorded on real tape machines, I found that GoldenSlew did the nicest job of acting like the sound of overbiasing. TapeBias uses a very slightly changed version of GoldenSlew on overbiasing. If it's inside ToTape7 it's an even better effect because it combines with everything else, but in this case you have basically GoldenSlew for when you overbias.By contrast, there's no such existing effect that acts like underbiasing. I could refer to a real tape recording and see the odd flat bits that pop up when the biasing isn't quite enough to handle the audio. The sound is known to go a little brighter, sort of dry things up… a possible sonic effect, especially if it's a plugin and not a giant pain to recalibrate tape machines just to do.Turns out it's possible to do an algorithm that acts quite a bit like what happens with underbiasing, except that rather than put in flat bits of audio, it puts in slanted bits that do about the same thing… and it's a simple algorithm, and you can bring it in subtly or make it obvious. And it works very nicely in ToTape7, inside a full tape emulation with all its parts… but here you get it a week early, all by itself. Because, why not? Why not be able to use that part of the effect, isolated, perhaps for some sound design purpose, or to do weird things with LFOs in VCV Rack or who knows what else?So, here's TapeBias. Turn it up to overbias, turn it down to underbias. Have fun :)"
+    "Closing in on the big update to ToTape, and here's a helpful detail, that's not existed in ToTape before. I've been doing recalls and rebuilds of the big ToTape7 for weeks, but this little aspect more or less worked right away. Biasing a tape means adding a really high frequency to the sound, a supersonic frequency like 40k. You record to the tape, and this frequency being there means the iron oxide (or whatever metals are in use) gets jostled around, enough that slow gradual changes can be represented properly. Without it, signals kinda get stuck, It's like dither for tiny metal chunks stuck to plastic! So there are two ways to go about figuring this one out. One is to painstakingly model the whole system, in mathematical perfection, while overprocessing the heck out of everything, and then stick a virtual faceplate on it. And presumably charge a bunch of money. Not my jam. The other is to HACK AWAY like mad until you can make noises that SOUND LIKE what's happening, ideally with nice simple algorithms that will retain the digital tone better. But what even is happening? TapeBias is bypassed at 0.5. Perfect bias here means it applies NONE of the processing. In fact in the final ToTape7 (next week if all goes well!) you can literally bypass the processing at 0.5 to save CPU: it won't be doing anything anyway. If you overbias, which is commonly suggested as a good practice within reason, you're applying this high frequency tone louder and louder. That will record onto the tape too, in fact you can de-flutter using it, but it's also eating up headroom: maybe, lots of headroom. If all your tape headroom is used up trying to record a supersonic tone, and bear in mind there's a boost/cut dynamic for treble already to try and minimize noise (not even counting Dubly!) then you'll be clipping the real highs more easily if the bias is too intense. In comparison with test files recorded on real tape machines, I found that GoldenSlew did the nicest job of acting like the sound of overbiasing. TapeBias uses a very slightly changed version of GoldenSlew on overbiasing. If it's inside ToTape7 it's an even better effect because it combines with everything else, but in this case you have basically GoldenSlew for when you overbias. By contrast, there's no such existing effect that acts like underbiasing. I could refer to a real tape recording and see the odd flat bits that pop up when the biasing isn't quite enough to handle the audio. The sound is known to go a little brighter, sort of dry things up… a possible sonic effect, especially if it's a plugin and not a giant pain to recalibrate tape machines just to do. Turns out it's possible to do an algorithm that acts quite a bit like what happens with underbiasing, except that rather than put in flat bits of audio, it puts in slanted bits that do about the same thing… and it's a simple algorithm, and you can bring it in subtly or make it obvious. And it works very nicely in ToTape7, inside a full tape emulation with all its parts… but here you get it a week early, all by itself. Because, why not? Why not be able to use that part of the effect, isolated, perhaps for some sound design purpose, or to do weird things with LFOs in VCV Rack or who knows what else? So, here's TapeBias. Turn it up to overbias, turn it down to underbias. Have fun :)"
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class TapeBias final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tpbs';
     float A;
     enum
     {
@@ -53,7 +57,6 @@ class TapeBias final : public Effect<T>
         gslew_total
     }; // fixed frequency pear filter for ultrasonics, stereo
     double gslew[gslew_total]; // probably worth just using a number here
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -84,18 +87,15 @@ class TapeBias final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -105,8 +105,7 @@ class TapeBias final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -116,8 +115,7 @@ class TapeBias final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "bias"; break;
 
             default: break;
@@ -127,8 +125,7 @@ class TapeBias final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Bias"; break;
 
             default: break;
@@ -138,24 +135,24 @@ class TapeBias final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -195,8 +192,7 @@ class TapeBias final : public Effect<T>
         overBias *= 1.618033988749894848204586;
         gslew[threshold1] = overBias;
         overBias *= 1.618033988749894848204586;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

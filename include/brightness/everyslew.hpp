@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "EverySlew is a wide variety of unique sound processing tools."
 };
 constexpr std::string_view k_long_description{
-    "Where to even begin? This is the Swiss Army Chainsaw of treble processing plugins. It'll do Slew, GoldenSlew, PlatinumSlew, or any combination of them, forwards, backwards and inside out. I hesitate even to recommend it as there is no real introduction to it, or any other plugin or processor that will really teach you how to use it. If you'd like to just tame unruly high frequencies, you can still use GoldenSlew or PlatinumSlew, and as long as you can still hear audio coming out you're fine (don't crank up Slew or GoldenSlew all the way to 1.0 unless you want to sample and hold, because they will do what you asked).But if you're still reading, here's what you get extra in EverySlew, which is mainly for me to use developing versions of Console that sound like real analog desks.Firstly, the Depth control gives you number of stages, with full crank being the equivalent of GoldenSlew or PlatinumSlew. For many sounds there will be no difference between the full ten stages those have, and much fewer. It'll be hard to hear. Fewer stages means lighter CPU load, so I'll be finding optimal settings here, but it also means less of the 'golden' effect when given extreme inputs. When used to take off only the brightest highs (more on that later) you can use fewer stages with no penalty. Two or three should suffice: 0.2 or 0.3 or so.Secondly, the Halo control gives you a terrifying, industrial meltdown of a sound that also introduces attenuation into the deep bass. I called it Halo because it brings in an odd sparkliness and energy that could come in handy. It uses another level of previous-sample to try and identify actual corners, changes in the angle of the wave, like my DeEss and Acceleration plugins do. I've never got this algorithm to work until now: having made it work, it's a strange and unruly thing. Realistic settings will all be rather low, especially if Slew is anything like obvious. HIgh Halo settings are a kind of terrible distortion I've never quite heard before: I expect this to be used in anger to make some very aggressive noises not quite like any other (which is always handy, right?)Lastly, you've now got a dry/wet. But not JUST a dry/wet, an Inv/Dry/Wet. Dry is 0.5 on the control. Crank it up and you have full wet… but set it to Inv, and you can make it cancel out the dry signal. When you do that, it shows you only the bits that are slew clipping, and silences everything else. So, for the first time, it's a slew clipper where you can monitor the clipping only, and directly hear exactly what the thing is doing. And this is handy, because the effect is very hard to hear at the levels it should be used! It will tend to make things sound exactly like they already did, except with glue and space in the mix, combing over the stray edges and points. Setting it to Inv means you can hear the points being put into place. Also, if you're using Halo, you can hear when that begins to reshape the effect, bringing in lows and so on.EverySlew isn't for everybody. I made it because I'll need it. I share it because that's what I do. If you're the sort of person to like this sort of thing, I hope you like it :)"
+    "Where to even begin? This is the Swiss Army Chainsaw of treble processing plugins. It'll do Slew, GoldenSlew, PlatinumSlew, or any combination of them, forwards, backwards and inside out. I hesitate even to recommend it as there is no real introduction to it, or any other plugin or processor that will really teach you how to use it. If you'd like to just tame unruly high frequencies, you can still use GoldenSlew or PlatinumSlew, and as long as you can still hear audio coming out you're fine (don't crank up Slew or GoldenSlew all the way to 1.0 unless you want to sample and hold, because they will do what you asked). But if you're still reading, here's what you get extra in EverySlew, which is mainly for me to use developing versions of Console that sound like real analog desks. Firstly, the Depth control gives you number of stages, with full crank being the equivalent of GoldenSlew or PlatinumSlew. For many sounds there will be no difference between the full ten stages those have, and much fewer. It'll be hard to hear. Fewer stages means lighter CPU load, so I'll be finding optimal settings here, but it also means less of the 'golden' effect when given extreme inputs. When used to take off only the brightest highs (more on that later) you can use fewer stages with no penalty. Two or three should suffice: 0.2 or 0.3 or so. Secondly, the Halo control gives you a terrifying, industrial meltdown of a sound that also introduces attenuation into the deep bass. I called it Halo because it brings in an odd sparkliness and energy that could come in handy. It uses another level of previous-sample to try and identify actual corners, changes in the angle of the wave, like my DeEss and Acceleration plugins do. I've never got this algorithm to work until now: having made it work, it's a strange and unruly thing. Realistic settings will all be rather low, especially if Slew is anything like obvious. HIgh Halo settings are a kind of terrible distortion I've never quite heard before: I expect this to be used in anger to make some very aggressive noises not quite like any other (which is always handy, right?) Lastly, you've now got a dry/wet. But not JUST a dry/wet, an Inv/Dry/Wet. Dry is 0.5 on the control. Crank it up and you have full wet… but set it to Inv, and you can make it cancel out the dry signal. When you do that, it shows you only the bits that are slew clipping, and silences everything else. So, for the first time, it's a slew clipper where you can monitor the clipping only, and directly hear exactly what the thing is doing. And this is handy, because the effect is very hard to hear at the levels it should be used! It will tend to make things sound exactly like they already did, except with glue and space in the mix, combing over the stray edges and points. Setting it to Inv means you can hear the points being put into place. Also, if you're using Halo, you can hear when that begins to reshape the effect, bringing in lows and so on. EverySlew isn't for everybody. I made it because I'll need it. I share it because that's what I do. If you're the sort of person to like this sort of thing, I hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class EverySlew final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'evsl';
     enum
     {
         prevSampL1,
@@ -75,11 +79,9 @@ class EverySlew final : public Effect<T>
         gslew_total
     }; // fixed frequency pear filter for ultrasonics, stereo
     double gslew[gslew_total]; // probably worth just using a number here
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
@@ -117,21 +119,18 @@ class EverySlew final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -144,8 +143,7 @@ class EverySlew final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
             case kParamC: return 0.16; break;
@@ -158,12 +156,11 @@ class EverySlew final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "slew"; break;
             case kParamB: return "depth"; break;
             case kParamC: return "halo"; break;
-            case kParamD: return "inv/wet"; break;
+            case kParamD: return "invwet"; break;
 
             default: break;
         }
@@ -172,8 +169,7 @@ class EverySlew final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Slew"; break;
             case kParamB: return "Depth"; break;
             case kParamC: return "Halo"; break;
@@ -186,30 +182,30 @@ class EverySlew final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -251,8 +247,7 @@ class EverySlew final : public Effect<T>
         source *= 1.618033988749894848204586;
         gslew[threshold1] = source;
         source *= 1.618033988749894848204586;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

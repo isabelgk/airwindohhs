@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kCosmos is infinite space ambient, or titanic hall."
 };
 constexpr std::string_view k_long_description{
-    "It's not the first time I've tried to make a space ambient type reverb, but there are a number of firsts here nevertheless.kCosmos uses the 5x5 Householder matrix design I've used in recent reverbs like kGuitarHall, but rather than just finding a new arrangement of delays, it's riding a wave of new developments in reverb development. Rather than taking days to evaluate ten or a hundred thousand possible reverbs before critical listening, I revamped the program I was using, to hundreds of MILLIONS per night. Since the method is not unlike the genetic algorithm in that it's trying variations against fitness functions, this wildly improved tone quality.I went from evaluating recurring delay lengths based on where they were in the reverb tail, to mapping out spacings between echo returns, and evaluating the distribution of these spacings. This changed the whole texture of the reverbs from 'artifical' to more of a natural, invisible spaciousness that blends in better.And I went from running an extra 3x3 matrix just for early reflections, to running no early reflections at all, to running a whole other parallel unfiltered 5x5 matrix… JUST for early reflections. That's the EarlyRF slider, which can be used in conjuction with Dry/Wet, predelay, and the Filter control, to help transition from the raw sounds to the deep reverb space.I've added an FIR brickwall filter for the main regenerating section (though not inside the regeneration) and worked out my own sinc interpolation, and have a plugin coming along those lines, and used it for the regenerating filter section. I've included a simple averaging for non-full-crank settings of this filter, so kCosmos can switch on the fly between extended highs at infinite sustain, and a maximal-depth version that gradually loses highs in a way that sounds like distance.And I've refined the concept of 'gradually restraining the infinite sustain when new audio is coming in', so that in normal use as an infinite verb, you can layer stuff all day without the reverb running away with you. It's so effective that subtle noises can have a slight feedback bias: when you start with very quiet layers, they will creep up in volume to about -18 dB total, at which point they'll balance. So it's an infinite reverb specifically designed for live performace as an ambient musician doing deep space explorations, and it'll adapt to the way you play audio into it.And lastly it has both CreamCoat style undersampling, and CrunchCoat style, at the same time. Meaning, set to full crank it uses the CreamCoat method for applying Bezier undersampling without artifacts, and as soon as you go away from Derez of 1.0, it switches to the continuous adjustment range of CrunchCoat, sometimes described as 'cursed digital derezzing'. Except this time, the Derez control is control-smoothed, and use of the filter tends to mask the 'cursed' quality completely. It's just that the giant reverbing space can be cleanly pitched up and down as you go, or dropped to an eerie rumble and murmur.There will be further experiments, but kCosmos stakes out a position as the most epic (and playable) Airwindows reverb. I hope you like it :)"
+    "It's not the first time I've tried to make a space ambient type reverb, but there are a number of firsts here nevertheless. kCosmos uses the 5x5 Householder matrix design I've used in recent reverbs like kGuitarHall, but rather than just finding a new arrangement of delays, it's riding a wave of new developments in reverb development. Rather than taking days to evaluate ten or a hundred thousand possible reverbs before critical listening, I revamped the program I was using, to hundreds of MILLIONS per night. Since the method is not unlike the genetic algorithm in that it's trying variations against fitness functions, this wildly improved tone quality. I went from evaluating recurring delay lengths based on where they were in the reverb tail, to mapping out spacings between echo returns, and evaluating the distribution of these spacings. This changed the whole texture of the reverbs from 'artifical' to more of a natural, invisible spaciousness that blends in better. And I went from running an extra 3x3 matrix just for early reflections, to running no early reflections at all, to running a whole other parallel unfiltered 5x5 matrix… JUST for early reflections. That's the EarlyRF slider, which can be used in conjuction with Dry/Wet, predelay, and the Filter control, to help transition from the raw sounds to the deep reverb space. I've added an FIR brickwall filter for the main regenerating section (though not inside the regeneration) and worked out my own sinc interpolation, and have a plugin coming along those lines, and used it for the regenerating filter section. I've included a simple averaging for non-full-crank settings of this filter, so kCosmos can switch on the fly between extended highs at infinite sustain, and a maximal-depth version that gradually loses highs in a way that sounds like distance. And I've refined the concept of 'gradually restraining the infinite sustain when new audio is coming in', so that in normal use as an infinite verb, you can layer stuff all day without the reverb running away with you. It's so effective that subtle noises can have a slight feedback bias: when you start with very quiet layers, they will creep up in volume to about -18 dB total, at which point they'll balance. So it's an infinite reverb specifically designed for live performace as an ambient musician doing deep space explorations, and it'll adapt to the way you play audio into it. And lastly it has both CreamCoat style undersampling, and CrunchCoat style, at the same time. Meaning, set to full crank it uses the CreamCoat method for applying Bezier undersampling without artifacts, and as soon as you go away from Derez of 1.0, it switches to the continuous adjustment range of CrunchCoat, sometimes described as 'cursed digital derezzing'. Except this time, the Derez control is control-smoothed, and use of the filter tends to mask the 'cursed' quality completely. It's just that the giant reverbing space can be cleanly pitched up and down as you go, or dropped to an eerie rumble and murmur. There will be further experiments, but kCosmos stakes out a position as the most epic (and playable) Airwindows reverb. I hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -527,15 +527,14 @@ class kCosmos final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -577,7 +576,7 @@ class kCosmos final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "predlay"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -601,32 +600,34 @@ class kCosmos final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

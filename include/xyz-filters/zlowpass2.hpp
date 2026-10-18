@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ZLowpass2 acts more like the Emu e6400 Ultra lowpass in motion, with coefficient interpolation."
 };
 constexpr std::string_view k_long_description{
-    "Need I even say more?My Z series filters were hotly sought after by a specific crew of localized Airwindows fans :D but they paid for their relatively high CPU efficiency with a dose of zipper noise, and that’s not really a ‘close emulation of the classic Emu e6400 Z-Plane filters’. At the time I hadn’t worked out the tech involved.A bunch of plugins and a set of Y series filters (which have their own interesting qualities, in their own right) later… and the Y plugins were the ones I chose to learn the ways of filter coefficient interpolation, and all of it implemented with the Airwindows sound… we have… ZLowpass2!Oh, and I think some changes I had to make to alter the biquad distortion factors, actually got me CLOSER to the classic-sampler sound.So this is a sampler filter, designed to give you a seamless blend through several options the real unit offered. It also gives you a HUGE amount of gain on tap, because the DnB folks liked to internally clip stuff in the sampler and then hit the filter with it. Even with the first ZLowpass, I got some special quirks of the sampler represented in the sound. This one’s even better, particularly if you’re sweeping the controls around to ‘play’ the sampler EQ. If you want a more glitchy effect for some neuro-sparkle, or if you just want more CPU free, ZLowpass (original) is still there for you. I think if I got ZLowpass2 sounding better for static, unchanging settings, it’s not by a lot: it’s mostly in motion that this one is meant to shine.Hope you like it! I’ll be working through some of the not-posted yet plugins and will not be addressing the other Z2 filters just yet. I want to hear whether this one’s doing its job for you all, as this is probably the keeper (if you automate the controls, and why wouldn’t you).Thank you for bearing with me! There will be more to come. My Patreon keeps me able to do this work :)"
+    "Need I even say more? My Z series filters were hotly sought after by a specific crew of localized Airwindows fans :D but they paid for their relatively high CPU efficiency with a dose of zipper noise, and that’s not really a ‘close emulation of the classic Emu e6400 Z-Plane filters’. At the time I hadn’t worked out the tech involved. A bunch of plugins and a set of Y series filters (which have their own interesting qualities, in their own right) later… and the Y plugins were the ones I chose to learn the ways of filter coefficient interpolation, and all of it implemented with the Airwindows sound… we have… ZLowpass2! Oh, and I think some changes I had to make to alter the biquad distortion factors, actually got me CLOSER to the classic-sampler sound. So this is a sampler filter, designed to give you a seamless blend through several options the real unit offered. It also gives you a HUGE amount of gain on tap, because the DnB folks liked to internally clip stuff in the sampler and then hit the filter with it. Even with the first ZLowpass, I got some special quirks of the sampler represented in the sound. This one’s even better, particularly if you’re sweeping the controls around to ‘play’ the sampler EQ. If you want a more glitchy effect for some neuro-sparkle, or if you just want more CPU free, ZLowpass (original) is still there for you. I think if I got ZLowpass2 sounding better for static, unchanging settings, it’s not by a lot: it’s mostly in motion that this one is meant to shine. Hope you like it! I’ll be working through some of the not-posted yet plugins and will not be addressing the other Z2 filters just yet. I want to hear whether this one’s doing its job for you all, as this is probably the keeper (if you automate the controls, and why wouldn’t you). Thank you for bearing with me! There will be more to come. My Patreon keeps me able to do this work :)"
 };
 constexpr std::string_view k_tags{
     "xyz-filters"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ZLowpass2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'zloq';
     double iirSampleAL;
     double iirSampleAR;
     enum
@@ -57,7 +61,6 @@ class ZLowpass2 final : public Effect<T>
     double outTrimB;
     double wetA;
     double wetB;
-
     enum
     {
         fix_freq,
@@ -75,11 +78,9 @@ class ZLowpass2 final : public Effect<T>
     }; // fixed frequency biquad filter for ultrasonics, stereo
     double fixA[fix_total];
     double fixB[fix_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
@@ -132,21 +133,18 @@ class ZLowpass2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -159,8 +157,7 @@ class ZLowpass2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.1; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -173,8 +170,7 @@ class ZLowpass2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "freq"; break;
             case kParamC: return "output"; break;
@@ -187,8 +183,7 @@ class ZLowpass2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Freq"; break;
             case kParamC: return "Output"; break;
@@ -201,30 +196,30 @@ class ZLowpass2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -276,8 +271,7 @@ class ZLowpass2 final : public Effect<T>
         fixA[fix_b2] = fixB[fix_b2] = (1.0 - K / fixB[fix_reso] + K * K) * norm;
         // end opamp stuff
         double trim = 0.1 + (3.712 * biquadA[biq_freq]);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

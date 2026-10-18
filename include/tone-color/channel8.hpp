@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Channel8 is Channel7 with updates from Capacitor2 and Slew3. More and better of what Channel is."
 };
 constexpr std::string_view k_long_description{
-    "Channel8 is a subtle ‘analogifier’ that applies saturation boosts, subtle highpass filtering, and slew clipping. What that means is, there’s a ‘drive’ knob you can turn up to boost things, and you can pick three ‘flavors’ you might recognize. They’re not really the consoles associated with those things, but they are calibrated to take effect about the same way, and when you use Channel8 (on tracks, on the mix buss, wherever) you add a little ‘analog flavor’ by restricting what the audio can do, in ways that are characteristic of real analog gear’s limitations. This restricting can help make things sound bigger and more solid.This is basically the newest evolution of Channel, which has always been one of my most popular plugins. It uses the improvements in Capacitor2 and Slew3, so basically it’s still relatively subtle, still very much Channel, but it’s taken on a new level in quality and natural tone. I’m real happy with it, and I’ll be returning to trying to fix up my video setup etc (and finishing up the dither re-releases, etc etc) knowing that I’ve dropped a nice audio bomb on the world. If you ever liked Channel, this should make you real happy."
+    "Channel8 is a subtle ‘analogifier’ that applies saturation boosts, subtle highpass filtering, and slew clipping. What that means is, there’s a ‘drive’ knob you can turn up to boost things, and you can pick three ‘flavors’ you might recognize. They’re not really the consoles associated with those things, but they are calibrated to take effect about the same way, and when you use Channel8 (on tracks, on the mix buss, wherever) you add a little ‘analog flavor’ by restricting what the audio can do, in ways that are characteristic of real analog gear’s limitations. This restricting can help make things sound bigger and more solid. This is basically the newest evolution of Channel, which has always been one of my most popular plugins. It uses the improvements in Capacitor2 and Slew3, so basically it’s still relatively subtle, still very much Channel, but it’s taken on a new level in quality and natural tone. I’m real happy with it, and I’ll be returning to trying to fix up my video setup etc (and finishing up the dither re-releases, etc etc) knowing that I’ve dropped a nice audio bomb on the world. If you ever liked Channel, this should make you real happy."
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Channel8 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cha8';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -76,12 +80,31 @@ class Channel8 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: consoletype = value; break;
             case kParamB: drive = value; break;
             case kParamC: output = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
+        }
+        // we can also set other defaults here, and do calculations that only have to happen
+        // once when parameters actually change. Here is the 'popup' setting its (global) values.
+        // variables can also be set in the processreplacing loop, and there they'll be set every buffersize
+        // here they're set when a parameter's actually changed, which should be less frequent, but
+        // you must use global variables in the Channel4.h file to do it.
+        switch ((VstInt32)(consoletype * 2.999)) {
+            case 0:
+                iirAmount = 0.005832;
+                threshold = 0.33362176;
+                break; // Neve
+            case 1:
+                iirAmount = 0.004096;
+                threshold = 0.59969536;
+                break; // API
+            case 2:
+                iirAmount = 0.004913;
+                threshold = 0.84934656;
+                break; // SSL
+            default: break; // should not happen
         }
     }
 
@@ -112,7 +135,7 @@ class Channel8 final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "console type"; break;
+            case kParamA: return "consoletype"; break;
             case kParamB: return "drive"; break;
             case kParamC: return "output"; break;
 
@@ -135,26 +158,36 @@ class Channel8 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(consoletype); break;
-            case kParamB: return std::to_string(drive); break;
-            case kParamC: return std::to_string(output); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(consoletype * 2.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Neve", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "API", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SSL", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: int2string((VstInt32)(drive * 200), text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(output, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return "%"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "%", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

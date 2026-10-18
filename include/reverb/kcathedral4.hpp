@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kCathedral4 is the Cathedral sound expressed as distant space."
 };
 constexpr std::string_view k_long_description{
-    "Flagship reverb takes whatever the newest technology is, and expresses it in the flashiest possible way. kCathedral's always been that for me, but the technology's come a long way over the years. And it turns out even kBeyond was only a preview, and there's major upgrades in store. kBeyond was using a literal million echo returns out of 3x3 and 6x6 matrices, but as the 3x3 only produces 27 echoes for early reflections I hadn't bothered to implemented it as a full Householder matrix (involving multiplications for non-4x4 matrices, and some of the feedback being inverted, and the 3x3 doesn't actually use local feedback even)And then I tried it… the video shows the two files I made to see what would happen, and the one done like it is in kBeyond is sparkly and complex, and the one with the real Householder is a quantum leap in depth and realism.And that's what's in kCathedral4, along with the Pear2 algorithm for filtering the deep-field reverb feed. It can do deep verb even unfiltered and bright, but when you mute it down to Bricasti degrees of darkness, you get a spaciousness that's beyond anything I've had.The algorithm is generated using the genetic algorithm: trying 'populations' of reverb constants and measuring how well they produce a result. I've learned things like how the total delay lengths of matrix paths added together are what need to add up to primes to sound right: it's been really complicated, but worth it. I'm going to have some amazing small rooms and loud halls too, chambers, you name it. We're just going back to the Cathedral, because it's a really cool sound. You could put choirs or pipe organs or Tangerine Dream in it, but you can also put whatever you like in there. Doesn't matter what you start with, you'll end up with sound you can bathe in.I'll keep working: remember, each reverb plugin is designed around a dedicated algorithm tuned using the Genetic Algorithm to optimize for whatever its vibe requires, so the character of each one will be different in ways beyond just adjustment of the parameters. You do get parameters though: regen, filter for the deep field, loudness of the early reflection section. I'm working on extending this and look forward to doing more with it, but kCathedral4 is for you to enjoy right now :)"
+    "Flagship reverb takes whatever the newest technology is, and expresses it in the flashiest possible way. kCathedral's always been that for me, but the technology's come a long way over the years. And it turns out even kBeyond was only a preview, and there's major upgrades in store. kBeyond was using a literal million echo returns out of 3x3 and 6x6 matrices, but as the 3x3 only produces 27 echoes for early reflections I hadn't bothered to implemented it as a full Householder matrix (involving multiplications for non-4x4 matrices, and some of the feedback being inverted, and the 3x3 doesn't actually use local feedback even) And then I tried it… the video shows the two files I made to see what would happen, and the one done like it is in kBeyond is sparkly and complex, and the one with the real Householder is a quantum leap in depth and realism. And that's what's in kCathedral4, along with the Pear2 algorithm for filtering the deep-field reverb feed. It can do deep verb even unfiltered and bright, but when you mute it down to Bricasti degrees of darkness, you get a spaciousness that's beyond anything I've had. The algorithm is generated using the genetic algorithm: trying 'populations' of reverb constants and measuring how well they produce a result. I've learned things like how the total delay lengths of matrix paths added together are what need to add up to primes to sound right: it's been really complicated, but worth it. I'm going to have some amazing small rooms and loud halls too, chambers, you name it. We're just going back to the Cathedral, because it's a really cool sound. You could put choirs or pipe organs or Tangerine Dream in it, but you can also put whatever you like in there. Doesn't matter what you start with, you'll end up with sound you can bathe in. I'll keep working: remember, each reverb plugin is designed around a dedicated algorithm tuned using the Genetic Algorithm to optimize for whatever its vibe requires, so the character of each one will be different in ways beyond just adjustment of the parameters. You do get parameters though: regen, filter for the deep field, loudness of the early reflection section. I'm working on extending this and look forward to doing more with it, but kCathedral4 is for you to enjoy right now :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -455,15 +455,14 @@ class kCathedral4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -505,7 +504,7 @@ class kCathedral4 final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "predlay"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -529,32 +528,34 @@ class kCathedral4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

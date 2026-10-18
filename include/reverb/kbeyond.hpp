@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kBeyond is a recital hall."
 };
 constexpr std::string_view k_long_description{
-    "Turns out there's a technology to beat all AI: the genetic algorithm. GA. And if you know how to steer it, you can do anything.kBeyond is a first real example of what that can do. It's two different reverb matrices in one plugin, the first generating early reflections and the second expanding them into an eerily believable acoustic space.I did it by telling the genetic algorithm to try millions upon millions of different matrices, and evaluate them in various ways. Like, constructing all the end-result echoes from the Householder matrix, and then seeing how many of those combinations were primes (people are used to putting primes in the individual delays of the matrix, but it does nothing! It's how many of the end results add up to a prime). Or measuring the gaps between echo returns, and seeing if they're similar or all different (this increases the depth and naturalness of the sound). Or working out what the intersample peaking of the reverb will be, and preferring lower treble energy out of it. Or wanting the first echoes to happen almost immediately, which means there has to be a path through the matrix that is very short.I put together a small hall out of this, without too much furniture or weird architecture (yes, I can specify that too) and it's yours now. It's using a 3x3 and a 6x6 Householder matrix inside, so before it even gets into regeneration it's producing 1.25 million echo returns (previous kVerbs before VerbSixes? 3125, for not much if any CPU savings). It's using Bezier undersampling to sound right at high sample rates with no penalty in CPU to speak of. It's got just enough controls to adapt to many needs, but is essentially simple to use: keep things near default, tune your RT60 and loudness of early reflections and the filtering on the deep reverb to tune the brightness of the hall. Use Derez if you want to scale it up while darkening it.There will be more grandiose spaces (heck, you have VerbSixes for that). But in certain ways, there won't be more impressive spaces for a while, because whatever sound you put into kBeyond, it ought to sound like you've just gone on the road and into a hall and put up some mics. It's not even a texture, it's just there, invisibly, making things real.Compare this to, say, ClearCoat, and you can see why I didn't stop there.Expect more. All the reverbs kinda need an update now that I can do this…"
+    "Turns out there's a technology to beat all AI: the genetic algorithm. GA. And if you know how to steer it, you can do anything. kBeyond is a first real example of what that can do. It's two different reverb matrices in one plugin, the first generating early reflections and the second expanding them into an eerily believable acoustic space. I did it by telling the genetic algorithm to try millions upon millions of different matrices, and evaluate them in various ways. Like, constructing all the end-result echoes from the Householder matrix, and then seeing how many of those combinations were primes (people are used to putting primes in the individual delays of the matrix, but it does nothing! It's how many of the end results add up to a prime). Or measuring the gaps between echo returns, and seeing if they're similar or all different (this increases the depth and naturalness of the sound). Or working out what the intersample peaking of the reverb will be, and preferring lower treble energy out of it. Or wanting the first echoes to happen almost immediately, which means there has to be a path through the matrix that is very short. I put together a small hall out of this, without too much furniture or weird architecture (yes, I can specify that too) and it's yours now. It's using a 3x3 and a 6x6 Householder matrix inside, so before it even gets into regeneration it's producing 1.25 million echo returns (previous kVerbs before VerbSixes? 3125, for not much if any CPU savings). It's using Bezier undersampling to sound right at high sample rates with no penalty in CPU to speak of. It's got just enough controls to adapt to many needs, but is essentially simple to use: keep things near default, tune your RT60 and loudness of early reflections and the filtering on the deep reverb to tune the brightness of the hall. Use Derez if you want to scale it up while darkening it. There will be more grandiose spaces (heck, you have VerbSixes for that). But in certain ways, there won't be more impressive spaces for a while, because whatever sound you put into kBeyond, it ought to sound like you've just gone on the road and into a hall and put up some mics. It's not even a texture, it's just there, invisibly, making things real. Compare this to, say, ClearCoat, and you can see why I didn't stop there. Expect more. All the reverbs kinda need an update now that I can do this…"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -447,15 +447,14 @@ class kBeyond final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -497,7 +496,7 @@ class kBeyond final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "predlay"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -521,32 +520,34 @@ class kBeyond final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

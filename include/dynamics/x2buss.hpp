@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "X2Buss is an updated version of the buss processing from ConsoleX2."
 };
 constexpr std::string_view k_long_description{
-    "Here's a sort of update. I've put a lot of work into the new Dynamics3, for the purpose of using it in ConsoleX3 when that's done. In doing that, I came up with some upgrades for the Bezier compression, and they weren't there when I did ConsoleX2 and ConsoleH… and on top of that, those used a very different sort of buss compression, which sort of speeded up rather than getting more intense. My idea with it had been to do a one-knob buss compressor that was really easy to dial in. I'll be replacing it with the full Dynamics3, vari-mu and expansion and all.So, what to do with the orphaned buss comp?Update it as a standalone. It no longer needs you to use the whole Console system, no longer has all the features in that, but there's one part it hangs on to: the ConsoleX2 EQ. So you get, not the BezEQ of the upcoming Console, but SmoothEQ2, based on more normal, traditional biquad filter EQ. Then, the cleaned-up version of the X2 buss comp, and then an output fader that's unity gain at the center, for gain trim.But one more thing: now the safety clipper after all this isn't ClipOnly2, like in ConsoleX2. It's ClipOnly3, with the little window of noise transitioning between unclipped and the edge of clipping… which itself is gentler than usual, like every version of ClipOnly.So, while I work on many other exciting things, here's a plugin that's like a previous Console's output stages, but with every detail slightly refined and polished, and in a standalone form so people can fool with it without having to go full Console. And it gives me time to work on some of the new plugins, and to test the new Meter, which needs a new video (already) because of how much it too has changed.X2Buss might serve as an interesting variation on 'loudenate', given the tone shaping possibilities, the unusual compression and the latest output clipping stage. Let me know if this fills a need :)"
+    "Here's a sort of update. I've put a lot of work into the new Dynamics3, for the purpose of using it in ConsoleX3 when that's done. In doing that, I came up with some upgrades for the Bezier compression, and they weren't there when I did ConsoleX2 and ConsoleH… and on top of that, those used a very different sort of buss compression, which sort of speeded up rather than getting more intense. My idea with it had been to do a one-knob buss compressor that was really easy to dial in. I'll be replacing it with the full Dynamics3, vari-mu and expansion and all. So, what to do with the orphaned buss comp? Update it as a standalone. It no longer needs you to use the whole Console system, no longer has all the features in that, but there's one part it hangs on to: the ConsoleX2 EQ. So you get, not the BezEQ of the upcoming Console, but SmoothEQ2, based on more normal, traditional biquad filter EQ. Then, the cleaned-up version of the X2 buss comp, and then an output fader that's unity gain at the center, for gain trim. But one more thing: now the safety clipper after all this isn't ClipOnly2, like in ConsoleX2. It's ClipOnly3, with the little window of noise transitioning between unclipped and the edge of clipping… which itself is gentler than usual, like every version of ClipOnly. So, while I work on many other exciting things, here's a plugin that's like a previous Console's output stages, but with every detail slightly refined and polished, and in a standalone form so people can fool with it without having to go full Console. And it gives me time to work on some of the new plugins, and to test the new Meter, which needs a new video (already) because of how much it too has changed. X2Buss might serve as an interesting variation on 'loudenate', given the tone shaping possibilities, the unusual compression and the latest output clipping stage. Let me know if this fills a need :)"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -185,8 +185,7 @@ class X2Buss final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -197,15 +196,13 @@ class X2Buss final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -224,8 +221,7 @@ class X2Buss final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -244,8 +240,7 @@ class X2Buss final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "high"; break;
             case kParamB: return "hmid"; break;
             case kParamC: return "lmid"; break;
@@ -264,8 +259,7 @@ class X2Buss final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "High"; break;
             case kParamB: return "HMid"; break;
             case kParamC: return "LMid"; break;
@@ -284,42 +278,42 @@ class X2Buss final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string(J, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "eq"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return "freq"; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return "dyn"; break;
-            case kParamJ: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "eq", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "freq", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "dyn", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -470,8 +464,7 @@ class X2Buss final : public Effect<T>
         inTrimA = inTrimB;
         inTrimB = J * 2.0;
         // Console
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

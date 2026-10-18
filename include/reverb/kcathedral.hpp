@@ -11,56 +11,55 @@ constexpr std::string_view k_short_description{
     "kCathedral is a giant reverby space."
 };
 constexpr std::string_view k_long_description{
-    "Here's a neat little experiment! As always with the K reverbs, it's a dedicated sound space with its own unique algorithm… but there are some new twists making kCathedral a step along an interesting path. This is the first of the Bricasti-inspired reverbs!It uses a 5x5 Householder matrix, and a built-in crossover (a SubTight filter, so it's not even a normal type of filter) to allow for extra delay on the lows. The internal reverb filtering is Pear filters rather than the biquads used on the kPlates. (the reverb is undersampled at high sample rates, so the SubTight crossover will work the same whether at 1x, 2x, or 4x.)And for all that trouble… kCathedral does NOT sound the same as the Bricasti Cathedral preset. You won't find a clone here.But… it will produce largely the same depth and spatiality, with a different texture that is less 'rich and soft' and more 'stark and vibey'. It should be used similarly: for realism, hide it behind other sounds by keeping it quiet. There are no controls other than a dry/wet: for use on an aux, go full wet, and if you're using it inline you might end up adding just the tiniest amount (in the video, I'm using 0.03 of it on my voice, and you'll barely notice it until it switches to similarly faint ClearCoat 7, just for a sentence, after having mentioned ClearCoat.)My hope for these is distinctness, and kCathedral might not be the one to reach for as an 'all-purpose' reverb, because it's just a first steo into a larger, more echoey new world. The thing I like about it is, while it has a distinct sound, the spatiality sits in the mix roughly the same way a real Bricasti might, even while the texture is different (will be interesting to see if I can get closer to that butter tone, in future).All in all, a good day at work (okay, months) and I hope you enjoy kCathedral :)"
+    "Here's a neat little experiment! As always with the K reverbs, it's a dedicated sound space with its own unique algorithm… but there are some new twists making kCathedral a step along an interesting path. This is the first of the Bricasti-inspired reverbs! It uses a 5x5 Householder matrix, and a built-in crossover (a SubTight filter, so it's not even a normal type of filter) to allow for extra delay on the lows. The internal reverb filtering is Pear filters rather than the biquads used on the kPlates. (the reverb is undersampled at high sample rates, so the SubTight crossover will work the same whether at 1x, 2x, or 4x.) And for all that trouble… kCathedral does NOT sound the same as the Bricasti Cathedral preset. You won't find a clone here. But… it will produce largely the same depth and spatiality, with a different texture that is less 'rich and soft' and more 'stark and vibey'. It should be used similarly: for realism, hide it behind other sounds by keeping it quiet. There are no controls other than a dry/wet: for use on an aux, go full wet, and if you're using it inline you might end up adding just the tiniest amount (in the video, I'm using 0.03 of it on my voice, and you'll barely notice it until it switches to similarly faint ClearCoat 7, just for a sentence, after having mentioned ClearCoat.) My hope for these is distinctness, and kCathedral might not be the one to reach for as an 'all-purpose' reverb, because it's just a first steo into a larger, more echoey new world. The thing I like about it is, while it has a distinct sound, the spatiality sits in the mix roughly the same way a real Bricasti might, even while the texture is different (will be interesting to see if I can get closer to that butter tone, in future). All in all, a good day at work (okay, months) and I hope you enjoy kCathedral :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
 };
 
-// regular3x3
-constexpr int earlyA = 437;
-constexpr int earlyB = 284;
-constexpr int earlyC = 754;
-constexpr int earlyD = 1538;
-constexpr int earlyE = 59;
-constexpr int earlyF = 1829;
-constexpr int earlyG = 37;
-constexpr int earlyH = 3304;
-constexpr int earlyI = 200;
-constexpr int predelay = 1014;
-constexpr int vlfpredelay = 3275; // 6 to 151 ms, 741 seat theater. Scarcity, 1 in 17259
-// kCathedralEarly741
-
-constexpr int delayA = 253;
-constexpr int delayB = 1395;
-constexpr int delayC = 248;
-constexpr int delayD = 284;
-constexpr int delayE = 952;
-constexpr int delayF = 430;
-constexpr int delayG = 1253;
-constexpr int delayH = 889;
-constexpr int delayI = 798;
-constexpr int delayJ = 397;
-constexpr int delayK = 1166;
-constexpr int delayL = 250;
-constexpr int delayM = 38;
-constexpr int delayN = 1389;
-constexpr int delayO = 1103;
-constexpr int delayP = 50;
-constexpr int delayQ = 1317;
-constexpr int delayR = 40;
-constexpr int delayS = 1393;
-constexpr int delayT = 325;
-constexpr int delayU = 11;
-constexpr int delayV = 265;
-constexpr int delayW = 1339;
-constexpr int delayX = 315;
-constexpr int delayY = 753; // 16 to 153 ms, 860 seat hall. Scarcity, 1 in 60182
-// ###RevSmooth860
-
 template <typename T>
 class kCathedral final : public Effect<T>
 {
+    static constexpr int earlyA = 437;
+    static constexpr int earlyB = 284;
+    static constexpr int earlyC = 754;
+    static constexpr int earlyD = 1538;
+    static constexpr int earlyE = 59;
+    static constexpr int earlyF = 1829;
+    static constexpr int earlyG = 37;
+    static constexpr int earlyH = 3304;
+    static constexpr int earlyI = 200;
+    static constexpr int predelay = 1014;
+    static constexpr int vlfpredelay = 3275;
+    static constexpr int delayA = 253;
+    static constexpr int delayB = 1395;
+    static constexpr int delayC = 248;
+    static constexpr int delayD = 284;
+    static constexpr int delayE = 952;
+    static constexpr int delayF = 430;
+    static constexpr int delayG = 1253;
+    static constexpr int delayH = 889;
+    static constexpr int delayI = 798;
+    static constexpr int delayJ = 397;
+    static constexpr int delayK = 1166;
+    static constexpr int delayL = 250;
+    static constexpr int delayM = 38;
+    static constexpr int delayN = 1389;
+    static constexpr int delayO = 1103;
+    static constexpr int delayP = 50;
+    static constexpr int delayQ = 1317;
+    static constexpr int delayR = 40;
+    static constexpr int delayS = 1393;
+    static constexpr int delayT = 325;
+    static constexpr int delayU = 11;
+    static constexpr int delayV = 265;
+    static constexpr int delayW = 1339;
+    static constexpr int delayX = 315;
+    static constexpr int delayY = 753;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kcth';
     double gainOutL;
     double gainOutR;
     double eAL[earlyA + 5];
@@ -253,18 +252,15 @@ class kCathedral final : public Effect<T>
         prevSlewR10,
         pear_total
     }; // fixed frequency pear filter for ultrasonics, stereo
-
     double pearA[pear_total]; // probably worth just using a number here
     double pearB[pear_total]; // probably worth just using a number here
     double pearC[pear_total]; // probably worth just using a number here
-
     double subAL;
     double subAR;
     double subBL;
     double subBR;
     double subCL;
     double subCR;
-
     double prevMulchBL;
     double prevMulchBR;
     double prevMulchCL;
@@ -273,19 +269,15 @@ class kCathedral final : public Effect<T>
     double prevMulchDR;
     double prevMulchEL;
     double prevMulchER;
-
     double prevOutEL;
     double prevOutER;
     double prevInEL;
     double prevInER;
-
     double tailL;
     double tailR;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
 
   public:
@@ -563,18 +555,15 @@ class kCathedral final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -584,8 +573,7 @@ class kCathedral final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
 
             default: break;
@@ -595,8 +583,7 @@ class kCathedral final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "wetness"; break;
 
             default: break;
@@ -606,8 +593,7 @@ class kCathedral final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Wetness"; break;
 
             default: break;
@@ -617,24 +603,24 @@ class kCathedral final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -677,8 +663,7 @@ class kCathedral final : public Effect<T>
         // this reverb makes 50% full dry AND full wet, not crossfaded.
         // that's so it can be on submixes without cutting back dry channel when adjusted:
         // unless you go super heavy, you are only adjusting the added verb loudness.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

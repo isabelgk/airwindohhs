@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SweetWide is a strange grungy stereo widener."
 };
 constexpr std::string_view k_long_description{
-    "It's experiment time! This is a really good example of the sort of thing I do for Airwindows, and for the folks out there.You may well find this horrible, lame and useless. That is OK, it's not going to be for everybody.But if you like the sort of weird grunge this produces, we're talking signature sound, secret weapon town, bigtime… and NOBODY else will be bringing it, and no AI will arrive at this unless literally told to copy it (in which case they should credit and say it's SweetWide they're using).This plugin comes not from the world of Srsly or EdIsDim or Wider (plenty of other things I've made to do stereo widening nicely). It comes from my experiments with ring modulation. It's really a very simple algorithm though it does use square root functions: that's next to nothing, as far as CPU is concerned. It's doing terrible things to the stereo signal coming in, for the purpose of exaggerating side-channel information, but in a way where it's tending to produce asymmetric modulations. That's more along the lines of 'second harmonic, fourth harmonic etc' rather than 'third harmonic and normal distortion', and that's why Sweet is part of the name: we tend to hear even harmonics as more 'sweet' than odd harmonics.Even then it's not acting normal because it's using that Soar control to govern how the square-root reacts to subtle sounds. It serves the purpose of bringing up a gnarly compressey grunginess, except for stereo widening. If you crank it out all the way it's very obvious, but you can dial the Soar setting in that way, and then pull it back if you'd like it to still be unique but not so obnoxious.It'll also do a stereo narrowing effect that's maybe even more obnoxious, by turning Un/Wide all the way to Un. It's basically the same thing as an Inv/Dry/Wet control. The whole thing runs without any stored variables, and the setup of controls is hilariously trivial: without the square roots it'd be about the most CPU-efficient plugin you have.The reason you don't have this already is, it sounds terrible. But it's terrible in kind of a wonderful way. I demonstrate it on a full mix, and you should never use it on a full mix. Instead, I think it'd be a great widener on a heavy guitar buss, or certain synth tones, or maybe it's a really interesting way to narrow a drum room sound and bring a lot of grungey color to things. Any sound you can get from it, you can tune with the Soar control. I've managed to bring the totally weird Soar control from my ring modulators to a stereo widener/narrower, in case that's handy.If this is the plugin for you, you've probably already started throwing it on things and enjoying its unique gnarly space-distortions, and if this isn't the plugin for you, I don't know how much more clearly I can warn you. You're welcome :)"
+    "It's experiment time! This is a really good example of the sort of thing I do for Airwindows, and for the folks out there. You may well find this horrible, lame and useless. That is OK, it's not going to be for everybody. But if you like the sort of weird grunge this produces, we're talking signature sound, secret weapon town, bigtime… and NOBODY else will be bringing it, and no AI will arrive at this unless literally told to copy it (in which case they should credit and say it's SweetWide they're using). This plugin comes not from the world of Srsly or EdIsDim or Wider (plenty of other things I've made to do stereo widening nicely). It comes from my experiments with ring modulation. It's really a very simple algorithm though it does use square root functions: that's next to nothing, as far as CPU is concerned. It's doing terrible things to the stereo signal coming in, for the purpose of exaggerating side-channel information, but in a way where it's tending to produce asymmetric modulations. That's more along the lines of 'second harmonic, fourth harmonic etc' rather than 'third harmonic and normal distortion', and that's why Sweet is part of the name: we tend to hear even harmonics as more 'sweet' than odd harmonics. Even then it's not acting normal because it's using that Soar control to govern how the square-root reacts to subtle sounds. It serves the purpose of bringing up a gnarly compressey grunginess, except for stereo widening. If you crank it out all the way it's very obvious, but you can dial the Soar setting in that way, and then pull it back if you'd like it to still be unique but not so obnoxious. It'll also do a stereo narrowing effect that's maybe even more obnoxious, by turning Un/Wide all the way to Un. It's basically the same thing as an Inv/Dry/Wet control. The whole thing runs without any stored variables, and the setup of controls is hilariously trivial: without the square roots it'd be about the most CPU-efficient plugin you have. The reason you don't have this already is, it sounds terrible. But it's terrible in kind of a wonderful way. I demonstrate it on a full mix, and you should never use it on a full mix. Instead, I think it'd be a great widener on a heavy guitar buss, or certain synth tones, or maybe it's a really interesting way to narrow a drum room sound and bring a lot of grungey color to things. Any sound you can get from it, you can tune with the Soar control. I've managed to bring the totally weird Soar control from my ring modulators to a stereo widener/narrower, in case that's handy. If this is the plugin for you, you've probably already started throwing it on things and enjoying its unique gnarly space-distortions, and if this isn't the plugin for you, I don't know how much more clearly I can warn you. You're welcome :)"
 };
 constexpr std::string_view k_tags{
     "stereo"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SweetWide final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'swid';
     float A;
     float B;
     uint32_t fpdL;
@@ -51,11 +55,10 @@ class SweetWide final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -85,7 +88,7 @@ class SweetWide final : public Effect<T>
     {
         switch (static_cast<params>(index)) {
             case kParamA: return "soar"; break;
-            case kParamB: return "un/wide"; break;
+            case kParamB: return "unwide"; break;
 
             default: break;
         }
@@ -105,24 +108,26 @@ class SweetWide final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

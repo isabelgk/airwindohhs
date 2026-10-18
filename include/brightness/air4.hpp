@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Air4 extends Air3 with controllable high frequency limiting."
 };
 constexpr std::string_view k_long_description{
-    "I'm pleased and honored to bring you Air4, which extends Air3 in a way that can help people trying my Meter plugin, and unable to get good high frequencies without bombing the slew section with red 'overslew' spikes.Back in the day, because of natural limitations of analog media and disc mastering, we didn't have extended treble, and yet there were still bright hit records. We more readily hear brightness when it's really upper-mids, but the really high stuff has special characteristics: first, it's harder to hear, and second, it conveys a spatial position in air. That position is 'CLOSE'. Within arm's reach, within a few inches, within a few millimeters… of your eardrum.This is because air is lossy, but digital isn't. Digital loses nothing, it just adds various distortions while it goes (this is why oversampling fans get excited about that: the extra distortions are rarely nice). For that reason, it's easy to make digital sounds unrealistically 'close', and this characterizes nearly all digital mixing.We see this in Airwindows Meter as massive red spikes. Because there's absolutely no flexibility or 'glue' to the highs, what happens is you get all the sonic cues of 'far too close to my ear' before you get the brightness lift you're expecting. Air3 only aggravates this: it's based on Kalman filtering, and it can boost ONLY that airy glitter, and then you've got that problem. Fine if you want that effect, but then you're also distorting.Air is the control for doing that, and Gnd means 'ground' and is literally everything else, so you can also adjust levels with it. Then there's the new controls. DarkF means 'dark filter', and it's the same as the control in Sinew (remember that? you already have it, but I saw it as a tube-fuzz sort of thing). And Ratio is basically a dry/wet for just DarkF, just Sinew (which, when it was invented, didn't get one: really novel stuff often appears as a super minimal plugin first).As seen in the video, if you adjust DarkF it produces a hard limit on the slews. It defaults to just over 0.5, which automatically stops 'red spikes' in the Slew section of Meter, no matter what treble boost you do. This'll be an aggressive sort of 'glue' for the highs, or a safety highs-restrictor if you want to not mess with the red spikes of brightness.To use it the way I use it, maybe lower the DarkF a bit, and then sneak Ratio back from full crank. What'll happen is, the spikes will gradually creep up towards their original volume, forming a spread-out cloud rather than a hard clipped line, except they'll be quieter than they were. The idea is to find the loudness you want for these bright peaks, and then work out how wide a range they're to cover. Doing this gives you brightness, but without the brittle harshness of digital treble boosting.I hope you like Air4! I'm working on ConsoleX every day now, and it'll get there. It's a LOT of work."
+    "I'm pleased and honored to bring you Air4, which extends Air3 in a way that can help people trying my Meter plugin, and unable to get good high frequencies without bombing the slew section with red 'overslew' spikes. Back in the day, because of natural limitations of analog media and disc mastering, we didn't have extended treble, and yet there were still bright hit records. We more readily hear brightness when it's really upper-mids, but the really high stuff has special characteristics: first, it's harder to hear, and second, it conveys a spatial position in air. That position is 'CLOSE'. Within arm's reach, within a few inches, within a few millimeters… of your eardrum. This is because air is lossy, but digital isn't. Digital loses nothing, it just adds various distortions while it goes (this is why oversampling fans get excited about that: the extra distortions are rarely nice). For that reason, it's easy to make digital sounds unrealistically 'close', and this characterizes nearly all digital mixing. We see this in Airwindows Meter as massive red spikes. Because there's absolutely no flexibility or 'glue' to the highs, what happens is you get all the sonic cues of 'far too close to my ear' before you get the brightness lift you're expecting. Air3 only aggravates this: it's based on Kalman filtering, and it can boost ONLY that airy glitter, and then you've got that problem. Fine if you want that effect, but then you're also distorting. Air is the control for doing that, and Gnd means 'ground' and is literally everything else, so you can also adjust levels with it. Then there's the new controls. DarkF means 'dark filter', and it's the same as the control in Sinew (remember that? you already have it, but I saw it as a tube-fuzz sort of thing). And Ratio is basically a dry/wet for just DarkF, just Sinew (which, when it was invented, didn't get one: really novel stuff often appears as a super minimal plugin first). As seen in the video, if you adjust DarkF it produces a hard limit on the slews. It defaults to just over 0.5, which automatically stops 'red spikes' in the Slew section of Meter, no matter what treble boost you do. This'll be an aggressive sort of 'glue' for the highs, or a safety highs-restrictor if you want to not mess with the red spikes of brightness. To use it the way I use it, maybe lower the DarkF a bit, and then sneak Ratio back from full crank. What'll happen is, the spikes will gradually creep up towards their original volume, forming a spread-out cloud rather than a hard clipped line, except they'll be quieter than they were. The idea is to find the loudness you want for these bright peaks, and then work out how wide a range they're to cover. Doing this gives you brightness, but without the brittle harshness of digital treble boosting. I hope you like Air4! I'm working on ConsoleX every day now, and it'll get there. It's a LOT of work."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Air4 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'aiyu';
     float A;
     float B;
     float C;
@@ -63,7 +67,6 @@ class Air4 final : public Effect<T>
         air_total
     };
     double air[air_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -100,21 +103,18 @@ class Air4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -127,8 +127,7 @@ class Air4 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.52; break;
@@ -141,8 +140,7 @@ class Air4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "air"; break;
             case kParamB: return "gnd"; break;
             case kParamC: return "darkf"; break;
@@ -155,8 +153,7 @@ class Air4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Air"; break;
             case kParamB: return "Gnd"; break;
             case kParamC: return "DarkF"; break;
@@ -169,30 +166,30 @@ class Air4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -212,8 +209,7 @@ class Air4 final : public Effect<T>
         double gndGain = B * 2.0;
         double threshSinew = pow(C, 2) / overallscale;
         double depthSinew = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -287,6 +283,12 @@ class Air4 final : public Effect<T>
                 temp = air[lastSL] - sinew;
             }
             air[lastSL] = temp;
+            if (air[lastSL] > 1.0) {
+                air[lastSL] = 1.0;
+            }
+            if (air[lastSL] < -1.0) {
+                air[lastSL] = -1.0;
+            }
             inputSampleL = (inputSampleL * (1.0 - depthSinew)) + (air[lastSL] * depthSinew);
             temp = inputSampleR;
             if (temp > 1.0) {
@@ -303,6 +305,12 @@ class Air4 final : public Effect<T>
                 temp = air[lastSR] - sinew;
             }
             air[lastSR] = temp;
+            if (air[lastSR] > 1.0) {
+                air[lastSR] = 1.0;
+            }
+            if (air[lastSR] < -1.0) {
+                air[lastSR] = -1.0;
+            }
             inputSampleR = (inputSampleR * (1.0 - depthSinew)) + (air[lastSR] * depthSinew);
             // run Sinew to stop excess slews, but run a dry/wet to allow a range of brights
             // begin 64 bit stereo floating point dither

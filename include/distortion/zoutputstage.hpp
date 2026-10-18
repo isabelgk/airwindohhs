@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ZOutputStage is the output clipping from the Emu e6400 style Z filters."
 };
 constexpr std::string_view k_long_description{
-    "So I didn't get asked for this, exactly.I got asked for the exciter setting out of the Emu e6400 Ultra. And this isn't it.But I did have an exciter (and so have you, as it's in the plugin collection.) I'm sure it's weirder and twitchier than the Emu one, but it does exist. It just won't sound anything like that sampler, because the sampler has a lot of hardware on the analog outs, as well as being probably a totally different algorithm than mine, one that I have no idea how it's done.Wait a second.The reason I got asked for this was, drum and bass guys in the UK wanted to add some insane grind and energy, to basically synth waves. And I don't have the algo for that… but my exciter is nothing if not insane, and I did an output stage on the Z filters. That would apply exactly the same to an exciter, or anything else. I'd just do it as a simple distortion, except that rather than being a normal distortion it'd use the special filtering used in the Z filters to get that 'frizz' on the edges of clipped sounds that I clearly saw in the recordings of the real e6400. If it did that on distorting filters, it would do the same on an exciter, or anything.And so I did :)This goes after… well, anything. Whatever you like. Turn it up past 0.1 to distort, just like the Z filters. Turn the output way down because it's really hot. Apply to whatever digital mayhem you can wreak, and it should act a little more like it's coming off that sampler.See ya next week :)"
+    "So I didn't get asked for this, exactly. I got asked for the exciter setting out of the Emu e6400 Ultra. And this isn't it. But I did have an exciter (and so have you, as it's in the plugin collection.) I'm sure it's weirder and twitchier than the Emu one, but it does exist. It just won't sound anything like that sampler, because the sampler has a lot of hardware on the analog outs, as well as being probably a totally different algorithm than mine, one that I have no idea how it's done. Wait a second. The reason I got asked for this was, drum and bass guys in the UK wanted to add some insane grind and energy, to basically synth waves. And I don't have the algo for that… but my exciter is nothing if not insane, and I did an output stage on the Z filters. That would apply exactly the same to an exciter, or anything else. I'd just do it as a simple distortion, except that rather than being a normal distortion it'd use the special filtering used in the Z filters to get that 'frizz' on the edges of clipped sounds that I clearly saw in the recordings of the real e6400. If it did that on distorting filters, it would do the same on an exciter, or anything. And so I did :) This goes after… well, anything. Whatever you like. Turn it up past 0.1 to distort, just like the Z filters. Turn the output way down because it's really hot. Apply to whatever digital mayhem you can wreak, and it should act a little more like it's coming off that sampler. See ya next week :)"
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ZOutputStage final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'zout';
     double biquadE[15];
     double biquadF[15];
     double iirSampleAL;
@@ -61,19 +65,16 @@ class ZOutputStage final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -84,8 +85,7 @@ class ZOutputStage final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.1; break;
             case kParamB: return 1.0; break;
 
@@ -96,8 +96,7 @@ class ZOutputStage final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "output"; break;
 
@@ -108,8 +107,7 @@ class ZOutputStage final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Output"; break;
 
@@ -120,26 +118,26 @@ class ZOutputStage final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -171,8 +169,7 @@ class ZOutputStage final : public Effect<T>
             biquadF[x] = biquadE[x];
         }
         // end opamp stuff
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

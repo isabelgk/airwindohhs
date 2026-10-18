@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SoftClock is a groove-oriented time reference."
 };
 constexpr std::string_view k_long_description{
-    "By special request, here's SoftClock before I can properly demo and use it. I'll have to play catch-up!SoftClock is a timing reference, like a click track… but far more powerful, because it does not synchronize machines so much as it synchronizes HUMANS. You put it on an unused track, and route it to another track AS AUDIO which you then record, in the arrange window as just another audio file. This can be done as you lay down an initial track while listening to the SoftClock output.What's the noise it makes? Frequency swoops, of a tone. It doesn't turn on and off, there's no attack or decay… a continuous tone which drops in volume as the pitch drops, but otherwise is just a drone… and this is your new click track.The next question is 'for the love of God, why would you do such a thing?' Because not only is this not a percussive sound, it doesn't even have a definable attack, and yet it proposes to replace click tracks, and in fact wants to become a timing reference for a world of 'human played' music where nothing is snapped to grid. There will be no grid, just human-played tracks riffing over SoftClock.The reason is, Entrainment. The 'swoop' of the tone mimicks the swing of a drummer's arm, or the strum of a guitar… or a dancer's body. It's digitally accurate, but directs the listener not toward an inhumanly accurate 'tick' but towards a motion… and when many players are moving in synchrony, that's when you have a powerful groove.But there's more. It's also a reference to where you are in the bar. The non-accented beats ebb down to a lower tone, and then ramp up again toward the One, which is the loudest and highest-pitched swoop of the tone. The amount of variation can be controlled, as can the basic pitch. Bear in mind the volume does modulate, but not in such a way as to produce an attack, even at the fastest speed settings. You dial it in to mimic the motion of your body playing, whether that's groovy or laid-back or hammering, and the non-accented beats always show you where you are in the bar, in an easy-to-hear way, even if the beats are themselves swung or the backbeat is slowed to add weight and bombast.What about those accented beats? Firstly, they're louder and higher-pitched, but they're also spaced out in an interesting way. You see, SoftClock can give you 4/4, or eighth notes, or four bars of 4/4… but it will also give you odd times beyond your humble sevens and elevens. It'll give variations on funny times when you've gone beyond 4/4. Here's the list, and how they're counted:1, 2, and 3 are counted as you'd expect. 4 is counted as 2,2. 5 is counted as 3,2 (in other words: one two three one two, with one being the accent). 6 is 3-3, and 7 is counted backwards from how Pink Floyd's 'Money' had it: 4-3, one two three four one two three. 8 is 4-4, 9 is 3-3-3, 10 is 5-5.Then things get more complicated. Note that Count numbers 8, 16, 24 and 32 are reserved for 4/4 with accents every eight beats, so you can have normal time but hear the unaccented beats guide you around one, two, three or four bars and highlight the first One.11 is counted four ways: 3332, 443, 551, 65.13 is counted three ways: 3334, 445, 553.17 is counted four ways: 44441, 5552, 773, 881. 19 is counted four ways: 44443, 5554, 775, 883.23 is counted four ways: 444443, 5558, 7772, 887.Count the accents and they'll come in these spacings. It's options for 'sub-phrases', repetitions or modulations up front and a variation for a turn-around, orienting you to the odd rhythm. The idea is for the repetitions to themselves be easily countable, and ideally seem to fit into a 'four sections but one is different' or 'three sections but one is different' model.This is in line with a music arrangement game I've been developing that's more likely to see life as a video-game now than as the card game I'd intended. Point being, SoftClock can do normal metronome things (except using entrainment rather than ticking at you) and orientation things as far as locating you in the bar, but it can also combine all that into a baffling proggy rhythm that nevertheless guides you into grooving and memorable riffs of many kinds. If the standard variations on freaky prime-numbered prog-meters aren't enough, you can play with Swing and the delay of BigBeat (accented beats) until you've gone full Beefheart: or, rather, full Magic Band and John French drum parts.Dive as deep as you like, or keep it more simple: SoftClock has you covered. You may be surprised at how much easier it is to hear, entrain, and orient yourself when using a click track that refuses to click. Remember, lay it down as a track, don't try to match it to a normal click, don't grid anything! SoftClock is for gridless grooves, and music that sounds human because it moves like humans. See how it feels."
+    "By special request, here's SoftClock before I can properly demo and use it. I'll have to play catch-up! SoftClock is a timing reference, like a click track… but far more powerful, because it does not synchronize machines so much as it synchronizes HUMANS. You put it on an unused track, and route it to another track AS AUDIO which you then record, in the arrange window as just another audio file. This can be done as you lay down an initial track while listening to the SoftClock output. What's the noise it makes? Frequency swoops, of a tone. It doesn't turn on and off, there's no attack or decay… a continuous tone which drops in volume as the pitch drops, but otherwise is just a drone… and this is your new click track. The next question is 'for the love of God, why would you do such a thing?' Because not only is this not a percussive sound, it doesn't even have a definable attack, and yet it proposes to replace click tracks, and in fact wants to become a timing reference for a world of 'human played' music where nothing is snapped to grid. There will be no grid, just human-played tracks riffing over SoftClock. The reason is, Entrainment. The 'swoop' of the tone mimicks the swing of a drummer's arm, or the strum of a guitar… or a dancer's body. It's digitally accurate, but directs the listener not toward an inhumanly accurate 'tick' but towards a motion… and when many players are moving in synchrony, that's when you have a powerful groove. But there's more. It's also a reference to where you are in the bar. The non-accented beats ebb down to a lower tone, and then ramp up again toward the One, which is the loudest and highest-pitched swoop of the tone. The amount of variation can be controlled, as can the basic pitch. Bear in mind the volume does modulate, but not in such a way as to produce an attack, even at the fastest speed settings. You dial it in to mimic the motion of your body playing, whether that's groovy or laid-back or hammering, and the non-accented beats always show you where you are in the bar, in an easy-to-hear way, even if the beats are themselves swung or the backbeat is slowed to add weight and bombast. What about those accented beats? Firstly, they're louder and higher-pitched, but they're also spaced out in an interesting way. You see, SoftClock can give you 4/4, or eighth notes, or four bars of 4/4… but it will also give you odd times beyond your humble sevens and elevens. It'll give variations on funny times when you've gone beyond 4/4. Here's the list, and how they're counted: 1, 2, and 3 are counted as you'd expect. 4 is counted as 2,2. 5 is counted as 3,2 (in other words: one two three one two, with one being the accent). 6 is 3-3, and 7 is counted backwards from how Pink Floyd's 'Money' had it: 4-3, one two three four one two three. 8 is 4-4, 9 is 3-3-3, 10 is 5-5. Then things get more complicated. Note that Count numbers 8, 16, 24 and 32 are reserved for 4/4 with accents every eight beats, so you can have normal time but hear the unaccented beats guide you around one, two, three or four bars and highlight the first One. 11 is counted four ways: 3332, 443, 551, 65. 13 is counted three ways: 3334, 445, 553. 17 is counted four ways: 44441, 5552, 773, 881. 19 is counted four ways: 44443, 5554, 775, 883. 23 is counted four ways: 444443, 5558, 7772, 887. Count the accents and they'll come in these spacings. It's options for 'sub-phrases', repetitions or modulations up front and a variation for a turn-around, orienting you to the odd rhythm. The idea is for the repetitions to themselves be easily countable, and ideally seem to fit into a 'four sections but one is different' or 'three sections but one is different' model. This is in line with a music arrangement game I've been developing that's more likely to see life as a video-game now than as the card game I'd intended. Point being, SoftClock can do normal metronome things (except using entrainment rather than ticking at you) and orientation things as far as locating you in the bar, but it can also combine all that into a baffling proggy rhythm that nevertheless guides you into grooving and memorable riffs of many kinds. If the standard variations on freaky prime-numbered prog-meters aren't enough, you can play with Swing and the delay of BigBeat (accented beats) until you've gone full Beefheart: or, rather, full Magic Band and John French drum parts. Dive as deep as you like, or keep it more simple: SoftClock has you covered. You may be surprised at how much easier it is to hear, entrain, and orient yourself when using a click track that refuses to click. Remember, lay it down as a track, don't try to match it to a normal click, don't grid anything! SoftClock is for gridless grooves, and music that sounds human because it moves like humans. See how it feels."
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SoftClock final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sftc';
     float A;
     float B;
     float C;
@@ -119,7 +123,7 @@ class SoftClock final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -128,8 +132,7 @@ class SoftClock final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -203,36 +206,38 @@ class SoftClock final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((int)(A * 200.99) + 40, text, kVstMaxParamStrLen); break;
+            case kParamB: int2string((int)(B * 32.99), text, kVstMaxParamStrLen); break;
+            case kParamC: int2string((int)(C * 16.99), text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

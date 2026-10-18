@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "VariMu is a more organic variation on Pressure (a compressor)"
 };
 constexpr std::string_view k_long_description{
-    "I’ve got something nice: everybody likes yet another compressor, right? I’ve got ButterComp, Swell, Logical4, the one in CStrip, Surge, SurgeTide, Pyewacket, Thunder, and of course Pressure4. All those are free (and I’m working on getting them open source as well, but first I want to get the actual plugins out).So clearly what we need is YET ANOTHER free compressor as we plainly don’t have nearly enough. We must run all the compressors, in a row, until everything is so compressed we can’t even stand ourselves! :DNo… there’s a non-joke reason. And that reason is, all those sound very different. They won’t all work for everyone: for instance, Pyewacket is all about retaining the attack transients of things and just stepping on the tails of envelopes. Swell is about stomping out those very attack transients until they’re all gone. Surge is about very smooth gain shifts that are totally transparent and more like an automatic gain control. SurgeTide is the same but more so, it’s almost completely unmanageable. Logical4 is about acting like a hardware stereo 2-buss compressor, and so on.VariMu comes from Pressure, originally. What it does differently is trigger using different math: it uses the square of the input signal, not just the signal alone, and it also handles brief transients differently. This makes it sound very different from Pressure, so if you like Pressure you should try it… and if you didn’t like Pressure, you should also try it, because it sounds different.That’s really the essence of all these Airwindows compressors (perhaps more than any other class of plugin). They’re all different algorithms, often pretty weird ones, and sound very different from each other. So you have to pick which ones fit with your type of music… but also, you don’t have to pick, because they’re all available to you for experimenting with, and if I come up with something weird and non-useful (SurgeTide comes to mind) then thanks to the Patreon I can put it out anyway, without worrying that it would kill the buzz and have people wondering if Airwindows has lost it. Even if it’s useful to just one person, I can release anything, no matter how weird.But this time, I don’t think I’ll be making excuses like that. VariMu has a good sound to it. I hope you like it :)"
+    "I’ve got something nice: everybody likes yet another compressor, right? I’ve got ButterComp, Swell, Logical4, the one in CStrip, Surge, SurgeTide, Pyewacket, Thunder, and of course Pressure4. All those are free (and I’m working on getting them open source as well, but first I want to get the actual plugins out). So clearly what we need is YET ANOTHER free compressor as we plainly don’t have nearly enough. We must run all the compressors, in a row, until everything is so compressed we can’t even stand ourselves! :D No… there’s a non-joke reason. And that reason is, all those sound very different. They won’t all work for everyone: for instance, Pyewacket is all about retaining the attack transients of things and just stepping on the tails of envelopes. Swell is about stomping out those very attack transients until they’re all gone. Surge is about very smooth gain shifts that are totally transparent and more like an automatic gain control. SurgeTide is the same but more so, it’s almost completely unmanageable. Logical4 is about acting like a hardware stereo 2-buss compressor, and so on. VariMu comes from Pressure, originally. What it does differently is trigger using different math: it uses the square of the input signal, not just the signal alone, and it also handles brief transients differently. This makes it sound very different from Pressure, so if you like Pressure you should try it… and if you didn’t like Pressure, you should also try it, because it sounds different. That’s really the essence of all these Airwindows compressors (perhaps more than any other class of plugin). They’re all different algorithms, often pretty weird ones, and sound very different from each other. So you have to pick which ones fit with your type of music… but also, you don’t have to pick, because they’re all available to you for experimenting with, and if I come up with something weird and non-useful (SurgeTide comes to mind) then thanks to the Patreon I can put it out anyway, without worrying that it would kill the buzz and have people wondering if Airwindows has lost it. Even if it’s useful to just one person, I can release anything, no matter how weird. But this time, I don’t think I’ll be making excuses like that. VariMu has a good sound to it. I hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class VariMu final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vari';
     double muVaryL;
     double muAttackL;
     double muNewSpeedL;
@@ -91,21 +95,18 @@ class VariMu final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -118,8 +119,7 @@ class VariMu final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -132,12 +132,11 @@ class VariMu final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "intensty"; break;
             case kParamB: return "speed"; break;
             case kParamC: return "output"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -146,8 +145,7 @@ class VariMu final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Intensty"; break;
             case kParamB: return "Speed"; break;
             case kParamC: return "Output"; break;
@@ -160,30 +158,30 @@ class VariMu final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -212,8 +210,7 @@ class VariMu final : public Effect<T>
         double squaredSampleL;
         double squaredSampleR;
         // µ µ µ µ µ µ µ µ µ µ µ µ is the kitten song o/~
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             static int noisesourceL = 0;
@@ -279,25 +276,20 @@ class VariMu final : public Effect<T>
             previousR = inputSampleR;
             inputSampleR *= muMakeupGain;
             // adjust coefficients for L
-            if (flip)
-            {
-                if (fabs(squaredSampleL) > threshold)
-                {
+            if (flip) {
+                if (fabs(squaredSampleL) > threshold) {
                     muVaryL = threshold / fabs(squaredSampleL);
                     muAttackL = sqrt(fabs(muSpeedAL));
                     muCoefficientAL = muCoefficientAL * (muAttackL - 1.0);
-                    if (muVaryL < threshold)
-                    {
+                    if (muVaryL < threshold) {
                         muCoefficientAL = muCoefficientAL + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientAL = muCoefficientAL + muVaryL;
                     }
                     muCoefficientAL = muCoefficientAL / muAttackL;
                 }
-                else
-                {
+                else {
                     muCoefficientAL = muCoefficientAL * ((muSpeedAL * muSpeedAL) - 1.0);
                     muCoefficientAL = muCoefficientAL + 1.0;
                     muCoefficientAL = muCoefficientAL / (muSpeedAL * muSpeedAL);
@@ -306,25 +298,20 @@ class VariMu final : public Effect<T>
                 muNewSpeedL = muNewSpeedL + fabs(squaredSampleL * release) + fastest;
                 muSpeedAL = muNewSpeedL / muSpeedAL;
             }
-            else
-            {
-                if (fabs(squaredSampleL) > threshold)
-                {
+            else {
+                if (fabs(squaredSampleL) > threshold) {
                     muVaryL = threshold / fabs(squaredSampleL);
                     muAttackL = sqrt(fabs(muSpeedBL));
                     muCoefficientBL = muCoefficientBL * (muAttackL - 1);
-                    if (muVaryL < threshold)
-                    {
+                    if (muVaryL < threshold) {
                         muCoefficientBL = muCoefficientBL + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientBL = muCoefficientBL + muVaryL;
                     }
                     muCoefficientBL = muCoefficientBL / muAttackL;
                 }
-                else
-                {
+                else {
                     muCoefficientBL = muCoefficientBL * ((muSpeedBL * muSpeedBL) - 1.0);
                     muCoefficientBL = muCoefficientBL + 1.0;
                     muCoefficientBL = muCoefficientBL / (muSpeedBL * muSpeedBL);
@@ -335,25 +322,20 @@ class VariMu final : public Effect<T>
             }
             // got coefficients, adjusted speeds for L
             // adjust coefficients for R
-            if (flip)
-            {
-                if (fabs(squaredSampleR) > threshold)
-                {
+            if (flip) {
+                if (fabs(squaredSampleR) > threshold) {
                     muVaryR = threshold / fabs(squaredSampleR);
                     muAttackR = sqrt(fabs(muSpeedAR));
                     muCoefficientAR = muCoefficientAR * (muAttackR - 1.0);
-                    if (muVaryR < threshold)
-                    {
+                    if (muVaryR < threshold) {
                         muCoefficientAR = muCoefficientAR + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientAR = muCoefficientAR + muVaryR;
                     }
                     muCoefficientAR = muCoefficientAR / muAttackR;
                 }
-                else
-                {
+                else {
                     muCoefficientAR = muCoefficientAR * ((muSpeedAR * muSpeedAR) - 1.0);
                     muCoefficientAR = muCoefficientAR + 1.0;
                     muCoefficientAR = muCoefficientAR / (muSpeedAR * muSpeedAR);
@@ -362,25 +344,20 @@ class VariMu final : public Effect<T>
                 muNewSpeedR = muNewSpeedR + fabs(squaredSampleR * release) + fastest;
                 muSpeedAR = muNewSpeedR / muSpeedAR;
             }
-            else
-            {
-                if (fabs(squaredSampleR) > threshold)
-                {
+            else {
+                if (fabs(squaredSampleR) > threshold) {
                     muVaryR = threshold / fabs(squaredSampleR);
                     muAttackR = sqrt(fabs(muSpeedBR));
                     muCoefficientBR = muCoefficientBR * (muAttackR - 1);
-                    if (muVaryR < threshold)
-                    {
+                    if (muVaryR < threshold) {
                         muCoefficientBR = muCoefficientBR + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientBR = muCoefficientBR + muVaryR;
                     }
                     muCoefficientBR = muCoefficientBR / muAttackR;
                 }
-                else
-                {
+                else {
                     muCoefficientBR = muCoefficientBR * ((muSpeedBR * muSpeedBR) - 1.0);
                     muCoefficientBR = muCoefficientBR + 1.0;
                     muCoefficientBR = muCoefficientBR / (muSpeedBR * muSpeedBR);
@@ -390,15 +367,13 @@ class VariMu final : public Effect<T>
                 muSpeedBR = muNewSpeedR / muSpeedBR;
             }
             // got coefficients, adjusted speeds for R
-            if (flip)
-            {
+            if (flip) {
                 coefficient = (muCoefficientAL + pow(muCoefficientAL, 2)) / 2.0;
                 inputSampleL *= coefficient;
                 coefficient = (muCoefficientAR + pow(muCoefficientAR, 2)) / 2.0;
                 inputSampleR *= coefficient;
             }
-            else
-            {
+            else {
                 coefficient = (muCoefficientBL + pow(muCoefficientBL, 2)) / 2.0;
                 inputSampleL *= coefficient;
                 coefficient = (muCoefficientBR + pow(muCoefficientBR, 2)) / 2.0;
