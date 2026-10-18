@@ -120,13 +120,26 @@ def plugin_categories(airwindopedia_path: Path, airwindows_root: Path) -> dict[s
     return categories
 
 
+def header_path(project_root: Path, title: str, category: str) -> Path:
+    return project_root / "include" / category / f"{title.replace(' ', '').lower()}.hpp"
+
+
+def existing_plugins_in_dirs(project_root: Path, categories: dict[str, str], source_dirs: set[str]) -> set[str]:
+    """Titles from `categories` that already have a header and whose upstream
+    source directory is one of `source_dirs`."""
+    wanted = {d.casefold() for d in source_dirs}
+    return {
+        title for title, category in categories.items()
+        if _SOURCE_DIR_ALIASES.get(title, title).replace(" ", "").casefold() in wanted
+        and header_path(project_root, title, category).exists()
+    }
+
+
 def find_missing_plugins(project_root: Path, categories: dict[str, str]) -> list[str]:
     """Plugin titles from `categories` that don't have a generated header yet."""
     missing = []
     for title, category in categories.items():
-        slug = title.replace(" ", "").lower()
-        output_path = project_root / "include" / category / f"{slug}.hpp"
-        if not output_path.exists():
+        if not header_path(project_root, title, category).exists():
             missing.append(title)
     return missing
 
@@ -240,7 +253,6 @@ class Plugin:
             _DESCRIPTION_TITLE_ALIASES.get(listed_title, listed_title))
 
         self.source_dir = Path(os.path.join(airwindows_root, source_title))
-
         self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
 
         # deferred import: clang_extractor imports GrabError/naive_line_filter from this module
