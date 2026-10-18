@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <cstdlib>
 
+#define FOURBYFOUR true // 171*10-GCFCEG4 on 2025-06-11
+#define SIXBYSIX true // 808b-GCCCEG6 on 2025-06-13 - VerbSixes
+
 namespace airwindohhs::verbsixes {
 
 constexpr std::string_view k_name{ "VerbSixes" };
@@ -20,6 +23,62 @@ constexpr std::string_view k_tags{
 template <typename T>
 class VerbSixes final : public Effect<T>
 {
+    static constexpr int d4A = 1060;
+    static constexpr int d4B = 3620;
+    static constexpr int d4C = 1750;
+    static constexpr int d4D = 530;
+    static constexpr int d4E = 2930;
+    static constexpr int d4F = 4460;
+    static constexpr int d4G = 6820;
+    static constexpr int d4H = 1090;
+    static constexpr int d4I = 6770;
+    static constexpr int d4J = 6120;
+    static constexpr int d4K = 6110;
+    static constexpr int d4L = 5400;
+    static constexpr int d4M = 6930;
+    static constexpr int d4N = 3650;
+    static constexpr int d4O = 2330;
+    static constexpr int d4P = 6660;
+    static constexpr int d6A = 729;
+    static constexpr int d6B = 1170;
+    static constexpr int d6C = 20;
+    static constexpr int d6D = 1089;
+    static constexpr int d6E = 17;
+    static constexpr int d6F = 221;
+    static constexpr int d6G = 180;
+    static constexpr int d6H = 332;
+    static constexpr int d6I = 119;
+    static constexpr int d6J = 657;
+    static constexpr int d6K = 1129;
+    static constexpr int d6L = 1142;
+    static constexpr int d6M = 742;
+    static constexpr int d6N = 30;
+    static constexpr int d6O = 786;
+    static constexpr int d6P = 124;
+    static constexpr int d6Q = 1107;
+    static constexpr int d6R = 85;
+    static constexpr int d6S = 1164;
+    static constexpr int d6T = 1052;
+    static constexpr int d6U = 416;
+    static constexpr int d6V = 642;
+    static constexpr int d6W = 427;
+    static constexpr int d6X = 120;
+    static constexpr int d6Y = 891;
+    static constexpr int d6ZA = 22;
+    static constexpr int d6ZB = 1171;
+    static constexpr int d6ZC = 278;
+    static constexpr int d6ZD = 476;
+    static constexpr int d6ZE = 376;
+    static constexpr int d6ZF = 573;
+    static constexpr int d6ZG = 1089;
+    static constexpr int d6ZH = 487;
+    static constexpr int d6ZI = 123;
+    static constexpr int d6ZJ = 329;
+    static constexpr int d6ZK = 465;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vsix';
 #ifdef THREEBYTHREE
     double a3AL[d3A + 5];
     double a3BL[d3B + 5];
@@ -1937,3 +1996,6 @@ class VerbSixes final : public Effect<T>
     }
 };
 } // namespace airwindohhs::verbsixes
+
+#undef FOURBYFOUR
+#undef SIXBYSIX
