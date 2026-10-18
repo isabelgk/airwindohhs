@@ -212,6 +212,23 @@ def _references_any(cursor: cindex.Cursor, names: set) -> bool:
     return bool(find_all(cursor, lambda c: c.kind == cindex.CursorKind.DECL_REF_EXPR and c.spelling in names))
 
 
+def _outer_cases(switch: cindex.Cursor) -> list:
+    """The `case` labels belonging to `switch` itself, skipping those of any
+    switch nested inside one of its cases (e.g. a label chosen by value)."""
+    cases = []
+
+    def walk(c):
+        for child in c.get_children():
+            if child.kind == cindex.CursorKind.SWITCH_STMT:
+                continue
+            if child.kind == cindex.CursorKind.CASE_STMT:
+                cases.append(child)
+            walk(child)
+
+    walk(switch)
+    return cases
+
+
 def _case_variable(case: cindex.Cursor) -> str:
     """The parameter letter (A, B, ...) a `case` in a parameter switch
     corresponds to, resolved by the case value's actual enum position --
@@ -467,7 +484,7 @@ class PluginAst:
         if not switches:
             return {}
         result = {}
-        for case in find_all(switches[0], lambda c: c.kind == cindex.CursorKind.CASE_STMT):
+        for case in _outer_cases(switches[0]):
             variable = _case_variable(case)
             if variable is None:
                 continue
@@ -488,7 +505,7 @@ class PluginAst:
         if not switches:
             return {}
         result = {}
-        for case in find_all(switches[0], lambda c: c.kind == cindex.CursorKind.CASE_STMT):
+        for case in _outer_cases(switches[0]):
             variable = _case_variable(case)
             if variable is None:
                 continue
