@@ -172,11 +172,7 @@ class Parameter:
         self.label = label
 
     def _slug(self):
-        to_strip = {"-", "/", ""}
-        slug = self.title.lower()
-        for elem in to_strip:
-            slug.replace(elem, "")
-        return slug
+        return re.sub(r"[^a-z0-9]", "", self.title.lower())
 
 
 class Plugin:
