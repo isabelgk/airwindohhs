@@ -372,6 +372,7 @@
 #include "reverb/ultralight2.hpp"
 #include "reverb/verbity.hpp"
 #include "reverb/verbity2.hpp"
+#include "reverb/verbsevens.hpp"
 #include "reverb/verbsixes.hpp"
 #include "reverb/verbthic.hpp"
 #include "reverb/verbtiny.hpp"
@@ -3424,6 +3425,14 @@ inline std::unique_ptr<IPlugin<T>> make_verbity2()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_verbsevens()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::verbsevens::VerbSevens>>(
+        airwindohhs::verbsevens::k_name, airwindohhs::verbsevens::k_tags,
+        airwindohhs::verbsevens::k_short_description, airwindohhs::verbsevens::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_verbsixes()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::verbsixes::VerbSixes>>(
@@ -4942,6 +4951,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::ultralight2::k_name, "ultralight2", "reverb", airwindohhs::ultralight2::k_tags, airwindohhs::ultralight2::k_short_description, airwindohhs::ultralight2::k_long_description, static_cast<int>(airwindohhs::ultralight2::Ultralight2<T>::kNumParameters), &make_ultralight2<T> },
         { airwindohhs::verbity::k_name, "verbity", "reverb", airwindohhs::verbity::k_tags, airwindohhs::verbity::k_short_description, airwindohhs::verbity::k_long_description, static_cast<int>(airwindohhs::verbity::Verbity<T>::kNumParameters), &make_verbity<T> },
         { airwindohhs::verbity2::k_name, "verbity2", "reverb", airwindohhs::verbity2::k_tags, airwindohhs::verbity2::k_short_description, airwindohhs::verbity2::k_long_description, static_cast<int>(airwindohhs::verbity2::Verbity2<T>::kNumParameters), &make_verbity2<T> },
+        { airwindohhs::verbsevens::k_name, "verbsevens", "reverb", airwindohhs::verbsevens::k_tags, airwindohhs::verbsevens::k_short_description, airwindohhs::verbsevens::k_long_description, static_cast<int>(airwindohhs::verbsevens::VerbSevens<T>::kNumParameters), &make_verbsevens<T> },
         { airwindohhs::verbsixes::k_name, "verbsixes", "reverb", airwindohhs::verbsixes::k_tags, airwindohhs::verbsixes::k_short_description, airwindohhs::verbsixes::k_long_description, static_cast<int>(airwindohhs::verbsixes::VerbSixes<T>::kNumParameters), &make_verbsixes<T> },
         { airwindohhs::verbthic::k_name, "verbthic", "reverb", airwindohhs::verbthic::k_tags, airwindohhs::verbthic::k_short_description, airwindohhs::verbthic::k_long_description, static_cast<int>(airwindohhs::verbthic::VerbThic<T>::kNumParameters), &make_verbthic<T> },
         { airwindohhs::verbtiny::k_name, "verbtiny", "reverb", airwindohhs::verbtiny::k_tags, airwindohhs::verbtiny::k_short_description, airwindohhs::verbtiny::k_long_description, static_cast<int>(airwindohhs::verbtiny::VerbTiny<T>::kNumParameters), &make_verbtiny<T> },
