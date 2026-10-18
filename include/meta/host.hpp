@@ -102,7 +102,7 @@ class PluginHost
   private:
     std::unique_ptr<IPlugin<T>> current_;
     const Entry* current_entry_ = nullptr;
-    T sample_rate_{};
+    T sample_rate_{ 44100 };
 };
 
 } // namespace airwindohhs::meta

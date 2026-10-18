@@ -6,12 +6,14 @@ typedef int VstInt32;
 template <typename T>
 class Effect
 {
-    T m_samplerate{};
+    // The VST SDK's AudioEffect starts at 44100 too; plugins divide by
+    // getSampleRate() / 44100.0, so 0 would produce inf/NaN output.
+    T m_samplerate{ 44100 };
 
   public:
     virtual ~Effect() = default;
 
-    T getSampleRate()
+    T getSampleRate() const
     {
         return m_samplerate;
     }
