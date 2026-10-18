@@ -92,7 +92,7 @@ jobs:
       - if: steps.existing.outputs.skip == 'false'
         id: verify
         run: |
-          new_file=$(git status --porcelain | awk '$1=="??"{print $2}' | grep '^include/' | head -1)
+          new_file=$(git status --porcelain --untracked-files=all | awk '$1=="??"{print $2}' | grep '^include/' | head -1)
           if [ -z "$new_file" ]; then
             echo "::warning::grab produced no header for ${{ matrix.plugin }}"
             echo "generated=false" >> "$GITHUB_OUTPUT"

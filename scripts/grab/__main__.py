@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from scripts.grab.grabber import Grabber, find_missing_plugins, parse_categories
+from scripts.grab.grabber import Grabber, find_missing_plugins, plugin_categories
 from scripts.grab.source_fetch import UpstreamSource, VersionPin, read_version_pin, write_version_pin
 
 
@@ -88,7 +88,7 @@ def main(argv=None):
     source, resolved_pin = resolve_source(args, version_file)
     try:
         if args.list_missing:
-            categories, _ = parse_categories(source.airwindopedia_path)
+            categories = plugin_categories(source.airwindopedia_path, source.plugin_source_dir)
             category_filter = set(args.category) if args.category else None
             if category_filter:
                 categories = {p: c for p, c in categories.items() if c in category_filter}

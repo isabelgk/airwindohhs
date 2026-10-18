@@ -28,6 +28,22 @@ def naive_line_filter(lines: list[str]) -> list[str]:
     return result
 
 
+# Airwindopedia.txt still lists these under the names they shipped with;
+# upstream has since renamed their source directories.
+_SOURCE_DIR_ALIASES = {
+    "PointyGuitar": "PunchyGuitar",
+    "PointyDeluxe": "PunchyDeluxe",
+}
+
+# Plugins whose Airwindopedia.txt entry is headed by a different name than
+# the one its category list uses.
+_DESCRIPTION_TITLE_ALIASES = {
+    "C5RawChannel": "C5RawConsole",
+}
+
+UNCATEGORIZED = "uncategorized"
+
+
 def resolve_source_title(airwindows_root: Path, title: str) -> str:
     """Return the upstream source directory name matching `title` ignoring case,
     since Airwindopedia.txt's spelling can differ from it ("Derez5" vs "DeRez5")."""
@@ -90,6 +106,18 @@ def parse_categories(airwindopedia_path: Path) -> tuple[dict[str, str], dict[str
         if line.startswith("# Categories"):
             in_categories = True
     return categories, categories_transpose
+
+
+def plugin_categories(airwindopedia_path: Path, airwindows_root: Path) -> dict[str, str]:
+    """Plugin title -> category for every plugin to generate: Airwindopedia's
+    categories, plus UNCATEGORIZED for each upstream source directory that
+    no Airwindopedia title (or alias) claims."""
+    categories, _ = parse_categories(airwindopedia_path)
+    claimed = {_SOURCE_DIR_ALIASES.get(t, t).replace(" ", "").casefold() for t in categories}
+    for entry in sorted(Path(airwindows_root).iterdir(), key=lambda e: e.name):
+        if entry.is_dir() and entry.name.casefold() not in claimed:
+            categories[entry.name] = UNCATEGORIZED
+    return categories
 
 
 def find_missing_plugins(project_root: Path, categories: dict[str, str]) -> list[str]:
@@ -199,17 +227,25 @@ class Plugin:
                  category: str):
         self.project_root = project_root
         self.airwindopedia_path = airwindopedia_path
-        self.title = resolve_source_title(airwindows_root, title.replace(" ", ""))
+        listed_title = title.replace(" ", "")
+        if listed_title in _SOURCE_DIR_ALIASES:
+            source_title = resolve_source_title(airwindows_root, _SOURCE_DIR_ALIASES[listed_title])
+            self.title = listed_title
+        else:
+            source_title = resolve_source_title(airwindows_root, listed_title)
+            self.title = source_title
         self.slug = self.title.lower()
         self.category = category
-        self.short_description, self.long_description = self._init_descriptions(title.replace(" ", ""))
+        self.short_description, self.long_description = self._init_descriptions(
+            _DESCRIPTION_TITLE_ALIASES.get(listed_title, listed_title))
 
-        self.source_dir = Path(os.path.join(airwindows_root, self.title))
+        self.source_dir = Path(os.path.join(airwindows_root, source_title))
+
         self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
 
         # deferred import: clang_extractor imports GrabError/naive_line_filter from this module
         from scripts.grab.clang_extractor import PluginAst
-        ast = PluginAst(self.source_dir, self.title)
+        ast = PluginAst(self.source_dir, source_title)
 
         self.initialization_code = ast.initialization_code()
         self.processing_code = ast.processing_code()
@@ -366,7 +402,6 @@ class Grabber:
     _airwindopedia_path: Path
     _template_header_path: Path
     _categories: dict[str, str]
-    _categories_transpose: dict[str, list[str]]
 
     def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path,
                  plugin_filter: set[str] = None, category_filter: set[str] = None):
@@ -380,7 +415,7 @@ class Grabber:
 
         self._airwindopedia_path = airwindopedia_path
         self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
-        self._categories, self._categories_transpose = parse_categories(airwindopedia_path)
+        self._categories = plugin_categories(airwindopedia_path, airwindows_root)
         self._init_plugins(plugin_filter, category_filter)
 
     def _init_plugins(self, plugin_filter: set[str] = None, category_filter: set[str] = None):
