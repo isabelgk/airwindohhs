@@ -15,19 +15,6 @@ def escape_cpp_string(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def first_matching_line_index(lines: list[str], match: str, line_rstrip=None) -> int:
-    for index, line in enumerate(lines):
-        if line_rstrip:
-            line = line.rstrip()
-        if match in line:
-            return index
-    raise GrabError(f"Could not find {match} in lines")
-
-
-def next_matching_line_index(lines: list[str], offset: int, match: str) -> int:
-    return first_matching_line_index(lines[offset:], match) + offset
-
-
 def naive_line_filter(lines: list[str]) -> list[str]:
     result = []
     ignore = {"{\n", "}\n", "\n"}
@@ -198,7 +185,7 @@ class Plugin:
         self.title = resolve_source_title(airwindows_root, title.replace(" ", ""))
         self.slug = self.title.lower()
         self.category = category
-        self.short_description, self.long_description = self._init_descriptions()
+        self.short_description, self.long_description = self._init_descriptions(title.replace(" ", ""))
 
         self.source_dir = Path(os.path.join(airwindows_root, self.title))
         self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
@@ -260,22 +247,21 @@ class Plugin:
             result[variable] = Parameter(variable, title, default_value, label, member=member)
         return result
 
-    def _init_descriptions(self):
+    def _init_descriptions(self, description_title: str):
         with open(self.airwindopedia_path, "r") as f:
             lines = f.readlines()
 
-        try:
-            begin_index = first_matching_line_index(lines, f"# {self.title}")
-            next_index = next_matching_line_index(lines, begin_index + 1, "# ")
-            short_description = lines[begin_index].replace("#", "").strip()
-
-            chunk = lines[begin_index + 1:next_index]
-            chunk = [line.replace("\n", "") for line in chunk]
-            long_description = "".join(naive_line_filter(chunk))
-            return escape_cpp_string(short_description), escape_cpp_string(long_description)
-        except RuntimeError as e:
+        heading = re.compile(rf"^#+ {re.escape(description_title)}(?![\w-])", re.IGNORECASE)
+        begin_index = next((i for i, line in enumerate(lines) if heading.match(line)), None)
+        if begin_index is None:
             warning(self.title, "could not find descriptions; using empty strings")
             return "", ""
+        next_index = next((i for i in range(begin_index + 1, len(lines)) if lines[i].startswith("#")), len(lines))
+        short_description = lines[begin_index].replace("#", "").strip()
+
+        chunk = [line.replace("\n", "") for line in lines[begin_index + 1:next_index]]
+        long_description = " ".join(line.strip() for line in naive_line_filter(chunk))
+        return escape_cpp_string(short_description), escape_cpp_string(long_description)
 
     def _to_dict(self) -> dict:
         d = {
