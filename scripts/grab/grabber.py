@@ -130,6 +130,18 @@ def warning(plugin: str, error: str):
     print(f"{plugin} (warning): {error}")
 
 
+# A plugin namespace with one of these names (Floor) would hide the math
+# function from every plugin namespace in airwindohhs that calls it unqualified.
+_C_MATH_FUNCTIONS = {
+    "abs", "acos", "acosh", "asin", "asinh", "atan", "atan2", "atanh", "cbrt", "ceil", "copysign",
+    "cos", "cosh", "erf", "erfc", "exp", "exp2", "expm1", "fabs", "fdim", "floor", "fma", "fmax",
+    "fmin", "fmod", "frexp", "hypot", "ilogb", "ldexp", "lgamma", "llrint", "llround", "log",
+    "log10", "log1p", "log2", "logb", "lrint", "lround", "modf", "nan", "nearbyint", "nextafter",
+    "nexttoward", "pow", "remainder", "remquo", "rint", "round", "scalbln", "scalbn", "sin", "sinh",
+    "sqrt", "tan", "tanh", "tgamma", "trunc",
+}
+
+
 class Parameter:
     """A parameter represents a VST parameter, a variable that can change how the plugin does the processing"""
 
@@ -214,6 +226,7 @@ class Plugin:
         # Only macros the emitted code references, so plugins that define but
         # never test them don't grow dead directives.
         emitted = self.private_vars + self.initialization_code + self.processing_code
+        self.namespace = f"{self.slug}effect" if self.slug in _C_MATH_FUNCTIONS else self.slug
         self.macros = {
             name: line for name, line in ast.file_scope_macros().items()
             if re.search(rf"\b{re.escape(name)}\b", emitted)
@@ -270,7 +283,7 @@ class Plugin:
 
     def _to_dict(self) -> dict:
         d = {
-            "namespace": self.slug,
+            "namespace": self.namespace,
             "short_description": self.short_description,
             "long_description": self.long_description,
             "tags": self.category,
