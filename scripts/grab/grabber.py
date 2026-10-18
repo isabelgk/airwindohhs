@@ -1,4 +1,5 @@
 import os.path
+import re
 import string
 from pathlib import Path
 
@@ -204,6 +205,14 @@ class Plugin:
                 self.initialization_code += "\n"
             self.initialization_code += injected
 
+        # Only macros the emitted code references, so plugins that define but
+        # never test them don't grow dead directives.
+        emitted = self.private_vars + self.initialization_code + self.processing_code
+        self.macros = {
+            name: line for name, line in ast.file_scope_macros().items()
+            if re.search(rf"\b{re.escape(name)}\b", emitted)
+        }
+
     def _init_parameters(self, ast):
         num_parameters = ast.num_parameters()
         if num_parameters == 0:
@@ -263,6 +272,9 @@ class Plugin:
             "private_variables": self.private_vars,
             "initialization": self.initialization_code,
             "process": self.processing_code,
+            "macro_defines": "".join(f"{line}\n" for line in self.macros.values()) + ("\n" if self.macros else ""),
+            # undefined again so one header's topology can't switch on blocks in another
+            "macro_undefs": ("\n" if self.macros else "") + "".join(f"#undef {name}\n" for name in self.macros),
             # param-specific:
             "param_enum": self._param_enum(),
             "set_parameter_value_switch": self._param_set_value_switch(),
