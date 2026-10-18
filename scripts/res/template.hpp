@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-namespace airwindohhs::${namespace}
+${macro_defines}namespace airwindohhs::${namespace}
 {
 
 constexpr std::string_view k_name{"${class_name}"};
@@ -115,3 +115,4 @@ public:
 
 };
 } // namespace airwindohhs::${namespace}
+${macro_undefs}

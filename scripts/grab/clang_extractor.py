@@ -352,6 +352,18 @@ class PluginAst:
             lines.append(f"static constexpr {text};\n")
         return "".join(lines)
 
+    def file_scope_macros(self) -> dict:
+        """Maps each object-like `#define` in the .h to its verbatim line, minus
+        the include guard. Some plugins pick a reverb topology this way
+        (`#define SIXBYSIX true`) and `#ifdef` the rest of the source on it."""
+        text = self.h_source.decode("utf-8", errors="replace")
+        guards = set(re.findall(r"^\s*#\s*ifndef\s+(\w+)", text, re.MULTILINE))
+        return {
+            match.group(1): match.group(0).strip()
+            for match in re.finditer(r"^\s*#\s*define\s+(\w+)(?:\s.*)?$", text, re.MULTILINE)
+            if match.group(1) not in guards
+        }
+
     def _class_definition(self) -> cindex.Cursor:
         return find_first(
             self.h_tu.cursor,
