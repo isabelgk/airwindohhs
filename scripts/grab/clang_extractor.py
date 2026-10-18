@@ -571,3 +571,19 @@ class PluginAst:
             text = re.sub(rf"\b{re.escape(old)}\b", new, text)
         text = re.sub(r"\bthrow\s*;", "break;", text)
         return _qualify_effect_calls(_sanitize_reserved_identifiers(text)).strip("\n") + "\n"
+
+    def shadows_members(self) -> bool:
+        """Whether any local variable or parameter in the emitted code reuses a
+        member's name, which -Wshadow and MSVC's C4458 warn about."""
+        fields = {f.spelling for f in self._emitted_fields()}
+        scopes = [self._constructor_definition(), self._method_definition("processDoubleReplacing", self.proc_path, self.proc_tu)]
+        for name in ("setParameter", "getParameterDisplay", "getParameterLabel"):
+            try:
+                scopes.append(self._method_definition(name, self.cpp_path, self.cpp_tu))
+            except GrabError:
+                pass
+        kinds = (cindex.CursorKind.VAR_DECL, cindex.CursorKind.PARM_DECL)
+        return any(
+            find_all(scope, lambda c: c.kind in kinds and c.spelling in fields)
+            for scope in scopes
+        )

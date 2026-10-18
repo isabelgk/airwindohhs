@@ -1,5 +1,5 @@
 #pragma once
-#include "effect.hpp"
+${shadow_warnings_push}#include "effect.hpp"
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
@@ -105,4 +105,4 @@ public:
 
 };
 } // namespace airwindohhs::${namespace}
-${macro_undefs}
+${macro_undefs}${shadow_warnings_pop}

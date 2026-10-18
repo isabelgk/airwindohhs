@@ -117,6 +117,23 @@ def warning(plugin: str, error: str):
     print(f"{plugin} (warning): {error}")
 
 
+_SHADOW_WARNINGS_PUSH = """#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4458)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+#endif
+"""
+
+_SHADOW_WARNINGS_POP = """#if defined(_MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+"""
+
+
 # A plugin namespace with one of these names (Floor) would hide the math
 # function from every plugin namespace in airwindohhs that calls it unqualified.
 _C_MATH_FUNCTIONS = {
@@ -200,6 +217,7 @@ class Plugin:
         self.set_parameter_code = ast.method_body("setParameter")
         self.display_code = ast.method_body("getParameterDisplay")
         self.label_code = ast.method_body("getParameterLabel")
+        self.shadows_members = ast.shadows_members()
         self.parameters = self._init_parameters(ast)
 
         injected, injected_names = ast.uninitialized_members()
@@ -283,6 +301,8 @@ class Plugin:
             "get_parameter_title_switch": self._param_title_switch(),
             "get_parameter_display_body": self.display_code,
             "get_parameter_label_body": self.label_code,
+            "shadow_warnings_push": _SHADOW_WARNINGS_PUSH if self.shadows_members else "",
+            "shadow_warnings_pop": _SHADOW_WARNINGS_POP if self.shadows_members else "",
         }
         return d
 
