@@ -133,6 +133,8 @@ def _sanitize_reserved_identifiers(text: str) -> str:
 # plumbing with no analogue here), so they must not be initialized either.
 _NON_EMITTED_MEMBERS = {"_programName", "_canDo"}
 
+_TEMPLATE_IO_POINTERS = {"in1", "in2", "out1", "out2"}
+
 # Some upstream constructors leave a member unassigned that the processing code
 # then reads on its first pass. Reading an indeterminate value is undefined
 # behaviour, and where the member is recursive filter state the garbage persists
@@ -336,13 +338,23 @@ class PluginAst:
         if skip == 0 or skip >= len(stmts):
             raise GrabError("Could not find input/output pointer declarations in processDoubleReplacing")
 
+        # the template declares in1/in2/out1/out2 itself; any other name needs its own declaration
+        pointer_decls = ""
+        for stmt in stmts[:skip]:
+            for var in stmt.get_children():
+                if var.kind != cindex.CursorKind.VAR_DECL or var.spelling in _TEMPLATE_IO_POINTERS:
+                    continue
+                init = list(var.get_children())[-1]
+                init_text = self.proc_source[init.extent.start.offset:init.extent.end.offset].decode("utf-8", errors="replace")
+                pointer_decls += f"T* {var.spelling} = {init_text};\n"
+
         start_offset = _line_start_offset(self.proc_source, stmts[skip].extent.start.offset)
         start_offset = _extend_over_leading_comments(self.proc_source, start_offset)
         # stmts[-1].extent.end can land before a trailing ';' or comment (e.g. a bare
         # expression statement as the function's last statement) -- slice to just
         # before the function body's own closing '}' instead, like initialization_code().
         end_offset = body.extent.end.offset - 1
-        result = _slice_and_filter(self.proc_source, start_offset, end_offset)
+        result = pointer_decls + _slice_and_filter(self.proc_source, start_offset, end_offset)
         return _qualify_effect_calls(result)
 
     def file_scope_declarations(self) -> str:
