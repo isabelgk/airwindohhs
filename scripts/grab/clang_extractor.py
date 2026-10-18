@@ -339,22 +339,25 @@ class PluginAst:
         result = _slice_and_filter(self.proc_source, start_offset, end_offset)
         return result.replace("getSampleRate()", "Effect<T>::getSampleRate()")
 
-    def file_scope_constants(self) -> str:
+    def file_scope_declarations(self) -> str:
         """Some plugins declare const globals in the .h (usually array-size
-        constants like `const int kshortA = 193;`) ahead of the class, and
-        reference them directly in private member declarations (e.g.
-        `double aAL[kshortA + 5];`). Carrying only the class's own private
-        section leaves those undefined, so pull in every top-level VAR_DECL
-        too -- harmless if unused (e.g. kNumInputs), required if not."""
-        decls = find_all(
-            self.h_tu.cursor,
-            lambda c: c.kind == cindex.CursorKind.VAR_DECL
-            and c.semantic_parent.kind == cindex.CursorKind.TRANSLATION_UNIT,
-            file=self.h_path,
-        )
+        constants like `const int kshortA = 193;`) or enums of named indices
+        ahead of the class, and reference them from private member declarations
+        or processing code. Carrying only the class's own private section leaves
+        those undefined, so pull in every top-level VAR_DECL and ENUM_DECL too,
+        except the parameter enum, which the template replaces."""
         lines = []
-        for decl in decls:
+        for decl in self.h_tu.cursor.get_children():
+            if not decl.location.file or str(decl.location.file) != str(self.h_path):
+                continue
             text = self.h_source[decl.extent.start.offset:decl.extent.end.offset].decode("utf-8", errors="replace")
+            if decl.kind == cindex.CursorKind.ENUM_DECL:
+                if any(c.spelling == "kNumParameters" for c in decl.get_children()):
+                    continue
+                lines.append(f"{text.rstrip().rstrip(';')};\n")
+                continue
+            if decl.kind != cindex.CursorKind.VAR_DECL:
+                continue
             text = text.rstrip().rstrip(";").strip()
             # normalize away whatever qualifiers the original had (const,
             # static, or neither) -- a non-static member's initializer isn't
@@ -398,7 +401,7 @@ class PluginAst:
         )
         start_offset = private_spec.extent.end.offset
         end_offset = class_decl.extent.end.offset - 1  # exclude the class's closing '}'
-        return self.file_scope_constants() + _slice_and_filter(self.h_source, start_offset, end_offset)
+        return self.file_scope_declarations() + _slice_and_filter(self.h_source, start_offset, end_offset)
 
     def _emitted_fields(self) -> list:
         return [
