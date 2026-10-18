@@ -208,6 +208,12 @@ def _slice_and_filter(source: bytes, start_offset: int, end_offset: int) -> str:
     return _sanitize_reserved_identifiers(filtered)
 
 
+def _qualify_effect_calls(text: str) -> str:
+    """getSampleRate() lives in the dependent base Effect<T>, so an unqualified
+    call doesn't resolve inside the class template."""
+    return re.sub(r"(?<![:\w])getSampleRate\s*\(", "Effect<T>::getSampleRate(", text)
+
+
 def _references_any(cursor: cindex.Cursor, names: set) -> bool:
     return bool(find_all(cursor, lambda c: c.kind == cindex.CursorKind.DECL_REF_EXPR and c.spelling in names))
 
@@ -313,7 +319,7 @@ class PluginAst:
 
     def initialization_code(self) -> str:
         start_offset, end_offset = self._initialization_extent()
-        return _slice_and_filter(self.cpp_source, start_offset, end_offset)
+        return _qualify_effect_calls(_slice_and_filter(self.cpp_source, start_offset, end_offset))
 
     def processing_code(self) -> str:
         method = self._method_definition("processDoubleReplacing", self.proc_path, self.proc_tu)
@@ -337,7 +343,7 @@ class PluginAst:
         # before the function body's own closing '}' instead, like initialization_code().
         end_offset = body.extent.end.offset - 1
         result = _slice_and_filter(self.proc_source, start_offset, end_offset)
-        return result.replace("getSampleRate()", "Effect<T>::getSampleRate()")
+        return _qualify_effect_calls(result)
 
     def file_scope_declarations(self) -> str:
         """Some plugins declare const globals in the .h (usually array-size
