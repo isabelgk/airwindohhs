@@ -535,3 +535,39 @@ class PluginAst:
                 continue
             result[variable] = member_refs[0].spelling
         return result
+
+    def _parameter_enum_renames(self) -> dict:
+        """Upstream parameter enum constants whose names differ from the
+        template's kParamA, kParamB, ... convention, mapped to that name."""
+        enum_decl = find_first(
+            self.h_tu.cursor,
+            lambda c: c.kind == cindex.CursorKind.ENUM_DECL
+            and any(child.spelling == "kNumParameters" for child in c.get_children()),
+            file=self.h_path, description="parameter enum",
+        )
+        renames = {}
+        for constant in enum_decl.get_children():
+            if constant.spelling == "kNumParameters":
+                continue
+            expected = f"kParam{num_to_alpha(constant.enum_value)}"
+            if constant.spelling != expected:
+                renames[constant.spelling] = expected
+        return renames
+
+    def method_body(self, name: str) -> str:
+        """The verbatim body of a .cpp method, rewritten to compile inside the
+        class template: parameter enum constants renamed, Effect<T> calls
+        qualified, and `throw;` (upstream's "unknown parameter" default, which
+        would call std::terminate here) turned into `break;`. Empty when the
+        plugin doesn't define the method, as parameterless plugins may not."""
+        try:
+            method = self._method_definition(name, self.cpp_path, self.cpp_tu)
+        except GrabError:
+            return ""
+        body = find_first(method, lambda c: c.kind == cindex.CursorKind.COMPOUND_STMT,
+                          description=f"{name} body")
+        text = self.cpp_source[body.extent.start.offset + 1:body.extent.end.offset - 1].decode("utf-8", errors="replace")
+        for old, new in self._parameter_enum_renames().items():
+            text = re.sub(rf"\b{re.escape(old)}\b", new, text)
+        text = re.sub(r"\bthrow\s*;", "break;", text)
+        return _qualify_effect_calls(_sanitize_reserved_identifiers(text)).strip("\n") + "\n"

@@ -36,11 +36,7 @@ public:
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-        $set_parameter_value_switch
-        default: break;
-        }
+        $set_parameter_value_body
     }
 
     float get_parameter_value(int index)
@@ -85,22 +81,16 @@ public:
 
     std::string get_parameter_display(int index) const
     {
-        switch(static_cast<params>(index))
-        {
-        $get_parameter_display_switch
-        default: break;
-        }
-        return {};
+        std::string text;
+        $get_parameter_display_body
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch(static_cast<params>(index))
-        {
-        $get_parameter_label_switch
-        default: break;
-        }
-        return {};
+        std::string text;
+        $get_parameter_label_body
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

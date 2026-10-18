@@ -146,17 +146,14 @@ class Parameter:
     """The slug-ified version of the parameter name"""
     default_value: float
     """The default parameter value"""
-    label: str
-    """The parameter label, often the units of the parameter"""
 
-    def __init__(self, variable: str, title: str, default_value: float, label: str, member: str = None):
+    def __init__(self, variable: str, title: str, default_value: float, member: str = None):
         self.variable = variable
         self.member = member if member is not None else variable
         self.enum_name = f"kParam{variable}"
         self.title = title
         self.slug = self._slug()
         self.default_value = default_value
-        self.label = label
 
     def _slug(self):
         return re.sub(r"[^a-z0-9]", "", self.title.lower())
@@ -176,6 +173,9 @@ class Plugin:
     initialization_code: str
     private_vars: str
     processing_code: str
+    set_parameter_code: str
+    display_code: str
+    label_code: str
     parameters: dict[str, Parameter]
 
     def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path, title: str,
@@ -197,6 +197,9 @@ class Plugin:
         self.initialization_code = ast.initialization_code()
         self.processing_code = ast.processing_code()
         self.private_vars = ast.private_vars()
+        self.set_parameter_code = ast.method_body("setParameter")
+        self.display_code = ast.method_body("getParameterDisplay")
+        self.label_code = ast.method_body("getParameterLabel")
         self.parameters = self._init_parameters(ast)
 
         injected, injected_names = ast.uninitialized_members()
@@ -208,7 +211,8 @@ class Plugin:
 
         # Only macros the emitted code references, so plugins that define but
         # never test them don't grow dead directives.
-        emitted = self.private_vars + self.initialization_code + self.processing_code
+        emitted = (self.private_vars + self.initialization_code + self.processing_code
+                   + self.set_parameter_code + self.display_code + self.label_code)
         self.namespace = f"{self.slug}effect" if self.slug in _C_MATH_FUNCTIONS else self.slug
         self.macros = {
             name: line for name, line in ast.file_scope_macros().items()
@@ -221,7 +225,6 @@ class Plugin:
             return dict()
 
         name_map = ast.parameter_strings("getParameterName")
-        label_map = ast.parameter_strings("getParameterLabel")
         member_map = ast.parameter_members()
 
         result = dict()
@@ -233,18 +236,13 @@ class Plugin:
                 warning(self.title, "Could not find parameter name; using a default instead")
                 title = variable
 
-            label = label_map.get(variable)
-            if label is None:
-                warning(self.title, f"Could not find parameter label for {variable} -- using empty string")
-                label = ""
-
             member = member_map.get(variable)
             if member is None:
                 warning(self.title, f"Could not find member variable for {variable}; assuming it's named '{variable}'")
                 member = variable
 
             default_value = ast.default_value(member)
-            result[variable] = Parameter(variable, title, default_value, label, member=member)
+            result[variable] = Parameter(variable, title, default_value, member=member)
         return result
 
     def _init_descriptions(self, description_title: str):
@@ -278,13 +276,13 @@ class Plugin:
             "macro_undefs": ("\n" if self.macros else "") + "".join(f"#undef {name}\n" for name in self.macros),
             # param-specific:
             "param_enum": self._param_enum(),
-            "set_parameter_value_switch": self._param_set_value_switch(),
+            "set_parameter_value_body": self.set_parameter_code,
             "get_parameter_value_switch": self._param_get_value_switch(),
             "get_parameter_default_switch": self._param_default_switch(),
             "get_parameter_name_switch": self._param_name_switch(),
             "get_parameter_title_switch": self._param_title_switch(),
-            "get_parameter_display_switch": self._parameter_display_switch(),
-            "get_parameter_label_switch": self._parameter_label_switch(),
+            "get_parameter_display_body": self.display_code,
+            "get_parameter_label_body": self.label_code,
         }
         return d
 
@@ -294,13 +292,6 @@ class Plugin:
             line = f"{param.enum_name} = {index},\n"
             lines.append(line)
         lines.append(f"kNumParameters = {len(self.parameters)}")
-        return "".join(lines)
-
-    def _param_set_value_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: {param.member} = value; break;\n"
-            lines.append(line)
         return "".join(lines)
 
     def _param_get_value_switch(self) -> str:
@@ -328,20 +319,6 @@ class Plugin:
         lines = []
         for index, param in self.parameters.items():
             line = f"case {param.enum_name}: return \"{escape_cpp_string(param.title)}\"; break;\n"
-            lines.append(line)
-        return "".join(lines)
-
-    def _parameter_display_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return std::to_string({param.member}); break;\n"
-            lines.append(line)
-        return "".join(lines)
-
-    def _parameter_label_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return \"{escape_cpp_string(param.label)}\"; break;\n"
             lines.append(line)
         return "".join(lines)
 
