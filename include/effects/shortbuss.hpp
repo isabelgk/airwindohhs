@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ShortBuss chases second harmonic, to add or remove it."
 };
 constexpr std::string_view k_long_description{
-    "This plugin is a little hard to explain, as it doesn't do normal things.ShortBuss is a re-imagining of the original ShortBuss, that came before Righteous and perhaps even NC-17. It's a seed that created a lot of unusual, powerful Airwindows plugins, but it's taken on new powers in its current incarnation.It's all about asymmetry. ShortBuss will try to find imbalance in your waveform: even harmonics, more weight on one side than on the other. When it does, you can turn it up, to further augment that effect. I've learned that people are using Righteous to do this, liking the warmth of the bass and not minding the fact that the rest of Righteous doesn't care for that treatment. So, ShortBuss is there to specialize in that effect if you want it.Second harmonic can be hard to hear, and this is not an EQ, or even a saturation in any normal sense. So it might be a bit tricky to hear, but that's what it's doing (you will probably notice higher peaks if you do that, as well).But there's more: this time, you can apply reverse ShortBuss. Not only ShortBuss, but backwards! And then it'll fight even harmonics. It'll try to take them away. This might clean up the low end very slightly (it's not really set up to act like an EQ, what it takes from one polarity it'll put on the other).More interestingly, it might make for an interesting bass-conditioner. Like on a guitar going to heavy distortion. Or a bass-heavy mix heading to loudenation. It will do a conditioning effect that most likely doesn't exist elsewhere, because this is such a strange and hard to explain effect that it's unmarketable and can only exist in the world of open source and/or Airwindows.But then there's even more… because that same conditioning has eerie similarities to what might happen on the steel of a plate reverb when you bring the damper in real close, physically suppressing its lower frequencies in a way that's beyond simple EQ…ShortBuss is yours to play with, but it's also a neat addition to my toolbox, and I'm looking forward to using it in some unexpected places to bring sounds that aren't like usual sounds. I have no idea if you'll like it, but there's probably about three people who'll absolutely love it, and that's good enough for me. Enjoy :)"
+    "This plugin is a little hard to explain, as it doesn't do normal things. ShortBuss is a re-imagining of the original ShortBuss, that came before Righteous and perhaps even NC-17. It's a seed that created a lot of unusual, powerful Airwindows plugins, but it's taken on new powers in its current incarnation. It's all about asymmetry. ShortBuss will try to find imbalance in your waveform: even harmonics, more weight on one side than on the other. When it does, you can turn it up, to further augment that effect. I've learned that people are using Righteous to do this, liking the warmth of the bass and not minding the fact that the rest of Righteous doesn't care for that treatment. So, ShortBuss is there to specialize in that effect if you want it. Second harmonic can be hard to hear, and this is not an EQ, or even a saturation in any normal sense. So it might be a bit tricky to hear, but that's what it's doing (you will probably notice higher peaks if you do that, as well). But there's more: this time, you can apply reverse ShortBuss. Not only ShortBuss, but backwards! And then it'll fight even harmonics. It'll try to take them away. This might clean up the low end very slightly (it's not really set up to act like an EQ, what it takes from one polarity it'll put on the other). More interestingly, it might make for an interesting bass-conditioner. Like on a guitar going to heavy distortion. Or a bass-heavy mix heading to loudenation. It will do a conditioning effect that most likely doesn't exist elsewhere, because this is such a strange and hard to explain effect that it's unmarketable and can only exist in the world of open source and/or Airwindows. But then there's even more… because that same conditioning has eerie similarities to what might happen on the steel of a plate reverb when you bring the damper in real close, physically suppressing its lower frequencies in a way that's beyond simple EQ… ShortBuss is yours to play with, but it's also a neat addition to my toolbox, and I'm looking forward to using it in some unexpected places to bring sounds that aren't like usual sounds. I have no idea if you'll like it, but there's probably about three people who'll absolutely love it, and that's good enough for me. Enjoy :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ShortBuss final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'shrt';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -55,19 +59,16 @@ class ShortBuss final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -78,8 +79,7 @@ class ShortBuss final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 1.0; break;
 
@@ -90,10 +90,9 @@ class ShortBuss final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "shortbs"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -102,8 +101,7 @@ class ShortBuss final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "ShortBs"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -114,26 +112,26 @@ class ShortBuss final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -148,8 +146,7 @@ class ShortBuss final : public Effect<T>
         overallscale *= Effect<T>::getSampleRate();
         double sbScale = (pow((A * 2.0) - 1.0, 3) * 0.001) / sqrt(overallscale);
         double wet = B;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

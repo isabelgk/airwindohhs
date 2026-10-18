@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "curve is the simplest, purest form of Recurve with no extra boosts."
 };
 constexpr std::string_view k_long_description{
-    "sometimes you just want the effect to be lowercase.the previous plugin recurve slammed home with 6 db of gain in its compression so you could hear it working, and had a clipper on the end in case you wanted to use it as a loudenator.but maybe you don’t. maybe the best thing for the purest, subtlest compression (the one with no transition point between getting louder and getting quieter, and no edges in the sound anywhere) is to have no gain either. it can still catch overs… most of the time, occasionally not. it can still be heard, probably, but in this form it can sit on nearly any track, unnoticed, quietly balancing levels in lowercase.you could put it on everything, even though compression multiplies (you get the ratio of all the different compressions, times each other). curve is so calm and gentle that even putting it on all tracks and stems and then the 2-buss still shouldn’t give you a heavily compressed sound.people have asked whether you can still do airwindows patreon for one dollar a month rather than the ‘fifty dollars a year’ concept. the answer is yes, of course, the per-plugin concept is just to give people something they can relate to. also if you can only spare one dollar a month i would rather help you. but hey, if you gotta share the love i cannot argue as it would be most hypocritical given my own fierce affections for the music producing community.i was helping clean up my late dad’s house and got a book called archy and mehitabel. whether it influenced curve will have to remain a mystery to the non-literary. suffice to say there’s a dance in the old plugin-monger yet. whatthehell, whatthehell<3do 2s and 3s count as uppercase"
+    "sometimes you just want the effect to be lowercase. the previous plugin recurve slammed home with 6 db of gain in its compression so you could hear it working, and had a clipper on the end in case you wanted to use it as a loudenator. but maybe you don’t. maybe the best thing for the purest, subtlest compression (the one with no transition point between getting louder and getting quieter, and no edges in the sound anywhere) is to have no gain either. it can still catch overs… most of the time, occasionally not. it can still be heard, probably, but in this form it can sit on nearly any track, unnoticed, quietly balancing levels in lowercase. you could put it on everything, even though compression multiplies (you get the ratio of all the different compressions, times each other). curve is so calm and gentle that even putting it on all tracks and stems and then the 2-buss still shouldn’t give you a heavily compressed sound. people have asked whether you can still do airwindows patreon for one dollar a month rather than the ‘fifty dollars a year’ concept. the answer is yes, of course, the per-plugin concept is just to give people something they can relate to. also if you can only spare one dollar a month i would rather help you. but hey, if you gotta share the love i cannot argue as it would be most hypocritical given my own fierce affections for the music producing community. i was helping clean up my late dad’s house and got a book called archy and mehitabel. whether it influenced curve will have to remain a mystery to the non-literary. suffice to say there’s a dance in the old plugin-monger yet. whatthehell, whatthehell <3 do 2s and 3s count as uppercase"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class curve final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'curv';
     double gain;
     uint32_t fpdL;
     uint32_t fpdR;
@@ -47,17 +51,14 @@ class curve final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -66,8 +67,7 @@ class curve final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -76,8 +76,7 @@ class curve final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -86,8 +85,7 @@ class curve final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -96,22 +94,22 @@ class curve final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -121,8 +119,7 @@ class curve final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

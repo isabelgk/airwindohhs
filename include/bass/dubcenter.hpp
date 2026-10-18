@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DubCenter is a version of DubSub where the bass reinforcement is purely mono."
 };
 constexpr std::string_view k_long_description{
-    "So here’s DubSub (below) with mono bass. This isn’t the last you’ll hear of this tool as I have BassKit coming out (which is the more approachable, well-behaved version of DubCenter) but this is the one that will let you get the most extreme. If you were using DubSub to its fullest, this one lets you do the same only with the bass and sub outputs centered.The reason you’d want to do that is, whether for sound reinforcement or vinyl mastering there’s little reason to have stereo bass. It just makes the woofers fight each other, below a certain frequency (which depends on how far apart your speakers are). This is why elliptical EQs exist.And the thing with DubCenter is, you don’t have to filter the original audio or mid/side it! All you have to do is use DubCenter to reinforce the bass, and it’ll automatically make that added content mono. This is even better than using (for instance) ToTape and its head bump mechanics to reinforce bass, because that (like a real tape deck) produces a stereo head bump. This produces the same fullness with the same algorithm, but it’s strictly mono so you get the effect of an elliptical EQ without having to run one! Only the super-deep stuff gets reinforced and the information and phase relationships of your original mix go untampered with.Again, BassKit will do this in a super-convenient way with much of the tweeky functionality simplified or taken out (for that one, there is no chance of abusing the sub-octave to do weird stuff as it’s restricted to only convincing subs content) but DubCenter is the one like DubSub, where you can make it do crazy things. You’ll find it in your plugin menu next to DubSub, most likely. Have fun!"
+    "So here’s DubSub (below) with mono bass. This isn’t the last you’ll hear of this tool as I have BassKit coming out (which is the more approachable, well-behaved version of DubCenter) but this is the one that will let you get the most extreme. If you were using DubSub to its fullest, this one lets you do the same only with the bass and sub outputs centered. The reason you’d want to do that is, whether for sound reinforcement or vinyl mastering there’s little reason to have stereo bass. It just makes the woofers fight each other, below a certain frequency (which depends on how far apart your speakers are). This is why elliptical EQs exist. And the thing with DubCenter is, you don’t have to filter the original audio or mid/side it! All you have to do is use DubCenter to reinforce the bass, and it’ll automatically make that added content mono. This is even better than using (for instance) ToTape and its head bump mechanics to reinforce bass, because that (like a real tape deck) produces a stereo head bump. This produces the same fullness with the same algorithm, but it’s strictly mono so you get the effect of an elliptical EQ without having to run one! Only the super-deep stuff gets reinforced and the information and phase relationships of your original mix go untampered with. Again, BassKit will do this in a super-convenient way with much of the tweeky functionality simplified or taken out (for that one, there is no chance of abusing the sub-octave to do weird stuff as it’s restricted to only convincing subs content) but DubCenter is the one like DubSub, where you can make it do crazy things. You’ll find it in your plugin menu next to DubSub, most likely. Have fun!"
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DubCenter final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dbct';
     double iirDriveSampleAL;
     double iirDriveSampleBL;
     double iirDriveSampleCL;
@@ -177,8 +181,7 @@ class DubCenter final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -189,15 +192,13 @@ class DubCenter final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -216,8 +217,7 @@ class DubCenter final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.9; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.74; break;
@@ -236,10 +236,9 @@ class DubCenter final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "tgrind"; break;
-            case kParamB: return "grd/out"; break;
+            case kParamB: return "grdout"; break;
             case kParamC: return "xover"; break;
             case kParamD: return "bsdrive"; break;
             case kParamE: return "bsvoice"; break;
@@ -247,7 +246,7 @@ class DubCenter final : public Effect<T>
             case kParamG: return "sbdrive"; break;
             case kParamH: return "sbvoice"; break;
             case kParamI: return "subout"; break;
-            case kParamJ: return "dry/wet"; break;
+            case kParamJ: return "drywet"; break;
 
             default: break;
         }
@@ -256,8 +255,7 @@ class DubCenter final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "TGrind"; break;
             case kParamB: return "Grd/Out"; break;
             case kParamC: return "XOver"; break;
@@ -276,42 +274,42 @@ class DubCenter final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string((F * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string((I * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string(J, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-            case kParamJ: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -350,8 +348,7 @@ class DubCenter final : public Effect<T>
         double wet = J;
         double glitch = 0.60;
         double tempSample;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -381,12 +378,11 @@ class DubCenter final : public Effect<T>
             if (oscGate < 0) {
                 oscGate = 0;
             }
-            // got a value that only goes down low when there's silence or near silence on input
+            // got a value that only goes down low when there's silence or nearVal silence on input
             clamp = 1.0 - oscGate;
             clamp *= 0.00001;
             // set up the thing to choke off oscillations- belt and suspenders affair
-            if (flip)
-            {
+            if (flip) {
                 tempSample = inputSampleL;
                 iirDriveSampleAL = (iirDriveSampleAL * (1 - iirAmount)) + (inputSampleL * iirAmount);
                 inputSampleL -= iirDriveSampleAL;
@@ -404,8 +400,7 @@ class DubCenter final : public Effect<T>
                 inputSampleR -= iirDriveSampleER;
                 ataLowpassR = tempSample - inputSampleR;
             }
-            else
-            {
+            else {
                 tempSample = inputSampleL;
                 iirDriveSampleBL = (iirDriveSampleBL * (1 - iirAmount)) + (inputSampleL * iirAmount);
                 inputSampleL -= iirDriveSampleBL;
@@ -437,8 +432,7 @@ class DubCenter final : public Effect<T>
                 inputSampleR = -1.0;
             }
             out = driveone;
-            while (out > glitch)
-            {
+            while (out > glitch) {
                 out -= glitch;
                 inputSampleL -= (inputSampleL * (fabs(inputSampleL) * glitch) * (fabs(inputSampleL) * glitch));
                 inputSampleL *= (1.0 + glitch);
@@ -447,8 +441,7 @@ class DubCenter final : public Effect<T>
             inputSampleL -= (inputSampleL * (fabs(inputSampleL) * out) * (fabs(inputSampleL) * out));
             inputSampleL *= (1.0 + out);
             out = driveone;
-            while (out > glitch)
-            {
+            while (out > glitch) {
                 out -= glitch;
                 inputSampleR -= (inputSampleR * (fabs(inputSampleR) * glitch) * (fabs(inputSampleR) * glitch));
                 inputSampleR *= (1.0 + glitch);
@@ -457,8 +450,7 @@ class DubCenter final : public Effect<T>
             inputSampleR -= (inputSampleR * (fabs(inputSampleR) * out) * (fabs(inputSampleR) * out));
             inputSampleR *= (1.0 + out);
             ataLowpass = (ataLowpassL + ataLowpassR) / 2.0;
-            if (ataLowpass > 0)
-            {
+            if (ataLowpass > 0) {
                 if (WasNegative) {
                     SubOctave = !SubOctave;
                 }
@@ -516,8 +508,7 @@ class DubCenter final : public Effect<T>
             ataLowpass -= iirSampleU;
             iirSampleV = (iirSampleV * altBmount) + (ataLowpass * iirBmount);
             ataLowpass -= iirSampleV;
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     iirHeadBumpA += (ataLowpass * BassGain);
                     iirHeadBumpA -= (iirHeadBumpA * iirHeadBumpA * iirHeadBumpA * HeadBumpFreq);
@@ -566,8 +557,7 @@ class DubCenter final : public Effect<T>
             if (SubOctave == false) {
                 SubBump = -SubBump;
             }
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     iirSubBumpA += (SubBump * SubGain);
                     iirSubBumpA -= (iirSubBumpA * iirSubBumpA * iirSubBumpA * SubBumpFreq);

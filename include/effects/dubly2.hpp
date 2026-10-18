@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Dubly2 is a key part of seventies sonics!"
 };
 constexpr std::string_view k_long_description{
-    "As we race towards ToTape7, more of the component parts emerge as their own plugins! As long as I'm reinventing all the things that go into ToTape7 (I've seen people get excited about the previous plugin, ToTape6, and felt I could do a heck of a lot better now) I like to let people have the new stuff immediately, and I like to let people use the component parts of things. So, first Flutter2 gets lifted to a new level, and now, Dubly2 is yours!And where Flutter2 took the basic algorithm to a new level, Dubly2 hasn't changed the basic sound of the plugin very much (it DOES change, especially if you're slamming it with volume). Instead… it's the control you get… which goes from a 2022-Chris 'one knob simplification' design, to six knobs and a dry/wet. Normally, nearly all of those would be preset, or perhaps would be trimpots inside the noise reduction box. Dubly's sound dates back to the late (or even mid) 1960s, and of course the 1970s, and the noise reduction machines were sold to big studios.So, unlike modern noise reductions where the system's very specific and detailed and is a black box you can't mess with… Dubly is kicking it old school! You can leave the encode and decode controls set to 0.5 for a 'normal' sound, or you can mess with them. The algorithms are very simple for better tone quality, but the end result is very Dubly!Encode has an encode level, and a frequency control. This specifies the 'brightness band' you'll be using and compressing 2:1 to get the brightness boost that gets added to the audio. It's pretty straightforward.Decode has a decode level, and a frequency control. This (and it's the same on the old units, believe it or not) does exactly the same encode, the same way… except you add it phase-inverted. That's it: that's Dubly. You can look up on old schematics, exactly where the output of the elaborate filtering and compression stuff is routed to one spot on the circuit board for 'encode' and another spot for 'decode'.This does have some implications. The highs get squished twice. In real units, care is taken to not have the compression time constants 'breathe' weirdly: for Dubly, we just use uLaw encoding on a brightness-filtered sound and it works great. It produces a similar effect when you add small amounts to the source audio.If you're going to mess with the trimpots (now ordinary sliders for anybody to play with), you can get controllable amounts of the 'two noise reduction units in encode, in series' simply by turning up the Encode amount. The existing processing becomes a special 'gloss and sparkle' control. You can tweak the Decode Amount similarly. The frequencies can be nudged up or down together, or you can make them be slightly different frequencies for unusual midrange effects that aren't normal: letting more mids through on Encode will cause them to be more compressed and intense, or you could go the other way and slim them down a little for an 'expanded' feel. It's all rather subtle but it's also tonal characteristics that really can't be had any other way… and if I'm not mistaken, these little adjustments can 'dial in' on the sound of many classic, beloved records.I look forward to playing with all this in the full ToTape7, with flutter and tape bias modeling, but for now you can fully play with and get used to these qualities in advance! Have fun with Dubly2 :)"
+    "As we race towards ToTape7, more of the component parts emerge as their own plugins! As long as I'm reinventing all the things that go into ToTape7 (I've seen people get excited about the previous plugin, ToTape6, and felt I could do a heck of a lot better now) I like to let people have the new stuff immediately, and I like to let people use the component parts of things. So, first Flutter2 gets lifted to a new level, and now, Dubly2 is yours! And where Flutter2 took the basic algorithm to a new level, Dubly2 hasn't changed the basic sound of the plugin very much (it DOES change, especially if you're slamming it with volume). Instead… it's the control you get… which goes from a 2022-Chris 'one knob simplification' design, to six knobs and a dry/wet. Normally, nearly all of those would be preset, or perhaps would be trimpots inside the noise reduction box. Dubly's sound dates back to the late (or even mid) 1960s, and of course the 1970s, and the noise reduction machines were sold to big studios. So, unlike modern noise reductions where the system's very specific and detailed and is a black box you can't mess with… Dubly is kicking it old school! You can leave the encode and decode controls set to 0.5 for a 'normal' sound, or you can mess with them. The algorithms are very simple for better tone quality, but the end result is very Dubly! Encode has an encode level, and a frequency control. This specifies the 'brightness band' you'll be using and compressing 2:1 to get the brightness boost that gets added to the audio. It's pretty straightforward. Decode has a decode level, and a frequency control. This (and it's the same on the old units, believe it or not) does exactly the same encode, the same way… except you add it phase-inverted. That's it: that's Dubly. You can look up on old schematics, exactly where the output of the elaborate filtering and compression stuff is routed to one spot on the circuit board for 'encode' and another spot for 'decode'. This does have some implications. The highs get squished twice. In real units, care is taken to not have the compression time constants 'breathe' weirdly: for Dubly, we just use uLaw encoding on a brightness-filtered sound and it works great. It produces a similar effect when you add small amounts to the source audio. If you're going to mess with the trimpots (now ordinary sliders for anybody to play with), you can get controllable amounts of the 'two noise reduction units in encode, in series' simply by turning up the Encode amount. The existing processing becomes a special 'gloss and sparkle' control. You can tweak the Decode Amount similarly. The frequencies can be nudged up or down together, or you can make them be slightly different frequencies for unusual midrange effects that aren't normal: letting more mids through on Encode will cause them to be more compressed and intense, or you could go the other way and slim them down a little for an 'expanded' feel. It's all rather subtle but it's also tonal characteristics that really can't be had any other way… and if I'm not mistaken, these little adjustments can 'dial in' on the sound of many classic, beloved records. I look forward to playing with all this in the full ToTape7, with flutter and tape bias modeling, but for now you can fully play with and get used to these qualities in advance! Have fun with Dubly2 :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Dubly2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dblz';
     float A;
     float B;
     float C;
@@ -74,8 +78,7 @@ class Dubly2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -83,15 +86,13 @@ class Dubly2 final : public Effect<T>
             case kParamE: E = value; break;
             case kParamF: F = value; break;
             case kParamG: G = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -107,8 +108,7 @@ class Dubly2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.0; break;
@@ -124,15 +124,14 @@ class Dubly2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "encamnt"; break;
             case kParamB: return "encfreq"; break;
             case kParamC: return "tapedrv"; break;
             case kParamD: return "decamnt"; break;
             case kParamE: return "decfreq"; break;
-            case kParamF: return "out pad"; break;
-            case kParamG: return "dry/wet"; break;
+            case kParamF: return "outpad"; break;
+            case kParamG: return "drywet"; break;
 
             default: break;
         }
@@ -141,8 +140,7 @@ class Dubly2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "EncAmnt"; break;
             case kParamB: return "EncFreq"; break;
             case kParamC: return "TapeDrv"; break;
@@ -158,36 +156,36 @@ class Dubly2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -210,8 +208,7 @@ class Dubly2 final : public Effect<T>
             outPad += 0.005;
         }
         double wet = G;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

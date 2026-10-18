@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BezEQ is a strange, alien three-band shelving EQ."
 };
 constexpr std::string_view k_long_description{
-    "You don't have an EQ anything like this. Nobody does. This is guaranteed new.The reason is, nobody with audio training would try to apply Bezier curves to audio reconstruction (since it doesn't make sense, though it's nice and efficient to do), and if you did you'd get my latest DeRez which doesn't work like a normal frequency crush and so that would scare more people off, and then if you tried to use two DeRezzes in series as brickwall filters for a three-band shelving EQ, you'd so quickly run into problems (for instance, with test tones) that you'd immediately run away, never to return, knowing it would be impossible to get away with it.And more fool anybody who did try ALL of these things and then gave up… because this is a hell of a thing, and now it's mine, which means now it's yours. I do Patreon so it doesn't matter if one of my plugins is scorned as an EQ and behaves terribly in testing. I can put it out anyway! And even explore the idea of building it into ConsoleH… but that's in development, and BezEQ is yours right now.If you keep Treble, Mid and Bass exactly the same volume (any value, the settings will match) it will behave quite perfectly. Doesn't matter what the crossovers do. They're assembled subtractively so they'll add up to perfect, every time, if they're set to 'flat'. I often do that with 'general purpose' EQs or with things like StoneFire: it's good to have 'flat' be really, really free from issues. It's the opposite of breaking things into an FFT transform or an mp3 and then reconstructing them from the (limited) data.Then, if you shut off Treble, the output is DeRez3 using the X control between Treble and Mid to set the cutoff.And if you shut off Treble and Mid, the output is DeRez3 using the X control between Mid and Bass.And if you shut off everything BUT Treble, it's the dry signal MINUS the first DeRez3. It's only the highs from what would've been a de-rezzed, pseudo-brickwall cutoff.And if you have Treble AND Bass, you have that plus the derezzed Bass, which is what remains after the Mid goes through another 'filter' that's not really a filter. Same with if you only have Mid: it's derezzed treble-removed, but with the other derez subtracted.Except you'll quickly learn that none of these are clean crossovers at all: you'll get a strange overtone that comes out at the filter cutoff and acts weird. You can add a LOT of deep bass and an extra tone, like a ring mod, through boosting bass and adjusting that cutoff. You can add bass through that extra tone by CUTTING bass and adjusting the cutoff. It's a bizarre toy but it works predictably and has its own sound, to love or hate.And that's not even getting into when you do this, and then make the cutoffs fight each other by setting TxM very low and MxB very high, causing the distortions to distort and interact… you can get into a lot of trouble with this, and so totally reinvent the sound that it becomes unrecognizable.And then dial it back to as subtle as you like, simply by making Treble, Mid and Bass be closer to each other.Have fun and don't say I didn't warn you :)"
+    "You don't have an EQ anything like this. Nobody does. This is guaranteed new. The reason is, nobody with audio training would try to apply Bezier curves to audio reconstruction (since it doesn't make sense, though it's nice and efficient to do), and if you did you'd get my latest DeRez which doesn't work like a normal frequency crush and so that would scare more people off, and then if you tried to use two DeRezzes in series as brickwall filters for a three-band shelving EQ, you'd so quickly run into problems (for instance, with test tones) that you'd immediately run away, never to return, knowing it would be impossible to get away with it. And more fool anybody who did try ALL of these things and then gave up… because this is a hell of a thing, and now it's mine, which means now it's yours. I do Patreon so it doesn't matter if one of my plugins is scorned as an EQ and behaves terribly in testing. I can put it out anyway! And even explore the idea of building it into ConsoleH… but that's in development, and BezEQ is yours right now. If you keep Treble, Mid and Bass exactly the same volume (any value, the settings will match) it will behave quite perfectly. Doesn't matter what the crossovers do. They're assembled subtractively so they'll add up to perfect, every time, if they're set to 'flat'. I often do that with 'general purpose' EQs or with things like StoneFire: it's good to have 'flat' be really, really free from issues. It's the opposite of breaking things into an FFT transform or an mp3 and then reconstructing them from the (limited) data. Then, if you shut off Treble, the output is DeRez3 using the X control between Treble and Mid to set the cutoff. And if you shut off Treble and Mid, the output is DeRez3 using the X control between Mid and Bass. And if you shut off everything BUT Treble, it's the dry signal MINUS the first DeRez3. It's only the highs from what would've been a de-rezzed, pseudo-brickwall cutoff. And if you have Treble AND Bass, you have that plus the derezzed Bass, which is what remains after the Mid goes through another 'filter' that's not really a filter. Same with if you only have Mid: it's derezzed treble-removed, but with the other derez subtracted. Except you'll quickly learn that none of these are clean crossovers at all: you'll get a strange overtone that comes out at the filter cutoff and acts weird. You can add a LOT of deep bass and an extra tone, like a ring mod, through boosting bass and adjusting that cutoff. You can add bass through that extra tone by CUTTING bass and adjusting the cutoff. It's a bizarre toy but it works predictably and has its own sound, to love or hate. And that's not even getting into when you do this, and then make the cutoffs fight each other by setting TxM very low and MxB very high, causing the distortions to distort and interact… you can get into a lot of trouble with this, and so totally reinvent the sound that it becomes unrecognizable. And then dial it back to as subtle as you like, simply by making Treble, Mid and Bass be closer to each other. Have fun and don't say I didn't warn you :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BezEQ final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bzeq';
     float A;
     float B;
     float C;
@@ -85,14 +89,13 @@ class BezEQ final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -154,30 +157,32 @@ class BezEQ final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

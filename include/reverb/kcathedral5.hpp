@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kCathedral5 lets you place yourself anywhere you like in the space."
 };
 constexpr std::string_view k_long_description{
-    "It's high time I moved on to the many other sonic spaces I've promised to cover, but there's reasons why this immediately follows kCathedral4.Yes, I'd hit upon using a proper Householder matrix for the 3x3 early reflection matrix, yes the work on the genetic algorithm was giving me better sounding reverbs every day, yes I'd worked out ways to measure the results for peak energy over RMS in a way that exactly translated to 'actually sounding far away rather than just a wash…But two problems remained, only one of which I was aware of.Firstly, early reflections were weird. They totally replaced pre-delay: the pre-delay included in kCathedral4 proved nearly useless as it was always too much delay, you couldn't turn it down and sit things in the reverb. Turns out I had to invent a whole new way of doing these early reflections, still taking only values from the big reverb for tonal consistency, but instead using a spread of delays, always in order of bigness, and not only 'the ones on the end' but any set of delays in the reverb. I thought it'd be best to only use the longest delays, but the need for less predelay forced my hand.At which point I learned that doing it let you move the sound source in the room, from right up next to the mic to back against the back wall. And every position sounded distinct and different, yet part of the space. And very low positions sounded like the instrument was right up against the wall, and adjusting that was just like moving drums out into the room and searching for that ideal spot, just like musicians and producers and engineers have done in real rooms back in the glory days of recording in studios…And then it turned out I'd been doing undersampling wrong this WHOLE time (which showed up as one user observed a funny burst of energy over 30k when recording at 96k, and wondered what it was)This was something I saw too. I'd run a test and at very high frequency there'd be this little ripple. And I experimented around and discovered: yes, and it comes from counting both the beginning sample and the end sample (of a downsampling Bezier calculation) rather than having them work as effectively the same sample. It involved a tricky little calculation, and then another for when the Bezier undersampling was continuous rather than stepped, and I ended up sorting it out.Only to learn that the Bezier filtering used exactly the same fix. And the Bezier de-rezzing, which is about the same thing but has a bitcrush… And that every single reverb plugin I had going, including ones I was actively using in music, required this fix on every plugin for every build and every platform and every version…I've been doing that. kCathedral5 shows you what is coming. I know I'm very interested in exploring the much smaller reverbs as people have asked for: kBeyond isn't representative because it doesn't have this fix and also doesn't have proper Householder early reflections, or the ability to position at different places in the room. It does have the 6x6 matrix, though. Think of it as on the right track but more bright and tizzy than it has to be, and without nearly enough depth compared to what is possible. Sheesh, every time I name a plugin 'kBestEverSeriouslyGuys' it's not a week before I find out something better to do…Having done a whole bunch of revising and fixing, I'm pretty tired, so I'm going to step away and take a little time just to decompress until early or mid September. I've got all my firewood in and my fuel oil paid for, so I can gather my strength for the further sprint that will be 'finishing up the component parts for, and the dedicated plugins of, ConsoleH' which I've promised by 2026.It seems like a great time to try to do something nice for people, so hang in there while I take a few weeks to breathe, and then it's going to be the universe of hip-hop sound reinvention. We'll probably see the 'Donuts' plugin. It's NOT going to be 'a clone of the thing Dilla used' because I don't do those, but all the same I think I can get the vibe.Talk to you folks in a few weeks, and I hope you enjoy kCathedral5. :)"
+    "It's high time I moved on to the many other sonic spaces I've promised to cover, but there's reasons why this immediately follows kCathedral4. Yes, I'd hit upon using a proper Householder matrix for the 3x3 early reflection matrix, yes the work on the genetic algorithm was giving me better sounding reverbs every day, yes I'd worked out ways to measure the results for peak energy over RMS in a way that exactly translated to 'actually sounding far away rather than just a wash… But two problems remained, only one of which I was aware of. Firstly, early reflections were weird. They totally replaced pre-delay: the pre-delay included in kCathedral4 proved nearly useless as it was always too much delay, you couldn't turn it down and sit things in the reverb. Turns out I had to invent a whole new way of doing these early reflections, still taking only values from the big reverb for tonal consistency, but instead using a spread of delays, always in order of bigness, and not only 'the ones on the end' but any set of delays in the reverb. I thought it'd be best to only use the longest delays, but the need for less predelay forced my hand. At which point I learned that doing it let you move the sound source in the room, from right up next to the mic to back against the back wall. And every position sounded distinct and different, yet part of the space. And very low positions sounded like the instrument was right up against the wall, and adjusting that was just like moving drums out into the room and searching for that ideal spot, just like musicians and producers and engineers have done in real rooms back in the glory days of recording in studios… And then it turned out I'd been doing undersampling wrong this WHOLE time (which showed up as one user observed a funny burst of energy over 30k when recording at 96k, and wondered what it was) This was something I saw too. I'd run a test and at very high frequency there'd be this little ripple. And I experimented around and discovered: yes, and it comes from counting both the beginning sample and the end sample (of a downsampling Bezier calculation) rather than having them work as effectively the same sample. It involved a tricky little calculation, and then another for when the Bezier undersampling was continuous rather than stepped, and I ended up sorting it out. Only to learn that the Bezier filtering used exactly the same fix. And the Bezier de-rezzing, which is about the same thing but has a bitcrush… And that every single reverb plugin I had going, including ones I was actively using in music, required this fix on every plugin for every build and every platform and every version… I've been doing that. kCathedral5 shows you what is coming. I know I'm very interested in exploring the much smaller reverbs as people have asked for: kBeyond isn't representative because it doesn't have this fix and also doesn't have proper Householder early reflections, or the ability to position at different places in the room. It does have the 6x6 matrix, though. Think of it as on the right track but more bright and tizzy than it has to be, and without nearly enough depth compared to what is possible. Sheesh, every time I name a plugin 'kBestEverSeriouslyGuys' it's not a week before I find out something better to do… Having done a whole bunch of revising and fixing, I'm pretty tired, so I'm going to step away and take a little time just to decompress until early or mid September. I've got all my firewood in and my fuel oil paid for, so I can gather my strength for the further sprint that will be 'finishing up the component parts for, and the dedicated plugins of, ConsoleH' which I've promised by 2026. It seems like a great time to try to do something nice for people, so hang in there while I take a few weeks to breathe, and then it's going to be the universe of hip-hop sound reinvention. We'll probably see the 'Donuts' plugin. It's NOT going to be 'a clone of the thing Dilla used' because I don't do those, but all the same I think I can get the vibe. Talk to you folks in a few weeks, and I hope you enjoy kCathedral5. :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -438,15 +438,14 @@ class kCathedral5 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -488,7 +487,7 @@ class kCathedral5 final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "positin"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -512,32 +511,34 @@ class kCathedral5 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

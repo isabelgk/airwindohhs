@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Console4Buss final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'coni';
     uint32_t fpdL;
     uint32_t fpdR;
     double fpNShapeL;
@@ -62,10 +66,12 @@ class Console4Buss final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: gain = value; break;
-
-            default: break;
+        switch (index) {
+            case kParamA:
+                gain = value;
+                break;
+            default: // unknown parameter, shouldn't happen!
+                break;
         }
     }
 
@@ -111,22 +117,30 @@ class Console4Buss final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(gain); break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                float2string(gain, text, kVstMaxParamStrLen);
+                break;
+            default: // unknown parameter, shouldn't happen!
+                break;
         }
-        return {};
+
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                vst_strncpy(text, " ", kVstMaxParamStrLen);
+                break;
+            default: // unknown parameter, shouldn't happen!
+                break;
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

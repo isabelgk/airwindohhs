@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "IronOxideClassic2 is my bandpassy tape sim, updated for high sample rate and aliasing control."
 };
 constexpr std::string_view k_long_description{
-    "Iron Oxide was one of my first successful plugins. It’s an old school tape emulation, meaning that it’s kind of bandpassy and is about saturating and slamming and aggressive tone coloring. It was made to compete with a pricey (well, back then it was) commercial plugin where the company had treated some of my friends poorly: I charged off and made a ‘commercial tape emulation killer’ plugin, with very unorthodox techniques. This is before my ToTape plugins, before head bumps: just a fat saturated tape-slam plugin.This grew to have all sorts of things: separate ips controls for low and high cutoffs, flutter, just lots of stuff. But the original one was an input, a tape speed control, and an output… and Iron Oxide Classic is me returning to those roots. It’s also handy, because as I bring in stuff like undersampling of delay buffer plugins, I can get the fundamentals right on a simpler build. That’s what this is. It’s Iron Oxide Classic, the simplest form, but brought up to the latest technical specs.That means it’s using the undersampling to deliver the same tone whether you’re at 44.1k or 96k or 192k. Though it uses delay buffers and samples along a time window, in the new version that’s consistent among sample rates. That also means it’s substantially more CPU-friendly at high rates, so you might be able to run twice or four times as many of ’em. It’s also using anti-aliasing filtering (that kicks in at high rates and isn’t ‘in circuit’ at low rates) to clean up its behavior still further. The end result is that the new Iron Oxide Classic has a way more organic, natural tone than the previous one did. These things (and running projects at 2X or 4X) really help get the analog vibe out of ITB digital gear. Since Iron Oxide Classic 2 is able to adapt to this stuff gracefully, that also means it’ll handle rendering at 2x or 4X sample rate should your workflow require working at 1X and then rendering out the final audio at a higher rate. Mind you, I design stuff so you’ll be able to work directly at the higher rate, but this should have you covered whatever your workflow."
+    "Iron Oxide was one of my first successful plugins. It’s an old school tape emulation, meaning that it’s kind of bandpassy and is about saturating and slamming and aggressive tone coloring. It was made to compete with a pricey (well, back then it was) commercial plugin where the company had treated some of my friends poorly: I charged off and made a ‘commercial tape emulation killer’ plugin, with very unorthodox techniques. This is before my ToTape plugins, before head bumps: just a fat saturated tape-slam plugin. This grew to have all sorts of things: separate ips controls for low and high cutoffs, flutter, just lots of stuff. But the original one was an input, a tape speed control, and an output… and Iron Oxide Classic is me returning to those roots. It’s also handy, because as I bring in stuff like undersampling of delay buffer plugins, I can get the fundamentals right on a simpler build. That’s what this is. It’s Iron Oxide Classic, the simplest form, but brought up to the latest technical specs. That means it’s using the undersampling to deliver the same tone whether you’re at 44.1k or 96k or 192k. Though it uses delay buffers and samples along a time window, in the new version that’s consistent among sample rates. That also means it’s substantially more CPU-friendly at high rates, so you might be able to run twice or four times as many of ’em. It’s also using anti-aliasing filtering (that kicks in at high rates and isn’t ‘in circuit’ at low rates) to clean up its behavior still further. The end result is that the new Iron Oxide Classic has a way more organic, natural tone than the previous one did. These things (and running projects at 2X or 4X) really help get the analog vibe out of ITB digital gear. Since Iron Oxide Classic 2 is able to adapt to this stuff gracefully, that also means it’ll handle rendering at 2x or 4X sample rate should your workflow require working at 1X and then rendering out the final audio at a higher rate. Mind you, I design stuff so you’ll be able to work directly at the higher rate, but this should have you covered whatever your workflow."
 };
 constexpr std::string_view k_tags{
     "tape"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class IronOxideClassic2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'feoe';
     double iirSampleAL;
     double iirSampleBL;
     double dL[264];
@@ -94,20 +98,17 @@ class IronOxideClassic2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -119,8 +120,7 @@ class IronOxideClassic2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.562341325190349; break;
             case kParamC: return 0.5; break;
@@ -132,11 +132,10 @@ class IronOxideClassic2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "input trim"; break;
-            case kParamB: return "tape speed"; break;
-            case kParamC: return "output trim"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "inputtrim"; break;
+            case kParamB: return "tapespeed"; break;
+            case kParamC: return "outputtrim"; break;
 
             default: break;
         }
@@ -145,8 +144,7 @@ class IronOxideClassic2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input Trim"; break;
             case kParamB: return "Tape Speed"; break;
             case kParamC: return "Output Trim"; break;
@@ -158,28 +156,28 @@ class IronOxideClassic2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(((A * 36.0) - 18.0), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(((B * B) * (B * B) * 148.5) + 1.5, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(((C * 36.0) - 18.0), text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return "ips"; break;
-            case kParamC: return "dB"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "ips", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -241,8 +239,7 @@ class IronOxideClassic2 final : public Effect<T>
         biquadB[4] = biquadB[2];
         biquadB[5] = 2.0 * (K * K - 1.0) * norm;
         biquadB[6] = (1.0 - K / biquadB[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -252,8 +249,7 @@ class IronOxideClassic2 final : public Effect<T>
                 inputSampleR = fpdR * 1.18e-17;
             }
             double tempSample;
-            if (flip)
-            {
+            if (flip) {
                 if (fabs(iirSampleAL) < 1.18e-37) {
                     iirSampleAL = 0.0;
                 }
@@ -265,8 +261,7 @@ class IronOxideClassic2 final : public Effect<T>
                 inputSampleL -= iirSampleAL;
                 inputSampleR -= iirSampleAR;
             }
-            else
-            {
+            else {
                 if (fabs(iirSampleBL) < 1.18e-37) {
                     iirSampleBL = 0.0;
                 }
@@ -332,8 +327,7 @@ class IronOxideClassic2 final : public Effect<T>
                 double temp;
                 dL[count + 131] = dL[count] = inputSampleL;
                 dR[count + 131] = dR[count] = inputSampleR;
-                if (flip)
-                {
+                if (flip) {
                     if (fabs(fastIIRAL) < 1.18e-37) {
                         fastIIRAL = 0.0;
                     }
@@ -432,8 +426,7 @@ class IronOxideClassic2 final : public Effect<T>
                     inputSampleL = fastIIRAL - (slowIIRAL / slowTaper);
                     inputSampleR = fastIIRAR - (slowIIRAR / slowTaper);
                 }
-                else
-                {
+                else {
                     if (fabs(fastIIRBL) < 1.18e-37) {
                         fastIIRBL = 0.0;
                     }

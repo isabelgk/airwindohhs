@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "EveryConsole is mix-and-match Airwindows Console."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes I give people tools AS I am working on them…EveryConsole contains the original Console algorithm, Console6, Console7, the sin()/asin() routine that's the guts of Console8 and PurestConsoles 1 and 2, BShifty which is the near-sin() approximation that's in PurestConsole3 from last week, and Console Zero.All of these algorithms are stripped of all the tone shaping parts and ultrasonic filterings to be the bare-minimum functions for their purposes. That doesn't mean they are every Airwindows saturation routine: Distortion has more. But these are all the ones designed to encode and then decode on the buss.And, EveryConsole includes both the Channel functions, and the Buss functions, under one hood. So you basically select the version you want, and whether it's channel or buss.Because there's no filtering or tone shaping these lend themselves to oversampling, for instance Reaper's new oversampling. That doesn't mean it'll be better: I think it kinda won't, but if you have oversampling capacity this is now yours to fool with. EveryConsole gives you access to the raw encode/decode functions without making you use them in an Airwindows way.That's not why I made it, though. I'm working on modeling the sound of big classic consoles, and I've got a lot of audio reference, and I needed to do a lot of study of how different Console versions combined. I'm already working on doing tone shaping to get closer to the target, and I wondered whether mismatching Console versions got you types of presentations that reminded the listener of specific big consoles.That would be a YES.So I'm busily at work using this plugin to monitor a lot of variations on Console and compare them to classic records, and if I get to have a tool then so do you! So, here is EveryConsole. If you'd like to combine it with the distributed ultrasonic filtering I like to use, then load up UltrasonX or HypersonX and arrange the instances of those so they're in the right places around the EveryConsole instances. If you'd like more like Console7's ability to bring elements forward and back in mix, or Console8's tone, you have to use those as there's extra stuff built into the plugins. But if you want more basic building blocks to assemble your own Airwindows big console… this is for you as much as it is for me.Hope you like it!"
+    "Sometimes I give people tools AS I am working on them… EveryConsole contains the original Console algorithm, Console6, Console7, the sin()/asin() routine that's the guts of Console8 and PurestConsoles 1 and 2, BShifty which is the near-sin() approximation that's in PurestConsole3 from last week, and Console Zero. All of these algorithms are stripped of all the tone shaping parts and ultrasonic filterings to be the bare-minimum functions for their purposes. That doesn't mean they are every Airwindows saturation routine: Distortion has more. But these are all the ones designed to encode and then decode on the buss. And, EveryConsole includes both the Channel functions, and the Buss functions, under one hood. So you basically select the version you want, and whether it's channel or buss. Because there's no filtering or tone shaping these lend themselves to oversampling, for instance Reaper's new oversampling. That doesn't mean it'll be better: I think it kinda won't, but if you have oversampling capacity this is now yours to fool with. EveryConsole gives you access to the raw encode/decode functions without making you use them in an Airwindows way. That's not why I made it, though. I'm working on modeling the sound of big classic consoles, and I've got a lot of audio reference, and I needed to do a lot of study of how different Console versions combined. I'm already working on doing tone shaping to get closer to the target, and I wondered whether mismatching Console versions got you types of presentations that reminded the listener of specific big consoles. That would be a YES. So I'm busily at work using this plugin to monitor a lot of variations on Console and compare them to classic records, and if I get to have a tool then so do you! So, here is EveryConsole. If you'd like to combine it with the distributed ultrasonic filtering I like to use, then load up UltrasonX or HypersonX and arrange the instances of those so they're in the right places around the EveryConsole instances. If you'd like more like Console7's ability to bring elements forward and back in mix, or Console8's tone, you have to use those as there's extra stuff built into the plugins. But if you want more basic building blocks to assemble your own Airwindows big console… this is for you as much as it is for me. Hope you like it!"
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class EveryConsole final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'evcs';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -54,20 +58,17 @@ class EveryConsole final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -79,8 +80,7 @@ class EveryConsole final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -92,8 +92,7 @@ class EveryConsole final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "contype"; break;
             case kParamB: return "intrim"; break;
             case kParamC: return "outtrim"; break;
@@ -105,8 +104,7 @@ class EveryConsole final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "ConType"; break;
             case kParamB: return "InTrim"; break;
             case kParamC: return "OutTrim"; break;
@@ -118,28 +116,45 @@ class EveryConsole final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 11.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Retro Ch", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Retro Bs", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Sin() Ch", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "aSin() Bs", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "C6 Ch", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "C6 Bs", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "C7 Ch", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "C7 Bs", kVstMaxParamStrLen); break;
+                    case 8: vst_strncpy(text, "BShift Ch", kVstMaxParamStrLen); break;
+                    case 9: vst_strncpy(text, "BShift Bs", kVstMaxParamStrLen); break;
+                    case 10: vst_strncpy(text, "CZero Ch", kVstMaxParamStrLen); break;
+                    case 11: vst_strncpy(text, "CZero Bs", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            case kParamB: float2string(B * 2.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 2.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -154,8 +169,7 @@ class EveryConsole final : public Effect<T>
         int console = (int)A * 11.999;
         double inTrim = B * 2.0; // 0-2
         double outTrim = C * 2.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -168,8 +182,7 @@ class EveryConsole final : public Effect<T>
                 inputSampleL *= inTrim;
                 inputSampleR *= inTrim;
             }
-            switch (console)
-            {
+            switch (console) {
                 case 0:
                     half = inputSampleL * 0.83;
                     falf = fabs(half);

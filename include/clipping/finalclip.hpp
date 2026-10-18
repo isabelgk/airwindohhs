@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "FinalClip is one stage of ADClip8 set up to clip +6dB for Final Cut Pro."
 };
 constexpr std::string_view k_long_description{
-    "If you like ADClip8, this came first and is basically the seed of ADClip8.FinalClip is a few variations on ClipOnly2, with a bit of slew clipping thrown in, and adjusted to work specifically for Final Cut Pro, the video software I use. This is because if I put any normal clipper such as you'd use in a DAW into Final Cut, it applies the clip to the cut at 6dB down. I can only assume this has to do with how it gain stages stuff for video. There's a way to gather clips into some sort of large composite clip and apply a 'master buss' plugin to the sum, and if you thought Airwindows Console in DAWs was awkward to set up, yikes! I'm not even trying to do that. I just run camera audio directly to the output of Final Cut and use that.Because the clip point is 6 dB down, it seemed like I could build a special clipper just for Final Cut, that would always apply what I needed. I could control loud voice outbursts, soften the entry to/exit from clipped parts in the way ClipOnly2 does, and I could even throw in a very subtle slew-clip to just faintly soften treble information, so my sibilance off my Roswell Colares would never be annoying (it's pretty good already, the mic tries to imitate an ELA M 251)Not only did this work, it turned out that allowing multiple stages of exactly this gave me ADClip8! So everybody wins.And of course I'm immediately letting people have the tool I made for me. If you experience normal clippers such as ClipOnly taking effect 6dB down, this is the one to use. Or, if for instance you're hammering a peak limiter on your mix buss at way over +6dB to the buss, then you can try this to precondition what the limiter sees, and you might get a pleasing result.But really, this just exists as a tool for me, or anyone who's using Final Cut and would like to drag a simple Airwindows clipper onto a (video) clip in the timeline, and have it make peaks more elegant, with no red clip lights happening and no abrasive highs when things get loud. Using this, I don't have to be that careful of my dynamic levels recording. If I suddenly yelp or talk loudly, clipping the camera's recording, this plugin will straighten it out and smooth off the corners just a bit so the loud bit isn't too objectionable.Since there's next to nothing to say about this plugin, nothing to do (no controls) and nothing to show (in a DAW, the interface is a blank rectangle or an empty line), the video's full of everything else I do to get the audio for my plugin-posting videos. If you'd like to see my setup, have at it. Otherwise, totally ignore it and just use the plugin :)"
+    "If you like ADClip8, this came first and is basically the seed of ADClip8. FinalClip is a few variations on ClipOnly2, with a bit of slew clipping thrown in, and adjusted to work specifically for Final Cut Pro, the video software I use. This is because if I put any normal clipper such as you'd use in a DAW into Final Cut, it applies the clip to the cut at 6dB down. I can only assume this has to do with how it gain stages stuff for video. There's a way to gather clips into some sort of large composite clip and apply a 'master buss' plugin to the sum, and if you thought Airwindows Console in DAWs was awkward to set up, yikes! I'm not even trying to do that. I just run camera audio directly to the output of Final Cut and use that. Because the clip point is 6 dB down, it seemed like I could build a special clipper just for Final Cut, that would always apply what I needed. I could control loud voice outbursts, soften the entry to/exit from clipped parts in the way ClipOnly2 does, and I could even throw in a very subtle slew-clip to just faintly soften treble information, so my sibilance off my Roswell Colares would never be annoying (it's pretty good already, the mic tries to imitate an ELA M 251) Not only did this work, it turned out that allowing multiple stages of exactly this gave me ADClip8! So everybody wins. And of course I'm immediately letting people have the tool I made for me. If you experience normal clippers such as ClipOnly taking effect 6dB down, this is the one to use. Or, if for instance you're hammering a peak limiter on your mix buss at way over +6dB to the buss, then you can try this to precondition what the limiter sees, and you might get a pleasing result. But really, this just exists as a tool for me, or anyone who's using Final Cut and would like to drag a simple Airwindows clipper onto a (video) clip in the timeline, and have it make peaks more elegant, with no red clip lights happening and no abrasive highs when things get loud. Using this, I don't have to be that careful of my dynamic levels recording. If I suddenly yelp or talk loudly, clipping the camera's recording, this plugin will straighten it out and smooth off the corners just a bit so the loud bit isn't too objectionable. Since there's next to nothing to say about this plugin, nothing to do (no controls) and nothing to show (in a DAW, the interface is a blank rectangle or an empty line), the video's full of everything else I do to get the audio for my plugin-posting videos. If you'd like to see my setup, have at it. Otherwise, totally ignore it and just use the plugin :)"
 };
 constexpr std::string_view k_tags{
     "clipping"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class FinalClip final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'fncp';
     double lastSampleL;
     double intermediateL[16];
     bool wasPosClipL;
@@ -57,17 +61,14 @@ class FinalClip final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -76,8 +77,7 @@ class FinalClip final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -86,8 +86,7 @@ class FinalClip final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -96,8 +95,7 @@ class FinalClip final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -106,22 +104,22 @@ class FinalClip final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -148,8 +146,7 @@ class FinalClip final : public Effect<T>
         // refclip*softness = 0.249171763330607	Seven decimal places is plenty as it's
         // not related to the original sound much: it's an arbitrary position in softening.
         // This is where the numbers come from, referencing the code of the original ClipOnly
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             //		if (fabs(inputSampleL)<1.18e-43) inputSampleL = fpdL * 1.18e-43;

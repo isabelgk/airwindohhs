@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BuildATPDF is a dither-making toolkit."
 };
 constexpr std::string_view k_long_description{
-    "I've explained how DoublePaul was made: taking a TPDF highpass dither, and including additional nearby samples to cause the tone of the noise to be more high-pitched.Wouldn’t be fair if I didn’t give you a chance to play with it yourself :)To use BuildATPDF the way I used it, set the middle sliders to -1 and +1. Then adjust the other sliders until you’ve tailored the sound of the noise in a way you like. With the other sliders at 0, you have PaulDither. If the surrounding sliders ‘oscillate’ (going minus, plus, minus, plus) you have more of what DoublePaul is. Tailor the highpass in ways gentle or obvious, or even darken the highpass while leaving its dither functionality intact! It’s the combination of a -1 and +1 tap that gives you highpassed TPDF. (This won’t work with +1 and +1, because it’s the same random noise passing through the plugin: it needs to play a positive node against a negative node)Or, you can set up the -1 and +1 taps, and then just play with the sliders to see what it sounds like!"
+    "I've explained how DoublePaul was made: taking a TPDF highpass dither, and including additional nearby samples to cause the tone of the noise to be more high-pitched. Wouldn’t be fair if I didn’t give you a chance to play with it yourself :) To use BuildATPDF the way I used it, set the middle sliders to -1 and +1. Then adjust the other sliders until you’ve tailored the sound of the noise in a way you like. With the other sliders at 0, you have PaulDither. If the surrounding sliders ‘oscillate’ (going minus, plus, minus, plus) you have more of what DoublePaul is. Tailor the highpass in ways gentle or obvious, or even darken the highpass while leaving its dither functionality intact! It’s the combination of a -1 and +1 tap that gives you highpassed TPDF. (This won’t work with +1 and +1, because it’s the same random noise passing through the plugin: it needs to play a positive node against a negative node) Or, you can set up the -1 and +1 taps, and then just play with the sliders to see what it sounds like!"
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BuildATPDF final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bltp';
     double bL[11];
     double bR[11];
     double f[11];
@@ -84,10 +88,9 @@ class BuildATPDF final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
@@ -96,15 +99,13 @@ class BuildATPDF final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -123,8 +124,7 @@ class BuildATPDF final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -143,8 +143,7 @@ class BuildATPDF final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "first"; break;
             case kParamB: return "second"; break;
             case kParamC: return "third"; break;
@@ -163,8 +162,7 @@ class BuildATPDF final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "First"; break;
             case kParamB: return "Second"; break;
             case kParamC: return "Third"; break;
@@ -183,42 +181,43 @@ class BuildATPDF final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string((D * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string((E * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string((F * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string((G * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string((H * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string((I * 2) - 1, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string((J * 2) - 1, text, kVstMaxParamStrLen); break;
 
-            default: break;
-        }
-        return {};
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
+
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return " "; break;
-            case kParamC: return " "; break;
-            case kParamD: return " "; break;
-            case kParamE: return " "; break;
-            case kParamF: return " "; break;
-            case kParamG: return " "; break;
-            case kParamH: return " "; break;
-            case kParamI: return " "; break;
-            case kParamJ: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -241,8 +240,7 @@ class BuildATPDF final : public Effect<T>
         double currentDither;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

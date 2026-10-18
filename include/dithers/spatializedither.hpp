@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SpatializeDither is a high-performance clarity and accuracy dither."
 };
 constexpr std::string_view k_long_description{
-    "Spatialize is one of my high-performance boutique dithers. Though I think my Naturalize beats it, that’s a preference: I like digital sound to sound organic and real, and I like ambience and foggy distance and other things Naturalize is great at emphasizing.Spatialize is also good at reverb depths and softness, but what it excels at is focus.This modified dither algorithm has opinions about what ought to be randomized. Any normal dither (especially a technically correct TPDF-based one, such as PaulDither, TapeDither or NodeDither that can encompass either) has no preferences about what samples it gets. It will apply noise regardless, with perfect impartiality.Spatialize (which I’ve also termed Contingent Dither, early in its development) isn’t like that. It says, ‘hey, this sample is exactly on a quantization value. No way am I going to mess that up, it’s staying right where it is!’. Or, it says ‘this sample is exactly between two quantization values. If I rapidly flip between adjacent values I can try to get the DAC to produce output between them. What could go wrong?’. Or, it says ‘this sample is none of the above, let’s bring in some randomness and apply dither like some normal plugin that isn’t crazy, would do’.Or all of the above, blended…That’s how Spatialize works. These are pretty bold things to try to do, especially the attempt to balance between two quantization values: that’s not really a reasonable thing to try, even when blended with random noise. And it pays something of a price: while Spatialize is quiet in its noise generation even without resorting to noise shaping, its behavior down around the noise floor isn’t perfectly well-behaved.But that’s a trade-off, because by sacrificing this good behavior, Spatialize gets to be very sure that when samples hit perfectly on quantization boundaries, they’ll be accurately represented. And the bit-flippiness of the exactly-between behavior gives rise to a really strong highpassy effect that heightens treble energy. The result is a dither with a holographic, intense sonic reality to it: and it IS reality, because it comes out of this determination to honor the true values of the samples wherever possible. Spatialize is always prepared to abandon ‘appropriate’ noise floor behavior if it can nail down the sonic envelope with more ruthless accuracy.So, if you’re into the hyper-real, high-definition sound of extreme clarity and accuracy, Spatialize might be your preferred Airwindows boutique dither. And, since it does it all with no noise shaping, there’s still an ease and naturalness to the resulting sound. It’s probably my own favorite apart from Naturalize, and for some things I prefer it. And, it’s free, AU and VST. :)"
+    "Spatialize is one of my high-performance boutique dithers. Though I think my Naturalize beats it, that’s a preference: I like digital sound to sound organic and real, and I like ambience and foggy distance and other things Naturalize is great at emphasizing. Spatialize is also good at reverb depths and softness, but what it excels at is focus. This modified dither algorithm has opinions about what ought to be randomized. Any normal dither (especially a technically correct TPDF-based one, such as PaulDither, TapeDither or NodeDither that can encompass either) has no preferences about what samples it gets. It will apply noise regardless, with perfect impartiality. Spatialize (which I’ve also termed Contingent Dither, early in its development) isn’t like that. It says, ‘hey, this sample is exactly on a quantization value. No way am I going to mess that up, it’s staying right where it is!’. Or, it says ‘this sample is exactly between two quantization values. If I rapidly flip between adjacent values I can try to get the DAC to produce output between them. What could go wrong?’. Or, it says ‘this sample is none of the above, let’s bring in some randomness and apply dither like some normal plugin that isn’t crazy, would do’. Or all of the above, blended… That’s how Spatialize works. These are pretty bold things to try to do, especially the attempt to balance between two quantization values: that’s not really a reasonable thing to try, even when blended with random noise. And it pays something of a price: while Spatialize is quiet in its noise generation even without resorting to noise shaping, its behavior down around the noise floor isn’t perfectly well-behaved. But that’s a trade-off, because by sacrificing this good behavior, Spatialize gets to be very sure that when samples hit perfectly on quantization boundaries, they’ll be accurately represented. And the bit-flippiness of the exactly-between behavior gives rise to a really strong highpassy effect that heightens treble energy. The result is a dither with a holographic, intense sonic reality to it: and it IS reality, because it comes out of this determination to honor the true values of the samples wherever possible. Spatialize is always prepared to abandon ‘appropriate’ noise floor behavior if it can nail down the sonic envelope with more ruthless accuracy. So, if you’re into the hyper-real, high-definition sound of extreme clarity and accuracy, Spatialize might be your preferred Airwindows boutique dither. And, since it does it all with no noise shaping, there’s still an ease and naturalness to the resulting sound. It’s probably my own favorite apart from Naturalize, and for some things I prefer it. And, it’s free, AU and VST. :)"
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SpatializeDither final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sdtr';
     double contingentErrL;
     double contingentErrR;
     bool flip;
@@ -57,19 +61,16 @@ class SpatializeDither final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -80,8 +81,7 @@ class SpatializeDither final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.0; break;
 
@@ -92,8 +92,7 @@ class SpatializeDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "quant"; break;
             case kParamB: return "derez"; break;
 
@@ -104,8 +103,7 @@ class SpatializeDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Quant"; break;
             case kParamB: return "DeRez"; break;
 
@@ -116,26 +114,33 @@ class SpatializeDither final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 1.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "CD 16", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "HD 24", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -174,8 +179,7 @@ class SpatializeDither final : public Effect<T>
         if (outScale < 8.0) {
             outScale = 8.0;
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

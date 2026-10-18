@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ToTape5 is Airwindows analog tape emulation."
 };
 constexpr std::string_view k_long_description{
-    "ToTape5 is the best Airwindows analog tape emulation. It builds upon the previous four versions (which have been some of my best sellers) and incorporates everything learned from the Purest series of plugins, to produce a tape emulation that does what analog does. (Analog tape does really good things for mixes, and it’s very difficult to get it right without sinking into a morass of overprocessing and digital blandness)It’s better than Iron Oxide, always was. Iron Oxide is for ‘slamming tape for effect’, for putting on individual tracks, not realism. ToTape is for realism and quality: for ‘mixing to tape’, in the box. I don’t think there is anything else that can stand as much scrutiny as ToTape will: it’s developed on mastering-grade gear and when used in its most optimized state, it’s not a toy. It should be more transparent and musical than most plugins (never mind ‘tape emulation’ plugins, which are generally not even as transparent and musical as a good digital EQ plugin).It has six controls: four if you don’t count Output and Dry/Wet, which are pretty obvious.Louder defaults to 0.25 because the tape emulation soaks up some level. You can set it to 0 for added purity (it removes a gain trim stage if you do) and if you do that, you can plainly hear that the emulated tape ‘soaks up’ some of the audio, noticeably dropping the level while not seeming to alter the tone at all. There are no gain adjustments making that happen, it’s entirely tape saturation which is very transparent. (There is no compression, either.)Softer is the treble softening. Defaults to 0, which is still on but very hi-fi and subtle. You can turn it up to get a more ‘old’ tape machine tone, and like the other controls if you need to finetune the effect by ear, your adjustments will probably be around 0.1 to 0.2 if you mean to retain the full fidelity of the mix.Fatter is the head bump. Defaults to 0, which is still on, but subtle. It can be cranked up to silly/stupid levels if you like. Again, if you want to emphasize the extra roundness and fullness of tape, you might be tweaking this to 0.1 or 0.2. If you don’t have fantastic subwoofers or monitoring that can handle deep bass, leave this at 0! Boosting it will introduce deep lows very cleanly and you might not hear them unless your monitoring is up to scratch. You will also have to turn down Output if you boost this a lot.Flutter is the tape flutter. Defaults to 0 which is OFF, see comment on ‘dry/wet’. The most amazingly awesome tape recorders did NOT have loads of flutter, but if you want a little ‘spaciness’ or ‘atmosphere’ you can put in small amounts of this, like 0.1 or so. Go by feel, if you can hear it fluttering it’s kind of too much. If you’re using this, please don’t use Dry/Wet to combine the result with dry: you’ll create a flangey effect and it’ll be more obvious than it should be. By design, Flutter is made so you can increase it until it’s too much, so please remember that realistic levels are more like 0.1: too subtle to immediately hear. Go by feel, or pretend you have a really terrific tape machine and leave it off entirely, set Flutter to 0. (For instance, anyone who’s mastering and intentionally adds flutter ought to think hard about whether that’s really helping.)"
+    "ToTape5 is the best Airwindows analog tape emulation. It builds upon the previous four versions (which have been some of my best sellers) and incorporates everything learned from the Purest series of plugins, to produce a tape emulation that does what analog does. (Analog tape does really good things for mixes, and it’s very difficult to get it right without sinking into a morass of overprocessing and digital blandness) It’s better than Iron Oxide, always was. Iron Oxide is for ‘slamming tape for effect’, for putting on individual tracks, not realism. ToTape is for realism and quality: for ‘mixing to tape’, in the box. I don’t think there is anything else that can stand as much scrutiny as ToTape will: it’s developed on mastering-grade gear and when used in its most optimized state, it’s not a toy. It should be more transparent and musical than most plugins (never mind ‘tape emulation’ plugins, which are generally not even as transparent and musical as a good digital EQ plugin). It has six controls: four if you don’t count Output and Dry/Wet, which are pretty obvious. Louder defaults to 0.25 because the tape emulation soaks up some level. You can set it to 0 for added purity (it removes a gain trim stage if you do) and if you do that, you can plainly hear that the emulated tape ‘soaks up’ some of the audio, noticeably dropping the level while not seeming to alter the tone at all. There are no gain adjustments making that happen, it’s entirely tape saturation which is very transparent. (There is no compression, either.) Softer is the treble softening. Defaults to 0, which is still on but very hi-fi and subtle. You can turn it up to get a more ‘old’ tape machine tone, and like the other controls if you need to finetune the effect by ear, your adjustments will probably be around 0.1 to 0.2 if you mean to retain the full fidelity of the mix. Fatter is the head bump. Defaults to 0, which is still on, but subtle. It can be cranked up to silly/stupid levels if you like. Again, if you want to emphasize the extra roundness and fullness of tape, you might be tweaking this to 0.1 or 0.2. If you don’t have fantastic subwoofers or monitoring that can handle deep bass, leave this at 0! Boosting it will introduce deep lows very cleanly and you might not hear them unless your monitoring is up to scratch. You will also have to turn down Output if you boost this a lot. Flutter is the tape flutter. Defaults to 0 which is OFF, see comment on ‘dry/wet’. The most amazingly awesome tape recorders did NOT have loads of flutter, but if you want a little ‘spaciness’ or ‘atmosphere’ you can put in small amounts of this, like 0.1 or so. Go by feel, if you can hear it fluttering it’s kind of too much. If you’re using this, please don’t use Dry/Wet to combine the result with dry: you’ll create a flangey effect and it’ll be more obvious than it should be. By design, Flutter is made so you can increase it until it’s too much, so please remember that realistic levels are more like 0.1: too subtle to immediately hear. Go by feel, or pretend you have a really terrific tape machine and leave it off entirely, set Flutter to 0. (For instance, anyone who’s mastering and intentionally adds flutter ought to think hard about whether that’s really helping.)"
 };
 constexpr std::string_view k_tags{
     "tape"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ToTape5 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tott';
     int gcount;
     double rateof;
     double sweep;
@@ -217,23 +221,20 @@ class ToTape5 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -248,8 +249,7 @@ class ToTape5 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.25; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.0; break;
@@ -264,14 +264,13 @@ class ToTape5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "louder"; break;
             case kParamB: return "softer"; break;
             case kParamC: return "fatter"; break;
             case kParamD: return "flutter"; break;
             case kParamE: return "output"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -280,8 +279,7 @@ class ToTape5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Louder"; break;
             case kParamB: return "Softer"; break;
             case kParamC: return "Fatter"; break;
@@ -296,34 +294,34 @@ class ToTape5 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -381,8 +379,7 @@ class ToTape5 final : public Effect<T>
         double drySampleR;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -434,8 +431,7 @@ class ToTape5 final : public Effect<T>
             if (flip < 1 || flip > 3) {
                 flip = 1;
             }
-            switch (flip)
-            {
+            switch (flip) {
                 case 1:
                     iirMidRollerAL = (iirMidRollerAL * (1.0 - RollAmount)) + (inputSampleL * RollAmount);
                     iirMidRollerAL = (invrandy * iirMidRollerAL) + (randy * iirMidRollerBL) + (randy * iirMidRollerCL);

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kRockstar2 is a realistic hall reverb using a new matrix!"
 };
 constexpr std::string_view k_long_description{
-    "kRockstar is no longer the most impressive realistic Airwindows reverb, because everything changed when I discovered the Conference 6x6 matrix.What that means is, each delay line output no longer feeds the next six delays in line. Instead, each delay feeds only five out of six… but they're always different ones, and more importantly, they're all either unity gain or inverted unity gain. Just like the 4x4 Householder matrix!Except, with a 4x4 matrix one input sound produces 256 echo returns, before feedback. With a 6x6 matrix, one input sound produces 46,656 echo returns before feedback… NOT counting the 3x3 matrix that handles predelay and placement in the room, So, 1,259,712 distinct echo returns, before feedback.It sounds lush. The texture is even better than kRockstar (exactly the same reverb algo and delay times, just so you could compare the two techniques!). It's also adding a Distance control, which is FastDistance but split in two, so that one half of it runs inside the undersampling and produces exactly the same tone no matter the sample rate. The other half runs outside the undersampling, specifically to darken exactly the part of the plugin that's meant to be smoother if you're filtering. If you're into dark spaces like your classic Bricasti tones, this control is your friend.kRockstar2 does not use the subtle tone adjustments I came up with for Ultralight, because I wanted it to match kRockstar closely. Both do have a subtle taste of nonlinearity to them, cleaning up just a tiny bit quicker than expected, blooming with loud sound just a little more to make the point.As a final touch, kRockstar2 has the same 'alive silence' thing I first added to kCyberCity, and continued in kRockstar, where the air in it breathes with a background space caused by the hall volume being activated by gentle air movement. It's too quiet to hear, but like properly applied dither, it alters the way you hear sounds drop beyond hearing. It's just that dither stops things from dropping into grit.With kRockstar2, when sounds drop away they drop into a sense of place, that's felt more than heard. Kind of like things in the real world. And again, if you're hearing the reverb washes, that's all fine, but that also means you have it distractingly loud. See how it works when you balance the sense of how big things are, against the other elements in the mix, so that sense of hugeness is simply another presence alongside all the other things you're hearing. The sense of place you get from handling it that way might be just what you needed.The reverb developments are coming fast, so expect me to beat this pretty soon :)"
+    "kRockstar is no longer the most impressive realistic Airwindows reverb, because everything changed when I discovered the Conference 6x6 matrix. What that means is, each delay line output no longer feeds the next six delays in line. Instead, each delay feeds only five out of six… but they're always different ones, and more importantly, they're all either unity gain or inverted unity gain. Just like the 4x4 Householder matrix! Except, with a 4x4 matrix one input sound produces 256 echo returns, before feedback. With a 6x6 matrix, one input sound produces 46,656 echo returns before feedback… NOT counting the 3x3 matrix that handles predelay and placement in the room, So, 1,259,712 distinct echo returns, before feedback. It sounds lush. The texture is even better than kRockstar (exactly the same reverb algo and delay times, just so you could compare the two techniques!). It's also adding a Distance control, which is FastDistance but split in two, so that one half of it runs inside the undersampling and produces exactly the same tone no matter the sample rate. The other half runs outside the undersampling, specifically to darken exactly the part of the plugin that's meant to be smoother if you're filtering. If you're into dark spaces like your classic Bricasti tones, this control is your friend. kRockstar2 does not use the subtle tone adjustments I came up with for Ultralight, because I wanted it to match kRockstar closely. Both do have a subtle taste of nonlinearity to them, cleaning up just a tiny bit quicker than expected, blooming with loud sound just a little more to make the point. As a final touch, kRockstar2 has the same 'alive silence' thing I first added to kCyberCity, and continued in kRockstar, where the air in it breathes with a background space caused by the hall volume being activated by gentle air movement. It's too quiet to hear, but like properly applied dither, it alters the way you hear sounds drop beyond hearing. It's just that dither stops things from dropping into grit. With kRockstar2, when sounds drop away they drop into a sense of place, that's felt more than heard. Kind of like things in the real world. And again, if you're hearing the reverb washes, that's all fine, but that also means you have it distractingly loud. See how it works when you balance the sense of how big things are, against the other elements in the mix, so that sense of hugeness is simply another presence alongside all the other things you're hearing. The sense of place you get from handling it that way might be just what you needed. The reverb developments are coming fast, so expect me to beat this pretty soon :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -479,22 +479,19 @@ class kRockstar2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -508,8 +505,7 @@ class kRockstar2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.75; break;
             case kParamC: return 1.0; break;
@@ -523,13 +519,12 @@ class kRockstar2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "regen"; break;
             case kParamB: return "positin"; break;
             case kParamC: return "downrez"; break;
             case kParamD: return "distnce"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -538,8 +533,7 @@ class kRockstar2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Regen"; break;
             case kParamB: return "Positin"; break;
             case kParamC: return "DownRez"; break;
@@ -553,32 +547,32 @@ class kRockstar2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -604,8 +598,7 @@ class kRockstar2 final : public Effect<T>
         int distanceSteps = (int)distance; // 25 maximum
         distance -= (double)distanceSteps;
         double wet = E;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -625,8 +618,7 @@ class kRockstar2 final : public Effect<T>
                 switch (earlyZero) {
                     case 0:
                         earlyFloor = earlyFloor + fabs(a3AL[c3AL]) + fabs(a3AR[c3AR]);
-                        if (ld3A != early[start + 3] && earlyFloor < 0.06125)
-                        {
+                        if (ld3A != early[start + 3] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3A + 2; x++) {
                                 a3AL[x] = 0.0;
                                 a3AR[x] = 0.0;
@@ -636,8 +628,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 1:
                         earlyFloor = earlyFloor + fabs(a3BL[c3BL]) + fabs(a3BR[c3BR]);
-                        if (ld3B != early[start + 7] && earlyFloor < 0.06125)
-                        {
+                        if (ld3B != early[start + 7] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3B + 2; x++) {
                                 a3BL[x] = 0.0;
                                 a3BR[x] = 0.0;
@@ -647,8 +638,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 2:
                         earlyFloor = earlyFloor + fabs(a3CL[c3CL]) + fabs(a3CR[c3CR]);
-                        if (ld3C != early[start + 8] && earlyFloor < 0.06125)
-                        {
+                        if (ld3C != early[start + 8] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3C + 2; x++) {
                                 a3CL[x] = 0.0;
                                 a3CR[x] = 0.0;
@@ -658,8 +648,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 3:
                         earlyFloor = earlyFloor + fabs(a3DL[c3DL]) + fabs(a3DR[c3DR]);
-                        if (ld3D != early[start + 2] && earlyFloor < 0.06125)
-                        {
+                        if (ld3D != early[start + 2] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3D + 2; x++) {
                                 a3DL[x] = 0.0;
                                 a3DR[x] = 0.0;
@@ -669,8 +658,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 4:
                         earlyFloor = earlyFloor + fabs(a3EL[c3EL]) + fabs(a3ER[c3ER]);
-                        if (ld3E != early[start + 4] && earlyFloor < 0.06125)
-                        {
+                        if (ld3E != early[start + 4] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3E + 2; x++) {
                                 a3EL[x] = 0.0;
                                 a3ER[x] = 0.0;
@@ -680,8 +668,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 5:
                         earlyFloor = earlyFloor + fabs(a3FL[c3FL]) + fabs(a3FR[c3FR]);
-                        if (ld3F != early[start + 6] && earlyFloor < 0.06125)
-                        {
+                        if (ld3F != early[start + 6] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3F + 2; x++) {
                                 a3FL[x] = 0.0;
                                 a3FR[x] = 0.0;
@@ -691,8 +678,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 6:
                         earlyFloor = earlyFloor + fabs(a3GL[c3GL]) + fabs(a3GR[c3GR]);
-                        if (ld3G != early[start] && earlyFloor < 0.06125)
-                        {
+                        if (ld3G != early[start] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3G + 2; x++) {
                                 a3GL[x] = 0.0;
                                 a3GR[x] = 0.0;
@@ -702,8 +688,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 7:
                         earlyFloor = earlyFloor + fabs(a3HL[c3HL]) + fabs(a3HR[c3HR]);
-                        if (ld3H != early[start + 1] && earlyFloor < 0.06125)
-                        {
+                        if (ld3H != early[start + 1] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3H + 2; x++) {
                                 a3HL[x] = 0.0;
                                 a3HR[x] = 0.0;
@@ -713,8 +698,7 @@ class kRockstar2 final : public Effect<T>
                         break;
                     case 8:
                         earlyFloor = earlyFloor + fabs(a3IL[c3IL]) + fabs(a3IR[c3IR]);
-                        if (ld3I != early[start + 5] && earlyFloor < 0.06125)
-                        {
+                        if (ld3I != early[start + 5] && earlyFloor < 0.06125) {
                             for (int x = 0; x < d3I + 2; x++) {
                                 a3IL[x] = 0.0;
                                 a3IR[x] = 0.0;
@@ -1372,8 +1356,7 @@ class kRockstar2 final : public Effect<T>
                 firstavgr = inputSampleR;
                 inputSampleR = (firstdryr * (1.0f - distance)) + (inputSampleR * distance);
                 // having done at least one interpolation we can now do the integer number of stages
-                switch (25 - distanceSteps)
-                { // apply the stack of filter steps to produce the distance filter
+                switch (25 - distanceSteps) { // apply the stack of filter steps to produce the distance filter
                     case 0:
                         inputSampleL += lsz;
                         inputSampleL *= 0.5;
@@ -1574,8 +1557,7 @@ class kRockstar2 final : public Effect<T>
             inputSampleL = (bez[bez_BL] + (bez[bez_CL] * (1.0 - X) * (1.0 - X)) + (bez[bez_BL] * 2.0 * (1.0 - X) * X) + (bez[bez_AL] * X * X)) * -0.0625;
             inputSampleR = (bez[bez_BR] + (bez[bez_CR] * (1.0 - X) * (1.0 - X)) + (bez[bez_BR] * 2.0 * (1.0 - X) * X) + (bez[bez_AR] * X * X)) * -0.0625;
             if (prevDistance < distanceSteps) {
-                switch (prevDistance)
-                {
+                switch (prevDistance) {
                     case 0:
                         rsa = lsa = 0.0f;
                         rsA = inputSampleR;
@@ -1696,8 +1678,7 @@ class kRockstar2 final : public Effect<T>
             firstAvgR = inputSampleR;
             inputSampleR = (firstDryR * (1.0f - distance)) + (inputSampleR * distance);
             // having done at least one interpolation we can now do the integer number of stages
-            switch (25 - distanceSteps)
-            { // apply the stack of filter steps to produce the distance filter
+            switch (25 - distanceSteps) { // apply the stack of filter steps to produce the distance filter
                 case 0:
                     inputSampleL += lsZ;
                     inputSampleL *= 0.5;

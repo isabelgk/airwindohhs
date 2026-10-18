@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "OrbitKick is a bass generator and kick drum reinforcer."
 };
 constexpr std::string_view k_long_description{
-    "If you've seen modern recording, you've probably seen a little drumlike object in front of bass drums. This device is a 'SubKick'. It's basically an NS10 woofer hung in front of the kick, so it can be knocked around by subsonic bass waves, and transfer that to electricity for recording. It might or might not be in an actual drum shell, needs to be recorded with an actual preamp (these can have very high output though!) and acts as just another mic, but one that captures the very deepest bass in conjunction with your full drumkit and all your other mics.But what if you could do that… without the pre? And also without the little drum shell, and without the NS10 speaker, and for that matter without the drumkit. Just 'deep bass subs' like a kick drum. On anything.Enter OrbitKick. This is basically a little physical simulation, like a planet orbiting a sun. When your input sound hits, it kicks this thing into orbit and it just spins, gradually slowing down as its orbit gets bigger and bigger. It's a little like a second-order sine wave, in that it's one of those Airwindows things that can get out of hand, which is what the controls are for.Drop is how fast the note will drop, from 'not at all' to real quick. Shape is the same, but makes it drop quicker to start off, so it's your taper: it gives you punchier attacks, rather than 'modular guy beeeoooo' kicks that have no impact. Start controls how high up your attack goes, in conjunction with Thresh, which is the threshold at which the note is kicked off… and Finish is where the note cuts off (set super low, you can get clicky releases).That's all. If you want shorter kicks, make it drop faster, start lower, or finish higher. These controls do it all. That includes weird nasty effects where the note is triggered in a scruffy, inconsistent way. OrbitKick does NOT sound like a sample. It's like a living bass thing, able to put the lowest of bottom octaves on whatever percussive thing you like, or add a thump or 'pewww!' laser sound to any other thing so long as it has a distinct attack. And without a distinct attack it will still work but it'll make an unpleasant noise. And if you can only listen on a laptop or cellphone you may never hear what it does at all…This one goes out to DnB friends of mine in London :) rarely do I get a plugin that will wreak so much mayhem on really, really big sound systems. Be careful out there, or don't :)"
+    "If you've seen modern recording, you've probably seen a little drumlike object in front of bass drums. This device is a 'SubKick'. It's basically an NS10 woofer hung in front of the kick, so it can be knocked around by subsonic bass waves, and transfer that to electricity for recording. It might or might not be in an actual drum shell, needs to be recorded with an actual preamp (these can have very high output though!) and acts as just another mic, but one that captures the very deepest bass in conjunction with your full drumkit and all your other mics. But what if you could do that… without the pre? And also without the little drum shell, and without the NS10 speaker, and for that matter without the drumkit. Just 'deep bass subs' like a kick drum. On anything. Enter OrbitKick. This is basically a little physical simulation, like a planet orbiting a sun. When your input sound hits, it kicks this thing into orbit and it just spins, gradually slowing down as its orbit gets bigger and bigger. It's a little like a second-order sine wave, in that it's one of those Airwindows things that can get out of hand, which is what the controls are for. Drop is how fast the note will drop, from 'not at all' to real quick. Shape is the same, but makes it drop quicker to start off, so it's your taper: it gives you punchier attacks, rather than 'modular guy beeeoooo' kicks that have no impact. Start controls how high up your attack goes, in conjunction with Thresh, which is the threshold at which the note is kicked off… and Finish is where the note cuts off (set super low, you can get clicky releases). That's all. If you want shorter kicks, make it drop faster, start lower, or finish higher. These controls do it all. That includes weird nasty effects where the note is triggered in a scruffy, inconsistent way. OrbitKick does NOT sound like a sample. It's like a living bass thing, able to put the lowest of bottom octaves on whatever percussive thing you like, or add a thump or 'pewww!' laser sound to any other thing so long as it has a distinct attack. And without a distinct attack it will still work but it'll make an unpleasant noise. And if you can only listen on a laptop or cellphone you may never hear what it does at all… This one goes out to DnB friends of mine in London :) rarely do I get a plugin that will wreak so much mayhem on really, really big sound systems. Be careful out there, or don't :)"
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class OrbitKick final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'orbt';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -69,23 +73,20 @@ class OrbitKick final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -100,8 +101,7 @@ class OrbitKick final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -116,14 +116,13 @@ class OrbitKick final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drop"; break;
             case kParamB: return "shape"; break;
             case kParamC: return "start"; break;
             case kParamD: return "finish"; break;
             case kParamE: return "thresh"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -132,8 +131,7 @@ class OrbitKick final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drop"; break;
             case kParamB: return "Shape"; break;
             case kParamC: return "Start"; break;
@@ -148,34 +146,34 @@ class OrbitKick final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -202,8 +200,7 @@ class OrbitKick final : public Effect<T>
         if (dry > 1.0) {
             dry = 1.0;
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

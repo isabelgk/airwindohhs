@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BassAmp is an old plugin with new tweaks, that gives some bass guitar tones."
 };
 constexpr std::string_view k_long_description{
-    "This is BassAmp. (I’ve been asked to do amp sim type plugins, so it’s a start). Back in the day I experimented with some of these things, though I’ve always been more interested in wiring up physical hardware, especially for guitar distortions and things. I’ve brought this one up to date in some ways, debugging a problem with the ‘dub’ channel and using my modern techniques for dithering to the floating point bus, and so on.It’s got basically a bright channel, midrange (which is just dry, as a slider), a bass channel with a characteristic woolly tone that has a kind of noisy blur on the small amount of treble it does have, and a ‘sub’ channel that really doesn’t work, so use it as a crazy special effect. BassKit might get you a cleaner sub-octave, but this will give you a trashy sub-octave that’s mostly garbage, even on a single-note line. So you’ll be leaving it off, I think."
+    "This is BassAmp. (I’ve been asked to do amp sim type plugins, so it’s a start). Back in the day I experimented with some of these things, though I’ve always been more interested in wiring up physical hardware, especially for guitar distortions and things. I’ve brought this one up to date in some ways, debugging a problem with the ‘dub’ channel and using my modern techniques for dithering to the floating point bus, and so on. It’s got basically a bright channel, midrange (which is just dry, as a slider), a bass channel with a characteristic woolly tone that has a kind of noisy blur on the small amount of treble it does have, and a ‘sub’ channel that really doesn’t work, so use it as a crazy special effect. BassKit might get you a cleaner sub-octave, but this will give you a trashy sub-octave that’s mostly garbage, even on a single-note line. So you’ll be leaving it off, I think."
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BassAmp final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'basa';
     double LataLast6Sample;
     double LataLast5Sample;
     double LataLast4Sample;
@@ -289,21 +293,18 @@ class BassAmp final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -316,8 +317,7 @@ class BassAmp final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.75; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.75; break;
@@ -330,8 +330,7 @@ class BassAmp final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "high"; break;
             case kParamB: return "dry"; break;
             case kParamC: return "dub"; break;
@@ -344,8 +343,7 @@ class BassAmp final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "High"; break;
             case kParamB: return "Dry"; break;
             case kParamC: return "Dub"; break;
@@ -358,30 +356,30 @@ class BassAmp final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -408,8 +406,7 @@ class BassAmp final : public Effect<T>
         double SubBumpFreq = (SubGain + 0.0001) / overallscale;
         double SubOutGain = contSub * 0.3;
         double iirHPAmount = 0.0000014 / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double LinputSample = *in1;
             double RinputSample = *in2;
             if (fabs(LinputSample) < 1.18e-43) {
@@ -442,8 +439,7 @@ class BassAmp final : public Effect<T>
             // begin first half- change inputSample -> ataHalfwaySample, ataDrySample -> ataHalfDrySample
             double LataHalfwayLowpass;
             double RataHalfwayLowpass;
-            if (flip)
-            {
+            if (flip) {
                 tempSample = subtractSample = LataHalfwaySample;
                 LiirDriveSampleA = (LiirDriveSampleA * (1.0 - iirAmount)) + (tempSample * iirAmount);
                 tempSample -= LiirDriveSampleA;
@@ -469,8 +465,7 @@ class BassAmp final : public Effect<T>
                 RataHalfwaySample -= correction;
                 RataHalfwayLowpass = subtractSample - RataHalfwaySample;
             }
-            else
-            {
+            else {
                 tempSample = subtractSample = LataHalfwaySample;
                 LiirDriveSampleB = (LiirDriveSampleB * (1.0 - iirAmount)) + (tempSample * iirAmount);
                 tempSample -= LiirDriveSampleB;
@@ -510,8 +505,7 @@ class BassAmp final : public Effect<T>
                 RataHalfwaySample = -1.0;
             }
             double drivetwo = driveone;
-            while (drivetwo > 0.60)
-            {
+            while (drivetwo > 0.60) {
                 drivetwo -= 0.60;
                 LataHalfwaySample -= (LataHalfwaySample * (fabs(LataHalfwaySample) * 0.60) * (fabs(LataHalfwaySample) * 0.60));
                 RataHalfwaySample -= (RataHalfwaySample * (fabs(RataHalfwaySample) * 0.60) * (fabs(RataHalfwaySample) * 0.60));
@@ -527,8 +521,7 @@ class BassAmp final : public Effect<T>
             // begin second half- inputSample and ataDrySample handled separately here
             double LataLowpass;
             double RataLowpass;
-            if (flip)
-            {
+            if (flip) {
                 tempSample = subtractSample = LinputSample;
                 LiirDriveSampleA = (LiirDriveSampleA * (1.0 - iirAmount)) + (tempSample * iirAmount);
                 tempSample -= LiirDriveSampleA;
@@ -554,8 +547,7 @@ class BassAmp final : public Effect<T>
                 RinputSample -= correction;
                 RataLowpass = subtractSample - RinputSample;
             }
-            else
-            {
+            else {
                 tempSample = subtractSample = LinputSample;
                 LiirDriveSampleB = (LiirDriveSampleB * (1.0 - iirAmount)) + (tempSample * iirAmount);
                 tempSample -= LiirDriveSampleB;
@@ -595,8 +587,7 @@ class BassAmp final : public Effect<T>
                 RinputSample = -1.0;
             }
             drivetwo = driveone;
-            while (drivetwo > 0.60)
-            {
+            while (drivetwo > 0.60) {
                 drivetwo -= 0.60;
                 LinputSample -= (LinputSample * (fabs(LinputSample) * 0.60) * (fabs(LinputSample) * 0.60));
                 RinputSample -= (RinputSample * (fabs(RinputSample) * 0.60) * (fabs(RinputSample) * 0.60));
@@ -631,8 +622,7 @@ class BassAmp final : public Effect<T>
             LataLowpass += LataHalfwayLowpass; // and combined them. Now we make sub-octaves
             RataLowpass += RataHalfwayLowpass; // and combined them. Now we make sub-octaves
             double randy = (double(fpdL) / UINT32_MAX) * 0.0555; // 0 to 1 the noise, may not be needed
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     LiirHeadBumpA += (LataLowpass * BassGain);
                     LiirHeadBumpA -= (LiirHeadBumpA * LiirHeadBumpA * LiirHeadBumpA * HeadBumpFreq);
@@ -662,8 +652,7 @@ class BassAmp final : public Effect<T>
             double RHeadBump = RiirHeadBumpA + RiirHeadBumpB + RiirHeadBumpC;
             double LSubBump = fabs(LHeadBump);
             double RSubBump = fabs(RHeadBump);
-            if (LHeadBump > 0)
-            {
+            if (LHeadBump > 0) {
                 if (LWasNegative) {
                     LSubOctave = !LSubOctave;
                 }
@@ -673,8 +662,7 @@ class BassAmp final : public Effect<T>
                 LWasNegative = true;
             }
             // set up polarities for sub-bass version
-            if (RHeadBump > 0)
-            {
+            if (RHeadBump > 0) {
                 if (RWasNegative) {
                     RSubOctave = !RSubOctave;
                 }
@@ -690,8 +678,7 @@ class BassAmp final : public Effect<T>
             if (RSubOctave == false) {
                 RSubBump = -RSubBump;
             }
-            switch (bflip)
-            {
+            switch (bflip) {
                 case 1:
                     LiirSubBumpA += (LSubBump * SubGain);
                     LiirSubBumpA -= (LiirSubBumpA * LiirSubBumpA * LiirSubBumpA * SubBumpFreq);

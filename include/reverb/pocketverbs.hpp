@@ -1,11 +1,11 @@
 #pragma once
+#if defined(_MSC_VER)
+#pragma warning(push)
 #pragma warning(disable : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #endif
-
 #include "effect.hpp"
 #include <cmath>
 #include <cstdint>
@@ -18,7 +18,7 @@ constexpr std::string_view k_short_description{
     "PocketVerbs is my popular old special effects reverbs plugin!"
 };
 constexpr std::string_view k_long_description{
-    "This plugin is a bit of a big deal. It’s been hotly anticipated, and is one of the last two ‘old stock’ plugins (at least, out of my main list) to be brought up to date and ported to VST/Windows/Linux. The other one is Cabs, and I think Cabs isn’t really very good. I’ll put it out anyhow, but I’ve dragged my feet because it’s a pain to work on and it’s not great at ‘being a speaker cab plugin’, not truly special just weird.But this is PocketVerbs, and PocketVerbs IS special. It’s a precursor to what I’m doing with MV, what I’ll do more of in the future… but the reason I dragged my feet on this one is, it’s cumbersome. There’s more code in it than the size of some novels, and I had to port that! It’s not even brilliant code… but it had to be done just as it was, to maintain the tone qualities PocketVerbs has. It’s huge because it has multiple reverbs to switch between, and the way I implemented that was not easy on me. I’ve honored that in the current version.You get chambers, rooms, springs. You get a PaulStretch type effect. You get Zarathustra, which is like that but dark and distant and vast. You get a strange gating effect not present in any other plugin, just as it was: this lets you completely and totally reinvent drum sounds even on a stereo mix. It’s a dual-mono design so you get stereo localization out of the space-ified, gated, reinvented drum sounds. Or, you can try whatever other crazy tricks tickle your fancy.It’s PocketVerbs. It’s here, it’s free, it’s yours. Go bonkers… and have fun."
+    "This plugin is a bit of a big deal. It’s been hotly anticipated, and is one of the last two ‘old stock’ plugins (at least, out of my main list) to be brought up to date and ported to VST/Windows/Linux. The other one is Cabs, and I think Cabs isn’t really very good. I’ll put it out anyhow, but I’ve dragged my feet because it’s a pain to work on and it’s not great at ‘being a speaker cab plugin’, not truly special just weird. But this is PocketVerbs, and PocketVerbs IS special. It’s a precursor to what I’m doing with MV, what I’ll do more of in the future… but the reason I dragged my feet on this one is, it’s cumbersome. There’s more code in it than the size of some novels, and I had to port that! It’s not even brilliant code… but it had to be done just as it was, to maintain the tone qualities PocketVerbs has. It’s huge because it has multiple reverbs to switch between, and the way I implemented that was not easy on me. I’ve honored that in the current version. You get chambers, rooms, springs. You get a PaulStretch type effect. You get Zarathustra, which is like that but dark and distant and vast. You get a strange gating effect not present in any other plugin, just as it was: this lets you completely and totally reinvent drum sounds even on a stereo mix. It’s a dual-mono design so you get stereo localization out of the space-ified, gated, reinvented drum sounds. Or, you can try whatever other crazy tricks tickle your fancy. It’s PocketVerbs. It’s here, it’s free, it’s yours. Go bonkers… and have fun."
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -27,6 +27,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PocketVerbs final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pkvb';
     int count;
     double dAR[7];
     double dBR[7];
@@ -805,21 +809,18 @@ class PocketVerbs final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -832,8 +833,7 @@ class PocketVerbs final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.0; break;
@@ -846,12 +846,11 @@ class PocketVerbs final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "type"; break;
             case kParamB: return "size"; break;
             case kParamC: return "gating"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -860,8 +859,7 @@ class PocketVerbs final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Type"; break;
             case kParamB: return "Size"; break;
             case kParamC: return "Gating"; break;
@@ -874,30 +872,41 @@ class PocketVerbs final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 5.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Chamber", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Spring", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Tiled", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Room", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Stretch", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Zarathu", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -934,8 +943,7 @@ class PocketVerbs final : public Effect<T>
             countdown = 26;
         } // kick off the adjustment which will take 26 zippernoise refreshes to complete
         if (countdown > 0) {
-            switch (countdown)
-            {
+            switch (countdown) {
                 case 1:
                     delayA = (int(maxdelayA * roomsize));
                     for (count = 2; count <= max; count++) {
@@ -1408,8 +1416,7 @@ class PocketVerbs final : public Effect<T>
             // countdown--; we are doing this after the second one
         }
         if (countdown > 0) {
-            switch (countdown)
-            {
+            switch (countdown) {
                 case 1:
                     delayA = (int(maxdelayA * roomsize));
                     for (count = 2; count <= max; count++) {
@@ -1881,8 +1888,7 @@ class PocketVerbs final : public Effect<T>
             } // end of switch statement
             countdown--; // every buffer we'll do one of the recalculations for prime buffer sizes
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -1928,8 +1934,7 @@ class PocketVerbs final : public Effect<T>
                 inputSampleR = -bridgerectifier;
             }
             // here we apply the ADT2 console-on-steroids trick
-            switch (verbtype)
-            {
+            switch (verbtype) {
                 case 1: // Chamber
                     allpasstemp = alpAL - 1;
                     if (allpasstemp < 0 || allpasstemp > delayA) {
@@ -7154,8 +7159,7 @@ class PocketVerbs final : public Effect<T>
                     break;
             }
             // end big switch for verb type
-            switch (verbtype)
-            {
+            switch (verbtype) {
                 case 1: // Chamber
                     allpasstemp = alpAR - 1;
                     if (allpasstemp < 0 || allpasstemp > delayA) {
@@ -12437,8 +12441,8 @@ class PocketVerbs final : public Effect<T>
     }
 };
 } // namespace airwindohhs::pocketverbs
-#pragma warning(default : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif

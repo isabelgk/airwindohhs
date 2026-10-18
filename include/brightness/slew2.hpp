@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Slew2 works like a de-esser or acceleration limiter: controls extreme highs."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes I just get lucky :)This plugin is just the anti-aliasing technology I was experimenting with in 2010, applied to Slew, my simple slew clipper. I thought it was going to make the slightly grungy Slew smoother (Slew is a clipper, and can be expected to have clipper-like qualities). That anti-aliasing code was a bit odd. It’s possible I made a mistake somewhere.If so, I’m keeping it, and now what I invented is out for VST also, and free to all.Slew2 doesn’t act anything like Slew. What it does, is it puts a particular behavior on the extreme highs. Set to an intermediate value, it’s an acceleration limiter. Cranked all the way up… well, check out the video. It behaves like one of the nodes in Average (also coming to VST) with a 100% cancellation, but the point of total cancellation is also the Nyquist frequency. Slew2 produces a very natural-sounding brickwall filter exactly at that frequency, with the response falling off faster and faster until it’s totally gone when you hit the Nyquist limit (digital sampling theory: at 44.1K (CD quality) it is 22.05K where the treble cuts off).People are using this for de-essers, and it’s pretty much ideal for any sound that must not be overwhelming in the super highs. The peculiar character of the rolloff means it’s suitable for almost anything because it won’t affect lower treble, and the fact that it’s really a clipper means you can use the slider to set a threshold where, the harder you push Slew2, the more it’ll refuse to let more brightness through. I’ve not tried using it as an acceleration limiter on a mastering lathe, but it could probably do that: which also means if you’re going for classic analog tone, you can just toss this on the 2-buss and use just enough to take excess brightness away. Slew2 is one of the ‘secret weapon’ plugins I was specifically asked to port to VST, and I’m happy to bring it to you all."
+    "Sometimes I just get lucky :) This plugin is just the anti-aliasing technology I was experimenting with in 2010, applied to Slew, my simple slew clipper. I thought it was going to make the slightly grungy Slew smoother (Slew is a clipper, and can be expected to have clipper-like qualities). That anti-aliasing code was a bit odd. It’s possible I made a mistake somewhere. If so, I’m keeping it, and now what I invented is out for VST also, and free to all. Slew2 doesn’t act anything like Slew. What it does, is it puts a particular behavior on the extreme highs. Set to an intermediate value, it’s an acceleration limiter. Cranked all the way up… well, check out the video. It behaves like one of the nodes in Average (also coming to VST) with a 100% cancellation, but the point of total cancellation is also the Nyquist frequency. Slew2 produces a very natural-sounding brickwall filter exactly at that frequency, with the response falling off faster and faster until it’s totally gone when you hit the Nyquist limit (digital sampling theory: at 44.1K (CD quality) it is 22.05K where the treble cuts off). People are using this for de-essers, and it’s pretty much ideal for any sound that must not be overwhelming in the super highs. The peculiar character of the rolloff means it’s suitable for almost anything because it won’t affect lower treble, and the fact that it’s really a clipper means you can use the slider to set a threshold where, the harder you push Slew2, the more it’ll refuse to let more brightness through. I’ve not tried using it as an acceleration limiter on a mastering lathe, but it could probably do that: which also means if you’re going for classic analog tone, you can just toss this on the 2-buss and use just enough to take excess brightness away. Slew2 is one of the ‘secret weapon’ plugins I was specifically asked to port to VST, and I’m happy to bring it to you all."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Slew2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'slw2';
     double LataLast3Sample;
     double LataLast2Sample;
     double LataLast1Sample;
@@ -93,18 +97,20 @@ class Slew2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
+        // we can also set other defaults here, and do calculations that only have to happen
+        // once when parameters actually change. Here is the 'popup' setting its (global) values.
+        // variables can also be set in the processreplacing loop, and there they'll be set every buffersize
+        // here they're set when a parameter's actually changed, which should be less frequent, but
+        // you must use global variables in the Slew2.h file to do it.
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -114,8 +120,7 @@ class Slew2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -125,8 +130,7 @@ class Slew2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "clamping"; break;
 
             default: break;
@@ -136,8 +140,7 @@ class Slew2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Clamping"; break;
 
             default: break;
@@ -147,24 +150,24 @@ class Slew2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -181,8 +184,7 @@ class Slew2 final : public Effect<T>
         double threshold = pow((1 - A), 4) / overallscale;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

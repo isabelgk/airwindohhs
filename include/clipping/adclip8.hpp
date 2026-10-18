@@ -8,10 +8,10 @@ namespace airwindohhs::adclip8 {
 
 constexpr std::string_view k_name{ "ADClip8" };
 constexpr std::string_view k_short_description{
-    "ADClip8 is the ultimate Airwindows loudenator/biggenator."
+    "ADClip8 is a stacked-up Airwindows loudenator based on ClipOnly2."
 };
 constexpr std::string_view k_long_description{
-    "The last time we saw an Airwindows ADClip, the full version rather than a neat and tidy stripped-down version, was October 8… of 2017. It's been more than six years since the king of loudenators saw an update, in part because ClipOnly got followed by ClipOnly2, which was such a good high-sample-rate clipper that it was all I needed for years. ClipOnly2 is still the cleanest, purest way to take small amounts of peak clipping to your signal: it's great as a safety clip.But, while working on a new version tailored to the needs of Final Cut Pro (which is also coming), something new arose.What would happen if the FCP version, which has a built-in slew clip and makes heavy use of Golden Ratios to arrive at its results, was adapted to a new ADClip? What if it was scaled to regular clipping levels, given a ceiling control to dial back its maximum to taste, what would happen if it was stacked up with a whole array of FinalClips in series like some of the other Airwindows plugins like to do? We're no longer dealing with ClipOnly2. Much like the original ADClip7, we're adding extra stuff and running a more complicated algorithm. But we've still got some of the special features of ADClip7, like the gain-matched mode and the Clips Only setting.Enter ADClip8. It has more settings. They go Normal, Gain Matched, Clip Only… then, Afterburner, Explode, Nuke, Apocalypse, and lastly Apotheosis. No, really! That's the new settings.What they represent is added stages, so Normal is a single stage (as is Gain Matched), Clip Only shows you where clips begin, and then the new modes are named for the sounds they produce, at two, three, four, five and six stages of special slew-clipped ClipOnly2 style sample-rate aware clipping. In practice, think 'bigger, bassier, thicker' as you continue to add stages. You may not always want to run the full six stages, you might want to voice it to your needs.The interesting part is how all this affects intersample peaking. Because the process brings in slew clipping and repeated use of the ClipOnly2 algorithm, which resists harsh entry into and exit from a clipped state, dialing up ADClip8 and cranking the gain produces an intensely saturated sound that resists intersample peaking not through filtration, but mechanically. It will literally put in transition samples to resist the intersample peaks from going beyond regular clipping. The more stages, the more thoroughly it resists 'true peak'.I would say don't use this for evil but who am I kidding. If you beat everyone with 'competitive loudness' this way, please never expect me to listen to what you did, I'll be hiding under my bed, regretting everything. :)For what it's worth, 'Apotheosis' mode should also be a very nice way to do extremely moderate transparent clipping of challenging material: ClipOnly2 will still be more transparent but only sounds like a slightly brighter version of ADClip8 Normal mode. Apotheosis mode simply does more and I wouldn't blame anybody for preferring it. Hope you like ADClip8!"
+    "The last time we saw an Airwindows ADClip, the full version rather than a neat and tidy stripped-down version, was October 8… of 2017. It's been more than six years since the king of loudenators saw an update, in part because ClipOnly got followed by ClipOnly2, which was such a good high-sample-rate clipper that it was all I needed for years. ClipOnly2 is still the cleanest, purest way to take small amounts of peak clipping to your signal: it's great as a safety clip. But, while working on a new version tailored to the needs of Final Cut Pro (which is also coming), something new arose. What would happen if the FCP version, which has a built-in slew clip and makes heavy use of Golden Ratios to arrive at its results, was adapted to a new ADClip? What if it was scaled to regular clipping levels, given a ceiling control to dial back its maximum to taste, what would happen if it was stacked up with a whole array of FinalClips in series like some of the other Airwindows plugins like to do? We're no longer dealing with ClipOnly2. Much like the original ADClip7, we're adding extra stuff and running a more complicated algorithm. But we've still got some of the special features of ADClip7, like the gain-matched mode and the Clips Only setting. Enter ADClip8. It has more settings. They go Normal, Gain Matched, Clip Only… then, Afterburner, Explode, Nuke, Apocalypse, and lastly Apotheosis. No, really! That's the new settings. What they represent is added stages, so Normal is a single stage (as is Gain Matched), Clip Only shows you where clips begin, and then the new modes are named for the sounds they produce, at two, three, four, five and six stages of special slew-clipped ClipOnly2 style sample-rate aware clipping. In practice, think 'bigger, bassier, thicker' as you continue to add stages. You may not always want to run the full six stages, you might want to voice it to your needs. The interesting part is how all this affects intersample peaking. Because the process brings in slew clipping and repeated use of the ClipOnly2 algorithm, which resists harsh entry into and exit from a clipped state, dialing up ADClip8 and cranking the gain produces an intensely saturated sound that resists intersample peaking not through filtration, but mechanically. It will literally put in transition samples to resist the intersample peaks from going beyond regular clipping. The more stages, the more thoroughly it resists 'true peak'. I would say don't use this for evil but who am I kidding. If you beat everyone with 'competitive loudness' this way, please never expect me to listen to what you did, I'll be hiding under my bed, regretting everything. :) For what it's worth, 'Apotheosis' mode should also be a very nice way to do extremely moderate transparent clipping of challenging material: ClipOnly2 will still be more transparent but only sounds like a slightly brighter version of ADClip8 Normal mode. Apotheosis mode simply does more and I wouldn't blame anybody for preferring it. Hope you like ADClip8!"
 };
 constexpr std::string_view k_tags{
     "clipping"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ADClip8 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'adcs';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -74,20 +78,17 @@ class ADClip8 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -99,8 +100,7 @@ class ADClip8 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.883; break;
             case kParamC: return 0.0; break;
@@ -112,8 +112,7 @@ class ADClip8 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "boost"; break;
             case kParamB: return "ceiling"; break;
             case kParamC: return "mode"; break;
@@ -125,8 +124,7 @@ class ADClip8 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Boost"; break;
             case kParamB: return "Ceiling"; break;
             case kParamC: return "Mode"; break;
@@ -138,28 +136,41 @@ class ADClip8 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 18.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC:
+                switch ((VstInt32)(C * 7.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Normal", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Atten", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Clips", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Afterbr", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Explode", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Nuke", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "Apocaly", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "Apothes", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -193,8 +204,7 @@ class ADClip8 final : public Effect<T>
             stageSetting = 1;
         }
         inputGain = ((inputGain - 1.0) / stageSetting) + 1.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -316,8 +326,7 @@ class ADClip8 final : public Effect<T>
                 lastSampleR[stage] = intermediateR[0][stage]; // run a little buffer to handle this
                 // end ClipOnly2 as a little, compressed chunk that can be dropped into code
             }
-            switch (mode)
-            {
+            switch (mode) {
                 case 1: break; // Normal
                 case 2:
                     inputSampleL /= inputGain;

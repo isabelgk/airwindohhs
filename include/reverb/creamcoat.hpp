@@ -11,34 +11,36 @@ constexpr std::string_view k_short_description{
     "CreamCoat is a swiss army knife reverb with soft undersampling."
 };
 constexpr std::string_view k_long_description{
-    "Here's where the DeRez3 plugin came from. CreamCoat works as a general purpose reverb/ambience, taking the same basic algorithms from ClearCoat (when there's the Select knob and it's made out of 4x4 householder matrices, it's a Something-Coat reverb) but working an amazing trick on them that can really transform them.It turns out you can get a smooth, lush effect out of the undersampling (no weird 'antique digital' artifacts) so long as you undersample by an exact divisor of the sample rate, and then use the Bezier curve trick to reconstruct the wave from the low sample rate.If that was too technical, listen to the tone of the reverb as you drop the sample rate with DeRez. You'll get a series of 'steps', each of them being clean and natural-sounding, but having a very sharp cutoff. It's like a filter, but it's just how the wave is reconstructed. Using it at high sample rates is even better because it gets to reconstruct in a more finely-grained way, but also you'll get more 'DeRez' options around the area you're finding useful!In keeping with the 'swiss army knife' concept, CreamCoat has a wide-ranging Regen control, letting you do infinite reverbs across any of the settings, or extremely short ambiences. And a Predelay control, letting you sit the short ambiences exactly where you want them.This is almost certainly a better 'general purpose' verb than the original ClearCoat, which is simplified for ease of understanding the code. It's still pretty simple, though! I've got many more sophisticated reverbs coming or planned, but with this and CrunchCoat you should be able to cover an absurd number of bases, reverb-wise. I hope you enjoy CreamCoat!"
+    "Here's where the DeRez3 plugin came from. CreamCoat works as a general purpose reverb/ambience, taking the same basic algorithms from ClearCoat (when there's the Select knob and it's made out of 4x4 householder matrices, it's a Something-Coat reverb) but working an amazing trick on them that can really transform them. It turns out you can get a smooth, lush effect out of the undersampling (no weird 'antique digital' artifacts) so long as you undersample by an exact divisor of the sample rate, and then use the Bezier curve trick to reconstruct the wave from the low sample rate. If that was too technical, listen to the tone of the reverb as you drop the sample rate with DeRez. You'll get a series of 'steps', each of them being clean and natural-sounding, but having a very sharp cutoff. It's like a filter, but it's just how the wave is reconstructed. Using it at high sample rates is even better because it gets to reconstruct in a more finely-grained way, but also you'll get more 'DeRez' options around the area you're finding useful! In keeping with the 'swiss army knife' concept, CreamCoat has a wide-ranging Regen control, letting you do infinite reverbs across any of the settings, or extremely short ambiences. And a Predelay control, letting you sit the short ambiences exactly where you want them. This is almost certainly a better 'general purpose' verb than the original ClearCoat, which is simplified for ease of understanding the code. It's still pretty simple, though! I've got many more sophisticated reverbs coming or planned, but with this and CrunchCoat you should be able to cover an absurd number of bases, reverb-wise. I hope you enjoy CreamCoat!"
 };
 constexpr std::string_view k_tags{
     "reverb"
 };
 
-const int predelay = 15000;
-
-const int kshortA = 350;
-const int kshortB = 1710;
-const int kshortC = 1610;
-const int kshortD = 835;
-const int kshortE = 700;
-const int kshortF = 1260;
-const int kshortG = 1110;
-const int kshortH = 1768;
-const int kshortI = 280;
-const int kshortJ = 2645;
-const int kshortK = 1410;
-const int kshortL = 1175;
-const int kshortM = 12;
-const int kshortN = 3110;
-const int kshortO = 120;
-const int kshortP = 2370;
-
 template <typename T>
 class CreamCoat final : public Effect<T>
 {
+    static constexpr int predelay = 15000;
+    static constexpr int kshortA = 350;
+    static constexpr int kshortB = 1710;
+    static constexpr int kshortC = 1610;
+    static constexpr int kshortD = 835;
+    static constexpr int kshortE = 700;
+    static constexpr int kshortF = 1260;
+    static constexpr int kshortG = 1110;
+    static constexpr int kshortH = 1768;
+    static constexpr int kshortI = 280;
+    static constexpr int kshortJ = 2645;
+    static constexpr int kshortK = 1410;
+    static constexpr int kshortL = 1175;
+    static constexpr int kshortM = 12;
+    static constexpr int kshortN = 3110;
+    static constexpr int kshortO = 120;
+    static constexpr int kshortP = 2370;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cmco';
     double aAL[kshortA + 5];
     double aBL[kshortB + 5];
     double aCL[kshortC + 5];
@@ -159,13 +161,11 @@ class CreamCoat final : public Effect<T>
         bez_total
     }; // the new undersampling. bez signifies the bezier curve reconstruction
     double bez[bez_total];
-
     float A;
     float B;
     float C;
     float D;
     float E;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -341,22 +341,19 @@ class CreamCoat final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -370,8 +367,7 @@ class CreamCoat final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -385,8 +381,7 @@ class CreamCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "select"; break;
             case kParamB: return "regen"; break;
             case kParamC: return "derez"; break;
@@ -400,8 +395,7 @@ class CreamCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Select"; break;
             case kParamB: return "Regen"; break;
             case kParamC: return "DeRez"; break;
@@ -415,32 +409,32 @@ class CreamCoat final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((VstInt32)(A * 16.999), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -552,8 +546,7 @@ class CreamCoat final : public Effect<T>
             countNR = 1;
             countOR = 1;
             countPR = 1;
-            switch (clearcoat)
-            {
+            switch (clearcoat) {
                 case 0:
                     shortA = 65;
                     shortB = 124;
@@ -912,8 +905,7 @@ class CreamCoat final : public Effect<T>
         // this reverb makes 50% full dry AND full wet, not crossfaded.
         // that's so it can be on submixes without cutting back dry channel when adjusted:
         // unless you go super heavy, you are only adjusting the added verb loudness.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

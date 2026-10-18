@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SlewSonic combines SlewOnly with ultrasonic filtering to solo brightness."
 };
 constexpr std::string_view k_long_description{
-    "This plugin was a journey! The video isn't even its final form. The idea was to find out whether SlewOnly aliases. Could you filter out ultrasonics and get a smoother SlewOnly?The answer is 'kinda', but then things got out of hand…SlewSonic lets you stack up as many as three instances of SlewOnly, each with ultrasonic filtering around them to resist aliasing. Except it's not always ultrasonic, because now you can set it from 25k all the way down to 5k. When you do that, you get the smoothest, darkest SlewOnly ever!But what even is SlewOnly? It's a monitoring plugin, very simple, that shows only the extreme treble, and balances the levels in a calibrated way to help you mix. SlewOnly is in all versions of Airwindows Monitoring, alongside SubsOnly and PeakOnly. It's there to show you stuff you wouldn't hear off just the regular mix. So if you switch over to SlewOnly, it should still be a mix, still about the same volume, still about the same density.The thing is, when you stack those up, the calibrated volume adjustment gets more and more extreme. So mega-boosts can create really LOUD super-treble. And this could be useful highlighting cymbals, whispers… anything where you want to solo those frequencies. The Bright control fades between the direct sound and one, two or three stages of SlewOnly, and the Mute control specifies the highest frequencies you keep, so it could fight aliasing even at lower sample rates.I'm imagining this as a tool for dedicated hi-hat tracks, stuff like that. You should be able to get exactly what you want. Hope you like SlewSonic!"
+    "This plugin was a journey! The video isn't even its final form. The idea was to find out whether SlewOnly aliases. Could you filter out ultrasonics and get a smoother SlewOnly? The answer is 'kinda', but then things got out of hand… SlewSonic lets you stack up as many as three instances of SlewOnly, each with ultrasonic filtering around them to resist aliasing. Except it's not always ultrasonic, because now you can set it from 25k all the way down to 5k. When you do that, you get the smoothest, darkest SlewOnly ever! But what even is SlewOnly? It's a monitoring plugin, very simple, that shows only the extreme treble, and balances the levels in a calibrated way to help you mix. SlewOnly is in all versions of Airwindows Monitoring, alongside SubsOnly and PeakOnly. It's there to show you stuff you wouldn't hear off just the regular mix. So if you switch over to SlewOnly, it should still be a mix, still about the same volume, still about the same density. The thing is, when you stack those up, the calibrated volume adjustment gets more and more extreme. So mega-boosts can create really LOUD super-treble. And this could be useful highlighting cymbals, whispers… anything where you want to solo those frequencies. The Bright control fades between the direct sound and one, two or three stages of SlewOnly, and the Mute control specifies the highest frequencies you keep, so it could fight aliasing even at lower sample rates. I'm imagining this as a tool for dedicated hi-hat tracks, stuff like that. You should be able to get exactly what you want. Hope you like SlewSonic!"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SlewSonic final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'slsn';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -69,19 +73,16 @@ class SlewSonic final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -92,8 +93,7 @@ class SlewSonic final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
 
@@ -104,8 +104,7 @@ class SlewSonic final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "mute"; break;
             case kParamB: return "bright"; break;
 
@@ -116,8 +115,7 @@ class SlewSonic final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Mute"; break;
             case kParamB: return "Bright"; break;
 
@@ -128,26 +126,26 @@ class SlewSonic final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 20.0) + 5.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "kHz"; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "kHz", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -216,8 +214,7 @@ class SlewSonic final : public Effect<T>
         // output as the control is turned up. Each one independently goes from 0-1 and stays at 1
         // beyond that point: this is a way to progressively add a 'black box' sound processing
         // which lets you fall through to simpler processing at lower settings.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

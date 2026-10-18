@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Slew3 is a new approach to slew clipping meant for a more analog-like darkening effect."
 };
 constexpr std::string_view k_long_description{
-    "A Chris’s work is never done! Or at least it’s not, when it comes to refining basic tonal building blocks that apply to many plugins. It’s just recently that I updated Capacitor with an analog behavior found (quite strikingly) in certain real-world capacitors. I’m at it again.This makes a third Slew plugin, and every one is strikingly different. Slew (original) darkens radically and makes a grungy, clipped tone (it’s in Channel, too, very subtly). Slew2, though there are some similarities in code, acts wildly different: it produces an intense rolloff that is only right up at the Nyquist frequency, and is an elegant anti-glare solution, but barely has a tone at all.Slew3 uses ideas from Acceleration and DeBess to produce a slew clipping that’s actually reading information beyond what the samples provide: it’s like it reconstructs the wave a bit and is most effective where you’d get intersample peaks. It’s NOT an EQ: it has very striking dynamic qualities. It’s not a pure ‘glare cutter’ like Slew2, either: there’s a limit to how much it will darken. But what it’s all about is producing an analog top-end on your digital content.This is an experimental plugin. In development, some of my audio caused it to freak out, and it took extra time to get it to behave (I suppose I could also put out the freak-out version but for now let’s stay safe, OK?). It’s not quite linear or predictable (neither is real analog) and though I feel like it might have some very serious mojo to bring, I’m also interested in whether it dies given certain kinds of audio. I’m pretty sure I have it tamed to where it won’t do anything crazy, but is it really the silver bullet? I guess we’ll find out together."
+    "A Chris’s work is never done! Or at least it’s not, when it comes to refining basic tonal building blocks that apply to many plugins. It’s just recently that I updated Capacitor with an analog behavior found (quite strikingly) in certain real-world capacitors. I’m at it again. This makes a third Slew plugin, and every one is strikingly different. Slew (original) darkens radically and makes a grungy, clipped tone (it’s in Channel, too, very subtly). Slew2, though there are some similarities in code, acts wildly different: it produces an intense rolloff that is only right up at the Nyquist frequency, and is an elegant anti-glare solution, but barely has a tone at all. Slew3 uses ideas from Acceleration and DeBess to produce a slew clipping that’s actually reading information beyond what the samples provide: it’s like it reconstructs the wave a bit and is most effective where you’d get intersample peaks. It’s NOT an EQ: it has very striking dynamic qualities. It’s not a pure ‘glare cutter’ like Slew2, either: there’s a limit to how much it will darken. But what it’s all about is producing an analog top-end on your digital content. This is an experimental plugin. In development, some of my audio caused it to freak out, and it took extra time to get it to behave (I suppose I could also put out the freak-out version but for now let’s stay safe, OK?). It’s not quite linear or predictable (neither is real analog) and though I feel like it might have some very serious mojo to bring, I’m also interested in whether it dies given certain kinds of audio. I’m pretty sure I have it tamed to where it won’t do anything crazy, but is it really the silver bullet? I guess we’ll find out together."
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Slew3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'slex';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -56,18 +60,15 @@ class Slew3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -77,8 +78,7 @@ class Slew3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -88,8 +88,7 @@ class Slew3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "clampng"; break;
 
             default: break;
@@ -99,8 +98,7 @@ class Slew3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Clampng"; break;
 
             default: break;
@@ -110,24 +108,24 @@ class Slew3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -141,8 +139,7 @@ class Slew3 final : public Effect<T>
         overallscale /= 44100.0;
         overallscale *= Effect<T>::getSampleRate();
         double threshold = pow((1 - A), 4) / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

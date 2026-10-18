@@ -11,47 +11,47 @@ constexpr std::string_view k_short_description{
     "kCathedral3 is a giant cathedral-like space using Bezier undersampling."
 };
 constexpr std::string_view k_long_description{
-    "From the mad scientist's lab, bigtime!This is the third kCathedral, and probably the final one before I launch into lots of other types of reverbs. I've got three lined up already, but this is where I figure out what the kReverbs are about.The first one was like this: one knob, dry/wet (a 'wetness' knob, in that the center is full volume for both) and a 5x5 Householder matrix. Put it out, people had fun but it was kind of metallic. Not really ready. So I kept working.The second one was one knob, dry/wet as before, greatly improved sonics. I designed new ways to generate and test the reverb algorithms, churned through millions of possibilities, measured and tested and cooked up a new and unique Cathedral algorithm. Also, tried a different sort of early reflections. Still a one-knob, but sounded a lot better.Then… I did even more algorithm testing. And invented CrunchCoat. And then DeRez3. And then CreamCoat, a method for using that technique while keeping the downsample 'gears' from seeming unrealistic. And explored the usefulness of varying regeneration. And found that when varying downsampling it's useful to adjust regen. And discovered Discontinuity! And tried using it in the feedback loop of the reverb, to dial in realistic huge-space sustain at synthetic loudnesses.So basically this ought to work for the genre going forward. If you thought CreamCoat sounded cool, that's the very primitive version compared with this, still a 5x5 Householder (already an unusual choice) but this time selected from more millions of options with new metrics for analyzing them. This time there's a predelay, a Discontinuity (says Top dB), a wide ranging Regen control (for realistic RT60s: this one happens to not go infinite). And that DeRez control you saw on CreamCoat, but this time it's on a BIG reverb.I feel this ought to work really well for many purposes: just listen to it. It's still trying to be an Airwindows-style reverb rather than 'front and center instrument for making all possible sounds', but within the context of cathedral-style deep verb, I think this obliterates the first two AND completely abandons the 'over-simplified' thing I tried valiantly to make work.Hope you like it, let me know what you think."
+    "From the mad scientist's lab, bigtime! This is the third kCathedral, and probably the final one before I launch into lots of other types of reverbs. I've got three lined up already, but this is where I figure out what the kReverbs are about. The first one was like this: one knob, dry/wet (a 'wetness' knob, in that the center is full volume for both) and a 5x5 Householder matrix. Put it out, people had fun but it was kind of metallic. Not really ready. So I kept working. The second one was one knob, dry/wet as before, greatly improved sonics. I designed new ways to generate and test the reverb algorithms, churned through millions of possibilities, measured and tested and cooked up a new and unique Cathedral algorithm. Also, tried a different sort of early reflections. Still a one-knob, but sounded a lot better. Then… I did even more algorithm testing. And invented CrunchCoat. And then DeRez3. And then CreamCoat, a method for using that technique while keeping the downsample 'gears' from seeming unrealistic. And explored the usefulness of varying regeneration. And found that when varying downsampling it's useful to adjust regen. And discovered Discontinuity! And tried using it in the feedback loop of the reverb, to dial in realistic huge-space sustain at synthetic loudnesses. So basically this ought to work for the genre going forward. If you thought CreamCoat sounded cool, that's the very primitive version compared with this, still a 5x5 Householder (already an unusual choice) but this time selected from more millions of options with new metrics for analyzing them. This time there's a predelay, a Discontinuity (says Top dB), a wide ranging Regen control (for realistic RT60s: this one happens to not go infinite). And that DeRez control you saw on CreamCoat, but this time it's on a BIG reverb. I feel this ought to work really well for many purposes: just listen to it. It's still trying to be an Airwindows-style reverb rather than 'front and center instrument for making all possible sounds', but within the context of cathedral-style deep verb, I think this obliterates the first two AND completely abandons the 'over-simplified' thing I tried valiantly to make work. Hope you like it, let me know what you think."
 };
 constexpr std::string_view k_tags{
     "reverb"
 };
 
-const int dscBuf = 90;
-
-const int predelay = 15000;
-const int vlfpredelay = 11000;
-
-const int delayA = 824;
-const int delayB = 982;
-const int delayC = 753;
-const int delayD = 402;
-const int delayE = 1206;
-const int delayF = 1235;
-const int delayG = 1396;
-const int delayH = 1330;
-const int delayI = 248;
-const int delayJ = 62;
-const int delayK = 1407;
-const int delayL = 40;
-const int delayM = 245;
-const int delayN = 1088;
-const int delayO = 775;
-const int delayP = 13;
-const int delayQ = 1299;
-const int delayR = 127;
-const int delayS = 1497;
-const int delayT = 386;
-const int delayU = 11;
-const int delayV = 971;
-const int delayW = 1403;
-const int delayX = 81;
-const int delayY = 1480; // 7 to 162 ms, 860 seat hall
-// 860-SLLU rated incompressible if filesize larger than 25,270,485 bytes
-
 template <typename T>
 class kCathedral3 final : public Effect<T>
 {
+    static constexpr int dscBuf = 90;
+    static constexpr int predelay = 15000;
+    static constexpr int vlfpredelay = 11000;
+    static constexpr int delayA = 824;
+    static constexpr int delayB = 982;
+    static constexpr int delayC = 753;
+    static constexpr int delayD = 402;
+    static constexpr int delayE = 1206;
+    static constexpr int delayF = 1235;
+    static constexpr int delayG = 1396;
+    static constexpr int delayH = 1330;
+    static constexpr int delayI = 248;
+    static constexpr int delayJ = 62;
+    static constexpr int delayK = 1407;
+    static constexpr int delayL = 40;
+    static constexpr int delayM = 245;
+    static constexpr int delayN = 1088;
+    static constexpr int delayO = 775;
+    static constexpr int delayP = 13;
+    static constexpr int delayQ = 1299;
+    static constexpr int delayR = 127;
+    static constexpr int delayS = 1497;
+    static constexpr int delayT = 386;
+    static constexpr int delayU = 11;
+    static constexpr int delayV = 971;
+    static constexpr int delayW = 1403;
+    static constexpr int delayX = 81;
+    static constexpr int delayY = 1480;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kctj';
     float A;
     float B;
     float C;
@@ -219,75 +219,60 @@ class kCathedral3 final : public Effect<T>
         prevSlewR10,
         pear_total
     }; // fixed frequency pear filter for ultrasonics, stereo
-
     double pearA[pear_total]; // probably worth just using a number here
     double pearB[pear_total]; // probably worth just using a number here
     double pearC[pear_total]; // probably worth just using a number here
     double pearD[pear_total]; // probably worth just using a number here
     double pearE[pear_total]; // probably worth just using a number here
     double pearF[pear_total]; // probably worth just using a number here
-
     double vibratoL;
     double vibratoR;
     double vibAL;
     double vibAR;
     double vibBL;
     double vibBR;
-
     double subAL;
     double subAR;
     double subBL;
     double subBR;
     double subCL;
     double subCR;
-
     double sbAL;
     double sbAR;
     double sbBL;
     double sbBR;
     double sbCL;
     double sbCR;
-
     double dBaL[dscBuf + 5];
     double dBaPosL;
     int dBaXL;
-
     double dBaR[dscBuf + 5];
     double dBaPosR;
     int dBaXR;
-
     double dBbL[dscBuf + 5];
     double dBbPosL;
     int dBbXL;
-
     double dBbR[dscBuf + 5];
     double dBbPosR;
     int dBbXR;
-
     double dBcL[dscBuf + 5];
     double dBcPosL;
     int dBcXL;
-
     double dBcR[dscBuf + 5];
     double dBcPosR;
     int dBcXR;
-
     double dBdL[dscBuf + 5];
     double dBdPosL;
     int dBdXL;
-
     double dBdR[dscBuf + 5];
     double dBdPosR;
     int dBdXR;
-
     double dBeL[dscBuf + 5];
     double dBePosL;
     int dBeXL;
-
     double dBeR[dscBuf + 5];
     double dBePosR;
     int dBeXR;
-
     enum
     {
         bez_AL,
@@ -306,7 +291,6 @@ class kCathedral3 final : public Effect<T>
         bez_total
     }; // the new undersampling. bez signifies the bezier curve reconstruction
     double bez[bez_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -563,22 +547,19 @@ class kCathedral3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -592,8 +573,7 @@ class kCathedral3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -607,9 +587,8 @@ class kCathedral3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "top db"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "topdb"; break;
             case kParamB: return "regen"; break;
             case kParamC: return "derez"; break;
             case kParamD: return "predlay"; break;
@@ -622,8 +601,7 @@ class kCathedral3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Top dB"; break;
             case kParamB: return "Regen"; break;
             case kParamC: return "DeRez"; break;
@@ -637,32 +615,32 @@ class kCathedral3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 70.0) + 70.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -716,8 +694,7 @@ class kCathedral3 final : public Effect<T>
         // this reverb makes 50% full dry AND full wet, not crossfaded.
         // that's so it can be on submixes without cutting back dry channel when adjusted:
         // unless you go super heavy, you are only adjusting the added verb loudness.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

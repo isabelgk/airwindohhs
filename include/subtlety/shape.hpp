@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Shape is an asymmetrical waveshaper for peak manipulating."
 };
 constexpr std::string_view k_long_description{
-    "Here’s a really basic building block for ya. The key word here is asymmetrical.Shape is a simple, often subtle, little plugin for either pulling out, or squishing in, parts of the waveform. It’s based on the same basic technology as Console: complementary sin() and asin() functions. But in Shape, you’re picking which you want to apply, and you’re offsetting things so you can hit one side of the waveform more than the other.Works like this. The Shape control determines what you’re doing. In the middle (0.5) you’re not doing anything. Increase it to 1.0 and you are stretching out the peaks of the waveform. Turn it down to 0.0 and you’re squishing the peaks of the waveform: like a soft-saturation but no boost, just restricting the waveform and making it distorted. The control scales all this so if you’re not cranking it out, you have lots of headroom and very gentle effects.The Offset control interacts with this by shifting things from one side to the other: 0.5 is no offset, 0.0 is negative and 1.0 is positive (in my sound editor in the video, this is the top half of the waveform as positive). The effect of this, especially if you’ve not cranked out the Shape control, is to make the Shape control do its thing to only one side of the wave. You shouldn’t automatically crank this one out either: you can, for nasty waveshaping tricks, but the power of Shape is in how transparently it can manage the positive and negative swings of your waveform.Also, when we’re reshaping the waveform so asymmetrically, that’s built-in even harmonics: this is a recipe for warmth. It’s like a turbo version of my PurestWarm plugins but even smoother, or like a variation of my SingleEndedTriode plugin. Use it gracefully (not cranking out the controls all the way) and everything you do will be tonal adjustments of great purity and subtlety, which is why it can be a bit hard to hear its effect when the controls are very near the middle.So the trick is to know what way you’re using it. If you’re doing sound design and you’re trying to get a sound to swing fully in both directions, you can either pick the part that you think is swinging too far (pos or neg), set the offset to favor that, and pull back that side by setting Shape lower than halfway (cutting BACK the side you’re focussing on), or you can pick the side that doesn’t go far enough, set the offset to favor it, and turn Shape UP to bring that side’s peaks up to match the other side.Or if you’re working on a bass and want it to be warmer, you can just choose between more Shape (more of a triangle-ey result out of a sine input) or less Shape (more of a squared result out of a sine input) and then lean the Offset one way or the other to get the warmth you want (not all the way, or it won’t be as smooth).Or, you can take your bass that you want to be purer, and try to identify whether it’s too triangle-ey or too square-ey, and then apply Shape to nudge it more in the direction of a pure sine-ey tone. It’s a waveshaper, so you can stack them up to get a VERY soft square or a soft-pointed triangle out of any sine-bass you start with, or put ’em back to the sine shape, or lean the offset one way or another, all very transparently.I don’t know how clear all this is, because you probably don’t have this function laid out in this way, and it’s too subtle for normal plugin makers to be able to sell you. Any commercial plugin where turning it up doesn’t equal ‘more’ plus you can’t always hear what it does, is in big trouble. But I’m Patreon-supported so I don’t have to follow those rules, so I can give you Shape even if most people don’t get a big charge out of it and throw their money :)And so I have. Enjoy Shape. My hope is that it serves its useful purpose for those who need to tweak exactly this, as transparently as possible. And if you didn’t need to… maybe you just didn’t know it was a thing. It is now! :)"
+    "Here’s a really basic building block for ya. The key word here is asymmetrical. Shape is a simple, often subtle, little plugin for either pulling out, or squishing in, parts of the waveform. It’s based on the same basic technology as Console: complementary sin() and asin() functions. But in Shape, you’re picking which you want to apply, and you’re offsetting things so you can hit one side of the waveform more than the other. Works like this. The Shape control determines what you’re doing. In the middle (0.5) you’re not doing anything. Increase it to 1.0 and you are stretching out the peaks of the waveform. Turn it down to 0.0 and you’re squishing the peaks of the waveform: like a soft-saturation but no boost, just restricting the waveform and making it distorted. The control scales all this so if you’re not cranking it out, you have lots of headroom and very gentle effects. The Offset control interacts with this by shifting things from one side to the other: 0.5 is no offset, 0.0 is negative and 1.0 is positive (in my sound editor in the video, this is the top half of the waveform as positive). The effect of this, especially if you’ve not cranked out the Shape control, is to make the Shape control do its thing to only one side of the wave. You shouldn’t automatically crank this one out either: you can, for nasty waveshaping tricks, but the power of Shape is in how transparently it can manage the positive and negative swings of your waveform. Also, when we’re reshaping the waveform so asymmetrically, that’s built-in even harmonics: this is a recipe for warmth. It’s like a turbo version of my PurestWarm plugins but even smoother, or like a variation of my SingleEndedTriode plugin. Use it gracefully (not cranking out the controls all the way) and everything you do will be tonal adjustments of great purity and subtlety, which is why it can be a bit hard to hear its effect when the controls are very near the middle. So the trick is to know what way you’re using it. If you’re doing sound design and you’re trying to get a sound to swing fully in both directions, you can either pick the part that you think is swinging too far (pos or neg), set the offset to favor that, and pull back that side by setting Shape lower than halfway (cutting BACK the side you’re focussing on), or you can pick the side that doesn’t go far enough, set the offset to favor it, and turn Shape UP to bring that side’s peaks up to match the other side. Or if you’re working on a bass and want it to be warmer, you can just choose between more Shape (more of a triangle-ey result out of a sine input) or less Shape (more of a squared result out of a sine input) and then lean the Offset one way or the other to get the warmth you want (not all the way, or it won’t be as smooth). Or, you can take your bass that you want to be purer, and try to identify whether it’s too triangle-ey or too square-ey, and then apply Shape to nudge it more in the direction of a pure sine-ey tone. It’s a waveshaper, so you can stack them up to get a VERY soft square or a soft-pointed triangle out of any sine-bass you start with, or put ’em back to the sine shape, or lean the offset one way or another, all very transparently. I don’t know how clear all this is, because you probably don’t have this function laid out in this way, and it’s too subtle for normal plugin makers to be able to sell you. Any commercial plugin where turning it up doesn’t equal ‘more’ plus you can’t always hear what it does, is in big trouble. But I’m Patreon-supported so I don’t have to follow those rules, so I can give you Shape even if most people don’t get a big charge out of it and throw their money :) And so I have. Enjoy Shape. My hope is that it serves its useful purpose for those who need to tweak exactly this, as transparently as possible. And if you didn’t need to… maybe you just didn’t know it was a thing. It is now! :)"
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Shape final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'shap';
     enum
     {
         fix_freq,
@@ -36,11 +40,9 @@ class Shape final : public Effect<T>
         fix_total
     }; // fixed frequency biquad filter for ultrasonics, stereo
     double fixA[fix_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
 
@@ -58,6 +60,9 @@ class Shape final : public Effect<T>
             fpdR = rand() * UINT32_MAX;
         }
         // this is reset: values being initialized only once. Startup values, whatever they are.
+        for (int i0 = 0; i0 < 11; i0++) {
+            fixA[i0] = 0.0;
+        }
     }
 
     enum params
@@ -69,19 +74,16 @@ class Shape final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -92,8 +94,7 @@ class Shape final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
 
@@ -104,10 +105,9 @@ class Shape final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "shape"; break;
-            case kParamB: return "neg/pos"; break;
+            case kParamB: return "negpos"; break;
 
             default: break;
         }
@@ -116,8 +116,7 @@ class Shape final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Shape"; break;
             case kParamB: return "Neg/Pos"; break;
 
@@ -128,26 +127,26 @@ class Shape final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -186,8 +185,7 @@ class Shape final : public Effect<T>
         fixA[fix_sR1] = 0.0;
         fixA[fix_sR2] = 0.0;
         // define filters here: on VST you can't define them in reset 'cos getSampleRate isn't returning good information yet
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

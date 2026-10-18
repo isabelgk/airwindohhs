@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "TakeCare is a lush chorus ensemble universe."
 };
 constexpr std::string_view k_long_description{
-    "The idea was to revisit plugins like Melt, with an eye to even more disconcerting sonic spaces like the works of The Caretaker. Seemed reasonable to do. I started off with my Melt plugin, to see what would happen.Then, in working on Householder matrices, I found that using a Householder matrix for a 3x3 grid of delays (rather than simply using them as delays, which I'd done before, thinking 'what difference could there possibly be?') made a HUGE difference. This is what's creating early reflections in my plugins post kBeyond (which it turned out I immediately went beyond).So, if you can do that with a 3x3 grid of delays that produces 27 echoes per channel… what if those delays were instead a chorus ensemble machine?This is TakeCare. Most of the work I did on it, was using synth pads in order to make giant illbient soundscapes, and indeed it's quite good at that. You can get real seasick off TakeCare. I've also set it up so the 'buffer' control can be manipulated to intentionally create horrible noises: at full regen, it'll even feed back at small buffer settings, and it's made to go into distortion a little below full scale in case you want to get real crunchy. It's also using an old Console algorithm internally, to expand the space inside the blast of noise.And then it turns out that if you keep it more calm, less regen, very small buffers and the depth not too extreme… it's a gorgeous chorus ensemble on something as revealing as a vintage Fender Rhodes. It generates stereo width, supplies a lovely pad of lushness around the instrument, and doesn't have to be weird at all. This could come in handy on things like synth pads, voices, who knows what? Think 'lush stereo chorus ensemble' and dial it in to whatever your needs are. The range on this is pretty nuts, because it was originally designed for radical uses but cleans up really well.I hope you like it :)"
+    "The idea was to revisit plugins like Melt, with an eye to even more disconcerting sonic spaces like the works of The Caretaker. Seemed reasonable to do. I started off with my Melt plugin, to see what would happen. Then, in working on Householder matrices, I found that using a Householder matrix for a 3x3 grid of delays (rather than simply using them as delays, which I'd done before, thinking 'what difference could there possibly be?') made a HUGE difference. This is what's creating early reflections in my plugins post kBeyond (which it turned out I immediately went beyond). So, if you can do that with a 3x3 grid of delays that produces 27 echoes per channel… what if those delays were instead a chorus ensemble machine? This is TakeCare. Most of the work I did on it, was using synth pads in order to make giant illbient soundscapes, and indeed it's quite good at that. You can get real seasick off TakeCare. I've also set it up so the 'buffer' control can be manipulated to intentionally create horrible noises: at full regen, it'll even feed back at small buffer settings, and it's made to go into distortion a little below full scale in case you want to get real crunchy. It's also using an old Console algorithm internally, to expand the space inside the blast of noise. And then it turns out that if you keep it more calm, less regen, very small buffers and the depth not too extreme… it's a gorgeous chorus ensemble on something as revealing as a vintage Fender Rhodes. It generates stereo width, supplies a lovely pad of lushness around the instrument, and doesn't have to be weird at all. This could come in handy on things like synth pads, voices, who knows what? Think 'lush stereo chorus ensemble' and dial it in to whatever your needs are. The range on this is pretty nuts, because it was originally designed for radical uses but cleans up really well. I hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class TakeCare final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tcar';
     float A;
     float B;
     float C;
@@ -190,7 +194,7 @@ class TakeCare final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -199,8 +203,7 @@ class TakeCare final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -248,7 +251,7 @@ class TakeCare final : public Effect<T>
             case kParamE: return "derez"; break;
             case kParamF: return "buffer"; break;
             case kParamG: return "output"; break;
-            case kParamH: return "dry/wet"; break;
+            case kParamH: return "drywet"; break;
 
             default: break;
         }
@@ -274,36 +277,38 @@ class TakeCare final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

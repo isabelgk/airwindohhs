@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ButterComp is my softest, smoothest compressor."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes a plugin can be a sort of cult favorite. That’s the story of ButterComp, a compressor of great subtlety that’s no use for quite a few normal compressor tasks… but still has a fervent following. I’ve been begged for the new version of this one (not merely VST, but revamped with all the current Airwindows sophistication and purity) and I’m delighted to bring it, though I think it might puzzle some people. If the stock Logic comp would do as well, this isn’t the plugin for you. But if you’re looking for a certain thing and thought it unattainable in software, this might be your lucky day.Buttercomp, under the hood, is absolutely unique (or unique, until I start working on variations and until other people try to copy it. They’re free to, but it’ll be possible to test that quite easily with special audio files).It’s a bipolar, interleaved compressor (with rather slow attack and release: a version with access to much faster dynamics is available in CStrip). This one’s the original, the cult classic. What is a bipolar, or an interleaved compressor? For the purposes of Buttercomp, it’s four totally independent compressors per channel. Two are sensitive to positive swing, and flip back and forth every sample. Two are sensitive to negative swing, also flipping back and forth every sample. The compression factor’s reconstructed through combining these poles, through the screen of the interleaved compressors switching back and forth at the Nyquist frequency… that mysterious digital frequency that is on the one hand the literal highest frequency that can be encoded, and the lowest frequency that ought to be totally rejected and filtered out.What happens is this: the tone of things gets some added second harmonic, wherever the compression is more strong on one side than the other. High frequencies take on a particular airy openness, since they too get second harmonic, plus individual sample spikes can only affect one out of four compressors: ButterComp deals with all samples only as samples relative to other samples, and doesn’t get thrown off by isolated samples that don’t represent the actual waveform. It’s got a sound, but the sound is hard to define because of its extreme fluidity and purity.If this sounds like your idea of fun, enjoy ButterComp. If you’re looking for the ‘all buttons in’ mode, I’ll get back to the drawing board and probably do something totally different for you. This compressor is not for everybody. Also, if you start slamming it really hard (demonstrated in the video), it’ll volume invert: you can squish it down to become more quiet than the quiet passages, but still it will retain its tone quality. It’s perhaps best used as a particular kind of ‘glue’ compressor, at which it is exceptional… or maybe I should say, it’s unique. Start working with it and you’ll soon work out whether you’re part of the ButterComp cult. Not everybody will be, and it’s only one type of sound… but nothing else can get that sound, and this is why I’ve kept this purest form of the algorithm available."
+    "Sometimes a plugin can be a sort of cult favorite. That’s the story of ButterComp, a compressor of great subtlety that’s no use for quite a few normal compressor tasks… but still has a fervent following. I’ve been begged for the new version of this one (not merely VST, but revamped with all the current Airwindows sophistication and purity) and I’m delighted to bring it, though I think it might puzzle some people. If the stock Logic comp would do as well, this isn’t the plugin for you. But if you’re looking for a certain thing and thought it unattainable in software, this might be your lucky day. Buttercomp, under the hood, is absolutely unique (or unique, until I start working on variations and until other people try to copy it. They’re free to, but it’ll be possible to test that quite easily with special audio files). It’s a bipolar, interleaved compressor (with rather slow attack and release: a version with access to much faster dynamics is available in CStrip). This one’s the original, the cult classic. What is a bipolar, or an interleaved compressor? For the purposes of Buttercomp, it’s four totally independent compressors per channel. Two are sensitive to positive swing, and flip back and forth every sample. Two are sensitive to negative swing, also flipping back and forth every sample. The compression factor’s reconstructed through combining these poles, through the screen of the interleaved compressors switching back and forth at the Nyquist frequency… that mysterious digital frequency that is on the one hand the literal highest frequency that can be encoded, and the lowest frequency that ought to be totally rejected and filtered out. What happens is this: the tone of things gets some added second harmonic, wherever the compression is more strong on one side than the other. High frequencies take on a particular airy openness, since they too get second harmonic, plus individual sample spikes can only affect one out of four compressors: ButterComp deals with all samples only as samples relative to other samples, and doesn’t get thrown off by isolated samples that don’t represent the actual waveform. It’s got a sound, but the sound is hard to define because of its extreme fluidity and purity. If this sounds like your idea of fun, enjoy ButterComp. If you’re looking for the ‘all buttons in’ mode, I’ll get back to the drawing board and probably do something totally different for you. This compressor is not for everybody. Also, if you start slamming it really hard (demonstrated in the video), it’ll volume invert: you can squish it down to become more quiet than the quiet passages, but still it will retain its tone quality. It’s perhaps best used as a particular kind of ‘glue’ compressor, at which it is exceptional… or maybe I should say, it’s unique. Start working with it and you’ll soon work out whether you’re part of the ButterComp cult. Not everybody will be, and it’s only one type of sound… but nothing else can get that sound, and this is why I’ve kept this purest form of the algorithm available."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ButterComp final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'btcp';
     double controlAposL;
     double controlAnegL;
     double controlBposL;
@@ -75,19 +79,16 @@ class ButterComp final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -98,8 +99,7 @@ class ButterComp final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
 
@@ -110,10 +110,9 @@ class ButterComp final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "compress"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -122,8 +121,7 @@ class ButterComp final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Compress"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -134,26 +132,26 @@ class ButterComp final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -195,8 +193,7 @@ class ButterComp final : public Effect<T>
         divisor /= overallscale;
         double remainder = divisor;
         divisor = 1.0 - divisor;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -261,24 +258,20 @@ class ButterComp final : public Effect<T>
             calcnegR = pow((1.0 / targetnegR), 2);
             // now we have mirrored targets for comp
             // outputpos and outputneg go from 0 to 1
-            if (inputSampleL > 0)
-            { // working on pos
+            if (inputSampleL > 0) { // working on pos
                 controlAposL *= divisor;
                 controlAposL += (calcposL * remainder);
             }
-            else
-            { // working on neg
+            else { // working on neg
                 controlAnegL *= divisor;
                 controlAnegL += (calcnegL * remainder);
             }
             // this causes each of the four to update only when active and in the correct 'flip'
-            if (inputSampleR > 0)
-            { // working on pos
+            if (inputSampleR > 0) { // working on pos
                 controlAposR *= divisor;
                 controlAposR += (calcposR * remainder);
             }
-            else
-            { // working on neg
+            else { // working on neg
                 controlAnegR *= divisor;
                 controlAnegR += (calcnegR * remainder);
             }

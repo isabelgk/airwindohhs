@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "AutoPan is for getting some organic stereo movement into your mix."
 };
 constexpr std::string_view k_long_description{
-    "This is pretty simple: I got asked for an auto-pan. So I Airwindowsified it a bit, and here you go.It’s set up to get some nice organic movement into your mix in various ways. Rate is how fast it goes (from nearly static, to a rapid flutter).Phase means each channel relative to each other: on either side, you get full L-R and back again. At the center, it’s a mono tremolo (though, for stereo channels). Off-center, it’ll offset the sines in such a way that the sound sets up a swirling, circular stereo motion: swooping forward from the side, going across, and then back to near-silence again. Basically, centered is ‘not side motion’ and to the sides is ‘more side motion’.Wide just cuts the mid channel. What this does for the auto-panning is, it’ll make stuff stretch out a bit beyond the edges of the speakers. If you’ve got something full to the side then you’ll get a bit of the opposite on the other speaker. Full wide is ‘only side channel’ and you’ll hear it in both because that’s what you get when you have only side channel: centered ‘mono’ sound, just out of phase completely. You’ll probably want to use smaller amounts of this, unless…Dry/Wet is the final useful thing here. You can set up extreme stuff, like full Side or weird motions with Phase, and then just dial it back with Dry/Wet and it’ll give you a nice subtle activity of whatever you set up: don’t sleep on Dry/Wet here, you can get nice effects through using aggressive settings elsewhere and just sneaking in a little Dry/Wet. Especially if you’re doing extreme things with Wide, Dry/Wet is how you can integrate that into a sound so it’s just a nice little subtle motion that’s interesting. Or of course you can just crank it out, I’m not your mom :)"
+    "This is pretty simple: I got asked for an auto-pan. So I Airwindowsified it a bit, and here you go. It’s set up to get some nice organic movement into your mix in various ways. Rate is how fast it goes (from nearly static, to a rapid flutter). Phase means each channel relative to each other: on either side, you get full L-R and back again. At the center, it’s a mono tremolo (though, for stereo channels). Off-center, it’ll offset the sines in such a way that the sound sets up a swirling, circular stereo motion: swooping forward from the side, going across, and then back to near-silence again. Basically, centered is ‘not side motion’ and to the sides is ‘more side motion’. Wide just cuts the mid channel. What this does for the auto-panning is, it’ll make stuff stretch out a bit beyond the edges of the speakers. If you’ve got something full to the side then you’ll get a bit of the opposite on the other speaker. Full wide is ‘only side channel’ and you’ll hear it in both because that’s what you get when you have only side channel: centered ‘mono’ sound, just out of phase completely. You’ll probably want to use smaller amounts of this, unless… Dry/Wet is the final useful thing here. You can set up extreme stuff, like full Side or weird motions with Phase, and then just dial it back with Dry/Wet and it’ll give you a nice subtle activity of whatever you set up: don’t sleep on Dry/Wet here, you can get nice effects through using aggressive settings elsewhere and just sneaking in a little Dry/Wet. Especially if you’re doing extreme things with Wide, Dry/Wet is how you can integrate that into a sound so it’s just a nice little subtle motion that’s interesting. Or of course you can just crank it out, I’m not your mom :)"
 };
 constexpr std::string_view k_tags{
     "stereo"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class AutoPan final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'autp';
     double rate, oldfpd;
     uint32_t fpdL;
     uint32_t fpdR;
@@ -60,21 +64,18 @@ class AutoPan final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -87,8 +88,7 @@ class AutoPan final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.1; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.0; break;
@@ -101,12 +101,11 @@ class AutoPan final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "rate"; break;
             case kParamB: return "phase"; break;
             case kParamC: return "wide"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -115,8 +114,7 @@ class AutoPan final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Rate"; break;
             case kParamB: return "Phase"; break;
             case kParamC: return "Wide"; break;
@@ -129,30 +127,30 @@ class AutoPan final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -169,8 +167,7 @@ class AutoPan final : public Effect<T>
         double offset = 3.141592653589793 + (B * 6.283185307179586);
         double panlaw = 1.0 - pow(C, 2);
         double wet = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

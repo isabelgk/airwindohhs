@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Verbity2 adds stereo crossmodulation and expands Verbity's feedforward reverb topology."
 };
 constexpr std::string_view k_long_description{
-    "Firstly, listen. Verbity2 might beat Galactic, for you, for deep reverbs. There are specific reasons why that might be. Listen and see if Verbity2 is the best reverb you can have… because you can have it, it's open source plugins supported by Patreon. If you can't do without it, you won't have to, it's yours. If you would have paid for a reverb this good, throw an additional $50 this year onto my Patreon, and we'll see if I can make another plugin by the year after that, working on these as my full-time job.So, how is it different from Verbity? You do still have Verbity, after all.First, Verbity2 is an expansion. These are what's called Householder matrix reverbs, with a feedforward topology. Verbity, and Galactic, and Chamber, use blocks of reverb elements all of which feed directly into all the other elements, in a four-by-four matrix. A Householder matrix that's four-by-four lets you do infinite reverb while having all the elements either be unity gain, or inverted unity gain, and all my Householder stuff thus far has been like this.Until now!Verbity2 uses a five-by-five matrix for each stage, and where Verbity has three banks of matrices, Verbity2 has five banks of matrices. So where Verbity uses its twelve echo banks to make four thousand distinct echoes… Verbity2 uses its twenty-five echo banks to make NINE MILLION distinct echoes… before feedback. That's not automatically 'better', but it's different, like more than three orders of magnitude different. That's going to affect the reverb texture.About that feedback… there's a change. So, Galactic is stereo: it applies a subtle offset vibrato to both sides on input making mono things stereo (come to think of it, would anybody like this as standalone?) and then it feeds back in a ping-pong fashion for maximum width from any source. All left reverb has to go through the entire right reverb in order to reach the left again.Verbity is the opposite: dual mono. It was designed from the start to be an ambience-maker, filling out space around individual elements wherever they are in the stereo field. People used to buy dual hardware reverbs specifically to do this in mixes: it's a secret mix trick, putting the verb only where it's needed. That's what Verbity does. And if you use NO feedback at all, Verbity2 will still do this.But if you extend the reverb tail in Verbity2, it's a hybrid. For each channel, two out of three of the output echo banks will stay put, and three will cross over. Half stereo spread, half keeping stuff where it is. For very long reverb tails this will always end up as a totally stereo wash. For really short ambiences, it'll act dual mono. But for moderate reverb tails, what happens is that you get a giant room picture behind your sounds. Stuff on one side blooms out, then washes across to the other side, and back again. I'm looking forward to experimenting with this for future designs :)There are also adjustments to tone control: the Darkness control is replaced with a control for Mulch. This is meant to be a kind of naturalness factor: Verbity, like Galactic, tends to hang on to thunderous bass, as if it expands into huge caverns. Mulch means the sound can darken, but it can also absorb some of the extreme lows, mimicking a physical room made out of wood and plaster, not stone or concrete. I should be able to expand on this a lot.So Verbity2 is a new level of reverb realism from me. Looking forward to further developments of this!"
+    "Firstly, listen. Verbity2 might beat Galactic, for you, for deep reverbs. There are specific reasons why that might be. Listen and see if Verbity2 is the best reverb you can have… because you can have it, it's open source plugins supported by Patreon. If you can't do without it, you won't have to, it's yours. If you would have paid for a reverb this good, throw an additional $50 this year onto my Patreon, and we'll see if I can make another plugin by the year after that, working on these as my full-time job. So, how is it different from Verbity? You do still have Verbity, after all. First, Verbity2 is an expansion. These are what's called Householder matrix reverbs, with a feedforward topology. Verbity, and Galactic, and Chamber, use blocks of reverb elements all of which feed directly into all the other elements, in a four-by-four matrix. A Householder matrix that's four-by-four lets you do infinite reverb while having all the elements either be unity gain, or inverted unity gain, and all my Householder stuff thus far has been like this. Until now! Verbity2 uses a five-by-five matrix for each stage, and where Verbity has three banks of matrices, Verbity2 has five banks of matrices. So where Verbity uses its twelve echo banks to make four thousand distinct echoes… Verbity2 uses its twenty-five echo banks to make NINE MILLION distinct echoes… before feedback. That's not automatically 'better', but it's different, like more than three orders of magnitude different. That's going to affect the reverb texture. About that feedback… there's a change. So, Galactic is stereo: it applies a subtle offset vibrato to both sides on input making mono things stereo (come to think of it, would anybody like this as standalone?) and then it feeds back in a ping-pong fashion for maximum width from any source. All left reverb has to go through the entire right reverb in order to reach the left again. Verbity is the opposite: dual mono. It was designed from the start to be an ambience-maker, filling out space around individual elements wherever they are in the stereo field. People used to buy dual hardware reverbs specifically to do this in mixes: it's a secret mix trick, putting the verb only where it's needed. That's what Verbity does. And if you use NO feedback at all, Verbity2 will still do this. But if you extend the reverb tail in Verbity2, it's a hybrid. For each channel, two out of three of the output echo banks will stay put, and three will cross over. Half stereo spread, half keeping stuff where it is. For very long reverb tails this will always end up as a totally stereo wash. For really short ambiences, it'll act dual mono. But for moderate reverb tails, what happens is that you get a giant room picture behind your sounds. Stuff on one side blooms out, then washes across to the other side, and back again. I'm looking forward to experimenting with this for future designs :) There are also adjustments to tone control: the Darkness control is replaced with a control for Mulch. This is meant to be a kind of naturalness factor: Verbity, like Galactic, tends to hang on to thunderous bass, as if it expands into huge caverns. Mulch means the sound can darken, but it can also absorb some of the extreme lows, mimicking a physical room made out of wood and plaster, not stone or concrete. I should be able to expand on this a lot. So Verbity2 is a new level of reverb realism from me. Looking forward to further developments of this!"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Verbity2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vbt2';
     double iirAL;
     double iirBL;
     // double aZL[5191];
@@ -344,21 +348,18 @@ class Verbity2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -371,8 +372,7 @@ class Verbity2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -385,8 +385,7 @@ class Verbity2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "rmsize"; break;
             case kParamB: return "sustain"; break;
             case kParamC: return "mulch"; break;
@@ -399,8 +398,7 @@ class Verbity2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "RmSize"; break;
             case kParamB: return "Sustain"; break;
             case kParamC: return "Mulch"; break;
@@ -413,30 +411,30 @@ class Verbity2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -510,8 +508,7 @@ class Verbity2 final : public Effect<T>
         delayO = 439.0 * size;
         delayT = 349.0 * size;
         delayY = 281.0 * size; // balanced primes of order two
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

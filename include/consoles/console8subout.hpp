@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Console8SubOut moves to a channel/submix/buss topology and adds analog simulation."
 };
 constexpr std::string_view k_long_description{
-    "Yep. Told you I had stuff in the works! ;)These are subtle things, not meant to be wildly wildly more colored and different from regular digital mix buss. It’s not like an amp sim. BUT, all the same, if you start to seriously listen to the texture and depth and how stuff communicates through Console8 relative to even Console7 much less a straight DAW mix, Console8 pretty much obliterates the rest. I made it because I needed it. I’m going to be using it, lots, and you can use it too: my plugins and digital things are free, Patreon-supported. These are tough times but that’s still working and has become all the more important to commit to.But what makes Console8 that much better?Ultrasonic filtering at 24k, distributed among more stages than ever before in a Console version, for extended highs (and it switches off at lower sample rates when it wouldn’t be helping, for lower CPU and more direct sound)Distributed highpass filtering emulating real analog gear. This is a new filter that doesn’t exist anywhere else and is only part of Console8. It’s more a texture/attitude filter than a sound-shaping filter, and is quite low but its effect is strongly felt.Distributed, gradiated treble softening across the whole mix topology. The idea is that your inputs are clean and low level, and as we go deeper into the console the levels rise as does the energy level, until the final mix buss is very powerful and pushing any electronics, transformers etc. quite hard. This gives Console8 the ability to do airy subtle sparkle and big roaring powerful energy all at the same time. It should just naturally happen through appropriate mixing. Think big, grand scale.A new mix topology with much simpler rules for how to set it up, using six dedicated plugins in six places.ChannelIn, SubIn, and BussIn go FIRST on your channels, submixes, and master buss.ChannelOut, SubOut, and BussOut go LAST on your channels, submixes, and master buss.All channels must go to a Submix with unity gain between the Out plugins and the In plugin on the submix.All submixes must go to the Master Buss with unity gain between the Out plugins and the In plugin on the master buss.The output of the BussOut goes directly to your converter, your file etc. and you’re done :)Don’t use any added processing between BussOut and the file or converter. It uses a version of ClipOnly2 plus a new wordlength reducer that doesn’t exist anywhere else and is a hybrid between my old Ten Nines process and Airwindows Dark. It only does 24 bit and if you must make 16 bit you can add a 16 bit dither (but you don’t need to make 16 bit, this is 2022, come on). This wordlength reducer is specially optimized for Console8, so if you’re using one of my existing Monitoring plugins that applies a wordlength reducer, switch it off when not in use (I’ll produce a ‘plain’ Monitoring that doesn’t interfere, though Monitoring2 is probably going to end up arriving at the same output as Console8BussOut)I realize this is a lot to take in but in practice it should all just work and fall into place very naturally. The Out plugins all have faders, which are good to assign to midi controllers so you can adjust them with physical controls and not the mouse. I have mine working with a TX-6 :) They’re designed so that 0.5 is unity: less than that fades down to zero, and more than that gives you about 12dB of boost in each stage. That’s also true for the master buss, except it also drives into the ClipOnly2 so it gets a punchier ‘slam’ than the channels and submixes get if you push those.It’s not really intended for ‘everything is louder than everything else’ overloudenated nonsense but will probably do that better than anything else you can have, especially if you’re trying to get a grand scale on things and not just ear-maiming grit :)Again, ‘In’ goes first. ‘Out’ goes last. All Channels go to a Sub, all Subs go to the Buss, and you’re done. Easy to explain :)"
+    "Yep. Told you I had stuff in the works! ;) These are subtle things, not meant to be wildly wildly more colored and different from regular digital mix buss. It’s not like an amp sim. BUT, all the same, if you start to seriously listen to the texture and depth and how stuff communicates through Console8 relative to even Console7 much less a straight DAW mix, Console8 pretty much obliterates the rest. I made it because I needed it. I’m going to be using it, lots, and you can use it too: my plugins and digital things are free, Patreon-supported. These are tough times but that’s still working and has become all the more important to commit to. But what makes Console8 that much better? Ultrasonic filtering at 24k, distributed among more stages than ever before in a Console version, for extended highs (and it switches off at lower sample rates when it wouldn’t be helping, for lower CPU and more direct sound) Distributed highpass filtering emulating real analog gear. This is a new filter that doesn’t exist anywhere else and is only part of Console8. It’s more a texture/attitude filter than a sound-shaping filter, and is quite low but its effect is strongly felt. Distributed, gradiated treble softening across the whole mix topology. The idea is that your inputs are clean and low level, and as we go deeper into the console the levels rise as does the energy level, until the final mix buss is very powerful and pushing any electronics, transformers etc. quite hard. This gives Console8 the ability to do airy subtle sparkle and big roaring powerful energy all at the same time. It should just naturally happen through appropriate mixing. Think big, grand scale. A new mix topology with much simpler rules for how to set it up, using six dedicated plugins in six places. ChannelIn, SubIn, and BussIn go FIRST on your channels, submixes, and master buss. ChannelOut, SubOut, and BussOut go LAST on your channels, submixes, and master buss. All channels must go to a Submix with unity gain between the Out plugins and the In plugin on the submix. All submixes must go to the Master Buss with unity gain between the Out plugins and the In plugin on the master buss. The output of the BussOut goes directly to your converter, your file etc. and you’re done :) Don’t use any added processing between BussOut and the file or converter. It uses a version of ClipOnly2 plus a new wordlength reducer that doesn’t exist anywhere else and is a hybrid between my old Ten Nines process and Airwindows Dark. It only does 24 bit and if you must make 16 bit you can add a 16 bit dither (but you don’t need to make 16 bit, this is 2022, come on). This wordlength reducer is specially optimized for Console8, so if you’re using one of my existing Monitoring plugins that applies a wordlength reducer, switch it off when not in use (I’ll produce a ‘plain’ Monitoring that doesn’t interfere, though Monitoring2 is probably going to end up arriving at the same output as Console8BussOut) I realize this is a lot to take in but in practice it should all just work and fall into place very naturally. The Out plugins all have faders, which are good to assign to midi controllers so you can adjust them with physical controls and not the mouse. I have mine working with a TX-6 :) They’re designed so that 0.5 is unity: less than that fades down to zero, and more than that gives you about 12dB of boost in each stage. That’s also true for the master buss, except it also drives into the ClipOnly2 so it gets a punchier ‘slam’ than the channels and submixes get if you push those. It’s not really intended for ‘everything is louder than everything else’ overloudenated nonsense but will probably do that better than anything else you can have, especially if you’re trying to get a grand scale on things and not just ear-maiming grit :) Again, ‘In’ goes first. ‘Out’ goes last. All Channels go to a Sub, all Subs go to the Buss, and you’re done. Easy to explain :)"
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Console8SubOut final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'c8so';
     double inTrimA;
     double inTrimB;
     bool hsr;
@@ -42,7 +46,6 @@ class Console8SubOut final : public Effect<T>
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
 
   public:
@@ -74,18 +77,15 @@ class Console8SubOut final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -95,8 +95,7 @@ class Console8SubOut final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -106,8 +105,7 @@ class Console8SubOut final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "fader"; break;
 
             default: break;
@@ -117,8 +115,7 @@ class Console8SubOut final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Fader"; break;
 
             default: break;
@@ -128,24 +125,24 @@ class Console8SubOut final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -176,8 +173,7 @@ class Console8SubOut final : public Effect<T>
         fix[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fix[fix_b2] = (1.0 - K / fix[fix_reso] + K * K) * norm;
         // this is the fixed biquad distributed anti-aliasing filter
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

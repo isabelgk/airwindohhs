@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "IronOxide5 is the old school, heavily colored Airwindows tape emulation."
 };
 constexpr std::string_view k_long_description{
-    "The legacy of this plugin goes way back. Many years ago, I was coding some of my first AU plugins, and some friends of mine were having bad experiences with a company that sold the big tape emulation plugin of the day. Outraged, I charged into the fray: I would code a replacement for them, one that did the same things and sounded better and sold for $60 (later $50). And that was Iron Oxide. It had one ‘ips’ control, a Drive, and an output level.Then, I expanded on that with Iron Oxide 2. That one split the ‘ips’ top and bottom cutoffs, so you could vary the ‘bandpassy’ quality it had. It used the same unusual algorithm, but made it more flexible. It also incorporated an unusual sort of anti-aliasing in the form of a ‘tape noise’ factor that blurred slew.Iron Oxide 3 added flutter. At this point, we stepped away from strictly zero latency: instead, the plugin declares zero latency but produces a fuzzy smear across one or two samples, the range the flutter covers. That persists with Iron Oxide 4 and 5, and is how the current free VST Iron Oxide works.Iron Oxide 4 added something else that (come to find out) is also present in the Delta Labs Effectron: inv/dry/wet control. That persists with Iron Oxide 5. The way you use it is, set up an Iron Oxide tone that accentuates a frequency range (like mids). Drive it, or leave it clean… but begin setting the control to inv (the inverted position). You’ll subtract it from dry, causing a dip rather than a boost, but if you’re saturating the ‘tape’ then the dip will leave dynamic energy in the area being cancelled: it will cut out fat, leaving punch. Overdrive the ‘tape’ section harder (and turn down ‘inv’) to get more punch out, or leave it clean and use it just to cancel out the area. It’s an unusual effect, but it works.Iron Oxide 5 is all of this, plus lessons from the ‘Purest’ line of plugins (mostly still in line to be released later) to produce the same thing as Iron Oxide 4, but even more pure and resonant and intense. None of these are really ‘mix buss’ plugins (though I’m not the boss of you): they’re far too intensely colored and distorted. They’re more about ‘make that snare really bark’ and so on. Though of course, since I’m not the boss of you, I can’t prevent you from trying to use it on the full mix. All I can do is say that ToTape is coming, and that’s the MODERN tape emulation. This is the old school, rowdy, obvious tape emulation, full of grunge and bark :)"
+    "The legacy of this plugin goes way back. Many years ago, I was coding some of my first AU plugins, and some friends of mine were having bad experiences with a company that sold the big tape emulation plugin of the day. Outraged, I charged into the fray: I would code a replacement for them, one that did the same things and sounded better and sold for $60 (later $50). And that was Iron Oxide. It had one ‘ips’ control, a Drive, and an output level. Then, I expanded on that with Iron Oxide 2. That one split the ‘ips’ top and bottom cutoffs, so you could vary the ‘bandpassy’ quality it had. It used the same unusual algorithm, but made it more flexible. It also incorporated an unusual sort of anti-aliasing in the form of a ‘tape noise’ factor that blurred slew. Iron Oxide 3 added flutter. At this point, we stepped away from strictly zero latency: instead, the plugin declares zero latency but produces a fuzzy smear across one or two samples, the range the flutter covers. That persists with Iron Oxide 4 and 5, and is how the current free VST Iron Oxide works. Iron Oxide 4 added something else that (come to find out) is also present in the Delta Labs Effectron: inv/dry/wet control. That persists with Iron Oxide 5. The way you use it is, set up an Iron Oxide tone that accentuates a frequency range (like mids). Drive it, or leave it clean… but begin setting the control to inv (the inverted position). You’ll subtract it from dry, causing a dip rather than a boost, but if you’re saturating the ‘tape’ then the dip will leave dynamic energy in the area being cancelled: it will cut out fat, leaving punch. Overdrive the ‘tape’ section harder (and turn down ‘inv’) to get more punch out, or leave it clean and use it just to cancel out the area. It’s an unusual effect, but it works. Iron Oxide 5 is all of this, plus lessons from the ‘Purest’ line of plugins (mostly still in line to be released later) to produce the same thing as Iron Oxide 4, but even more pure and resonant and intense. None of these are really ‘mix buss’ plugins (though I’m not the boss of you): they’re far too intensely colored and distorted. They’re more about ‘make that snare really bark’ and so on. Though of course, since I’m not the boss of you, I can’t prevent you from trying to use it on the full mix. All I can do is say that ToTape is coming, and that’s the MODERN tape emulation. This is the old school, rowdy, obvious tape emulation, full of grunge and bark :)"
 };
 constexpr std::string_view k_tags{
     "tape"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class IronOxide5 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'feob';
     double iirSamplehAL;
     double iirSamplehBL;
     double iirSampleAL;
@@ -128,8 +132,7 @@ class IronOxide5 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -137,15 +140,13 @@ class IronOxide5 final : public Effect<T>
             case kParamE: E = value; break;
             case kParamF: F = value; break;
             case kParamG: G = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -161,8 +162,7 @@ class IronOxide5 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.562341325190349; break;
             case kParamC: return 0.562341325190349; break;
@@ -178,15 +178,14 @@ class IronOxide5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "input trim"; break;
-            case kParamB: return "tape high"; break;
-            case kParamC: return "tape low"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "inputtrim"; break;
+            case kParamB: return "tapehigh"; break;
+            case kParamC: return "tapelow"; break;
             case kParamD: return "flutter"; break;
             case kParamE: return "noise"; break;
-            case kParamF: return "output trim"; break;
-            case kParamG: return "inv/dry/wet"; break;
+            case kParamF: return "outputtrim"; break;
+            case kParamG: return "invdrywet"; break;
 
             default: break;
         }
@@ -195,8 +194,7 @@ class IronOxide5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input Trim"; break;
             case kParamB: return "Tape High"; break;
             case kParamC: return "Tape Low"; break;
@@ -212,36 +210,36 @@ class IronOxide5 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(((A * 36.0) - 18.0), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(((B * B) * (B * B) * 148.5) + 1.5, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(((C * C) * (C * C) * 148.5) + 1.5, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(((F * 36.0) - 18.0), text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(((G * 2.0) - 1.0), text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return "ips"; break;
-            case kParamC: return "ips"; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return "dB"; break;
-            case kParamG: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "ips", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "ips", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -292,8 +290,7 @@ class IronOxide5 final : public Effect<T>
             fastTaper += 1.0;
             slowTaper += 1.0;
         }
-        else
-        {
+        else {
             iirAmount /= overallscale;
             lowspeedscale *= overallscale;
             fastTaper = 1.0 + (fastTaper / overallscale);
@@ -309,8 +306,7 @@ class IronOxide5 final : public Effect<T>
         double inputSampleR;
         double drySampleL;
         double drySampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -349,15 +345,13 @@ class IronOxide5 final : public Effect<T>
             inputSampleR = bridgerectifierR;
             // apply to input signal, interpolate samples
             // all the funky renaming is just trying to fix how I never reassigned the control numbers
-            if (flip)
-            {
+            if (flip) {
                 iirSampleAL = (iirSampleAL * (1 - iirAmount)) + (inputSampleL * iirAmount);
                 iirSampleAR = (iirSampleAR * (1 - iirAmount)) + (inputSampleR * iirAmount);
                 inputSampleL -= iirSampleAL;
                 inputSampleR -= iirSampleAR;
             }
-            else
-            {
+            else {
                 iirSampleBL = (iirSampleBL * (1 - iirAmount)) + (inputSampleL * iirAmount);
                 iirSampleBR = (iirSampleBR * (1 - iirAmount)) + (inputSampleR * iirAmount);
                 inputSampleL -= iirSampleBL;
@@ -398,8 +392,7 @@ class IronOxide5 final : public Effect<T>
             // increment the counter
             dL[count + 131] = dL[count] = inputSampleL;
             dR[count + 131] = dR[count] = inputSampleR;
-            if (flip)
-            {
+            if (flip) {
                 fastIIRAL = fastIIRAL / fastTaper;
                 slowIIRAL = slowIIRAL / slowTaper;
                 fastIIRAL += dL[count];
@@ -486,8 +479,7 @@ class IronOxide5 final : public Effect<T>
                 inputSampleL = fastIIRAL - (slowIIRAL / slowTaper);
                 inputSampleR = fastIIRAR - (slowIIRAR / slowTaper);
             }
-            else
-            {
+            else {
                 fastIIRBL = fastIIRBL / fastTaper;
                 slowIIRBL = slowIIRBL / slowTaper;
                 fastIIRBL += dL[count];

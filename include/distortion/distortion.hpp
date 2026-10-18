@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Distortion is a slightly dark analog-style distortion with several presets, like Focus."
 };
 constexpr std::string_view k_long_description{
-    "I think this one ought to go over well. People often want ‘analog-style distortion’. Here’s a collection of Airwindows distortion algorithms in a handy plugin with a new twist: it’s optimized for high sample rate in an innovative way.What does that mean? Distortion is a slightly ‘dark’ distortion plugin. Not only are the algorithms pretty smooth (with some exceptions: check the end of the video for one!), it uses sample averaging to stop extreme highs from getting through. At 44.1k, there’s an averaging stage before the distortion, darkening the output but also interfering with aliasing. Averaging also has some tonal benefits to midrange and bass, so this gives the plugin more of a ‘voice’. That’s at 44.1k, CD quality.But, if you use higher rates like 96k or 192k, Distortion begins to use more ‘poles’ of simple averaging. It’ll bring in averaging after the distortion, softening the tone. It’ll use more and more stages of this treble-softening, still always on just the most recent two samples, even though that becomes more and more finely grained as the sample rate goes up. Because of how averaging works, this never brings in weird notches or cancellations (like broader averages) but it does produce a sort of bleed-off of highs. Run at 44.1k this would give you an increasingly wide roll-off.At the high sample rates this was designed for, what you get instead is exactly the same ‘dark distortion’ tonality, but increasingly better aliasing rejection as the sample rate goes up. I think 96k is a sweet spot for this: at 96k, still a basically normal sample rate, you get extremely warm and fluid distortion, even when pushed to extremes.If you like extremes, look into the final two distortion modes. In Distortion, the modes Mojo and Dyno operate in their purest form, where the distortion shape can curl around again to produce strange effects if you slam them ruthlessly. In the video you see me discovering this on Mojo, running a simple DI bass at far too high a volume into Mojo, and then doubling it up to make crazy organic synth-like effects. Other modes like Density, Drive or Spiral will just go to ultra-clipping normally.Distortion will give you truly warm overdrive effects, especially at high sample rates, without a bunch of fake analog modeling. I don’t recommend using it on everything (because maybe some sounds are good WITH extended high-end, especially if you’re working at 96k and all) but as always, I’m not the boss of you.Again, the notable thing about this relative to other cascaded aliasing-suppressed distortions like Console7Cascade is that Distortion is doing it all with simple averaging filters. That will give you a distinct, softer sound without the clarity you get from multi-pole biquad rolloffs. Distortion is for when you want warm, warm, warm and are OK with letting the highs soften, plus if you want to pick different sorts of crunch edge (not often a feature on Airwindows plugins)."
+    "I think this one ought to go over well. People often want ‘analog-style distortion’. Here’s a collection of Airwindows distortion algorithms in a handy plugin with a new twist: it’s optimized for high sample rate in an innovative way. What does that mean? Distortion is a slightly ‘dark’ distortion plugin. Not only are the algorithms pretty smooth (with some exceptions: check the end of the video for one!), it uses sample averaging to stop extreme highs from getting through. At 44.1k, there’s an averaging stage before the distortion, darkening the output but also interfering with aliasing. Averaging also has some tonal benefits to midrange and bass, so this gives the plugin more of a ‘voice’. That’s at 44.1k, CD quality. But, if you use higher rates like 96k or 192k, Distortion begins to use more ‘poles’ of simple averaging. It’ll bring in averaging after the distortion, softening the tone. It’ll use more and more stages of this treble-softening, still always on just the most recent two samples, even though that becomes more and more finely grained as the sample rate goes up. Because of how averaging works, this never brings in weird notches or cancellations (like broader averages) but it does produce a sort of bleed-off of highs. Run at 44.1k this would give you an increasingly wide roll-off. At the high sample rates this was designed for, what you get instead is exactly the same ‘dark distortion’ tonality, but increasingly better aliasing rejection as the sample rate goes up. I think 96k is a sweet spot for this: at 96k, still a basically normal sample rate, you get extremely warm and fluid distortion, even when pushed to extremes. If you like extremes, look into the final two distortion modes. In Distortion, the modes Mojo and Dyno operate in their purest form, where the distortion shape can curl around again to produce strange effects if you slam them ruthlessly. In the video you see me discovering this on Mojo, running a simple DI bass at far too high a volume into Mojo, and then doubling it up to make crazy organic synth-like effects. Other modes like Density, Drive or Spiral will just go to ultra-clipping normally. Distortion will give you truly warm overdrive effects, especially at high sample rates, without a bunch of fake analog modeling. I don’t recommend using it on everything (because maybe some sounds are good WITH extended high-end, especially if you’re working at 96k and all) but as always, I’m not the boss of you. Again, the notable thing about this relative to other cascaded aliasing-suppressed distortions like Console7Cascade is that Distortion is doing it all with simple averaging filters. That will give you a distinct, softer sound without the clarity you get from multi-pole biquad rolloffs. Distortion is for when you want warm, warm, warm and are OK with letting the highs soften, plus if you want to pick different sorts of crunch edge (not often a feature on Airwindows plugins)."
 };
 constexpr std::string_view k_tags{
     "distortion"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Distortion final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dstr';
     double previousInL[9];
     double previousOutL[9];
     double previousInR[9];
@@ -67,21 +71,18 @@ class Distortion final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -94,8 +95,7 @@ class Distortion final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -108,12 +108,11 @@ class Distortion final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "mode"; break;
             case kParamC: return "output"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -122,8 +121,7 @@ class Distortion final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Mode"; break;
             case kParamC: return "Output"; break;
@@ -136,30 +134,40 @@ class Distortion final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A - 0.5) * 24.0, text, kVstMaxParamStrLen); break;
+            case kParamB:
+                switch ((VstInt32)(B * 4.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Density", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Drive", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Spiral", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Mojo", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Dyno", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            case kParamC: float2string((C - 0.5) * 24.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-            case kParamC: return "dB"; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -177,8 +185,7 @@ class Distortion final : public Effect<T>
         int mode = (int)(B * 4.999);
         double output = pow(10.0, ((C - 0.5) * 24.0) / 20.0);
         double wet = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -200,8 +207,7 @@ class Distortion final : public Effect<T>
                 previousInR[x] = inputSampleR;
                 inputSampleR = temp;
             }
-            switch (mode)
-            {
+            switch (mode) {
                 case 0: // Density
                     if (inputSampleL > 1.570796326794897) {
                         inputSampleL = 1.570796326794897;

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "HypersonX is like UltrasonX but with seven stages instead of five."
 };
 constexpr std::string_view k_long_description{
-    "This one’s pretty straightforward. If you know UltrasonX, this is the same thing but for Hypersonic. These are ultrasonic filters for use at high sample rates such as 96k: for less processing than it would take to oversample a bunch of stuff you can run the whole mix at an elevated sample rate and put filtering between nonlinear stages: it works better to do a little filtering in many places, and it helps the mix from seeming overprocessed.HypersonX is steeper, because it’s seven stages instead of only five. It cuts off a little higher, so it should go right past 20k without hinting at rolling off or softening anything. But since it (like Hypersonic itself) is seven stages, that means you’ve got to find seven spots in your mix to stick the respective stages of the filter.Like UltrasonX (and like future Console versions I do that will use this technology), you have to have one each of every stage of HypersonX, from input to final 2-buss. That means you don’t have to repeat ’em across all channels: for instance, if you’re running stage A and B on the channels, and C, D and E on submixes, and F and G on the 2-buss, that’s way less filters than you’d have if you placed just one Hypersonic on the start of every single channel, AND it will work better because it’ll keep every little nonlinear stage in check. Otherwise, they can seize on small bits of aliasing and alias them further until they combine and become obvious. Single filtering at the input won’t protect you from this. Distributed filtering will.This might not be for everybody. The thing is, if you’re running at high sample rates and you want to resist aliasing and have a warm, analog tone that still retains clarity, this might be for you… and similarly to other Airwindows inventions, the cumbersome nature of HypersonX could become your secret weapon. Who wants to carefully arrange to have one each of seven types of inaudible filtering across your signal path, from channel start to end of 2-buss? Possibly you, if the resulting tone speaks to your musical tastes. The barrier to entry is a setup that’s a pain in the butt and fussy rules for how it works (you can combine it with the original PurestConsole if you’d like to also have the cleanest possible Airwindows Console mix, that’s a whole other set of fussy rules!) but you might find the results a little spectacular.I hope so! The next thing for me is building this into the next version(s) of Console, and I believe it will help things a whole lot. But with HypersonX, you don’t have to wait. Use it on its own or combine it with any earlier version of Console (not Console7 or PurestConsole2, which have their own filtering, but Console 5 or 6 or PurestConsole or Atmosphere or PDConsole which didn’t have ultrasonic filtering built in) and begin constructing your own in-house mixing board, and get your personal sound.(followup: this became the ultrasonic filter tech for Console8)"
+    "This one’s pretty straightforward. If you know UltrasonX, this is the same thing but for Hypersonic. These are ultrasonic filters for use at high sample rates such as 96k: for less processing than it would take to oversample a bunch of stuff you can run the whole mix at an elevated sample rate and put filtering between nonlinear stages: it works better to do a little filtering in many places, and it helps the mix from seeming overprocessed. HypersonX is steeper, because it’s seven stages instead of only five. It cuts off a little higher, so it should go right past 20k without hinting at rolling off or softening anything. But since it (like Hypersonic itself) is seven stages, that means you’ve got to find seven spots in your mix to stick the respective stages of the filter. Like UltrasonX (and like future Console versions I do that will use this technology), you have to have one each of every stage of HypersonX, from input to final 2-buss. That means you don’t have to repeat ’em across all channels: for instance, if you’re running stage A and B on the channels, and C, D and E on submixes, and F and G on the 2-buss, that’s way less filters than you’d have if you placed just one Hypersonic on the start of every single channel, AND it will work better because it’ll keep every little nonlinear stage in check. Otherwise, they can seize on small bits of aliasing and alias them further until they combine and become obvious. Single filtering at the input won’t protect you from this. Distributed filtering will. This might not be for everybody. The thing is, if you’re running at high sample rates and you want to resist aliasing and have a warm, analog tone that still retains clarity, this might be for you… and similarly to other Airwindows inventions, the cumbersome nature of HypersonX could become your secret weapon. Who wants to carefully arrange to have one each of seven types of inaudible filtering across your signal path, from channel start to end of 2-buss? Possibly you, if the resulting tone speaks to your musical tastes. The barrier to entry is a setup that’s a pain in the butt and fussy rules for how it works (you can combine it with the original PurestConsole if you’d like to also have the cleanest possible Airwindows Console mix, that’s a whole other set of fussy rules!) but you might find the results a little spectacular. I hope so! The next thing for me is building this into the next version(s) of Console, and I believe it will help things a whole lot. But with HypersonX, you don’t have to wait. Use it on its own or combine it with any earlier version of Console (not Console7 or PurestConsole2, which have their own filtering, but Console 5 or 6 or PurestConsole or Atmosphere or PDConsole which didn’t have ultrasonic filtering built in) and begin constructing your own in-house mixing board, and get your personal sound. (followup: this became the ultrasonic filter tech for Console8)"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class HypersonX final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'hypx';
     enum
     {
         fix_freq,
@@ -36,11 +40,9 @@ class HypersonX final : public Effect<T>
         fix_total
     }; // fixed frequency biquad filter for ultrasonics, stereo
     double fixA[fix_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     static const int kA = 0;
     static const int kB = 1;
     static const int kC = 2;
@@ -48,7 +50,6 @@ class HypersonX final : public Effect<T>
     static const int kE = 4;
     static const int kF = 5;
     static const int kG = 6;
-
     float A;
 
   public:
@@ -77,18 +78,15 @@ class HypersonX final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -98,8 +96,7 @@ class HypersonX final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -109,8 +106,7 @@ class HypersonX final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "q"; break;
 
             default: break;
@@ -120,8 +116,7 @@ class HypersonX final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Q"; break;
 
             default: break;
@@ -131,24 +126,36 @@ class HypersonX final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 6.999)) // 0 to almost edge of # of params
+                {
+                    case kA: vst_strncpy(text, "Reso A", kVstMaxParamStrLen); break;
+                    case kB: vst_strncpy(text, "Reso B", kVstMaxParamStrLen); break;
+                    case kC: vst_strncpy(text, "Reso C", kVstMaxParamStrLen); break;
+                    case kD: vst_strncpy(text, "Reso D", kVstMaxParamStrLen); break;
+                    case kE: vst_strncpy(text, "Reso E", kVstMaxParamStrLen); break;
+                    case kF: vst_strncpy(text, "Reso F", kVstMaxParamStrLen); break;
+                    case kG: vst_strncpy(text, "Reso G", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -163,8 +170,7 @@ class HypersonX final : public Effect<T>
             cutoff = 0.49; // don't crash if run at 44.1k
         }
         fixA[fix_freq] = cutoff;
-        switch ((VstInt32)(A * 6.999))
-        {
+        switch ((VstInt32)(A * 6.999)) {
             case kA:
                 fixA[fix_reso] = 4.46570214;
                 break;
@@ -194,8 +200,7 @@ class HypersonX final : public Effect<T>
         fixA[fix_a2] = fixA[fix_a0];
         fixA[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixA[fix_b2] = (1.0 - K / fixA[fix_reso] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

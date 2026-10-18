@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PurestDualPan is an updated PurestGain but as a dual pan."
 };
 constexpr std::string_view k_long_description{
-    "This one's by patron request: as in, one specific patron REALLY wanted a PurestDualPan, so now everybody has one :)It is using dezippering, but instead of the much slower one from PurestGain, it's the quicker and more direct one from out of the Z filter plugins. It's using the pan law I used in Console9 and later, that uses sine functions to come up with a pan law. And it's using a quirky little audio taper in its left and right gain controls, so that 0.5 is unity gain, but full crank is actually 3.069492192001773 because it's 2 to the power of the golden ratio, same for the taper of attenuating anything. This produces a funny sort of taper that I like, and also makes it impossible to reference the actual control's number in any useful way. So, behave as if you can't see numbers, they certainly won't be what you think they are and there's no predicting what they will be in dB terms.I have a Bit Shift one also, but it doesn't strictly count as that because it requires an add as part of the algorithm. This one counts as a PurestGain, though! If you're a PurestGain fan, this is the same only as a dual pan."
+    "This one's by patron request: as in, one specific patron REALLY wanted a PurestDualPan, so now everybody has one :) It is using dezippering, but instead of the much slower one from PurestGain, it's the quicker and more direct one from out of the Z filter plugins. It's using the pan law I used in Console9 and later, that uses sine functions to come up with a pan law. And it's using a quirky little audio taper in its left and right gain controls, so that 0.5 is unity gain, but full crank is actually 3.069492192001773 because it's 2 to the power of the golden ratio, same for the taper of attenuating anything. This produces a funny sort of taper that I like, and also makes it impossible to reference the actual control's number in any useful way. So, behave as if you can't see numbers, they certainly won't be what you think they are and there's no predicting what they will be in dB terms. I have a Bit Shift one also, but it doesn't strictly count as that because it requires an add as part of the algorithm. This one counts as a PurestGain, though! If you're a PurestGain fan, this is the same only as a dual pan."
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PurestDualPan final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pdpn';
     float A;
     float B;
     float C;
@@ -65,13 +69,12 @@ class PurestDualPan final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -104,10 +107,10 @@ class PurestDualPan final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "l vol"; break;
-            case kParamB: return "l pan"; break;
-            case kParamC: return "r vol"; break;
-            case kParamD: return "r pan"; break;
+            case kParamA: return "lvol"; break;
+            case kParamB: return "lpan"; break;
+            case kParamC: return "rvol"; break;
+            case kParamD: return "rpan"; break;
 
             default: break;
         }
@@ -129,28 +132,30 @@ class PurestDualPan final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class NotJustAnotherCD final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'njac';
     double bynL[13];
     double bynR[13];
     double noiseShapingL;
@@ -72,17 +76,11 @@ class NotJustAnotherCD final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
-        }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -91,8 +89,7 @@ class NotJustAnotherCD final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -101,8 +98,7 @@ class NotJustAnotherCD final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -111,8 +107,7 @@ class NotJustAnotherCD final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -121,22 +116,16 @@ class NotJustAnotherCD final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -155,8 +144,7 @@ class NotJustAnotherCD final : public Effect<T>
         double totalB;
         double drySampleL;
         double drySampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -195,8 +183,7 @@ class NotJustAnotherCD final : public Effect<T>
             hotbinA = floor(benfordize);
             // hotbin becomes the Benford bin value for this number floored
             totalA = 0;
-            if ((hotbinA > 0) && (hotbinA < 10))
-            {
+            if ((hotbinA > 0) && (hotbinA < 10)) {
                 bynL[hotbinA] += 1;
                 totalA += (301 - bynL[1]);
                 totalA += (176 - bynL[2]);
@@ -235,8 +222,7 @@ class NotJustAnotherCD final : public Effect<T>
             hotbinB = floor(benfordize);
             // hotbin becomes the Benford bin value for this number ceiled
             totalB = 0;
-            if ((hotbinB > 0) && (hotbinB < 10))
-            {
+            if ((hotbinB > 0) && (hotbinB < 10)) {
                 bynL[hotbinB] += 1;
                 totalB += (301 - bynL[1]);
                 totalB += (176 - bynL[2]);
@@ -253,13 +239,11 @@ class NotJustAnotherCD final : public Effect<T>
                 hotbinB = 10;
             }
             // produce total number- smaller is closer to Benford real
-            if (totalA < totalB)
-            {
+            if (totalA < totalB) {
                 bynL[hotbinA] += 1;
                 inputSampleL = floor(inputSampleL);
             }
-            else
-            {
+            else {
                 bynL[hotbinB] += 1;
                 inputSampleL = ceil(inputSampleL);
             }
@@ -302,8 +286,7 @@ class NotJustAnotherCD final : public Effect<T>
             hotbinA = floor(benfordize);
             // hotbin becomes the Benford bin value for this number floored
             totalA = 0;
-            if ((hotbinA > 0) && (hotbinA < 10))
-            {
+            if ((hotbinA > 0) && (hotbinA < 10)) {
                 bynR[hotbinA] += 1;
                 totalA += (301 - bynR[1]);
                 totalA += (176 - bynR[2]);
@@ -342,8 +325,7 @@ class NotJustAnotherCD final : public Effect<T>
             hotbinB = floor(benfordize);
             // hotbin becomes the Benford bin value for this number ceiled
             totalB = 0;
-            if ((hotbinB > 0) && (hotbinB < 10))
-            {
+            if ((hotbinB > 0) && (hotbinB < 10)) {
                 bynR[hotbinB] += 1;
                 totalB += (301 - bynR[1]);
                 totalB += (176 - bynR[2]);
@@ -360,13 +342,11 @@ class NotJustAnotherCD final : public Effect<T>
                 hotbinB = 10;
             }
             // produce total number- smaller is closer to Benford real
-            if (totalA < totalB)
-            {
+            if (totalA < totalB) {
                 bynR[hotbinA] += 1;
                 inputSampleR = floor(inputSampleR);
             }
-            else
-            {
+            else {
                 bynR[hotbinB] += 1;
                 inputSampleR = ceil(inputSampleR);
             }

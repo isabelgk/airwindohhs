@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Mojo is a biggenator that also works as a loudenator."
 };
 constexpr std::string_view k_long_description{
-    "Happy accidents! What I was trying to do was add a blend control to Spiral, so I could make a Channel that let you go between the original, ‘fatter’ sound and the cleaner, more transparent but less fat Spiral sound.Instead, I got this (and another, complementary plugin to be revealed later). I coded up a refinement to the algorithm, where the ‘curve factor’ of Spiral got modified by powers of itself, or powers of powers of itself… up to the fourth power, which turned out to sort of have MAGICAL powers, or at least that’s how it seemed when I worked out what was happening to my test sine waves.Mojo’s the result. It’s a neat little algorithm that doesn’t sound anything like Density, or Spiral. Instead, it sounds like concentrated HUGE. Even at no added boost, it makes the sound a lot fatter (much like what was asked: a more refined algorithm that still gets the fatness of Density). But then there’s more… when you start slamming it.Turns out this simple little algorithm, one single transfer function without extra parts or switches or added tricks, soaks up input gain like nothing I’ve seen.Understand, it’s not ‘clean’. It thickens and fattens the sound without any real EQ change, by where it puts the energy and how it rounds off peaks. It’s got a weirdly effective way of being able to round stuff off and then turn it into a mostly flat-topped output, like full-on digital clipping style loudness, but with neatly sculpted little curves going in and out of the flat stuff. It’s also such a nonintuitive algorithm that I wasn’t able to find an ideal spot to just straight clip it… so, like original Spiral, if you push beyond its limits it’ll start wavefolding on you (which can be an indication of too much slam). But the sweet spot is unusually wide and forgiving, and it sounds really loud while you explore that maximum limit.Mojo is an accident, but it’s also an obvious ‘popular’ plugin. Check to see if you’re okay with the extreme fattening effect it has, since it does really have a sound and isn’t what you’d call clean, even in the absence of extra boost. But if you were already looking for some ‘mojo’ to be added, this Mojo might be just the type… and, like the original Density algorithm, this one is likely to show up in other plugins as an added saturation element, because it’s got a distinct flavor that will help certain plugins do their thing."
+    "Happy accidents! What I was trying to do was add a blend control to Spiral, so I could make a Channel that let you go between the original, ‘fatter’ sound and the cleaner, more transparent but less fat Spiral sound. Instead, I got this (and another, complementary plugin to be revealed later). I coded up a refinement to the algorithm, where the ‘curve factor’ of Spiral got modified by powers of itself, or powers of powers of itself… up to the fourth power, which turned out to sort of have MAGICAL powers, or at least that’s how it seemed when I worked out what was happening to my test sine waves. Mojo’s the result. It’s a neat little algorithm that doesn’t sound anything like Density, or Spiral. Instead, it sounds like concentrated HUGE. Even at no added boost, it makes the sound a lot fatter (much like what was asked: a more refined algorithm that still gets the fatness of Density). But then there’s more… when you start slamming it. Turns out this simple little algorithm, one single transfer function without extra parts or switches or added tricks, soaks up input gain like nothing I’ve seen. Understand, it’s not ‘clean’. It thickens and fattens the sound without any real EQ change, by where it puts the energy and how it rounds off peaks. It’s got a weirdly effective way of being able to round stuff off and then turn it into a mostly flat-topped output, like full-on digital clipping style loudness, but with neatly sculpted little curves going in and out of the flat stuff. It’s also such a nonintuitive algorithm that I wasn’t able to find an ideal spot to just straight clip it… so, like original Spiral, if you push beyond its limits it’ll start wavefolding on you (which can be an indication of too much slam). But the sweet spot is unusually wide and forgiving, and it sounds really loud while you explore that maximum limit. Mojo is an accident, but it’s also an obvious ‘popular’ plugin. Check to see if you’re okay with the extreme fattening effect it has, since it does really have a sound and isn’t what you’d call clean, even in the absence of extra boost. But if you were already looking for some ‘mojo’ to be added, this Mojo might be just the type… and, like the original Density algorithm, this one is likely to show up in other plugins as an added saturation element, because it’s got a distinct flavor that will help certain plugins do their thing."
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Mojo final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'mojo';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -48,18 +52,15 @@ class Mojo final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -69,8 +70,7 @@ class Mojo final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -80,8 +80,7 @@ class Mojo final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
 
             default: break;
@@ -91,8 +90,7 @@ class Mojo final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
 
             default: break;
@@ -102,24 +100,24 @@ class Mojo final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 24.0) - 12.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -130,8 +128,7 @@ class Mojo final : public Effect<T>
         T* out2 = outputs[1];
 
         double gain = pow(10.0, ((A * 24.0) - 12.0) / 20.0);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

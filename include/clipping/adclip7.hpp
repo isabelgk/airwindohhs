@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ADClip7 is the ultimate Airwindows loudness maximizer/ peak control."
 };
 constexpr std::string_view k_long_description{
-    "Finally! The newest version of Airwindows’ famous ADClip is out, and it’s Mac and PC VST for the first time, and it’s free! If you have dense, busy mixes and you want to push their loudness to the max, this is the one you want. And, oddly, if you’re mastering for streaming services or iTunes and don’t want to do a thing besides convey your mix at a set LUFS and intersample peak level, this is still the one you want :)Here’s how it works.You’ve got a boost control, a soften control, an enhance control, and a popup or multi-function control with three options: normal, gain matched, and Clip Only. These are all interactive, so I’ll explain them in the context of that ‘mode selector’ popup.In normal mode, boost makes things louder. This is a clipper, and no more polite method can ever make things louder than a clipper: you need to either give it a busy and complicated mix to mask the clip artifacts, or use it to snip off non-tonal percussive peaks, at which it excels. A clipper does NOT produce ‘limiter-like unvarying block of sound’, and you shouldn’t try to achieve that. A clipper gives you punchy but LOUD, and tries to retain all the dynamics you’re feeding it, rather than smooth them out for a ‘clean’ sound.The soften control manages the way that high frequencies enter and exit the clips. It algorithmically reshapes the edges of your clip, stopping it from getting digital glare and fizz. This is the heart of ADClip (also present in my simpler clippers, not counting One Corner Clip, which is still upcoming).The soften control also balances the outputs of two separate energy-fill algorithms, one for bass and one for highs. This was the response to a certain other loudness maximizer that launched proclaiming clippers were dead, and which is still promising its version 2 (and some bugfixes) while ADClip has gone far beyond it. Turned out the secret of that one was an elaborate way of massaging clipped-off loudness back into the signal, in a way that was supposed to be transparent but ‘cracked’ into artifacts when pushed too hard. The algorithms were presumably very sophisticated, which tends to just make the breaking point more obvious when you hit it.The Airwindows version is a completely different, cruder and more direct version of doing the same thing, so when you slam the heck out of ADClip7, you get a deep bass slam that ‘overhangs’ a bit to add weight, and still fits into the clipped output. And you get the softened, analog-style clips to add ‘heat’ and overtones, but you also get a high-mids reinforcement that normally just highlights bright transients that would otherwise be lost to the clipping. And the Enhance control lets you go between purely ‘analog clip’ energy, and these added reinforcements.The gain-matched mode has two uses. You could use it to ‘set your slam level’ in a way guaranteed not to trick you into thinking louder is better: it turns the output down, so instead of hearing everything get bigger and louder, you just listen for the point that the clipping’s adversely affecting the sound. Then you can flip back to normal mode, if that’s what you wanted (maximum loudness without blatant grunge). Or, you can ignore the slam and use gain-matched mode as I demonstrate in the video: ADClip7 already suppresses intersample peaks when they’re part of clipping, already reinforces energy lost to clipping, so you can use it in conjunction with a tool like Youlean’s loudness meter to dial in a specific intersample peak level for iTunes or other such picky streaming services. It’ll work like padding the output. and if you’re already in the ballpark LUFS-wise, ADClip is a far more sophisticated tool than just limiting and then padding the output to get to your ‘true peak’ target.The last mode is Clip Only, and rather than selecting the various algorithm outputs individually, this version of ADClip gives you them at their respective loudnesses, combined. That means you can engage this mode to hear ONLY the clips, and check that you’re not hearing any recognizable ‘scrunch’ of continuing clippage. But since you’re also hearing the enhance outputs, you can adjust softness and enhance level to balance the stuff being introduced to the sound. My recommendation is to set the controls so no one type of artifact predominates: it’s not necessarily great to throw in a bunch of ‘enhance’ bass just because you can. If you’re hearing that much of it that you’re tempted to use it as an effect, you’re definitely also over-slamming your music.So my recommendation in 2017 heading to 2018, is to use ADClip7 in gain-matched mode, to keep that ‘true peak’ measurement within the Mastered For iTunes requirements. I’m sure not everybody will stick to that, but I’m happy to say it is actually quite good for doing that, and if people want to smash stuff with it and enjoy the bass thud, that’s their affair. Remember a clipper makes stuff dynamic and punchy, not ‘flattened out’: use a limiter if you need dynamically flat, or perhaps both. In this modern era of replay gain, I’m going to suggest that dynamic and punchy is where it’s at. Learn the lessons of the LUFS meter! They’re available to us all, now."
+    "Finally! The newest version of Airwindows’ famous ADClip is out, and it’s Mac and PC VST for the first time, and it’s free! If you have dense, busy mixes and you want to push their loudness to the max, this is the one you want. And, oddly, if you’re mastering for streaming services or iTunes and don’t want to do a thing besides convey your mix at a set LUFS and intersample peak level, this is still the one you want :) Here’s how it works. You’ve got a boost control, a soften control, an enhance control, and a popup or multi-function control with three options: normal, gain matched, and Clip Only. These are all interactive, so I’ll explain them in the context of that ‘mode selector’ popup. In normal mode, boost makes things louder. This is a clipper, and no more polite method can ever make things louder than a clipper: you need to either give it a busy and complicated mix to mask the clip artifacts, or use it to snip off non-tonal percussive peaks, at which it excels. A clipper does NOT produce ‘limiter-like unvarying block of sound’, and you shouldn’t try to achieve that. A clipper gives you punchy but LOUD, and tries to retain all the dynamics you’re feeding it, rather than smooth them out for a ‘clean’ sound. The soften control manages the way that high frequencies enter and exit the clips. It algorithmically reshapes the edges of your clip, stopping it from getting digital glare and fizz. This is the heart of ADClip (also present in my simpler clippers, not counting One Corner Clip, which is still upcoming). The soften control also balances the outputs of two separate energy-fill algorithms, one for bass and one for highs. This was the response to a certain other loudness maximizer that launched proclaiming clippers were dead, and which is still promising its version 2 (and some bugfixes) while ADClip has gone far beyond it. Turned out the secret of that one was an elaborate way of massaging clipped-off loudness back into the signal, in a way that was supposed to be transparent but ‘cracked’ into artifacts when pushed too hard. The algorithms were presumably very sophisticated, which tends to just make the breaking point more obvious when you hit it. The Airwindows version is a completely different, cruder and more direct version of doing the same thing, so when you slam the heck out of ADClip7, you get a deep bass slam that ‘overhangs’ a bit to add weight, and still fits into the clipped output. And you get the softened, analog-style clips to add ‘heat’ and overtones, but you also get a high-mids reinforcement that normally just highlights bright transients that would otherwise be lost to the clipping. And the Enhance control lets you go between purely ‘analog clip’ energy, and these added reinforcements. The gain-matched mode has two uses. You could use it to ‘set your slam level’ in a way guaranteed not to trick you into thinking louder is better: it turns the output down, so instead of hearing everything get bigger and louder, you just listen for the point that the clipping’s adversely affecting the sound. Then you can flip back to normal mode, if that’s what you wanted (maximum loudness without blatant grunge). Or, you can ignore the slam and use gain-matched mode as I demonstrate in the video: ADClip7 already suppresses intersample peaks when they’re part of clipping, already reinforces energy lost to clipping, so you can use it in conjunction with a tool like Youlean’s loudness meter to dial in a specific intersample peak level for iTunes or other such picky streaming services. It’ll work like padding the output. and if you’re already in the ballpark LUFS-wise, ADClip is a far more sophisticated tool than just limiting and then padding the output to get to your ‘true peak’ target. The last mode is Clip Only, and rather than selecting the various algorithm outputs individually, this version of ADClip gives you them at their respective loudnesses, combined. That means you can engage this mode to hear ONLY the clips, and check that you’re not hearing any recognizable ‘scrunch’ of continuing clippage. But since you’re also hearing the enhance outputs, you can adjust softness and enhance level to balance the stuff being introduced to the sound. My recommendation is to set the controls so no one type of artifact predominates: it’s not necessarily great to throw in a bunch of ‘enhance’ bass just because you can. If you’re hearing that much of it that you’re tempted to use it as an effect, you’re definitely also over-slamming your music. So my recommendation in 2017 heading to 2018, is to use ADClip7 in gain-matched mode, to keep that ‘true peak’ measurement within the Mastered For iTunes requirements. I’m sure not everybody will stick to that, but I’m happy to say it is actually quite good for doing that, and if people want to smash stuff with it and enjoy the bass thud, that’s their affair. Remember a clipper makes stuff dynamic and punchy, not ‘flattened out’: use a limiter if you need dynamically flat, or perhaps both. In this modern era of replay gain, I’m going to suggest that dynamic and punchy is where it’s at. Learn the lessons of the LUFS meter! They’re available to us all, now."
 };
 constexpr std::string_view k_tags{
     "clipping"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ADClip7 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'adcr';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -85,21 +89,18 @@ class ADClip7 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -112,8 +113,7 @@ class ADClip7 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -126,8 +126,7 @@ class ADClip7 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "boost"; break;
             case kParamB: return "soften"; break;
             case kParamC: return "enhance"; break;
@@ -140,8 +139,7 @@ class ADClip7 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Boost"; break;
             case kParamB: return "Soften"; break;
             case kParamC: return "Enhance"; break;
@@ -154,30 +152,38 @@ class ADClip7 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 18.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD:
+                switch ((VstInt32)(D * 2.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Normal", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Atten", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Clips", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -229,8 +235,7 @@ class ADClip7 final : public Effect<T>
         int count = 0;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -258,8 +263,7 @@ class ADClip7 final : public Effect<T>
             bL[count + 11020] = bL[count] = overshootL;
             bR[count + 11020] = bR[count] = overshootR;
             gcount--;
-            if (highslift > 0.0)
-            {
+            if (highslift > 0.0) {
                 // we have a big pile of b[] which is overshoots
                 temp = count + refH3;
                 highsL = -(bL[temp] * minusH3); // less as value moves away from .0
@@ -320,8 +324,7 @@ class ADClip7 final : public Effect<T>
             else {
                 highsR = -bridgerectifier;
             }
-            if (subslift > 0.0)
-            {
+            if (subslift > 0.0) {
                 lowsL *= subs;
                 lowsR *= subs;
                 // going in we'll reel back some of the swing
@@ -554,8 +557,7 @@ class ADClip7 final : public Effect<T>
                 refclipR += 0.00001;
             }
             // adjust clip level on the fly
-            if (lastSampleL >= refclipL)
-            {
+            if (lastSampleL >= refclipL) {
                 if (inputSampleL < refclipL) {
                     lastSampleL = ((refclipL * hardness) + (inputSampleL * softness));
                 }
@@ -563,8 +565,7 @@ class ADClip7 final : public Effect<T>
                     lastSampleL = refclipL;
                 }
             }
-            if (lastSampleR >= refclipR)
-            {
+            if (lastSampleR >= refclipR) {
                 if (inputSampleR < refclipR) {
                     lastSampleR = ((refclipR * hardness) + (inputSampleR * softness));
                 }
@@ -572,8 +573,7 @@ class ADClip7 final : public Effect<T>
                     lastSampleR = refclipR;
                 }
             }
-            if (lastSampleL <= -refclipL)
-            {
+            if (lastSampleL <= -refclipL) {
                 if (inputSampleL > -refclipL) {
                     lastSampleL = ((-refclipL * hardness) + (inputSampleL * softness));
                 }
@@ -581,8 +581,7 @@ class ADClip7 final : public Effect<T>
                     lastSampleL = -refclipL;
                 }
             }
-            if (lastSampleR <= -refclipR)
-            {
+            if (lastSampleR <= -refclipR) {
                 if (inputSampleR > -refclipR) {
                     lastSampleR = ((-refclipR * hardness) + (inputSampleR * softness));
                 }
@@ -590,8 +589,7 @@ class ADClip7 final : public Effect<T>
                     lastSampleR = -refclipR;
                 }
             }
-            if (inputSampleL > refclipL)
-            {
+            if (inputSampleL > refclipL) {
                 if (lastSampleL < refclipL) {
                     inputSampleL = ((refclipL * hardness) + (lastSampleL * softness));
                 }
@@ -599,8 +597,7 @@ class ADClip7 final : public Effect<T>
                     inputSampleL = refclipL;
                 }
             }
-            if (inputSampleR > refclipR)
-            {
+            if (inputSampleR > refclipR) {
                 if (lastSampleR < refclipR) {
                     inputSampleR = ((refclipR * hardness) + (lastSampleR * softness));
                 }
@@ -608,8 +605,7 @@ class ADClip7 final : public Effect<T>
                     inputSampleR = refclipR;
                 }
             }
-            if (inputSampleL < -refclipL)
-            {
+            if (inputSampleL < -refclipL) {
                 if (lastSampleL > -refclipL) {
                     inputSampleL = ((-refclipL * hardness) + (lastSampleL * softness));
                 }
@@ -617,8 +613,7 @@ class ADClip7 final : public Effect<T>
                     inputSampleL = -refclipL;
                 }
             }
-            if (inputSampleR < -refclipR)
-            {
+            if (inputSampleR < -refclipR) {
                 if (lastSampleR > -refclipR) {
                     inputSampleR = ((-refclipR * hardness) + (lastSampleR * softness));
                 }
@@ -628,8 +623,7 @@ class ADClip7 final : public Effect<T>
             }
             lastSampleL = inputSampleL;
             lastSampleR = inputSampleR;
-            switch (mode)
-            {
+            switch (mode) {
                 case 1: break; // Normal
                 case 2:
                     inputSampleL /= inputGain;

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Mastering2 is Airwindows style, and can do elliptical EQ now!"
 };
 constexpr std::string_view k_long_description{
-    "This update to Mastering adds the control at the top, which is elliptical EQ, and defaults to zero like Glue does. Not hard to explain: it cuts bass in the side channel, as if you were mastering a vinyl record, though this has uses in nearly any stereo environment. Below a sufficiently low frequency, stereo bass becomes meaningless if it's stereo enough. Purely out of phase stuff will cancel out.High time I put it out: been working on the reverbs so much that I have to dig into the backlog for a proper plugin. It's also funny that the addition of Sidepass makes yet another control where it's quite hard to hear what it's doing. Mastering in general is a plugin all about doing little subtle hard-to-hear corrections, or dialing things in using Airwindows Meter. For instance, if you see red spikes on the slew section of Meter, Glue on this will let you control those without damaging apparent high-end. Scope lets you boost or ease back on detail again without apparently changing 'treble', and Girth enhances or eases back sub hugeness without apparently changing 'bass' that much.Then there's Drive which really doesn't act much like a saturation because it is really Airwindows Zoom, except in a multi-band version that applies to the 'EQ bands', except they're actually Kalman filters. And of course there's dither, but it's for modern formats so it is all to 24 bit. To the extent you can even register that, it goes in rough order of 'how much excitement and brightness and focus there is', up to Bypass which lets full floating point audio pass.You should probably run this in conjunction with Airwindows Meter, because it's all about massaging peak energy and 'invisible transients' to shape them exactly the way you want. My idea there was to be able to maximize that type of 'invisible' audio for the greatest possible effect, and I use Meter to observe what's happening rather than just trying to vibe it. The hope is, tuning that stuff just right, produces audio that immediately sounds correct, whether the obvious parts are loud or soft, bright or dark. It's not a replacement for remixing: I don't consider mastering to be doing the same things as mixing but differently. Mastering should be tailoring the spell cast by the mixer, and that's what Mastering2 is all about.Won't work for everybody, but for those who appreciate this plugin, having an invisible elliptical filter in there is probably a great upgrade. It all runs on the 64-bit dithered-to-32 floating point buss, so that's one more area you can dial in to be just right, within the plugin's processing. It ought to interact with Girth very nicely."
+    "This update to Mastering adds the control at the top, which is elliptical EQ, and defaults to zero like Glue does. Not hard to explain: it cuts bass in the side channel, as if you were mastering a vinyl record, though this has uses in nearly any stereo environment. Below a sufficiently low frequency, stereo bass becomes meaningless if it's stereo enough. Purely out of phase stuff will cancel out. High time I put it out: been working on the reverbs so much that I have to dig into the backlog for a proper plugin. It's also funny that the addition of Sidepass makes yet another control where it's quite hard to hear what it's doing. Mastering in general is a plugin all about doing little subtle hard-to-hear corrections, or dialing things in using Airwindows Meter. For instance, if you see red spikes on the slew section of Meter, Glue on this will let you control those without damaging apparent high-end. Scope lets you boost or ease back on detail again without apparently changing 'treble', and Girth enhances or eases back sub hugeness without apparently changing 'bass' that much. Then there's Drive which really doesn't act much like a saturation because it is really Airwindows Zoom, except in a multi-band version that applies to the 'EQ bands', except they're actually Kalman filters. And of course there's dither, but it's for modern formats so it is all to 24 bit. To the extent you can even register that, it goes in rough order of 'how much excitement and brightness and focus there is', up to Bypass which lets full floating point audio pass. You should probably run this in conjunction with Airwindows Meter, because it's all about massaging peak energy and 'invisible transients' to shape them exactly the way you want. My idea there was to be able to maximize that type of 'invisible' audio for the greatest possible effect, and I use Meter to observe what's happening rather than just trying to vibe it. The hope is, tuning that stuff just right, produces audio that immediately sounds correct, whether the obvious parts are loud or soft, bright or dark. It's not a replacement for remixing: I don't consider mastering to be doing the same things as mixing but differently. Mastering should be tailoring the spell cast by the mixer, and that's what Mastering2 is all about. Won't work for everybody, but for those who appreciate this plugin, having an invisible elliptical filter in there is probably a great upgrade. It all runs on the 64-bit dithered-to-32 floating point buss, so that's one more area you can dial in to be just right, within the plugin's processing. It ought to interact with Girth very nicely."
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Mastering2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'masu';
     float A;
     float B;
     float C;
@@ -263,7 +267,7 @@ class Mastering2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -271,8 +275,7 @@ class Mastering2 final : public Effect<T>
             case kParamE: E = value; break;
             case kParamF: F = value; break;
             case kParamG: G = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -342,34 +345,47 @@ class Mastering2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG:
+                switch ((VstInt32)(G * 5.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Dark", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "TenNines", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "TPDFWde", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "PaulWde", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "NJAD", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Bypass", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

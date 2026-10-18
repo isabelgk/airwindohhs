@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Creature is a soft slew saturator, a new class of noisechanger."
 };
 constexpr std::string_view k_long_description{
-    "So here's something new: didn't exist before, even I didn't have it.Creature is a soft slew saturator. It's a way of working with applying a sin() function to slew clipping. In fact it applies an unbounded sin() function, so it might be technically considered a slew wavefolder? Because that's what everybody needed, was a slew wavefolder. How useful, nerdy, and pointless.Not so much. Listen to this little monster.Creature is up to 32 (or more, at high sample rates) soft slew saturators, stacked up like the poles of a filter. It acts like a distortion, except it's not a distortion. It acts like a filter, but it's even less of a filter. Its interaction with sample rate is really strange (has to scale up with the square root of the sample rate multiplier!)And what Creature really does, is roar.As you keep adding Depth, the gain and the thunder increase unreasonably. The total force on tap is pretty ridiculous, and it keeps getting harder to control as you turn it up. There's an Inv control that can give you a really interesting cancellation that acts like a highpass-ish, but not like any highpass you've ever heard. Using it in phase, in Wet mode, unleashes a monstrous overdrive with humongous bass that refuses to lose weight even at impossibly high gains (real interesting on drum rooms!)There is no overdrive. There is no EQ. There is no highpass.It's just Creature, which is very much its own beast. It's also a very, very simple algorithm (isn't that so often the way?) so especially at low Depth settings, all this monstrousness can be yours for almost no CPU. I'll be finding ways to put this to use, but as always, you've got it fresh from the plugin forges. Be careful, and have fun with your new Creature."
+    "So here's something new: didn't exist before, even I didn't have it. Creature is a soft slew saturator. It's a way of working with applying a sin() function to slew clipping. In fact it applies an unbounded sin() function, so it might be technically considered a slew wavefolder? Because that's what everybody needed, was a slew wavefolder. How useful, nerdy, and pointless. Not so much. Listen to this little monster. Creature is up to 32 (or more, at high sample rates) soft slew saturators, stacked up like the poles of a filter. It acts like a distortion, except it's not a distortion. It acts like a filter, but it's even less of a filter. Its interaction with sample rate is really strange (has to scale up with the square root of the sample rate multiplier!) And what Creature really does, is roar. As you keep adding Depth, the gain and the thunder increase unreasonably. The total force on tap is pretty ridiculous, and it keeps getting harder to control as you turn it up. There's an Inv control that can give you a really interesting cancellation that acts like a highpass-ish, but not like any highpass you've ever heard. Using it in phase, in Wet mode, unleashes a monstrous overdrive with humongous bass that refuses to lose weight even at impossibly high gains (real interesting on drum rooms!) There is no overdrive. There is no EQ. There is no highpass. It's just Creature, which is very much its own beast. It's also a very, very simple algorithm (isn't that so often the way?) so especially at low Depth settings, all this monstrousness can be yours for almost no CPU. I'll be finding ways to put this to use, but as always, you've got it fresh from the plugin forges. Be careful, and have fun with your new Creature."
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Creature final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'crea';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -60,20 +64,17 @@ class Creature final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -85,8 +86,7 @@ class Creature final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.26; break;
             case kParamB: return 0.26; break;
             case kParamC: return 1.0; break;
@@ -98,11 +98,10 @@ class Creature final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drive"; break;
             case kParamB: return "depth"; break;
-            case kParamC: return "inv/wet"; break;
+            case kParamC: return "invwet"; break;
 
             default: break;
         }
@@ -111,8 +110,7 @@ class Creature final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drive"; break;
             case kParamB: return "Depth"; break;
             case kParamC: return "Inv/Wet"; break;
@@ -124,28 +122,28 @@ class Creature final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -165,8 +163,7 @@ class Creature final : public Effect<T>
         if (dry > 1.0) {
             dry = 1.0; // full dry for use with inv, to 0.0 at full wet
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

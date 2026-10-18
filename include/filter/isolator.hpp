@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Isolator is a steep highpass or lowpass filter, like you might find in a speaker crossover."
 };
 constexpr std::string_view k_long_description{
-    "Isolator is like some of my Biquad Filter plugins, except it’s tuned to a particular purpose. In DJing, one technique is to use a filter on the full mix for effect, and Isolator is geared towards two specific tricks in that vein: sweeping the filter down until the music is just a throb and then bringing it back, or sweeping the filter up to leave only highs and then dropping the bass back in.This is done using a speaker-crossover style filter: Isolator is a fifth order Butterworth filter made out of three series biquad filters run inside an instance of Airwindows Console. It rolls off at 30 dB/octave (I think I had this as 36db/octave in the video, but that would be a sixth-order filter) and probably slightly steeper than that, because I’m up to my usual tricks and chose the fifth order Butterworth because it’s made out of Q factors that are a close approximation of the golden ratio. So, I’ve used that, making the filter JUST a bit steeper than normal :D also, the way the frequency control is mapped, means it gives you accurate control over the full Nyquist range of the filter AND still puts the midrange in the middle of the control, through changing the logarithm of the filter frequency. That means it always is able to go full-range no matter what sample rate you’re at: maxed out, is always ‘max sample rate’, it just sweeps farther up when run at higher sample rates once you’re at the far right of the control.That’s the tech rundown. In practice, this is a lowpass/highpass filter. You can sweep it around, though it’s possible to freak it out if you throw a lot of filter-sweep activity at it in a zone where it’s handling a lot of energy. It wouldn’t be good to try and FM this control: biquads sound wonderfully smooth and rich but they won’t handle that treatment, especially run inside their own version of Console. You can use the treble and bass controls as a form of shelf, or output gain: note that I’ve set them up for instant response so you CAN FM them or do really aggressive, choppy things with them without upsetting the filter. That said, if you have a heavily bassy sound coming through them, you can get clicks since they will respond instantly: it’s that or have them chase the value, and you can’t do aggressive glitchy stuff if you chase the value, so I’ve got them responding directly. That does mean you can do stuff like have the lows coming through and then ‘flicker’ in the highs setting for a glitchy effect, at whatever speed you can automate the slider.I expect mostly this will be useful for the classic ‘now it’s all bass… and now the full mix gradually swells up’ effect, but there are many possible uses. You can use it to neatly lop off highs or lows with the steepest cutoff possible that isn’t QUITE resonant. You can cut the bass on tracks with great accuracy, and you can use it as a shelf of great accuracy: the bands are made by subtracting from the lowpassed version, so having both treble and bass full up means you have literally unaltered digital audio, apart from some ‘zero dB’ multiplications. That means very subtle cuts in highs OR lows might be using a sharp near-resonant filter sound, but the less cut you have the cleaner the output will be. It’s a mastering-grade surgical high/low shelf, much like professional DJ isolators must be constructed to carry the full mix with ideal sound quality.Except I can beat those in one very Airwindows detail: if you are using it as a lowpass, and you’ve got high on zero and low on 1 and you open up the filter completely sweeping it up… no matter what sample rate you’re at, once you reach 1 (full crank) on the frequency control, it seamlessly bypasses itself while still calculating the filtered signal. So, unlike analog isolators, when you run THIS isolator on the full mix, at times you’re not using it, it is literally not in the signal path anymore. :D"
+    "Isolator is like some of my Biquad Filter plugins, except it’s tuned to a particular purpose. In DJing, one technique is to use a filter on the full mix for effect, and Isolator is geared towards two specific tricks in that vein: sweeping the filter down until the music is just a throb and then bringing it back, or sweeping the filter up to leave only highs and then dropping the bass back in. This is done using a speaker-crossover style filter: Isolator is a fifth order Butterworth filter made out of three series biquad filters run inside an instance of Airwindows Console. It rolls off at 30 dB/octave (I think I had this as 36db/octave in the video, but that would be a sixth-order filter) and probably slightly steeper than that, because I’m up to my usual tricks and chose the fifth order Butterworth because it’s made out of Q factors that are a close approximation of the golden ratio. So, I’ve used that, making the filter JUST a bit steeper than normal :D also, the way the frequency control is mapped, means it gives you accurate control over the full Nyquist range of the filter AND still puts the midrange in the middle of the control, through changing the logarithm of the filter frequency. That means it always is able to go full-range no matter what sample rate you’re at: maxed out, is always ‘max sample rate’, it just sweeps farther up when run at higher sample rates once you’re at the far right of the control. That’s the tech rundown. In practice, this is a lowpass/highpass filter. You can sweep it around, though it’s possible to freak it out if you throw a lot of filter-sweep activity at it in a zone where it’s handling a lot of energy. It wouldn’t be good to try and FM this control: biquads sound wonderfully smooth and rich but they won’t handle that treatment, especially run inside their own version of Console. You can use the treble and bass controls as a form of shelf, or output gain: note that I’ve set them up for instant response so you CAN FM them or do really aggressive, choppy things with them without upsetting the filter. That said, if you have a heavily bassy sound coming through them, you can get clicks since they will respond instantly: it’s that or have them chase the value, and you can’t do aggressive glitchy stuff if you chase the value, so I’ve got them responding directly. That does mean you can do stuff like have the lows coming through and then ‘flicker’ in the highs setting for a glitchy effect, at whatever speed you can automate the slider. I expect mostly this will be useful for the classic ‘now it’s all bass… and now the full mix gradually swells up’ effect, but there are many possible uses. You can use it to neatly lop off highs or lows with the steepest cutoff possible that isn’t QUITE resonant. You can cut the bass on tracks with great accuracy, and you can use it as a shelf of great accuracy: the bands are made by subtracting from the lowpassed version, so having both treble and bass full up means you have literally unaltered digital audio, apart from some ‘zero dB’ multiplications. That means very subtle cuts in highs OR lows might be using a sharp near-resonant filter sound, but the less cut you have the cleaner the output will be. It’s a mastering-grade surgical high/low shelf, much like professional DJ isolators must be constructed to carry the full mix with ideal sound quality. Except I can beat those in one very Airwindows detail: if you are using it as a lowpass, and you’ve got high on zero and low on 1 and you open up the filter completely sweeping it up… no matter what sample rate you’re at, once you reach 1 (full crank) on the frequency control, it seamlessly bypasses itself while still calculating the filtered signal. So, unlike analog isolators, when you run THIS isolator on the full mix, at times you’re not using it, it is literally not in the signal path anymore. :D"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Isolator final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'isol';
     double biquadA[15];
     double biquadB[15];
     double biquadC[15]; // note that this stereo form doesn't require L and R forms!
@@ -64,20 +68,17 @@ class Isolator final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -89,8 +90,7 @@ class Isolator final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -102,8 +102,7 @@ class Isolator final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "freq"; break;
             case kParamB: return "high"; break;
             case kParamC: return "low"; break;
@@ -115,8 +114,7 @@ class Isolator final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Freq"; break;
             case kParamB: return "High"; break;
             case kParamC: return "Low"; break;
@@ -128,28 +126,28 @@ class Isolator final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -203,8 +201,7 @@ class Isolator final : public Effect<T>
         biquadC[6] = (1.0 - K / biquadC[1] + K * K) * norm;
         // there is a form for highpass
         // but I would suggest subtracting the lowpass from dry
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BussColors4 is the Airwindows console emulations, now working up to 192K correctly."
 };
 constexpr std::string_view k_long_description{
-    "This plugin’s a pretty huge deal: it’s been around since before console emulations were a thing, and I’ve been steadily working on it year after year. There’s not been much to do: my original algorithms, once I moved past the earliest incarnation as the ‘Character’ plugins, were so solid that it left little to do. BussColors has sold $22,445 of plugins over the years, as Audio Units alone, in spite of the fact that it has always been a 44.1K plug (due to being based on a convolution model).The story there is, a guy at NoiseVault always wanted someone to make a plugin which used his sets of hardware convolution kernels, which he’d done at all different levels. Sort of the Nebula thing (Giancarlo has been a great help when I was getting the VST thing going, check out Nebula)I’m not that. I’m Chris from Airwindows… so I set out to make my own version of this sort of thing, with hardcoded algorithms generated on-the-fly, as raw and close to the metal as I could get it. And I got some pretty respectable CPU efficiency with all of the tone quality I wanted, limited to 44.1K.UNTIL NOW :)Try it. BussColors4 is the newest version of BussColors, and it works at any sample rate and gets you the same sound. Better, in fact: I like what it does a lot better at 96K and 192K. It also doesn’t greatly expand processing and CPU hit at higher sample rates. I think this one’s a real highlight of the Airwindows arsenal. It would definitely be worth your $50, like its predecessors (well, I always did give existing BussColors users free updates for life, I mean for new buyers). Feel free to shoot it out against the most expensive and/or CPU-hungry options and I think it will clobber all comers.The sources of the models in BussColors are as follows:Dark (originally Cider) is a Focusrite and resembles an MCI console a bitRock (also seen in the Logical compressor) is from SSL impulses, obviously it's SSL in natureLush (originally Neverland) is from Neve impulsesVibe (originally in the Elation compressor) is from LA-2A impulsesHolo (originally in Precious) is from Precision8 impulsesPunch (originally in APIcolypse) is from API impulsesSteel (originally in Calibre) is something else, I don't remember whatTube (originally Luxor) is from Manley Massive Passive impulsesAll of these run a form of dynamic convolution which means they are never EXACTLY what the source impulses would have them be: it's more complicated than that. So, treat them as original things, not as attempts to clone whatever original gear sourced the impulses. In the end, they're BussColors(4)."
+    "This plugin’s a pretty huge deal: it’s been around since before console emulations were a thing, and I’ve been steadily working on it year after year. There’s not been much to do: my original algorithms, once I moved past the earliest incarnation as the ‘Character’ plugins, were so solid that it left little to do. BussColors has sold $22,445 of plugins over the years, as Audio Units alone, in spite of the fact that it has always been a 44.1K plug (due to being based on a convolution model). The story there is, a guy at NoiseVault always wanted someone to make a plugin which used his sets of hardware convolution kernels, which he’d done at all different levels. Sort of the Nebula thing (Giancarlo has been a great help when I was getting the VST thing going, check out Nebula) I’m not that. I’m Chris from Airwindows… so I set out to make my own version of this sort of thing, with hardcoded algorithms generated on-the-fly, as raw and close to the metal as I could get it. And I got some pretty respectable CPU efficiency with all of the tone quality I wanted, limited to 44.1K. UNTIL NOW :) Try it. BussColors4 is the newest version of BussColors, and it works at any sample rate and gets you the same sound. Better, in fact: I like what it does a lot better at 96K and 192K. It also doesn’t greatly expand processing and CPU hit at higher sample rates. I think this one’s a real highlight of the Airwindows arsenal. It would definitely be worth your $50, like its predecessors (well, I always did give existing BussColors users free updates for life, I mean for new buyers). Feel free to shoot it out against the most expensive and/or CPU-hungry options and I think it will clobber all comers. The sources of the models in BussColors are as follows: Dark (originally Cider) is a Focusrite and resembles an MCI console a bit Rock (also seen in the Logical compressor) is from SSL impulses, obviously it's SSL in nature Lush (originally Neverland) is from Neve impulses Vibe (originally in the Elation compressor) is from LA-2A impulses Holo (originally in Precious) is from Precision8 impulses Punch (originally in APIcolypse) is from API impulses Steel (originally in Calibre) is something else, I don't remember what Tube (originally Luxor) is from Manley Massive Passive impulses All of these run a form of dynamic convolution which means they are never EXACTLY what the source impulses would have them be: it's more complicated than that. So, treat them as original things, not as attempts to clone whatever original gear sourced the impulses. In the end, they're BussColors(4)."
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BussColors4 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bsc4';
     double bL[175]; // full buffer for high sample rates. Scales to 192K
     double bR[175]; // full buffer for high sample rates. Scales to 192K
     double dL[100]; // buffer for calculating sag as it relates to the dynamic impulse synthesis. To 192K.
@@ -103,21 +107,18 @@ class BussColors4 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
             case kParamC: C = value; break;
-            case kParamD: D = value; break;
-
-            default: break;
+            case kParamD: D = value; break; // this is the popup, stored as a float
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -130,8 +131,7 @@ class BussColors4 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -144,12 +144,11 @@ class BussColors4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "color"; break;
-            case kParamB: return "input trim"; break;
-            case kParamC: return "output trim"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamB: return "inputtrim"; break;
+            case kParamC: return "outputtrim"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -158,8 +157,7 @@ class BussColors4 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Color"; break;
             case kParamB: return "Input Trim"; break;
             case kParamC: return "Output Trim"; break;
@@ -172,30 +170,43 @@ class BussColors4 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 7.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Dark", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Rock", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Lush", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Vibe", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Holo", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Punch", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "Steel", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "Tube", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed A 'popup' parameter, exit
+            case kParamB: float2string((B * 36.0) - 18.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * 36.0) - 18.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return "dB"; break;
-            case kParamC: return "dB"; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -231,8 +242,7 @@ class BussColors4 final : public Effect<T>
         double inputSampleL;
         double inputSampleR;
         int console = (int)(A * 7.999) + 1; // the AU used a 1-8 index, will just keep it
-        switch (console)
-        {
+        switch (console) {
             case 1:
                 offsetA = 4;
                 gain = g[1];
@@ -282,8 +292,7 @@ class BussColors4 final : public Effect<T>
         outgain *= pow(10.0, (((C * 36.0) - 18.0) + 3.3) / 14.0); // add adjustment factor
         double wet = D;
         // removed extra dry variable
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -387,8 +396,7 @@ class BussColors4 final : public Effect<T>
             // be the correct way to find out this (or indeed, whether doing another add insode the convolutions would
             // be the best bet,
             // The convolutions!
-            switch (console)
-            {
+            switch (console) {
                 case 1:
                     // begin Cider (Focusrite) MCI
                     inputSampleL += (bL[c[1]] * (0.61283288942201319 + (0.00024011410669522 * applyconvL)));
@@ -686,8 +694,7 @@ class BussColors4 final : public Effect<T>
                     // end Tube (Manley) conv
                     break;
             }
-            switch (console)
-            {
+            switch (console) {
                 case 1:
                     // begin Cider (Focusrite) MCI
                     inputSampleR += (bR[c[1]] * (0.61283288942201319 + (0.00024011410669522 * applyconvR)));

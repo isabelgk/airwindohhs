@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Verbity is a dual-mono reverb, which uses feedforward reverb topology."
 };
 constexpr std::string_view k_long_description{
-    "Late nights of reverb hacking (ok, Monday mornings?) give rise to a new best reverb. At least, best for me. Perhaps it’ll count as ‘best’ in general, we shall see, that is rather a matter of taste but it’s my new favorite and is inspiring me a lot.Meet Verbity.This came from experiments in feedforward reverb topology, something Casey from Bricasti likes to recommend. Well, I can see why! Verbity uses the same Householder reverb matrices as the previous Reverb and MatrixVerb, but instead of each bank feeding back on itself, each bank feeds another bank and only the very last one of three, feeds back to the start again. I’m going to call this innovative not because it’s such a novel concept, but because it’s innovative to me, as I’d never figured that stuff out before. There are interesting things having to do with how you arrange the delay times across the three banks, and I’ve got some concepts from MV going for less sustainy spaces that should help spatial plausibility, and I’ve made some choices around the wetness and filter controls that are a little unusual.Bottom line is, listen to this thing! I’m real happy with the tone of it. I feel it sort of kills all my previous reverbs, which is awkward when I named one of them ‘Reverb’, but my namespace issues won’t affect your reverb tones. Just listen! Casey’s a wise man, and was certainly right about the usefulness of feedforward networks. I haven’t got any of his code or any other hints from him… but all the same, that one detail made a huge difference.The Darkness control has one quirk to be aware of: you can adjust it all the way to total darkness, 1.0 which translates to complete lowpass filter. Be aware that if you do that, you can trap DC energy inside the filter, so if you’re going for extreme filtration try to adjust so that the value is nearly 1.0 without actually being it. For most purposes that should work: I just don’t like to restrict the controls. For any normal use you won’t have Darkness nearly that high anyhow.The Wetness control is not exactly a traditional Dry/Wet, so I’m using Wetness as the name. What it does is, as you increase it you add Wet up to 0.5 setting without turning down Dry AT ALL. Verbity can be used on stems and busses in a Console mix to put excellent custom reverb spaces on things, and set up this way you’re not constantly shifting your dry-signal level when adjusting, you’re just adjusting the verb level in there. If you go beyond 0.5, you start attenuating Dry while leaving Wet at full crank, and for sends you’ll want Wetness to be 1.0 just as it would be with a Dry/Wet.This is a dual mono verb, so for now you don’t gain anything adding Srsly2 unless you have actual stereo content going in. Centered stuff is going to stay centered. You might not notice right off since it’s so deep, so I’m telling you. This is consistent with my other reverbs, except that MatrixVerb and Reverb are able to add stereo pitch bending which will spread center content. Verbity is your basic Airwindows Bricasti-style reverb, which also means it doesn’t have pitch shifting: Casey doesn’t like it, and this is an exploration into the things Casey’s talked about publically, to see if his wisdom leads to better reverbs.Signs point to yes :)"
+    "Late nights of reverb hacking (ok, Monday mornings?) give rise to a new best reverb. At least, best for me. Perhaps it’ll count as ‘best’ in general, we shall see, that is rather a matter of taste but it’s my new favorite and is inspiring me a lot. Meet Verbity. This came from experiments in feedforward reverb topology, something Casey from Bricasti likes to recommend. Well, I can see why! Verbity uses the same Householder reverb matrices as the previous Reverb and MatrixVerb, but instead of each bank feeding back on itself, each bank feeds another bank and only the very last one of three, feeds back to the start again. I’m going to call this innovative not because it’s such a novel concept, but because it’s innovative to me, as I’d never figured that stuff out before. There are interesting things having to do with how you arrange the delay times across the three banks, and I’ve got some concepts from MV going for less sustainy spaces that should help spatial plausibility, and I’ve made some choices around the wetness and filter controls that are a little unusual. Bottom line is, listen to this thing! I’m real happy with the tone of it. I feel it sort of kills all my previous reverbs, which is awkward when I named one of them ‘Reverb’, but my namespace issues won’t affect your reverb tones. Just listen! Casey’s a wise man, and was certainly right about the usefulness of feedforward networks. I haven’t got any of his code or any other hints from him… but all the same, that one detail made a huge difference. The Darkness control has one quirk to be aware of: you can adjust it all the way to total darkness, 1.0 which translates to complete lowpass filter. Be aware that if you do that, you can trap DC energy inside the filter, so if you’re going for extreme filtration try to adjust so that the value is nearly 1.0 without actually being it. For most purposes that should work: I just don’t like to restrict the controls. For any normal use you won’t have Darkness nearly that high anyhow. The Wetness control is not exactly a traditional Dry/Wet, so I’m using Wetness as the name. What it does is, as you increase it you add Wet up to 0.5 setting without turning down Dry AT ALL. Verbity can be used on stems and busses in a Console mix to put excellent custom reverb spaces on things, and set up this way you’re not constantly shifting your dry-signal level when adjusting, you’re just adjusting the verb level in there. If you go beyond 0.5, you start attenuating Dry while leaving Wet at full crank, and for sends you’ll want Wetness to be 1.0 just as it would be with a Dry/Wet. This is a dual mono verb, so for now you don’t gain anything adding Srsly2 unless you have actual stereo content going in. Centered stuff is going to stay centered. You might not notice right off since it’s so deep, so I’m telling you. This is consistent with my other reverbs, except that MatrixVerb and Reverb are able to add stereo pitch bending which will spread center content. Verbity is your basic Airwindows Bricasti-style reverb, which also means it doesn’t have pitch shifting: Casey doesn’t like it, and this is an exploration into the things Casey’s talked about publically, to see if his wisdom leads to better reverbs. Signs point to yes :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Verbity final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vbty';
     double iirAL;
     double iirBL;
     double aIL[6480];
@@ -217,21 +221,18 @@ class Verbity final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -244,8 +245,7 @@ class Verbity final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.25; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.25; break;
@@ -258,8 +258,7 @@ class Verbity final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "bigness"; break;
             case kParamB: return "longness"; break;
             case kParamC: return "darkness"; break;
@@ -272,8 +271,7 @@ class Verbity final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Bigness"; break;
             case kParamB: return "Longness"; break;
             case kParamC: return "Darkness"; break;
@@ -286,30 +284,30 @@ class Verbity final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -367,8 +365,7 @@ class Verbity final : public Effect<T>
         delayF = 4217.0 * size;
         delayG = 2269.0 * size;
         delayH = 1597.0 * size;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

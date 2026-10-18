@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Ultralight2 is more of the most low-CPU matrix reverb I can make."
 };
 constexpr std::string_view k_long_description{
-    "This plugin continues work I'm doing, trying to make working demos of ideas for the Godot game engine.Much like FastDistance is a filter that (when not pushed to really heavy attenuation of brightness) is way more efficient than using a DF1 biquad filter, Ultralight2 is a reverb that's way more efficient than using any of my other reverbs. Why? Because it's extremely limited. There's nearly nothing to it, just a 4x4 Householder matrix and some tone shaping and a teeny allpass chain that runs in parallel to the predelay.Why? Because I want to put dozens, maybe hundreds of them, into a game… and have the game still run and have room for graphics and gameplay.This would involve placing them as ultrasimple mono instances, each with its own delay times and settings, in a scene. They'd all get fed all of the sounds in the scene, and then your environment would be composed of all the distinct spaces sounding off at once.The controls have changed a bit! I had to do a bugfix on Ultralight anyway (redownload it if you want the tone shaping to work fully as intended). Now, rather than making part of the first delays turn into allpasses, I did further experimenting. No wonder I never liked allpasses, they sound awful unless the delay time is so quick it's inside the 'Haas effect' region where really rapid echoes blur and merge… without that, they're useless. Now all the matrix delays are normal reverb delays (which also means they can run even faster in SIMD) and then there's another thing that goes in front…Turns out you can use exactly the same sequence of operations to do an allpass, and a simple delay line. THAT means it can be SIMD (single instruction, multiple data). And it turns out if you set these things up right (never mind loops, just do things in fours) compilers really do optimize for them if they can. I learned that when some AMD users on retro machines got wildly worse performance than they should: your processor has to at least be able to do vector processing on 32-bit floats to run Ultralight or Ultralight2. Anything half recent ought to do it, though I'm interested in exceptions (I don't think stuff compiled on the Pi will be using SIMD).So now there's Damping (same as RT60, but more damping means less sustain), but if you turn Damping to zero, rather than getting infinite sustain, now you get zero reverb… just only the predelay, dry/wet, and the allpasses. So Ultralight2 can also be used as a blurry slapback.Then there's unSolid and unRflec, which are the highpass and lowpass like they are in Ultralight. But there are changes here too… unSolid is the highpass, where if you turn it up the decay gets brighter and you lose bass through the walls. However, the frequencies are a bit different than they are in Ultralight. unRflec is the lowpass, like in Ultralight, where I've fixed a simple bug and re-uploaded it (it's just the next week, be aware that's happened and consider it an Ultralight Redux). However, with Ultralight, these things go from 0 to 4, incrementally adding stages of the feedback path into the filtering, and using the same paths: for Ultralight they count down from 4 which is the least filtered, and they pick the same paths so choosing 3 on both means that path is both highpassed and lowpassed.For Ultralight2, you set it to 0 for no filtering, and 1 to filter only one path… but they come from opposite directions. So, if you set the filters to 2 and 2, you've just put a filter on every path, but only one. If you pick 1 and 3, or 3 and 1, same deal: you've affected all the feedback, but in different ways. 4 and 4 gives you full highpassing and lowpassing on every path, and so on. I just found that it sounded better that way.You can also set the predelay to 0 and then there's no allpassing. Each part of the reverb can be individually bypassed, just in case.Dry/Wet is the reverb (there are no early reflections) and works as usual, except that in Ultralight2…Distnce is the distance high frequency attentuation, just like in FastDistance, and runs AFTER dry/wet so you can hear what a sound, its predelay, and its reverb, sound like in a game engine with all of them far away from you. That's because, like my earlier plugin VerbSixes, this plugin is the tool I use to audition possible 4x4 reverbs to add to the game engine. I paste in the new values in the header file, build it, and do a sound example to hear what it did. Especially when dialing in settings, that's helpful. Again, this is NOT really meant for musician or mix use, though if you must run a reverb on impossibly potato hardware (that can do SIMD), this might save you.I think this will hold me with low-CPU verbs for now. I've got big things in store for the flagship reverbs: turns out there's a kind of matrix for 6x6es that's way better than Householder, which is optimal for stuff like these 4x4s. So this work has led to some nice advances in Airwindows-land :)"
+    "This plugin continues work I'm doing, trying to make working demos of ideas for the Godot game engine. Much like FastDistance is a filter that (when not pushed to really heavy attenuation of brightness) is way more efficient than using a DF1 biquad filter, Ultralight2 is a reverb that's way more efficient than using any of my other reverbs. Why? Because it's extremely limited. There's nearly nothing to it, just a 4x4 Householder matrix and some tone shaping and a teeny allpass chain that runs in parallel to the predelay. Why? Because I want to put dozens, maybe hundreds of them, into a game… and have the game still run and have room for graphics and gameplay. This would involve placing them as ultrasimple mono instances, each with its own delay times and settings, in a scene. They'd all get fed all of the sounds in the scene, and then your environment would be composed of all the distinct spaces sounding off at once. The controls have changed a bit! I had to do a bugfix on Ultralight anyway (redownload it if you want the tone shaping to work fully as intended). Now, rather than making part of the first delays turn into allpasses, I did further experimenting. No wonder I never liked allpasses, they sound awful unless the delay time is so quick it's inside the 'Haas effect' region where really rapid echoes blur and merge… without that, they're useless. Now all the matrix delays are normal reverb delays (which also means they can run even faster in SIMD) and then there's another thing that goes in front… Turns out you can use exactly the same sequence of operations to do an allpass, and a simple delay line. THAT means it can be SIMD (single instruction, multiple data). And it turns out if you set these things up right (never mind loops, just do things in fours) compilers really do optimize for them if they can. I learned that when some AMD users on retro machines got wildly worse performance than they should: your processor has to at least be able to do vector processing on 32-bit floats to run Ultralight or Ultralight2. Anything half recent ought to do it, though I'm interested in exceptions (I don't think stuff compiled on the Pi will be using SIMD). So now there's Damping (same as RT60, but more damping means less sustain), but if you turn Damping to zero, rather than getting infinite sustain, now you get zero reverb… just only the predelay, dry/wet, and the allpasses. So Ultralight2 can also be used as a blurry slapback. Then there's unSolid and unRflec, which are the highpass and lowpass like they are in Ultralight. But there are changes here too… unSolid is the highpass, where if you turn it up the decay gets brighter and you lose bass through the walls. However, the frequencies are a bit different than they are in Ultralight. unRflec is the lowpass, like in Ultralight, where I've fixed a simple bug and re-uploaded it (it's just the next week, be aware that's happened and consider it an Ultralight Redux). However, with Ultralight, these things go from 0 to 4, incrementally adding stages of the feedback path into the filtering, and using the same paths: for Ultralight they count down from 4 which is the least filtered, and they pick the same paths so choosing 3 on both means that path is both highpassed and lowpassed. For Ultralight2, you set it to 0 for no filtering, and 1 to filter only one path… but they come from opposite directions. So, if you set the filters to 2 and 2, you've just put a filter on every path, but only one. If you pick 1 and 3, or 3 and 1, same deal: you've affected all the feedback, but in different ways. 4 and 4 gives you full highpassing and lowpassing on every path, and so on. I just found that it sounded better that way. You can also set the predelay to 0 and then there's no allpassing. Each part of the reverb can be individually bypassed, just in case. Dry/Wet is the reverb (there are no early reflections) and works as usual, except that in Ultralight2… Distnce is the distance high frequency attentuation, just like in FastDistance, and runs AFTER dry/wet so you can hear what a sound, its predelay, and its reverb, sound like in a game engine with all of them far away from you. That's because, like my earlier plugin VerbSixes, this plugin is the tool I use to audition possible 4x4 reverbs to add to the game engine. I paste in the new values in the header file, build it, and do a sound example to hear what it did. Especially when dialing in settings, that's helpful. Again, this is NOT really meant for musician or mix use, though if you must run a reverb on impossibly potato hardware (that can do SIMD), this might save you. I think this will hold me with low-CPU verbs for now. I've got big things in store for the flagship reverbs: turns out there's a kind of matrix for 6x6es that's way better than Householder, which is optimal for stuff like these 4x4s. So this work has led to some nice advances in Airwindows-land :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -262,23 +262,20 @@ class Ultralight2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -293,8 +290,7 @@ class Ultralight2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.65; break;
             case kParamB: return 0.75; break;
             case kParamC: return 0.75; break;
@@ -309,13 +305,12 @@ class Ultralight2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "damping"; break;
             case kParamB: return "unsolid"; break;
             case kParamC: return "unreflc"; break;
             case kParamD: return "predlay"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
             case kParamF: return "distnce"; break;
 
             default: break;
@@ -325,8 +320,7 @@ class Ultralight2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Damping"; break;
             case kParamB: return "UnSolid"; break;
             case kParamC: return "UnReflc"; break;
@@ -341,34 +335,34 @@ class Ultralight2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((int)(A * 9.99), text, kVstMaxParamStrLen); break;
+            case kParamB: int2string((int)(B * 4.99), text, kVstMaxParamStrLen); break;
+            case kParamC: int2string((int)(C * 4.99), text, kVstMaxParamStrLen); break;
+            case kParamD: int2string((int)(D * 998.0), text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -418,8 +412,7 @@ class Ultralight2 final : public Effect<T>
         distance -= (float)distanceSteps; // 0.9984
         // distance is not a property of the reverb node, it's a property of
         // the game audio engine, where every source can be localized
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             float inputSampleL = *in1;
             float inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -633,8 +626,7 @@ class Ultralight2 final : public Effect<T>
                 fBR = fma(hBR, 2.0f, hER);
                 fCR = fma(hCR, 2.0f, hER);
                 fDR = fma(hDR, 2.0f, hER);
-                switch (unSolid)
-                {
+                switch (unSolid) {
                     case 0:
                         fhAL *= 0.25f;
                         fAL -= fhAL * 0.125f;
@@ -666,8 +658,7 @@ class Ultralight2 final : public Effect<T>
                     case 4:
                         break;
                 }
-                switch (unReflect)
-                {
+                switch (unReflect) {
                     case 0:
                         fDL = (fDL + flDL) * 0.5f;
                         flDL = fDL;
@@ -713,8 +704,7 @@ class Ultralight2 final : public Effect<T>
                 inputSampleL = (firstDryL * (1.0f - distance)) + (inputSampleL * distance);
                 // having done at least one interpolation we can now do the integer number of stages
                 if (prevDistance < distanceSteps) {
-                    switch (prevDistance)
-                    {
+                    switch (prevDistance) {
                         case 0: lsA = inputSampleL; // if we've changed the setting
                         case 1: lsB = inputSampleL; // reset the ones being put back into play
                         case 2: lsC = inputSampleL; // this won't be happening constantly,
@@ -770,8 +760,7 @@ class Ultralight2 final : public Effect<T>
                         case 52: break; // reset prevDistance after R channel
                     }
                 }
-                switch (52 - distanceSteps)
-                { // apply the stack of filter steps to produce the distance filter
+                switch (52 - distanceSteps) { // apply the stack of filter steps to produce the distance filter
                     case 0:
                         inputSampleL += lsz;
                         inputSampleL *= 0.5f;
@@ -991,8 +980,7 @@ class Ultralight2 final : public Effect<T>
                 inputSampleR = (firstDryR * (1.0f - distance)) + (inputSampleR * distance);
                 // having done at least one interpolation we can now do the integer number of stages
                 if (prevDistance < distanceSteps) {
-                    switch (prevDistance)
-                    {
+                    switch (prevDistance) {
                         case 0: rsA = inputSampleR; // if we've changed the setting
                         case 1: rsB = inputSampleR; // reset the ones being put back into play
                         case 2: rsC = inputSampleR; // this won't be happening constantly,
@@ -1048,8 +1036,7 @@ class Ultralight2 final : public Effect<T>
                         case 52: prevDistance = distanceSteps;
                     }
                 }
-                switch (52 - distanceSteps)
-                { // apply the stack of filter steps to produce the distance filter
+                switch (52 - distanceSteps) { // apply the stack of filter steps to produce the distance filter
                     case 0:
                         inputSampleR += rsz;
                         inputSampleR *= 0.5f;

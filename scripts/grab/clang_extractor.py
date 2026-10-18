@@ -133,6 +133,8 @@ def _sanitize_reserved_identifiers(text: str) -> str:
 # plumbing with no analogue here), so they must not be initialized either.
 _NON_EMITTED_MEMBERS = {"_programName", "_canDo"}
 
+_TEMPLATE_IO_POINTERS = {"in1", "in2", "out1", "out2"}
+
 # Some upstream constructors leave a member unassigned that the processing code
 # then reads on its first pass. Reading an indeterminate value is undefined
 # behaviour, and where the member is recursive filter state the garbage persists
@@ -208,8 +210,31 @@ def _slice_and_filter(source: bytes, start_offset: int, end_offset: int) -> str:
     return _sanitize_reserved_identifiers(filtered)
 
 
+def _qualify_effect_calls(text: str) -> str:
+    """getSampleRate() lives in the dependent base Effect<T>, so an unqualified
+    call doesn't resolve inside the class template."""
+    return re.sub(r"(?<![:\w])getSampleRate\s*\(", "Effect<T>::getSampleRate(", text)
+
+
 def _references_any(cursor: cindex.Cursor, names: set) -> bool:
     return bool(find_all(cursor, lambda c: c.kind == cindex.CursorKind.DECL_REF_EXPR and c.spelling in names))
+
+
+def _outer_cases(switch: cindex.Cursor) -> list:
+    """The `case` labels belonging to `switch` itself, skipping those of any
+    switch nested inside one of its cases (e.g. a label chosen by value)."""
+    cases = []
+
+    def walk(c):
+        for child in c.get_children():
+            if child.kind == cindex.CursorKind.SWITCH_STMT:
+                continue
+            if child.kind == cindex.CursorKind.CASE_STMT:
+                cases.append(child)
+            walk(child)
+
+    walk(switch)
+    return cases
 
 
 def _case_variable(case: cindex.Cursor) -> str:
@@ -296,7 +321,7 @@ class PluginAst:
 
     def initialization_code(self) -> str:
         start_offset, end_offset = self._initialization_extent()
-        return _slice_and_filter(self.cpp_source, start_offset, end_offset)
+        return _qualify_effect_calls(_slice_and_filter(self.cpp_source, start_offset, end_offset))
 
     def processing_code(self) -> str:
         method = self._method_definition("processDoubleReplacing", self.proc_path, self.proc_tu)
@@ -313,31 +338,44 @@ class PluginAst:
         if skip == 0 or skip >= len(stmts):
             raise GrabError("Could not find input/output pointer declarations in processDoubleReplacing")
 
+        # the template declares in1/in2/out1/out2 itself; any other name needs its own declaration
+        pointer_decls = ""
+        for stmt in stmts[:skip]:
+            for var in stmt.get_children():
+                if var.kind != cindex.CursorKind.VAR_DECL or var.spelling in _TEMPLATE_IO_POINTERS:
+                    continue
+                init = list(var.get_children())[-1]
+                init_text = self.proc_source[init.extent.start.offset:init.extent.end.offset].decode("utf-8", errors="replace")
+                pointer_decls += f"T* {var.spelling} = {init_text};\n"
+
         start_offset = _line_start_offset(self.proc_source, stmts[skip].extent.start.offset)
         start_offset = _extend_over_leading_comments(self.proc_source, start_offset)
         # stmts[-1].extent.end can land before a trailing ';' or comment (e.g. a bare
         # expression statement as the function's last statement) -- slice to just
         # before the function body's own closing '}' instead, like initialization_code().
         end_offset = body.extent.end.offset - 1
-        result = _slice_and_filter(self.proc_source, start_offset, end_offset)
-        return result.replace("getSampleRate()", "Effect<T>::getSampleRate()")
+        result = pointer_decls + _slice_and_filter(self.proc_source, start_offset, end_offset)
+        return _qualify_effect_calls(result)
 
-    def file_scope_constants(self) -> str:
+    def file_scope_declarations(self) -> str:
         """Some plugins declare const globals in the .h (usually array-size
-        constants like `const int kshortA = 193;`) ahead of the class, and
-        reference them directly in private member declarations (e.g.
-        `double aAL[kshortA + 5];`). Carrying only the class's own private
-        section leaves those undefined, so pull in every top-level VAR_DECL
-        too -- harmless if unused (e.g. kNumInputs), required if not."""
-        decls = find_all(
-            self.h_tu.cursor,
-            lambda c: c.kind == cindex.CursorKind.VAR_DECL
-            and c.semantic_parent.kind == cindex.CursorKind.TRANSLATION_UNIT,
-            file=self.h_path,
-        )
+        constants like `const int kshortA = 193;`) or enums of named indices
+        ahead of the class, and reference them from private member declarations
+        or processing code. Carrying only the class's own private section leaves
+        those undefined, so pull in every top-level VAR_DECL and ENUM_DECL too,
+        except the parameter enum, which the template replaces."""
         lines = []
-        for decl in decls:
+        for decl in self.h_tu.cursor.get_children():
+            if not decl.location.file or str(decl.location.file) != str(self.h_path):
+                continue
             text = self.h_source[decl.extent.start.offset:decl.extent.end.offset].decode("utf-8", errors="replace")
+            if decl.kind == cindex.CursorKind.ENUM_DECL:
+                if any(c.spelling == "kNumParameters" for c in decl.get_children()):
+                    continue
+                lines.append(f"{text.rstrip().rstrip(';')};\n")
+                continue
+            if decl.kind != cindex.CursorKind.VAR_DECL:
+                continue
             text = text.rstrip().rstrip(";").strip()
             # normalize away whatever qualifiers the original had (const,
             # static, or neither) -- a non-static member's initializer isn't
@@ -381,7 +419,7 @@ class PluginAst:
         )
         start_offset = private_spec.extent.end.offset
         end_offset = class_decl.extent.end.offset - 1  # exclude the class's closing '}'
-        return self.file_scope_constants() + _slice_and_filter(self.h_source, start_offset, end_offset)
+        return self.file_scope_declarations() + _slice_and_filter(self.h_source, start_offset, end_offset)
 
     def _emitted_fields(self) -> list:
         return [
@@ -467,7 +505,7 @@ class PluginAst:
         if not switches:
             return {}
         result = {}
-        for case in find_all(switches[0], lambda c: c.kind == cindex.CursorKind.CASE_STMT):
+        for case in _outer_cases(switches[0]):
             variable = _case_variable(case)
             if variable is None:
                 continue
@@ -488,7 +526,7 @@ class PluginAst:
         if not switches:
             return {}
         result = {}
-        for case in find_all(switches[0], lambda c: c.kind == cindex.CursorKind.CASE_STMT):
+        for case in _outer_cases(switches[0]):
             variable = _case_variable(case)
             if variable is None:
                 continue
@@ -497,3 +535,55 @@ class PluginAst:
                 continue
             result[variable] = member_refs[0].spelling
         return result
+
+    def _parameter_enum_renames(self) -> dict:
+        """Upstream parameter enum constants whose names differ from the
+        template's kParamA, kParamB, ... convention, mapped to that name."""
+        enum_decl = find_first(
+            self.h_tu.cursor,
+            lambda c: c.kind == cindex.CursorKind.ENUM_DECL
+            and any(child.spelling == "kNumParameters" for child in c.get_children()),
+            file=self.h_path, description="parameter enum",
+        )
+        renames = {}
+        for constant in enum_decl.get_children():
+            if constant.spelling == "kNumParameters":
+                continue
+            expected = f"kParam{num_to_alpha(constant.enum_value)}"
+            if constant.spelling != expected:
+                renames[constant.spelling] = expected
+        return renames
+
+    def method_body(self, name: str) -> str:
+        """The verbatim body of a .cpp method, rewritten to compile inside the
+        class template: parameter enum constants renamed, Effect<T> calls
+        qualified, and `throw;` (upstream's "unknown parameter" default, which
+        would call std::terminate here) turned into `break;`. Empty when the
+        plugin doesn't define the method, as parameterless plugins may not."""
+        try:
+            method = self._method_definition(name, self.cpp_path, self.cpp_tu)
+        except GrabError:
+            return ""
+        body = find_first(method, lambda c: c.kind == cindex.CursorKind.COMPOUND_STMT,
+                          description=f"{name} body")
+        text = self.cpp_source[body.extent.start.offset + 1:body.extent.end.offset - 1].decode("utf-8", errors="replace")
+        for old, new in self._parameter_enum_renames().items():
+            text = re.sub(rf"\b{re.escape(old)}\b", new, text)
+        text = re.sub(r"\bthrow\s*;", "break;", text)
+        return _qualify_effect_calls(_sanitize_reserved_identifiers(text)).strip("\n") + "\n"
+
+    def shadows_members(self) -> bool:
+        """Whether any local variable or parameter in the emitted code reuses a
+        member's name, which -Wshadow and MSVC's C4458 warn about."""
+        fields = {f.spelling for f in self._emitted_fields()}
+        scopes = [self._constructor_definition(), self._method_definition("processDoubleReplacing", self.proc_path, self.proc_tu)]
+        for name in ("setParameter", "getParameterDisplay", "getParameterLabel"):
+            try:
+                scopes.append(self._method_definition(name, self.cpp_path, self.cpp_tu))
+            except GrabError:
+                pass
+        kinds = (cindex.CursorKind.VAR_DECL, cindex.CursorKind.PARM_DECL)
+        return any(
+            find_all(scope, lambda c: c.kind in kinds and c.spelling in fields)
+            for scope in scopes
+        )

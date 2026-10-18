@@ -49,6 +49,19 @@ def clone_upstream_source(repo_url: str, ref: str, dest: Path) -> Path:
     return dest
 
 
+def changed_plugin_dirs(root: Path, old_ref: str) -> set[str]:
+    """Names of the plugin source directories that differ between `old_ref`
+    and the commit checked out in the airwindows checkout at `root`."""
+    has_old = subprocess.run(["git", "cat-file", "-e", f"{old_ref}^{{commit}}"], cwd=root, capture_output=True)
+    if has_old.returncode != 0:
+        _run(["git", "fetch", "--depth", "1", "origin", old_ref], cwd=root)
+    diff = subprocess.run(
+        ["git", "diff", "--name-only", old_ref, "HEAD", "--", str(PLUGIN_SOURCE_SUBDIR)],
+        cwd=root, check=True, capture_output=True, text=True,
+    ).stdout
+    return {Path(line).relative_to(PLUGIN_SOURCE_SUBDIR).parts[0] for line in diff.splitlines() if line}
+
+
 def _run(args: list[str], cwd: Path):
     subprocess.run(args, cwd=cwd, check=True, capture_output=True, text=True)
 

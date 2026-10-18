@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "AtmosphereChannel is Console5 processing with powerful new acoustic distance effects."
 };
 constexpr std::string_view k_long_description{
-    "I’m pleased with this one: it’s in the Console5 family (so its parts can be interchanged with any other Console5 plugins) but it represents a few different breakthroughs, and if they work out, I’ll be keeping them.First, this is a multi-stage slew clipper. The effect’s a bit like PDConsole, a gluing and taming of bright digital highs: but, where PDConsole uses the algorithm of PurestDrive to get a more analog mixing-desk kind of sound, Atmosphere’s many stages of slew clipping (across fourteen samples, each with a different maximum slew) enforces the behavior of free air and acoustic distance. This has been a goal for quite a while, but I’ve never got results like these before (might be worth fitting a more exaggerated version into a ‘Distance 2’, if people like). It’s not calibrated to overwhelm, but the scale of your mix should be huge, and since it’s an extended-window slew clipping effect your quieter, subtler sounds don’t get muddied.This type of processing steps on the annoying digital harshness with a heavy foot, but doesn’t directly EQ: the results you get will depend on what it would be like to have your sound blasting away through a perfect playback system at a distance of ten to thirty feet. If you need up-close, bright and loud sounds, you’ll need to use another system (such as PurestConsole), this one is for space and scale. It’ll probably work well for some electronic mixes if they’re meant to sound loud, it’ll give a real hugeness to rock or metal mixes (so long as the desired effect is more ‘live gig’ in scale) and it will really come into its own summing orchestral stuff from virtual instruments (or anything with similar scale/power needs)."
+    "I’m pleased with this one: it’s in the Console5 family (so its parts can be interchanged with any other Console5 plugins) but it represents a few different breakthroughs, and if they work out, I’ll be keeping them. First, this is a multi-stage slew clipper. The effect’s a bit like PDConsole, a gluing and taming of bright digital highs: but, where PDConsole uses the algorithm of PurestDrive to get a more analog mixing-desk kind of sound, Atmosphere’s many stages of slew clipping (across fourteen samples, each with a different maximum slew) enforces the behavior of free air and acoustic distance. This has been a goal for quite a while, but I’ve never got results like these before (might be worth fitting a more exaggerated version into a ‘Distance 2’, if people like). It’s not calibrated to overwhelm, but the scale of your mix should be huge, and since it’s an extended-window slew clipping effect your quieter, subtler sounds don’t get muddied. This type of processing steps on the annoying digital harshness with a heavy foot, but doesn’t directly EQ: the results you get will depend on what it would be like to have your sound blasting away through a perfect playback system at a distance of ten to thirty feet. If you need up-close, bright and loud sounds, you’ll need to use another system (such as PurestConsole), this one is for space and scale. It’ll probably work well for some electronic mixes if they’re meant to sound loud, it’ll give a real hugeness to rock or metal mixes (so long as the desired effect is more ‘live gig’ in scale) and it will really come into its own summing orchestral stuff from virtual instruments (or anything with similar scale/power needs)."
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class AtmosphereChannel final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'atch';
     double gainchase;
     double settingchase;
     double chasespeed;
@@ -135,18 +139,15 @@ class AtmosphereChannel final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -156,8 +157,7 @@ class AtmosphereChannel final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
 
             default: break;
@@ -167,8 +167,7 @@ class AtmosphereChannel final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
 
             default: break;
@@ -178,8 +177,7 @@ class AtmosphereChannel final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
 
             default: break;
@@ -189,24 +187,24 @@ class AtmosphereChannel final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -248,8 +246,7 @@ class AtmosphereChannel final : public Effect<T>
         thresholdK = 1.603020998405568 / overallscale;
         thresholdL = 1.763323098246125 / overallscale;
         thresholdM = 1.939655408070737 / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

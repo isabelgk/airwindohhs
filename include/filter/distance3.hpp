@@ -11,17 +11,20 @@ constexpr std::string_view k_short_description{
     "Distance3 combines the best parts of Distance and Discontinuity."
 };
 constexpr std::string_view k_long_description{
-    "By request from my livestreams, let's jump right back into the Discontinuity thing, but this time combined with a much older plugin: the original Distance!This is a kind of plugin meant to darken the sound and make stuff sound really far away. Originally, I was thinking something that could take all the highs out and accentuate rumble, like turning a sound into the thunder version of itself. And so the first Distance worked basically as an EQ: three stacked stages of processing that combined to make stuff huge, kind of like my monitoring plugin SubsOnly.Thing is, that doesn't have any nonlinearities to speak of in it, not the kind that happen in the real world over that much air. And at the time I was working on a Console version called Atmosphere, and thought I had a handle on bringing in that kind of nonlinearity. And so the next one was Distance2… but it lost some of the purity and depth of Distance, but didn't sound quite the way I wanted. It was the best I could do at the time, and is still there if you're interested in different sorts of darken/distort.And then I brought in Discontinuity and was working on it in livestreams and someone mentioned, what if it was part of Distance? And the interesting thing is that Discontinuity also gets its sound from… three stages of processing, stacked. (as in, not side-by-side but in series, one after the other.)Anytime you look at a situation like that, you can think to yourself: well, I could run these two plugins on after the other, but what if I interleaved the stages? One of Distance, one of Discontinuity, another Distance, another Discontinuity, and so on? Surely that would combine the effects in a more interesting way, merge them into a new distinct thing as they work on each other in turn?And so here is Distance3. It goes right back to the tone quality of Distance, but it has all of the 'loud vibe' from Discontinuity, and outperforms either of them if you need the synthesis of both. There's probably lots of uses for this and my hope is that it'll be very easy to find those uses: if a thing has to be convincingly far away and you've already got reverb and ambience taken care of, Distance3 should immediately get you there in the best possible way."
+    "By request from my livestreams, let's jump right back into the Discontinuity thing, but this time combined with a much older plugin: the original Distance! This is a kind of plugin meant to darken the sound and make stuff sound really far away. Originally, I was thinking something that could take all the highs out and accentuate rumble, like turning a sound into the thunder version of itself. And so the first Distance worked basically as an EQ: three stacked stages of processing that combined to make stuff huge, kind of like my monitoring plugin SubsOnly. Thing is, that doesn't have any nonlinearities to speak of in it, not the kind that happen in the real world over that much air. And at the time I was working on a Console version called Atmosphere, and thought I had a handle on bringing in that kind of nonlinearity. And so the next one was Distance2… but it lost some of the purity and depth of Distance, but didn't sound quite the way I wanted. It was the best I could do at the time, and is still there if you're interested in different sorts of darken/distort. And then I brought in Discontinuity and was working on it in livestreams and someone mentioned, what if it was part of Distance? And the interesting thing is that Discontinuity also gets its sound from… three stages of processing, stacked. (as in, not side-by-side but in series, one after the other.) Anytime you look at a situation like that, you can think to yourself: well, I could run these two plugins on after the other, but what if I interleaved the stages? One of Distance, one of Discontinuity, another Distance, another Discontinuity, and so on? Surely that would combine the effects in a more interesting way, merge them into a new distinct thing as they work on each other in turn? And so here is Distance3. It goes right back to the tone quality of Distance, but it has all of the 'loud vibe' from Discontinuity, and outperforms either of them if you need the synthesis of both. There's probably lots of uses for this and my hope is that it'll be very easy to find those uses: if a thing has to be convincingly far away and you've already got reverb and ambience taken care of, Distance3 should immediately get you there in the best possible way."
 };
 constexpr std::string_view k_tags{
     "filter"
 };
 
-constexpr int dscBuf = 90;
-
 template <typename T>
 class Distance3 final : public Effect<T>
 {
+    static constexpr int dscBuf = 90;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'disv';
     float A;
     float B;
     float C;
@@ -130,20 +133,17 @@ class Distance3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -155,8 +155,7 @@ class Distance3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -168,11 +167,10 @@ class Distance3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "distance"; break;
-            case kParamB: return "top db"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamB: return "topdb"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -181,8 +179,7 @@ class Distance3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Distance"; break;
             case kParamB: return "Top dB"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -194,28 +191,28 @@ class Distance3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 10.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 70.0) + 70.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "miles"; break;
-            case kParamB: return "dB"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "miles", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -234,8 +231,7 @@ class Distance3 final : public Effect<T>
         double refdB = (B * 70.0) + 70.0;
         double topdB = 0.000000075 * pow(10.0, refdB / 20.0) * overallscale;
         double wet = C;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

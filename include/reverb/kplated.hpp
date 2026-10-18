@@ -11,52 +11,54 @@ constexpr std::string_view k_short_description{
     "kPlateD is a plate reverb, not unlike its namesake atop Abbey Road."
 };
 constexpr std::string_view k_long_description{
-    "We're not done, but we're done with the lettered plate reverbs not unlike certain ones in a famous studio! And we're ending with a banger. This is kPlateD. This is the one that wasn't modified to run with hybrid circuitry, though it's still got the circuitry removed from the box to lower noise (ok, easier to do that with a plugin: I'm literally not putting fake mains hum or anything, in). This is the all-tube one.Just listen, and compare it with the others, notably kPlateA which is also more of a 'long deep' plate.You're not going to get the sheer scale of the difference off competing plugins, and these are free open source and if fixes are ever needed everyone will get fixes or updates for free, forever, with source code so you could maintain it yourself: how much is that worth to you? Probably not as much as being extorted for software, because people will always pay more money if they're backed into a corner and forced to. But you know, I don't need ALL of the money from all of the people. Just enough to live, and buy a Neve console to put in my home :) (just kidding)So even though it's purely software, the tube circuitry is plainly obvious as a contrast to the other three with their hybrid sound. How is this done? Partly through tuning everything (and selecting the actual reverb matrices) to suit the target sound. And partly through literally coding each of them a little differently, with kPlateD being by far the most distinct, its internal saturation algorithms being a whole different type.So if I can do this, why didn't I do it with kPlateA, B and C? For the same reason the Beatles album Abbey Road and the Pink Floyd album Dark Side of the Moon wouldn't automatically be better if they were cut on the old REDD consoles. Each sound serves a purpose. They convey distinct atmospheres, which your ear can learn and remember, so rather than struggling to adapt all manner of strange controls you can do 'this should have kPlateB' and then concentrate on what music's meant to go into it. Hope you enjoy the atmosphere of the classic kPlateD :)"
+    "We're not done, but we're done with the lettered plate reverbs not unlike certain ones in a famous studio! And we're ending with a banger. This is kPlateD. This is the one that wasn't modified to run with hybrid circuitry, though it's still got the circuitry removed from the box to lower noise (ok, easier to do that with a plugin: I'm literally not putting fake mains hum or anything, in). This is the all-tube one. Just listen, and compare it with the others, notably kPlateA which is also more of a 'long deep' plate. You're not going to get the sheer scale of the difference off competing plugins, and these are free open source and if fixes are ever needed everyone will get fixes or updates for free, forever, with source code so you could maintain it yourself: how much is that worth to you? Probably not as much as being extorted for software, because people will always pay more money if they're backed into a corner and forced to. But you know, I don't need ALL of the money from all of the people. Just enough to live, and buy a Neve console to put in my home :) (just kidding) So even though it's purely software, the tube circuitry is plainly obvious as a contrast to the other three with their hybrid sound. How is this done? Partly through tuning everything (and selecting the actual reverb matrices) to suit the target sound. And partly through literally coding each of them a little differently, with kPlateD being by far the most distinct, its internal saturation algorithms being a whole different type. So if I can do this, why didn't I do it with kPlateA, B and C? For the same reason the Beatles album Abbey Road and the Pink Floyd album Dark Side of the Moon wouldn't automatically be better if they were cut on the old REDD consoles. Each sound serves a purpose. They convey distinct atmospheres, which your ear can learn and remember, so rather than struggling to adapt all manner of strange controls you can do 'this should have kPlateB' and then concentrate on what music's meant to go into it. Hope you enjoy the atmosphere of the classic kPlateD :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
 };
 
-constexpr int earlyA = 103;
-constexpr int earlyB = 709;
-constexpr int earlyC = 151;
-constexpr int earlyD = 263;
-constexpr int earlyE = 1433;
-constexpr int earlyF = 593;
-constexpr int earlyG = 1361;
-constexpr int earlyH = 31;
-constexpr int earlyI = 691;
-constexpr int predelay = 24010; // 79 ms, 750 seat theater. Scarcity, 1 in 60270
-constexpr int delayA = 619;
-constexpr int delayB = 181;
-constexpr int delayC = 101;
-constexpr int delayD = 677;
-constexpr int delayE = 401;
-constexpr int delayF = 151;
-constexpr int delayG = 409;
-constexpr int delayH = 31;
-constexpr int delayI = 641;
-constexpr int delayJ = 661;
-constexpr int delayK = 11;
-constexpr int delayL = 691;
-constexpr int delayM = 719;
-constexpr int delayN = 17;
-constexpr int delayO = 61;
-constexpr int delayP = 743;
-constexpr int delayQ = 89;
-constexpr int delayR = 659;
-constexpr int delayS = 5;
-constexpr int delayT = 547;
-constexpr int delayU = 769;
-constexpr int delayV = 421;
-constexpr int delayW = 47;
-constexpr int delayX = 521;
-constexpr int delayY = 163; // 80 ms, 778 seat theater. Scarcity, 1 in 94194
-// kPlateD
-
 template <typename T>
 class kPlateD final : public Effect<T>
 {
+    static constexpr int earlyA = 103;
+    static constexpr int earlyB = 709;
+    static constexpr int earlyC = 151;
+    static constexpr int earlyD = 263;
+    static constexpr int earlyE = 1433;
+    static constexpr int earlyF = 593;
+    static constexpr int earlyG = 1361;
+    static constexpr int earlyH = 31;
+    static constexpr int earlyI = 691;
+    static constexpr int predelay = 24010;
+    static constexpr int delayA = 619;
+    static constexpr int delayB = 181;
+    static constexpr int delayC = 101;
+    static constexpr int delayD = 677;
+    static constexpr int delayE = 401;
+    static constexpr int delayF = 151;
+    static constexpr int delayG = 409;
+    static constexpr int delayH = 31;
+    static constexpr int delayI = 641;
+    static constexpr int delayJ = 661;
+    static constexpr int delayK = 11;
+    static constexpr int delayL = 691;
+    static constexpr int delayM = 719;
+    static constexpr int delayN = 17;
+    static constexpr int delayO = 61;
+    static constexpr int delayP = 743;
+    static constexpr int delayQ = 89;
+    static constexpr int delayR = 659;
+    static constexpr int delayS = 5;
+    static constexpr int delayT = 547;
+    static constexpr int delayU = 769;
+    static constexpr int delayV = 421;
+    static constexpr int delayW = 47;
+    static constexpr int delayX = 521;
+    static constexpr int delayY = 163;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kpld';
     double iirAL;
     double iirBL;
     double gainIn;
@@ -236,7 +238,6 @@ class kPlateD final : public Effect<T>
     double fixB[fix_total];
     double fixC[fix_total];
     double fixD[fix_total];
-
     double prevMulchBL;
     double prevMulchBR;
     double prevMulchCL;
@@ -245,26 +246,23 @@ class kPlateD final : public Effect<T>
     double prevMulchDR;
     double prevMulchEL;
     double prevMulchER;
-
     double prevOutDL;
     double prevOutDR;
     double prevOutEL;
     double prevOutER;
-
     double prevInDL;
     double prevInDR;
     double prevInEL;
     double prevInER;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
     float D;
     float E; // parameters. Always 0-1, and we scale/alter them elsewhere.
+
   public:
     kPlateD()
     {
@@ -558,22 +556,19 @@ class kPlateD final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -587,8 +582,7 @@ class kPlateD final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -602,11 +596,10 @@ class kPlateD final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "inputpad"; break;
             case kParamB: return "damping"; break;
-            case kParamC: return "low cut"; break;
+            case kParamC: return "lowcut"; break;
             case kParamD: return "predelay"; break;
             case kParamE: return "wetness"; break;
 
@@ -617,8 +610,7 @@ class kPlateD final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "InputPad"; break;
             case kParamB: return "Damping"; break;
             case kParamC: return "Low Cut"; break;
@@ -632,32 +624,32 @@ class kPlateD final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B * 10.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 3.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(pow(D, 2) * 0.5, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return "sec"; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "sec", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -747,8 +739,7 @@ class kPlateD final : public Effect<T>
         fixD[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixD[fix_b2] = (1.0 - K / fixD[fix_reso] + K * K) * norm;
         // stereo biquad bandpasses we can put into the reverb matrix
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Srsly3 is Srsly2, with a Nonlin control to analogify the filters."
 };
 constexpr std::string_view k_long_description{
-    "Those who are familiar with Airwindows know that Srsly is a sort of take on a famous stereo processor, the Hughes SRS. The first version, Srsly, uses a bank of very tight resonant filters to adjust space psychoacoustically and simulate the sound of ambience around human ears (based on illustrations that ran in Popular Mechanics). The second, Srsly2, took that and added aggressive mid/side processing to more closely resemble existing SRS boxes, thanks to a Crate SRS box I was able to get by way of example.Srsly3 is the same thing as Srsly2, except all those filters are replaced with the kinds of biquad filter found in Airwindows BiquadNonlin. That's the one where I figured out how to apply the filter modulating used in Capacitor2, which simulates nonlinearity in cutoff frequency of ceramic capacitors (specifically Murata capacitors made of barium titanate), but applied to biquad filters which are a lot more adaptable than Capacitor was.You don't have to understand any of that, it's just the way I got to this result.It means you get a Nonlin control, where setting it to 0 means you have Srsly2 again. And then when you turn it up, especially when you have your filters at a higher Q setting (sharper resonances), the filters get modulated by the voltage pressures they themselves see from the signal passing through. And it fuzzes them out in a way that makes Srsly3 sound more analog than it's ever sounded before, with more of a vibe and texture to the vivid stereo sounds it can make.I would say play with it and see what kinds of settings sound good to you. And if you liked Srsly2 and found it useful, now you've got this which starts where Srsly2 left off, and then takes it to new places. BiquadNonLin really sounds most interesting on tight resonant peaks, which is what Srsly is made out of, so with a bit of luck this will really click for Srsly enjoyers. Hope you like it!"
+    "Those who are familiar with Airwindows know that Srsly is a sort of take on a famous stereo processor, the Hughes SRS. The first version, Srsly, uses a bank of very tight resonant filters to adjust space psychoacoustically and simulate the sound of ambience around human ears (based on illustrations that ran in Popular Mechanics). The second, Srsly2, took that and added aggressive mid/side processing to more closely resemble existing SRS boxes, thanks to a Crate SRS box I was able to get by way of example. Srsly3 is the same thing as Srsly2, except all those filters are replaced with the kinds of biquad filter found in Airwindows BiquadNonlin. That's the one where I figured out how to apply the filter modulating used in Capacitor2, which simulates nonlinearity in cutoff frequency of ceramic capacitors (specifically Murata capacitors made of barium titanate), but applied to biquad filters which are a lot more adaptable than Capacitor was. You don't have to understand any of that, it's just the way I got to this result. It means you get a Nonlin control, where setting it to 0 means you have Srsly2 again. And then when you turn it up, especially when you have your filters at a higher Q setting (sharper resonances), the filters get modulated by the voltage pressures they themselves see from the signal passing through. And it fuzzes them out in a way that makes Srsly3 sound more analog than it's ever sounded before, with more of a vibe and texture to the vivid stereo sounds it can make. I would say play with it and see what kinds of settings sound good to you. And if you liked Srsly2 and found it useful, now you've got this which starts where Srsly2 left off, and then takes it to new places. BiquadNonLin really sounds most interesting on tight resonant peaks, which is what Srsly is made out of, so with a bit of luck this will really click for Srsly enjoyers. Hope you like it!"
 };
 constexpr std::string_view k_tags{
     "stereo"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Srsly3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'srsn';
     float A;
     float B;
     float C;
@@ -83,23 +87,20 @@ class Srsly3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -114,8 +115,7 @@ class Srsly3 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -130,14 +130,13 @@ class Srsly3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "center"; break;
             case kParamB: return "space"; break;
             case kParamC: return "level"; break;
             case kParamD: return "q"; break;
             case kParamE: return "nonlin"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -146,8 +145,7 @@ class Srsly3 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Center"; break;
             case kParamB: return "Space"; break;
             case kParamC: return "Level"; break;
@@ -162,34 +160,34 @@ class Srsly3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -293,7 +291,7 @@ class Srsly3 final : public Effect<T>
         double nonLin = pow(E, 2); // output pad
         double wet = F; // dry/wet
         // biquad contains these values:
-        //[0] is frequency: 0.000001 to 0.499999 is near-zero to near-Nyquist
+        //[0] is frequency: 0.000001 to 0.499999 is nearVal-zero to nearVal-Nyquist
         //[1] is resonance, 0.7071 is Butterworth. Also can't be zero
         //[2] is a0 but you need distinct ones for additional biquad instances so it's here
         //[3] is a1 but you need distinct ones for additional biquad instances so it's here
@@ -304,8 +302,7 @@ class Srsly3 final : public Effect<T>
         //[8] is LEFT stored delayed sample (you have to include the coefficient making code if you do that)
         //[9] is RIGHT stored delayed sample (freq and res are stored so you can move them sample by sample)
         //[10] is RIGHT stored delayed sample (you have to include the coefficient making code if you do that)
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

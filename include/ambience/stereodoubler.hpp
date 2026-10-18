@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "StereoDoubler is like GlitchShifter optimized for pitch shift doubling and tripling."
 };
 constexpr std::string_view k_long_description{
-    "StereoDoubler is another retro plugin I’ve had for a while, that is now available as open source and VST2 and M1 Mac and Raspberry Pi and so on. It’s using the basic concept of Glitch Shifter, so I should explain what that is first.Glitch Shifter is my plugin for doing pitch shifting (and feedback on it, if you like) in a different way. Instead of smoothly interpolating over relatively small loops of sound to pitch shift, it works with potentially much larger loops, and searches for spots where it can seamlessly (or near-seamlessly) switch over without ever blending or blurring the sound. For that reason, it’s more up front and edgy, more personality, but it can also disconnect from the source audio in weird ways or glitch out like mad, hence the name.StereoDoubler’s like two of those, tamed. Well, mostly tamed. It takes the source audio, and gives you a pitched-up version in one channel, a pitched-down version in the other, and lets you bring in dry for a center channel if you want. Because it’s still Glitch Shifter, it’ll give you faint ticking noises if it’s struggling to make its loops work, but it’s a lot tighter and more normal than Glitch Shifter usually is, and it’s simultaneously shifting up and down so the two sides will each have their own distinct glitch ‘personality’ while being as upfront and direct as they possibly can.I hope you like it. Sometimes taking a wild experiment and reining it in a bit, is just the thing. StereoDoubler isn’t meant to work on every possible situation, it’s designed to be amazing when it’s in its element. Maybe your mix is its element :)"
+    "StereoDoubler is another retro plugin I’ve had for a while, that is now available as open source and VST2 and M1 Mac and Raspberry Pi and so on. It’s using the basic concept of Glitch Shifter, so I should explain what that is first. Glitch Shifter is my plugin for doing pitch shifting (and feedback on it, if you like) in a different way. Instead of smoothly interpolating over relatively small loops of sound to pitch shift, it works with potentially much larger loops, and searches for spots where it can seamlessly (or near-seamlessly) switch over without ever blending or blurring the sound. For that reason, it’s more up front and edgy, more personality, but it can also disconnect from the source audio in weird ways or glitch out like mad, hence the name. StereoDoubler’s like two of those, tamed. Well, mostly tamed. It takes the source audio, and gives you a pitched-up version in one channel, a pitched-down version in the other, and lets you bring in dry for a center channel if you want. Because it’s still Glitch Shifter, it’ll give you faint ticking noises if it’s struggling to make its loops work, but it’s a lot tighter and more normal than Glitch Shifter usually is, and it’s simultaneously shifting up and down so the two sides will each have their own distinct glitch ‘personality’ while being as upfront and direct as they possibly can. I hope you like it. Sometimes taking a wild experiment and reining it in a bit, is just the thing. StereoDoubler isn’t meant to work on every possible situation, it’s designed to be amazing when it’s in its element. Maybe your mix is its element :)"
 };
 constexpr std::string_view k_tags{
     "ambience"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class StereoDoubler final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sdub';
     double pL[5001];
     double pR[5001];
     int gcountL;
@@ -68,15 +72,13 @@ class StereoDoubler final : public Effect<T>
             pL[count] = 0.0;
             pR[count] = 0.0;
         }
-        for (int count = 0; count < 8; count++)
-        {
+        for (int count = 0; count < 8; count++) {
             tempL[count] = 0.0;
             positionL[count] = 0.0;
             lastpositionL[count] = 0.0;
             trackingL[count] = 0.0;
         }
-        for (int count = 0; count < 8; count++)
-        {
+        for (int count = 0; count < 8; count++) {
             tempR[count] = 0.0;
             positionR[count] = 0.0;
             lastpositionR[count] = 0.0;
@@ -127,19 +129,16 @@ class StereoDoubler final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -150,8 +149,7 @@ class StereoDoubler final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.6; break;
             case kParamB: return 0.6; break;
 
@@ -162,10 +160,9 @@ class StereoDoubler final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "detune"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -174,8 +171,7 @@ class StereoDoubler final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Detune"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -186,26 +182,26 @@ class StereoDoubler final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -241,8 +237,7 @@ class StereoDoubler final : public Effect<T>
             speedR = 0.0;
         }
         int width = 2300;
-        if (prevwidth != width)
-        {
+        if (prevwidth != width) {
             positionL[0] = 0;
             positionL[1] = (int)(width / 3);
             positionL[2] = (int)((width / 3) * 2);
@@ -277,8 +272,7 @@ class StereoDoubler final : public Effect<T>
         int bcountL;
         int bcountR;
         int base;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -348,8 +342,7 @@ class StereoDoubler final : public Effect<T>
                 if (lastplusR > width) {
                     lastplusR -= width;
                 }
-                if (trackingL[activeL] == 0.0)
-                {
+                if (trackingL[activeL] == 0.0) {
                     posplusL = positionL[activeL] + adjust;
                     lastposplusL = lastpositionL[activeL] + adjust;
                     if (posplusL > width) {
@@ -366,8 +359,7 @@ class StereoDoubler final : public Effect<T>
                     }
                     // fire splice based on whether somebody moved past somebody else just now
                 }
-                if (trackingR[activeR] == 0.0)
-                {
+                if (trackingR[activeR] == 0.0) {
                     posplusR = positionR[activeR] + adjust;
                     lastposplusR = lastpositionR[activeR] + adjust;
                     if (posplusR > width) {
@@ -384,8 +376,7 @@ class StereoDoubler final : public Effect<T>
                     }
                     // fire splice based on whether somebody moved past somebody else just now
                 }
-                for (count = 0; count < 8; count++)
-                {
+                for (count = 0; count < 8; count++) {
                     if (positionL[count] > width) {
                         positionL[count] -= width;
                     }
@@ -405,8 +396,7 @@ class StereoDoubler final : public Effect<T>
                 lastcountR = bcountR = gcountR;
                 pL[bcountL + width] = pL[bcountL] = inputSampleL;
                 pR[bcountR + width] = pR[bcountR] = inputSampleR;
-                for (count = 0; count < 8; count++)
-                {
+                for (count = 0; count < 8; count++) {
                     base = (int)floor(positionL[count]);
                     tempL[count] = (pL[base] * (1 - (positionL[count] - base))); // less as value moves away from .0
                     tempL[count] += pL[base + 1]; // we can assume always using this in one way or another?
@@ -420,78 +410,62 @@ class StereoDoubler final : public Effect<T>
                     tempR[count] -= (((pR[base] - pR[base + 1]) - (pR[base + 1] - pR[base + 2])) / 50); // interpolation hacks 'r us
                     tempR[count] /= 2;
                 }
-                if (trackingL[activeL] > 0.0)
-                {
+                if (trackingL[activeL] > 0.0) {
                     crossfade = sin(trackingL[bestspliceL] * 1.57);
                     inputSampleL = (tempL[activeL] * crossfade) + (tempL[bestspliceL] * (1.0 - crossfade));
-                    for (count = 0; count < 8; count++)
-                    {
+                    for (count = 0; count < 8; count++) {
                         depth = (0.5 - fabs(tempL[activeL] - tempL[count]));
-                        if ((depth > 0) && (count != activeL))
-                        {
+                        if ((depth > 0) && (count != activeL)) {
                             trackingL[count] -= (depth / adjust);
                             bestspliceL = count;
                         }
                         // take down the splicings but skip the current one
                     }
                     bestyetL = 1.0;
-                    for (count = 0; count < 8; count++)
-                    {
-                        if ((trackingL[count] < bestyetL) && (count != activeL))
-                        {
+                    for (count = 0; count < 8; count++) {
+                        if ((trackingL[count] < bestyetL) && (count != activeL)) {
                             bestspliceL = count;
                             bestyetL = trackingL[count];
                         }
                     }
-                    if (trackingL[bestspliceL] < 0.0)
-                    {
-                        for (count = 0; count < 8; count++)
-                        {
+                    if (trackingL[bestspliceL] < 0.0) {
+                        for (count = 0; count < 8; count++) {
                             trackingL[count] = 1.0;
                         }
                         activeL = bestspliceL;
                         trackingL[activeL] = 0.0;
                     }
                 }
-                else
-                {
+                else {
                     inputSampleL = tempL[activeL];
                 }
-                if (trackingR[activeR] > 0.0)
-                {
+                if (trackingR[activeR] > 0.0) {
                     crossfade = sin(trackingR[bestspliceR] * 1.57);
                     inputSampleR = (tempR[activeR] * crossfade) + (tempR[bestspliceR] * (1.0 - crossfade));
-                    for (count = 0; count < 8; count++)
-                    {
+                    for (count = 0; count < 8; count++) {
                         depth = (0.5 - fabs(tempR[activeR] - tempR[count]));
-                        if ((depth > 0) && (count != activeR))
-                        {
+                        if ((depth > 0) && (count != activeR)) {
                             trackingR[count] -= (depth / adjust);
                             bestspliceR = count;
                         }
                         // take down the splicings but skip the current one
                     }
                     bestyetR = 1.0;
-                    for (count = 0; count < 8; count++)
-                    {
-                        if ((trackingR[count] < bestyetR) && (count != activeR))
-                        {
+                    for (count = 0; count < 8; count++) {
+                        if ((trackingR[count] < bestyetR) && (count != activeR)) {
                             bestspliceR = count;
                             bestyetR = trackingR[count];
                         }
                     }
-                    if (trackingR[bestspliceR] < 0.0)
-                    {
-                        for (count = 0; count < 8; count++)
-                        {
+                    if (trackingR[bestspliceR] < 0.0) {
+                        for (count = 0; count < 8; count++) {
                             trackingR[count] = 1.0;
                         }
                         activeR = bestspliceR;
                         trackingR[activeR] = 0.0;
                     }
                 }
-                else
-                {
+                else {
                     inputSampleR = tempR[activeR];
                 }
                 inputSampleL = (inputSampleL * wet) + (drySampleL * (1.0 - wet));

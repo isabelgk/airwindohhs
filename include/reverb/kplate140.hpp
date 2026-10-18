@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kPlate140 is a next-generation Airwindows plate reverb."
 };
 constexpr std::string_view k_long_description{
-    "Time for the big plate!kPlate140 is a lot like the smaller version, kPlate240, to the point that you might ask, what's up with that? Can't you simply make the 240 version sustain a little longer, maybe dial in some EQ, and not need to have a whole separate plugin?Much like kPlate240, kPlate140 is a 5x5 Householder matrix with a plate-style delay density, Pear filters, and the use of SubTight. Where a lot of reverbs out there will be different EQ settings etc. on one basic algorithm (or a small number of them), it's true that it's got the same sliders doing the same things and if you can use one you can use the other… but the way these are designed involves generating thousands or hundreds of thousands of possible Householder matrices and testing them to try and work out what would give the best sound. That means they've got better during the time I've developed the technique… but it also means each new 'best algorithm' is unique. Sometimes there's a lucky break, like the original Galactic one (a 4x4) that was used again for Galactic3, sometimes not so much like the original kCathedral that people felt was metallic.And then when you're trying to do a literal plate which very much has its own sound qualities… and some years ago I did build a DIY real-world physical plate reverb, so I'm familiar with the sound though I couldn't get it up to EMT140 quality and didn't keep it… well, dialing in the sound involves getting all that stuff tuned up uniquely to the plugin in question.kPlate140 isn't meant to duplicate kPlate240. My take on the gold foil reverb is that it's cloudier, more understated: from reports of people who use both sorts, it's got a thing of its own but it's the big 375 pound monster (600 pounds packed for shipping) that really gets people's attention. And so, kPlate140 takes a different angle, with all of its parts tuned for that flashier, deeper, more fiery sound that's not part of the more subdued 240.140 plates come in all sounds and varieties: much like with the earlier attempt at plate reverbs, kPlateA through D, each one will sound different. kPlate140's the one that is yours, much like kPlate240 is. I'm hoping this will come in handy in situations where you're looking for a plate reverb plugin, but are going for that BIG sound. You get to have both! Have fun bathing in reverb :)"
+    "Time for the big plate! kPlate140 is a lot like the smaller version, kPlate240, to the point that you might ask, what's up with that? Can't you simply make the 240 version sustain a little longer, maybe dial in some EQ, and not need to have a whole separate plugin? Much like kPlate240, kPlate140 is a 5x5 Householder matrix with a plate-style delay density, Pear filters, and the use of SubTight. Where a lot of reverbs out there will be different EQ settings etc. on one basic algorithm (or a small number of them), it's true that it's got the same sliders doing the same things and if you can use one you can use the other… but the way these are designed involves generating thousands or hundreds of thousands of possible Householder matrices and testing them to try and work out what would give the best sound. That means they've got better during the time I've developed the technique… but it also means each new 'best algorithm' is unique. Sometimes there's a lucky break, like the original Galactic one (a 4x4) that was used again for Galactic3, sometimes not so much like the original kCathedral that people felt was metallic. And then when you're trying to do a literal plate which very much has its own sound qualities… and some years ago I did build a DIY real-world physical plate reverb, so I'm familiar with the sound though I couldn't get it up to EMT140 quality and didn't keep it… well, dialing in the sound involves getting all that stuff tuned up uniquely to the plugin in question. kPlate140 isn't meant to duplicate kPlate240. My take on the gold foil reverb is that it's cloudier, more understated: from reports of people who use both sorts, it's got a thing of its own but it's the big 375 pound monster (600 pounds packed for shipping) that really gets people's attention. And so, kPlate140 takes a different angle, with all of its parts tuned for that flashier, deeper, more fiery sound that's not part of the more subdued 240. 140 plates come in all sounds and varieties: much like with the earlier attempt at plate reverbs, kPlateA through D, each one will sound different. kPlate140's the one that is yours, much like kPlate240 is. I'm hoping this will come in handy in situations where you're looking for a plate reverb plugin, but are going for that BIG sound. You get to have both! Have fun bathing in reverb :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -578,14 +578,13 @@ class kPlate140 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -647,30 +646,32 @@ class kPlate140 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

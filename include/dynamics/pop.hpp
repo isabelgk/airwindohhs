@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Pop is a crazy overcompressor with a very exaggerated sound."
 };
 constexpr std::string_view k_long_description{
-    "Why another compressor?Yes, ‘because they all act and sound a little different’, but what’s the deal with this one in particular?Pop was designed to be overstressed to get an effect like the Allen & Heath mini-limiter used on some 80s Genesis and Phil Collins songs: that huge attack, the way that little subtleties jump boldly out of the mix, the sheer squish and gnarl of it all. It wasn’t really about trying to model the specific gear so much as trying to get the effect, or more of the effect: I especially wanted the front end of sounds to burst through with enormous presence, but I also wanted to bring up little details out of the performance.Pop’s a huge success at this. On some audio, I can get weird little reverb elements from the background to seem to hover up front even while loud stuff is being smashed. It’s designed to volume invert: the idea is if you’re hitting it with superloud things it can overcompensate and push the volume down extra far, letting you further exaggerate the effect.As such, there are some sounds this just can’t do. If you try and get a huge thunderous smashed sound of it, it will just go super 80s and give you a loud attack and maybe even backwards decay, or some reinvention of the body of the sound. You have to set the level carefully to get the right sound happening, so it’s not terribly flexible: Pop is picky and you have to work it almost like it’s an instrument. It does run without latency, so in theory you could do like Phil did and track directly into it (or track into the DAW with it already present in the monitoring path) so you could modulate your singing intensity to work with it. That ought to work. Also remember a slapback echo, and to actually doubletrack!If I can ever get the real preamp/compressor, I’ll study the heck out of it and do Pop 2. I’ll keep an eye out, as that would be really rewarding work and I could probably get closer to the real thing with that kind of reference :)"
+    "Why another compressor? Yes, ‘because they all act and sound a little different’, but what’s the deal with this one in particular? Pop was designed to be overstressed to get an effect like the Allen & Heath mini-limiter used on some 80s Genesis and Phil Collins songs: that huge attack, the way that little subtleties jump boldly out of the mix, the sheer squish and gnarl of it all. It wasn’t really about trying to model the specific gear so much as trying to get the effect, or more of the effect: I especially wanted the front end of sounds to burst through with enormous presence, but I also wanted to bring up little details out of the performance. Pop’s a huge success at this. On some audio, I can get weird little reverb elements from the background to seem to hover up front even while loud stuff is being smashed. It’s designed to volume invert: the idea is if you’re hitting it with superloud things it can overcompensate and push the volume down extra far, letting you further exaggerate the effect. As such, there are some sounds this just can’t do. If you try and get a huge thunderous smashed sound of it, it will just go super 80s and give you a loud attack and maybe even backwards decay, or some reinvention of the body of the sound. You have to set the level carefully to get the right sound happening, so it’s not terribly flexible: Pop is picky and you have to work it almost like it’s an instrument. It does run without latency, so in theory you could do like Phil did and track directly into it (or track into the DAW with it already present in the monitoring path) so you could modulate your singing intensity to work with it. That ought to work. Also remember a slapback echo, and to actually doubletrack! If I can ever get the real preamp/compressor, I’ll study the heck out of it and do Pop 2. I’ll keep an eye out, as that would be really rewarding work and I could probably get closer to the real thing with that kind of reference :)"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Pop final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'popc';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -116,20 +120,17 @@ class Pop final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -141,8 +142,7 @@ class Pop final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.3; break;
             case kParamB: return 1.0; break;
             case kParamC: return 1.0; break;
@@ -154,11 +154,10 @@ class Pop final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "intenst"; break;
             case kParamB: return "output"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -167,8 +166,7 @@ class Pop final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Intenst"; break;
             case kParamB: return "Output"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -180,28 +178,28 @@ class Pop final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -229,8 +227,7 @@ class Pop final : public Effect<T>
         double output = B;
         double wet = C;
         // µ µ µ µ µ µ µ µ µ µ µ µ is the kitten song o/~
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -303,25 +300,20 @@ class Pop final : public Effect<T>
                 punchinessR = 0.65;
             }
             // adjust coefficients for L
-            if (flip)
-            {
-                if (fabs(lowestSampleL) > threshold)
-                {
+            if (flip) {
+                if (fabs(lowestSampleL) > threshold) {
                     muVaryL = threshold / fabs(lowestSampleL);
                     muAttackL = sqrt(fabs(muSpeedAL));
                     muCoefficientAL = muCoefficientAL * (muAttackL - 1.0);
-                    if (muVaryL < threshold)
-                    {
+                    if (muVaryL < threshold) {
                         muCoefficientAL = muCoefficientAL + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientAL = muCoefficientAL + muVaryL;
                     }
                     muCoefficientAL = muCoefficientAL / muAttackL;
                 }
-                else
-                {
+                else {
                     muCoefficientAL = muCoefficientAL * ((muSpeedAL * muSpeedAL) - 1.0);
                     muCoefficientAL = muCoefficientAL + 1.0;
                     muCoefficientAL = muCoefficientAL / (muSpeedAL * muSpeedAL);
@@ -330,25 +322,20 @@ class Pop final : public Effect<T>
                 muNewSpeedL = muNewSpeedL + fabs(lowestSampleL * release) + fastest;
                 muSpeedAL = muNewSpeedL / muSpeedAL;
             }
-            else
-            {
-                if (fabs(lowestSampleL) > threshold)
-                {
+            else {
+                if (fabs(lowestSampleL) > threshold) {
                     muVaryL = threshold / fabs(lowestSampleL);
                     muAttackL = sqrt(fabs(muSpeedBL));
                     muCoefficientBL = muCoefficientBL * (muAttackL - 1);
-                    if (muVaryL < threshold)
-                    {
+                    if (muVaryL < threshold) {
                         muCoefficientBL = muCoefficientBL + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientBL = muCoefficientBL + muVaryL;
                     }
                     muCoefficientBL = muCoefficientBL / muAttackL;
                 }
-                else
-                {
+                else {
                     muCoefficientBL = muCoefficientBL * ((muSpeedBL * muSpeedBL) - 1.0);
                     muCoefficientBL = muCoefficientBL + 1.0;
                     muCoefficientBL = muCoefficientBL / (muSpeedBL * muSpeedBL);
@@ -359,25 +346,20 @@ class Pop final : public Effect<T>
             }
             // got coefficients, adjusted speeds for L
             // adjust coefficients for R
-            if (flip)
-            {
-                if (fabs(lowestSampleR) > threshold)
-                {
+            if (flip) {
+                if (fabs(lowestSampleR) > threshold) {
                     muVaryR = threshold / fabs(lowestSampleR);
                     muAttackR = sqrt(fabs(muSpeedAR));
                     muCoefficientAR = muCoefficientAR * (muAttackR - 1.0);
-                    if (muVaryR < threshold)
-                    {
+                    if (muVaryR < threshold) {
                         muCoefficientAR = muCoefficientAR + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientAR = muCoefficientAR + muVaryR;
                     }
                     muCoefficientAR = muCoefficientAR / muAttackR;
                 }
-                else
-                {
+                else {
                     muCoefficientAR = muCoefficientAR * ((muSpeedAR * muSpeedAR) - 1.0);
                     muCoefficientAR = muCoefficientAR + 1.0;
                     muCoefficientAR = muCoefficientAR / (muSpeedAR * muSpeedAR);
@@ -386,25 +368,20 @@ class Pop final : public Effect<T>
                 muNewSpeedR = muNewSpeedR + fabs(lowestSampleR * release) + fastest;
                 muSpeedAR = muNewSpeedR / muSpeedAR;
             }
-            else
-            {
-                if (fabs(lowestSampleR) > threshold)
-                {
+            else {
+                if (fabs(lowestSampleR) > threshold) {
                     muVaryR = threshold / fabs(lowestSampleR);
                     muAttackR = sqrt(fabs(muSpeedBR));
                     muCoefficientBR = muCoefficientBR * (muAttackR - 1);
-                    if (muVaryR < threshold)
-                    {
+                    if (muVaryR < threshold) {
                         muCoefficientBR = muCoefficientBR + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientBR = muCoefficientBR + muVaryR;
                     }
                     muCoefficientBR = muCoefficientBR / muAttackR;
                 }
-                else
-                {
+                else {
                     muCoefficientBR = muCoefficientBR * ((muSpeedBR * muSpeedBR) - 1.0);
                     muCoefficientBR = muCoefficientBR + 1.0;
                     muCoefficientBR = muCoefficientBR / (muSpeedBR * muSpeedBR);

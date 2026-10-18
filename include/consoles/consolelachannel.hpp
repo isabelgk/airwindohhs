@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ConsoleLAChannel is the Airwindows take on the Quad Eight console."
 };
 constexpr std::string_view k_long_description{
-    "APIs and Neves and MCI, oh my… well, ConsoleLA emulates the most incredible console you've never heard of. This thing was the sound of LA in the seventies. It's on the back cover of Steely Dan records, it's been seen in Tom Scholz's basement, and it's heard even on classic 70s LA and Hollywood and San Francisco records it didn't make… because it's the production model of a whole lineage of West Coast custom recording consoles with similar designs and circuitry. And you can still get them, apparently, the company lives… but I don't know where, or for how much, or how, as there's no sign of prices or any way to get them. There's none on Reverb, Vintage King doesn't have any, good luck even finding channel strips…Meet the Quad Eight.This sound echoes through the Seventies. Tons of Steely Dan, tons of Zappa, Grateful Dead, Neil Young, Joni Mitchell… that's not even counting the wilder sightings, like when people figured this console mixed The Wall, or hearing it on Yes's Relayer album. The thing is, this was THE big production console before the days of Neve and API and SSL. Quad Eight were the first to go into production and come up with a recording console that you could just buy, set up, and use. Before them, you had to build your own.Quad Eight were (are, since the website says they can still make you gear) supplying the film industry, and it shows. These desks are amazing at making movies for your ears. (in the Zappa phrase, on the Hot Rats album, which was done at the Whitney studios in Glendale the year before they got a Neve, so that album was likely also Quad Eight or a kindred West Coast console)ConsoleLA, like ConsoleMC before it, is a bit of a different approach to emulating these great old dinosaurs, some still things you could conceivably find and have, some forever lost. The thing is, this is the nearest thing to custom point-to-point wiring of discrete transistors. On top of that, the Quad Eight ran a higher supply voltage than anybody: negative 28 to positive 28 volts, for enormous energy and headroom. The way to get these sounds is not layer upon layer of 'digital emulation' but trying to get the behaviors right with minimal, atypical algorithms. Only then can you get the energy and sonority of the real Quad Eight.The filtering is a whole other thing from the MCI. No mid peak here. The slopes are more gradual, but you can cut the hell out of the mids, and the deeper into the Seventies we got, the deeper the midrange cuts became. What I've done with ConsoleLA is try to make the simplest, most approachable Console system that can get the widest range of sounds as heard on these records, and reward you when you pursue music-recording in the old school, human way.This doubtless won't be the last, but it might just end up being my favorite. I hope you like ConsoleLA :)"
+    "APIs and Neves and MCI, oh my… well, ConsoleLA emulates the most incredible console you've never heard of. This thing was the sound of LA in the seventies. It's on the back cover of Steely Dan records, it's been seen in Tom Scholz's basement, and it's heard even on classic 70s LA and Hollywood and San Francisco records it didn't make… because it's the production model of a whole lineage of West Coast custom recording consoles with similar designs and circuitry. And you can still get them, apparently, the company lives… but I don't know where, or for how much, or how, as there's no sign of prices or any way to get them. There's none on Reverb, Vintage King doesn't have any, good luck even finding channel strips… Meet the Quad Eight. This sound echoes through the Seventies. Tons of Steely Dan, tons of Zappa, Grateful Dead, Neil Young, Joni Mitchell… that's not even counting the wilder sightings, like when people figured this console mixed The Wall, or hearing it on Yes's Relayer album. The thing is, this was THE big production console before the days of Neve and API and SSL. Quad Eight were the first to go into production and come up with a recording console that you could just buy, set up, and use. Before them, you had to build your own. Quad Eight were (are, since the website says they can still make you gear) supplying the film industry, and it shows. These desks are amazing at making movies for your ears. (in the Zappa phrase, on the Hot Rats album, which was done at the Whitney studios in Glendale the year before they got a Neve, so that album was likely also Quad Eight or a kindred West Coast console) ConsoleLA, like ConsoleMC before it, is a bit of a different approach to emulating these great old dinosaurs, some still things you could conceivably find and have, some forever lost. The thing is, this is the nearest thing to custom point-to-point wiring of discrete transistors. On top of that, the Quad Eight ran a higher supply voltage than anybody: negative 28 to positive 28 volts, for enormous energy and headroom. The way to get these sounds is not layer upon layer of 'digital emulation' but trying to get the behaviors right with minimal, atypical algorithms. Only then can you get the energy and sonority of the real Quad Eight. The filtering is a whole other thing from the MCI. No mid peak here. The slopes are more gradual, but you can cut the hell out of the mids, and the deeper into the Seventies we got, the deeper the midrange cuts became. What I've done with ConsoleLA is try to make the simplest, most approachable Console system that can get the widest range of sounds as heard on these records, and reward you when you pursue music-recording in the old school, human way. This doubtless won't be the last, but it might just end up being my favorite. I hope you like ConsoleLA :)"
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ConsoleLAChannel final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'clac';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -88,22 +92,19 @@ class ConsoleLAChannel final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -117,8 +118,7 @@ class ConsoleLAChannel final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -132,8 +132,7 @@ class ConsoleLAChannel final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "treble"; break;
             case kParamB: return "mid"; break;
             case kParamC: return "bass"; break;
@@ -147,8 +146,7 @@ class ConsoleLAChannel final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Treble"; break;
             case kParamB: return "Mid"; break;
             case kParamC: return "Bass"; break;
@@ -162,32 +160,32 @@ class ConsoleLAChannel final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -228,8 +226,7 @@ class ConsoleLAChannel final : public Effect<T>
         // and then become -1.0 to 3.0;
         // there will be successive sin/cos stages w. dry/wet in these
         double freqMid = 0.024;
-        switch (cycleEnd)
-        {
+        switch (cycleEnd) {
             case 1: // base sample rate, no change
                 break;
             case 2: // 96k tier
@@ -267,8 +264,7 @@ class ConsoleLAChannel final : public Effect<T>
         }
         double gainL = 1.0;
         double gainR = 1.0;
-        switch (bitshiftL)
-        {
+        switch (bitshiftL) {
             case 17: gainL = 0.0; break;
             case 16: gainL = 0.0000152587890625; break;
             case 15: gainL = 0.000030517578125; break;
@@ -288,8 +284,7 @@ class ConsoleLAChannel final : public Effect<T>
             case 1: gainL = 0.5; break;
             case 0: break;
         }
-        switch (bitshiftR)
-        {
+        switch (bitshiftR) {
             case 17: gainR = 0.0; break;
             case 16: gainR = 0.0000152587890625; break;
             case 15: gainR = 0.000030517578125; break;
@@ -313,8 +308,7 @@ class ConsoleLAChannel final : public Effect<T>
         gainB = E * 2.0; // smoothed master fader from Z2 filters
         // BitShiftGain pre gain trim goes here
         double subTrim = 0.0011 / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

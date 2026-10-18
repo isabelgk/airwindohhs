@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "DeNoise can work as a multiband gate and as a wild effect."
 };
 constexpr std::string_view k_long_description{
-    "So it starts as a multiband gate. That's pretty direct. You've got frequency ranges, and when they're set to zero there's no gating and full wet is the same as dry. Turn up a band, and you're increasing the threshold: when the sound at that band drops below the threshold it gates and there's silence. You can use the dry/wet control to moderate the effect a little, and you can dial in settings that neatly denoise a sound without interfering with the main audio too much.The speed control governs how rapidly it transitions, and increasing that slows the reaction time, so you can keep the gate from chattering, set it as quick as possible without an obvious click and you're good. On top of that there's a trick from DeCrackle that's part of the dry/wet: the same as DeCrackle, if you set it full dry rather than just bypassing it, what you get is the delta function with dry subtracted from the result. This isn't the same as an inv/wet control so I didn't label it that: it's a special case for 'monitor only what's being taken away' which is sometimes handy for stuff like this.And now, we get freaky with it :)When you raise the gating a lot farther than mere noise gating, you get into some aggressive sound sculpting very quickly. Since it's a gate, you're shortening everything, but since it's multiband it can wrench the tone around. Instead of cutting low mids on the sound, you can gate them out super aggressively and it'll shorten and tighten up a kick, but keep the low mids as part of the attack: you're basically handling the decay of every part differently. You can have the bands blend across different settings, or have adjacent bands very different from each other, and all these things twist and mutate the tone.And then once you're doing that, the speed control comes into play. It governs both how fast the gate can slam shut, and how quick it can open, and that's also relative to the frequency of the band, so exaggerate this and you get filter-sweepy effects. Adjusting this can lock in exact gatey tones really well, it should be obvious where Speed wants to be set. And of course if that's not enough for you, you can make a tone entirely out of the Delta, where it loses all the attacks and keeps only the decays being gated off…And, it's one of the more CPU-efficient Airwindows plugins so it does all that while barely touching your CPU.It should be fun, as well as useful in the normal way. Hope you like it :)"
+    "So it starts as a multiband gate. That's pretty direct. You've got frequency ranges, and when they're set to zero there's no gating and full wet is the same as dry. Turn up a band, and you're increasing the threshold: when the sound at that band drops below the threshold it gates and there's silence. You can use the dry/wet control to moderate the effect a little, and you can dial in settings that neatly denoise a sound without interfering with the main audio too much. The speed control governs how rapidly it transitions, and increasing that slows the reaction time, so you can keep the gate from chattering, set it as quick as possible without an obvious click and you're good. On top of that there's a trick from DeCrackle that's part of the dry/wet: the same as DeCrackle, if you set it full dry rather than just bypassing it, what you get is the delta function with dry subtracted from the result. This isn't the same as an inv/wet control so I didn't label it that: it's a special case for 'monitor only what's being taken away' which is sometimes handy for stuff like this. And now, we get freaky with it :) When you raise the gating a lot farther than mere noise gating, you get into some aggressive sound sculpting very quickly. Since it's a gate, you're shortening everything, but since it's multiband it can wrench the tone around. Instead of cutting low mids on the sound, you can gate them out super aggressively and it'll shorten and tighten up a kick, but keep the low mids as part of the attack: you're basically handling the decay of every part differently. You can have the bands blend across different settings, or have adjacent bands very different from each other, and all these things twist and mutate the tone. And then once you're doing that, the speed control comes into play. It governs both how fast the gate can slam shut, and how quick it can open, and that's also relative to the frequency of the band, so exaggerate this and you get filter-sweepy effects. Adjusting this can lock in exact gatey tones really well, it should be obvious where Speed wants to be set. And of course if that's not enough for you, you can make a tone entirely out of the Delta, where it loses all the attacks and keeps only the decays being gated off… And, it's one of the more CPU-efficient Airwindows plugins so it does all that while barely touching your CPU. It should be fun, as well as useful in the normal way. Hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "noise"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class DeNoise final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dnoi';
     float A;
     float B;
     float C;
@@ -144,7 +148,7 @@ class DeNoise final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -153,8 +157,7 @@ class DeNoise final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -202,7 +205,7 @@ class DeNoise final : public Effect<T>
             case kParamE: return "bass"; break;
             case kParamF: return "sub"; break;
             case kParamG: return "speed"; break;
-            case kParamH: return "dry/wet"; break;
+            case kParamH: return "drywet"; break;
 
             default: break;
         }
@@ -228,36 +231,38 @@ class DeNoise final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

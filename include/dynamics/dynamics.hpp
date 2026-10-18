@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Dynamics is a combination compressor gate."
 };
 constexpr std::string_view k_long_description{
-    "Dynamics started with a request: the gate, from CStrip, on its own. Then I thought, what if I included the compression too? I could tweak both and see if I could make 'em better for the new plugin. And then I thought, what would it be like if I combined them into a single dynamics object?I think it worked.Dynamics can be very transparent, or you can crank the speed and intensity to be hyper-squished… but since it's a single plugin, you can hypercompress AND gate as a unit. That means you're triggering the gate off the source audio, you're able to control the closing of the gate like it's raw sound, but the sound you're gating is the compressed one. And that means terrific control and cleanness on the sculpted, tightened sounds. I've designed it so you can make it gate on almost anything, and squish very aggressively. It's unlinked so you can use it on a stereo submix with distinct parts for each side, or put it on a mono track to control and shape it."
+    "Dynamics started with a request: the gate, from CStrip, on its own. Then I thought, what if I included the compression too? I could tweak both and see if I could make 'em better for the new plugin. And then I thought, what would it be like if I combined them into a single dynamics object? I think it worked. Dynamics can be very transparent, or you can crank the speed and intensity to be hyper-squished… but since it's a single plugin, you can hypercompress AND gate as a unit. That means you're triggering the gate off the source audio, you're able to control the closing of the gate like it's raw sound, but the sound you're gating is the compressed one. And that means terrific control and cleanness on the sculpted, tightened sounds. I've designed it so you can make it gate on almost anything, and squish very aggressively. It's unlinked so you can use it on a stereo submix with distinct parts for each side, or put it on a mono track to control and shape it."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Dynamics final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dynm';
     // begin Gate
     bool WasNegativeL;
     int ZeroCrossL;
@@ -119,21 +123,18 @@ class Dynamics final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -146,8 +147,7 @@ class Dynamics final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.0; break;
@@ -160,12 +160,11 @@ class Dynamics final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "comp"; break;
             case kParamB: return "speed"; break;
             case kParamC: return "gate"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -174,8 +173,7 @@ class Dynamics final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Comp"; break;
             case kParamB: return "Speed"; break;
             case kParamC: return "Gate"; break;
@@ -188,30 +186,30 @@ class Dynamics final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -239,8 +237,7 @@ class Dynamics final : public Effect<T>
         // speed to be compensated w.r.t sample rate
         // end Gate
         double wet = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -280,10 +277,8 @@ class Dynamics final : public Effect<T>
             double calcneg = 1.0 / targetnegL;
             // now we have mirrored targets for comp
             // outputpos and outputneg go from 0 to 1
-            if (inputSampleL > 0)
-            { // working on pos
-                if (true == flip)
-                {
+            if (inputSampleL > 0) { // working on pos
+                if (true == flip) {
                     controlAposL *= divisor;
                     controlAposL += (calcpos * remainder);
                 }
@@ -293,8 +288,7 @@ class Dynamics final : public Effect<T>
                 }
             }
             else { // working on neg
-                if (true == flip)
-                {
+                if (true == flip) {
                     controlAnegL *= divisor;
                     controlAnegL += (calcneg * remainder);
                 }
@@ -343,10 +337,8 @@ class Dynamics final : public Effect<T>
             calcneg = 1.0 / targetnegR;
             // now we have mirrored targets for comp
             // outputpos and outputneg go from 0 to 1
-            if (inputSampleR > 0)
-            { // working on pos
-                if (true == flip)
-                {
+            if (inputSampleR > 0) { // working on pos
+                if (true == flip) {
                     controlAposR *= divisor;
                     controlAposR += (calcpos * remainder);
                 }
@@ -356,8 +348,7 @@ class Dynamics final : public Effect<T>
                 }
             }
             else { // working on neg
-                if (true == flip)
-                {
+                if (true == flip) {
                     controlAnegR *= divisor;
                     controlAnegR += (calcneg * remainder);
                 }
@@ -380,8 +371,7 @@ class Dynamics final : public Effect<T>
             flip = !flip;
             // end compressor
             // begin Gate
-            if (drySampleL > 0.0)
-            {
+            if (drySampleL > 0.0) {
                 if (WasNegativeL == true) {
                     ZeroCrossL = absmax * 0.3;
                 }
@@ -391,8 +381,7 @@ class Dynamics final : public Effect<T>
                 ZeroCrossL += 1;
                 WasNegativeL = true;
             }
-            if (drySampleR > 0.0)
-            {
+            if (drySampleR > 0.0) {
                 if (WasNegativeR == true) {
                     ZeroCrossR = absmax * 0.3;
                 }
@@ -408,11 +397,9 @@ class Dynamics final : public Effect<T>
             if (ZeroCrossR > absmax) {
                 ZeroCrossR = absmax;
             }
-            if (gateL == 0.0)
-            {
+            if (gateL == 0.0) {
                 // if gate is totally silent
-                if (fabs(drySampleL) > onthreshold)
-                {
+                if (fabs(drySampleL) > onthreshold) {
                     if (gaterollerL == 0.0) {
                         gaterollerL = ZeroCrossL;
                     }
@@ -427,8 +414,7 @@ class Dynamics final : public Effect<T>
             }
             else {
                 // gate is not silent but closing
-                if (fabs(drySampleL) > offthreshold)
-                {
+                if (fabs(drySampleL) > offthreshold) {
                     if (gaterollerL < ZeroCrossL) {
                         gaterollerL = ZeroCrossL;
                     }
@@ -441,11 +427,9 @@ class Dynamics final : public Effect<T>
                     gaterollerL -= release;
                 }
             }
-            if (gateR == 0.0)
-            {
+            if (gateR == 0.0) {
                 // if gate is totally silent
-                if (fabs(drySampleR) > onthreshold)
-                {
+                if (fabs(drySampleR) > onthreshold) {
                     if (gaterollerR == 0.0) {
                         gaterollerR = ZeroCrossR;
                     }
@@ -460,8 +444,7 @@ class Dynamics final : public Effect<T>
             }
             else {
                 // gate is not silent but closing
-                if (fabs(drySampleR) > offthreshold)
-                {
+                if (fabs(drySampleR) > offthreshold) {
                     if (gaterollerR < ZeroCrossR) {
                         gaterollerR = ZeroCrossR;
                     }
@@ -480,8 +463,7 @@ class Dynamics final : public Effect<T>
             if (gaterollerR < 0.0) {
                 gaterollerR = 0.0;
             }
-            if (gaterollerL < 1.0)
-            {
+            if (gaterollerL < 1.0) {
                 gateL = gaterollerL;
                 double bridgerectifier = 1 - cos(fabs(inputSampleL));
                 if (inputSampleL > 0) {
@@ -497,8 +479,7 @@ class Dynamics final : public Effect<T>
             else {
                 gateL = 1.0;
             }
-            if (gaterollerR < 1.0)
-            {
+            if (gaterollerR < 1.0) {
                 gateR = gaterollerR;
                 double bridgerectifier = 1 - cos(fabs(inputSampleR));
                 if (inputSampleR > 0) {

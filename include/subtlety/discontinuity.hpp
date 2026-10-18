@@ -11,17 +11,20 @@ constexpr std::string_view k_short_description{
     "Discontinuity models air under intense loudness."
 };
 constexpr std::string_view k_long_description{
-    "This might be the most important subtle sound effect I've ever done.Air isn't linear. That's why DAWs don't sound like reality: they are literally too perfect, in that their transients, their sound combining, every aspect of their operation has no error at all. One would assume this would produce perfect sound, but some of us have never shut up about our grievances with it. (we just lost a titan of that grievance in Steve Albini, but he's far from alone in that.)If you have sounds in air, they sound real even while the air itself distorts them. Much like my recent work with capacitors modulating their values under voltage pressure (up to 80% in some cases!), air modulates the speed of sound under AIR pressure. This makes incredibly obvious and intense crackles on loud sounds like rocket takeoffs, but many of us have heard this crackle at things like rock concerts, especially in a really live room like a hockey rink.Discontinuity simply adds THAT distortion. At loudnesses from 70 dB to 140 dB. That's all it does, and at loudnesses below 110 dB or so it's quite subtle… but I've found use for it as quiet as 71dB (the voice tracks on my last two videos!)I won't say it's correct and accurate at 140dB: I include that because people will enjoy it so much, but I'm not using that much. I just have to… because people will enjoy it, and because it's impossible not to hear when cranked that high.How to use Discontinuity? At any point in the mix where there's a sound, apply it so that the loudest possible sound (typically 0dB, or clipping) matches the loudness you need. If your sound peaks at 10 dB quieter than clipping, and the sound needs to seem like it's 102 dB, set Discontinuity to 112 dB. And listen! There will be an obvious sweet spot where it starts to seem exactly right, and you can dial in the apparent loudness as if it was a tone or EQ move.Discontinuity does its frequency modulation using sample buffers. For that reason, it permanently has a bit of latency and it's never quite the same latency because it's frequency modulated by the track it's on. For that reason, you could put it on every track and drum mic as long as you give up the idea of phase coherence. It's better on minimally miked things or possibly submixes, and on distinct sounds that don't need to keep perfect phase alignment with each other.Depending on who you are and what you've dreamed of being able to make sound do, you might immediately not care about any of that, and immediately start using it on everything and never stop. That's me. It's like when I invented Console, only more so. The interesting thing is how useful I find the quiet, subtle settings when getting a mix to gel and come alive like it's a real sonic event happening. I can set very delicate and quiet, against super loud, and have them all just work.Discontinuity is a fundamental part of ConsoleX, which I'm still working on. I hope you like getting a little piece of the mixing revolution early, so you can learn about it :)"
+    "This might be the most important subtle sound effect I've ever done. Air isn't linear. That's why DAWs don't sound like reality: they are literally too perfect, in that their transients, their sound combining, every aspect of their operation has no error at all. One would assume this would produce perfect sound, but some of us have never shut up about our grievances with it. (we just lost a titan of that grievance in Steve Albini, but he's far from alone in that.) If you have sounds in air, they sound real even while the air itself distorts them. Much like my recent work with capacitors modulating their values under voltage pressure (up to 80% in some cases!), air modulates the speed of sound under AIR pressure. This makes incredibly obvious and intense crackles on loud sounds like rocket takeoffs, but many of us have heard this crackle at things like rock concerts, especially in a really live room like a hockey rink. Discontinuity simply adds THAT distortion. At loudnesses from 70 dB to 140 dB. That's all it does, and at loudnesses below 110 dB or so it's quite subtle… but I've found use for it as quiet as 71dB (the voice tracks on my last two videos!) I won't say it's correct and accurate at 140dB: I include that because people will enjoy it so much, but I'm not using that much. I just have to… because people will enjoy it, and because it's impossible not to hear when cranked that high. How to use Discontinuity? At any point in the mix where there's a sound, apply it so that the loudest possible sound (typically 0dB, or clipping) matches the loudness you need. If your sound peaks at 10 dB quieter than clipping, and the sound needs to seem like it's 102 dB, set Discontinuity to 112 dB. And listen! There will be an obvious sweet spot where it starts to seem exactly right, and you can dial in the apparent loudness as if it was a tone or EQ move. Discontinuity does its frequency modulation using sample buffers. For that reason, it permanently has a bit of latency and it's never quite the same latency because it's frequency modulated by the track it's on. For that reason, you could put it on every track and drum mic as long as you give up the idea of phase coherence. It's better on minimally miked things or possibly submixes, and on distinct sounds that don't need to keep perfect phase alignment with each other. Depending on who you are and what you've dreamed of being able to make sound do, you might immediately not care about any of that, and immediately start using it on everything and never stop. That's me. It's like when I invented Console, only more so. The interesting thing is how useful I find the quiet, subtle settings when getting a mix to gel and come alive like it's a real sonic event happening. I can set very delicate and quiet, against super loud, and have them all just work. Discontinuity is a fundamental part of ConsoleX, which I'm still working on. I hope you like getting a little piece of the mixing revolution early, so you can learn about it :)"
 };
 constexpr std::string_view k_tags{
     "subtlety"
 };
 
-constexpr int dscBuf = 90;
-
 template <typename T>
 class Discontinuity final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'disc';
+    static constexpr int dscBuf = 90;
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -88,18 +91,15 @@ class Discontinuity final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -109,8 +109,7 @@ class Discontinuity final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -120,9 +119,8 @@ class Discontinuity final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "top db"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "topdb"; break;
 
             default: break;
         }
@@ -131,8 +129,7 @@ class Discontinuity final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Top dB"; break;
 
             default: break;
@@ -142,24 +139,24 @@ class Discontinuity final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 70.0) + 70.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -174,8 +171,7 @@ class Discontinuity final : public Effect<T>
         overallscale *= Effect<T>::getSampleRate();
         double refdB = (A * 70.0) + 70.0;
         double topdB = 0.000000075 * pow(10.0, refdB / 20.0) * overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Remap puts the guts back into overloudenated audio!"
 };
 constexpr std::string_view k_long_description{
-    "Is your audio too flat?Here’s the thing. We have an endless series of saturations, console models, tape emulations, iron oxide slams, smooth compressors, naughty compressors, magneto-dynamic infundibulators… as music-mongers, it seems we spend all our time distorting, squishing and flattening.And this is normal, because if you don’t do some of that it’s easy to come up with a very empty, stark, vanilla recording. Most of the genres we know and love feature some form of distortion or dynamics compression, or more likely both.But what about when we get carried away, and the result is about as impactful as Muzak? (which is fine in its place, but we crave a lot more)Until recently it didn’t matter because louder was always ‘better’… but now, Replay Gain and a million automatic gain functions have rendered the loudness our enemy. If you squish just a little too much you can end up flat, boring AND turned down by the gain control. So what do we do to get more impact and mojo WITHOUT splatting our mixes against a digital wall?Remap is finally out to answer that. You might not need it: if you’ve got great self-control or always squish too little, it might not help you. But for an awful lot of people, Remap can be the ‘hail mary’ mix de-squisher, after the fact. And since it works the way it does, it can find uses of other sorts, for it’s a pretty simple algorithm.Remap does a fairly decent job of taking a full scale sine wave and transmogrifying it into a softened triangle wave, if you set it just right. It heightens the pointiness, the peak energy, the aura of things. If you don’t exaggerate it, it stays nice and clean. If you do exaggerate it, you get a fierce crunchy punchiness but that’s what the dry/wet control is for. It produces peaks above 0dB on fullscale content, so be warned: it’s basically putting the dynamics back. Especially with soft-clipped stuff, Remap can reshape your original wave back again… or provide expansion and power where none existed.Pretty much anywhere your mix feels flat and congested, Remap can help (so long as your gain staging is toward the loud side). Turn it up until it’s too much then back it off. Below 0.5 will always be very subtle: above 0.5, things might get funky in a hurry. You might find a huge fierce bass drum manifesting itself, or guitars growing fangs and attitude, or vocals enunciating more clearly and passionately, belting harder. It depends on what’s already in your mix: used correctly, Remap can bring more of it out. There will be most likely ONE focus point for the Remap slider, for any given mix or sound within its range. Find that and then use output level and dry/wet to balance that super-real signal with however much of the source you want. This one REALLY likes dry/wet to give you natural results, the focal point might be a real gritty tonality. No gloss, just guts and kick and attitude."
+    "Is your audio too flat? Here’s the thing. We have an endless series of saturations, console models, tape emulations, iron oxide slams, smooth compressors, naughty compressors, magneto-dynamic infundibulators… as music-mongers, it seems we spend all our time distorting, squishing and flattening. And this is normal, because if you don’t do some of that it’s easy to come up with a very empty, stark, vanilla recording. Most of the genres we know and love feature some form of distortion or dynamics compression, or more likely both. But what about when we get carried away, and the result is about as impactful as Muzak? (which is fine in its place, but we crave a lot more) Until recently it didn’t matter because louder was always ‘better’… but now, Replay Gain and a million automatic gain functions have rendered the loudness our enemy. If you squish just a little too much you can end up flat, boring AND turned down by the gain control. So what do we do to get more impact and mojo WITHOUT splatting our mixes against a digital wall? Remap is finally out to answer that. You might not need it: if you’ve got great self-control or always squish too little, it might not help you. But for an awful lot of people, Remap can be the ‘hail mary’ mix de-squisher, after the fact. And since it works the way it does, it can find uses of other sorts, for it’s a pretty simple algorithm. Remap does a fairly decent job of taking a full scale sine wave and transmogrifying it into a softened triangle wave, if you set it just right. It heightens the pointiness, the peak energy, the aura of things. If you don’t exaggerate it, it stays nice and clean. If you do exaggerate it, you get a fierce crunchy punchiness but that’s what the dry/wet control is for. It produces peaks above 0dB on fullscale content, so be warned: it’s basically putting the dynamics back. Especially with soft-clipped stuff, Remap can reshape your original wave back again… or provide expansion and power where none existed. Pretty much anywhere your mix feels flat and congested, Remap can help (so long as your gain staging is toward the loud side). Turn it up until it’s too much then back it off. Below 0.5 will always be very subtle: above 0.5, things might get funky in a hurry. You might find a huge fierce bass drum manifesting itself, or guitars growing fangs and attitude, or vocals enunciating more clearly and passionately, belting harder. It depends on what’s already in your mix: used correctly, Remap can bring more of it out. There will be most likely ONE focus point for the Remap slider, for any given mix or sound within its range. Find that and then use output level and dry/wet to balance that super-real signal with however much of the source you want. This one REALLY likes dry/wet to give you natural results, the focal point might be a real gritty tonality. No gloss, just guts and kick and attitude."
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Remap final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'rema';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -54,20 +58,17 @@ class Remap final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -79,8 +80,7 @@ class Remap final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 1.0; break;
             case kParamC: return 1.0; break;
@@ -92,11 +92,10 @@ class Remap final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "remap"; break;
             case kParamB: return "output"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -105,8 +104,7 @@ class Remap final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Remap"; break;
             case kParamB: return "Output"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -118,28 +116,28 @@ class Remap final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -153,8 +151,7 @@ class Remap final : public Effect<T>
         double gain = (drive + 0.2) * 8;
         double out = B;
         double wet = C;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

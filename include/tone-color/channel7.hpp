@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Channel7 improves slew clipping and lets you blend Channel 6 and 5."
 };
 constexpr std::string_view k_long_description{
-    "Short and sweet. You know how Interstage got an update because the slew clipping was too intense on high sample rates? This applied to Channel, too. So, Channel7 now handles high sample rates better than any previous Channel.There’s more: Channel5 was the last one with the ‘Density’ algorithm, that’s extra fat-sounding. Channel6 got the Spiral algorithm, much purer and clearer… but without that fatness effect Density gets. My attempts to make a special algorithm that does both gave me Mojo and Dyno… neither of which are Channel or a replacement for either Spiral or Density.So, Channel7 simply goes to 200%, not 100%. Up to 100% it’s the same as Channel6, but with the slew clipping fix. From 100% to 200% it does a crossfade into Channel5’s Density algorithm—so it ends up being best of all possible worlds. You can seamlessly go from perfectly clean, to the purest saturation there is, and beyond that to add any degree of fatness you like to the sound (and it fades between Spiral and Density, so there’s extra subtlety to the way it transitions).Channel7: yeah, you’re pretty much going to want this upgrade no matter which Channel you liked. It is all of the best, more effective than ever."
+    "Short and sweet. You know how Interstage got an update because the slew clipping was too intense on high sample rates? This applied to Channel, too. So, Channel7 now handles high sample rates better than any previous Channel. There’s more: Channel5 was the last one with the ‘Density’ algorithm, that’s extra fat-sounding. Channel6 got the Spiral algorithm, much purer and clearer… but without that fatness effect Density gets. My attempts to make a special algorithm that does both gave me Mojo and Dyno… neither of which are Channel or a replacement for either Spiral or Density. So, Channel7 simply goes to 200%, not 100%. Up to 100% it’s the same as Channel6, but with the slew clipping fix. From 100% to 200% it does a crossfade into Channel5’s Density algorithm—so it ends up being best of all possible worlds. You can seamlessly go from perfectly clean, to the purest saturation there is, and beyond that to add any degree of fatness you like to the sound (and it fades between Spiral and Density, so there’s extra subtlety to the way it transitions). Channel7: yeah, you’re pretty much going to want this upgrade no matter which Channel you liked. It is all of the best, more effective than ever."
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Channel7 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cha7';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -72,12 +76,31 @@ class Channel7 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: consoletype = value; break;
             case kParamB: drive = value; break;
             case kParamC: output = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
+        }
+        // we can also set other defaults here, and do calculations that only have to happen
+        // once when parameters actually change. Here is the 'popup' setting its (global) values.
+        // variables can also be set in the processreplacing loop, and there they'll be set every buffersize
+        // here they're set when a parameter's actually changed, which should be less frequent, but
+        // you must use global variables in the Channel4.h file to do it.
+        switch ((VstInt32)(consoletype * 2.999)) {
+            case 0:
+                iirAmount = 0.005832;
+                threshold = 0.33362176;
+                break; // Neve
+            case 1:
+                iirAmount = 0.004096;
+                threshold = 0.59969536;
+                break; // API
+            case 2:
+                iirAmount = 0.004913;
+                threshold = 0.84934656;
+                break; // SSL
+            default: break; // should not happen
         }
     }
 
@@ -108,7 +131,7 @@ class Channel7 final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "console type"; break;
+            case kParamA: return "consoletype"; break;
             case kParamB: return "drive"; break;
             case kParamC: return "output"; break;
 
@@ -131,26 +154,36 @@ class Channel7 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(consoletype); break;
-            case kParamB: return std::to_string(drive); break;
-            case kParamC: return std::to_string(output); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(consoletype * 2.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Neve", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "API", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SSL", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: int2string((VstInt32)(drive * 200), text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(output, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return "%"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "%", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

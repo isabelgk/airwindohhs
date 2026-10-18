@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Overheads is for compressing only part of the sound, strangely!"
 };
 constexpr std::string_view k_long_description{
-    "I could say this was a compressor for putting on drum overheads to take out the drums and leave only the cymbals, but that would only be scratching the surface…Overheads is one of those old Airwindows plugins built on really strange ideas. Let's assume we want to compress drums but leave cymbals. How might we do that? We could filter, but why would we do that when we could do something more perverse? Instead, let's take a really short delay, like a flange. Next, invert it: compression gets driven by the source audio minus the delayed. Then expand the delay. Then what?Then, high frequencies tend to slip through the cracks between the delay gap. They don't get affected as strongly. But deeper frequencies will produce one part louder than the other, and subtracting produces an output that can kick in the compression. Except it might not, because the sounds might not line up. So add a control called 'Node' to move the delay gap. But how do you know what to do with 'node'? Best change it to something else: 'Sharp', for instance (which is what happened). Then what?So, put 'Sharp' in the middle somewhere. Start cranking up Compr to compress it, and you'll hear the sound squish, then negate: an area in the sound will dynamically invert, as if you're deleting the snare or kick or whatever, but it will be weird. Move 'Sharp' around to adjust it: larger 'Sharp' should let it grab slightly deeper sounds, smaller 'Sharp' shifts the cancellation up a little. Push 'Compr' further to hear what it does. To actually use it for its intended purpose, back it off so you're only slightly clamping down the drums and leaving the cymbals, making space for spot mics. It'll mess with the cymbals: see if you like how that works.Or: do whatever go nuts, do crimes, ruin everything. Put it on every drum and set them all differently. Get a really bizarre sound that's not like anything else, live long, prosper. (if you do, join my Patreon!)No promises.Oh, also, as seen in the video, if you use this on a sine wave at just the right level, it will turn the sine wave into a triangle. I totally didn't mean for it to do that, and am not really sure how it manages it. Beware. Have fun :)"
+    "I could say this was a compressor for putting on drum overheads to take out the drums and leave only the cymbals, but that would only be scratching the surface… Overheads is one of those old Airwindows plugins built on really strange ideas. Let's assume we want to compress drums but leave cymbals. How might we do that? We could filter, but why would we do that when we could do something more perverse? Instead, let's take a really short delay, like a flange. Next, invert it: compression gets driven by the source audio minus the delayed. Then expand the delay. Then what? Then, high frequencies tend to slip through the cracks between the delay gap. They don't get affected as strongly. But deeper frequencies will produce one part louder than the other, and subtracting produces an output that can kick in the compression. Except it might not, because the sounds might not line up. So add a control called 'Node' to move the delay gap. But how do you know what to do with 'node'? Best change it to something else: 'Sharp', for instance (which is what happened). Then what? So, put 'Sharp' in the middle somewhere. Start cranking up Compr to compress it, and you'll hear the sound squish, then negate: an area in the sound will dynamically invert, as if you're deleting the snare or kick or whatever, but it will be weird. Move 'Sharp' around to adjust it: larger 'Sharp' should let it grab slightly deeper sounds, smaller 'Sharp' shifts the cancellation up a little. Push 'Compr' further to hear what it does. To actually use it for its intended purpose, back it off so you're only slightly clamping down the drums and leaving the cymbals, making space for spot mics. It'll mess with the cymbals: see if you like how that works. Or: do whatever go nuts, do crimes, ruin everything. Put it on every drum and set them all differently. Get a really bizarre sound that's not like anything else, live long, prosper. (if you do, join my Patreon!) No promises. Oh, also, as seen in the video, if you use this on a sine wave at just the right level, it will turn the sine wave into a triangle. I totally didn't mean for it to do that, and am not really sure how it manages it. Beware. Have fun :)"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Overheads final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'over';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -64,20 +68,17 @@ class Overheads final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -89,8 +90,7 @@ class Overheads final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -102,11 +102,10 @@ class Overheads final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "compr"; break;
             case kParamB: return "sharp"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -115,8 +114,7 @@ class Overheads final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Compr"; break;
             case kParamB: return "Sharp"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -128,28 +126,28 @@ class Overheads final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -167,8 +165,7 @@ class Overheads final : public Effect<T>
         ovhTrim *= ovhTrim;
         int offset = (pow(B, 7) * 16.0 * overallscale) + 1;
         double wet = C;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

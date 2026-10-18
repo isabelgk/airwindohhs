@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Energy is electrifying fixed-frequency treble boosts."
 };
 constexpr std::string_view k_long_description{
-    "In the continuing series of ‘weird algorithms other people can’t give you’, here’s Energy. What’s the matter with Energy that only Airwindows can/will do it? Pretty simple. It’s a bizarre algorithm which acts like half a super-high-Q boost and can’t be tuned in the normal way. It can only work on integer multiples of the sample rate. So the labels only relate to 44.1K, they’re colorfully named rather than specifying frequencies, and at different sample rates any frequency labels would be lies anyhow… and they can’t be tuned, and the Q can’t be altered. Literally all it does is slam huge amounts of super-aggressive treble on.But what a treble it is! Energy accentuates the attack transient like no other high frequency EQ (especially linear phase, and ‘DSP cookbook’ biquad EQs). The principle of operation is totally different. It didn’t catch on because it’s a weird idea to start with, and it’s completely not adaptable to anything. It’s not even that great at cuts, though you can try it for cuts if you like. It’s really just about slamming a bunch of punchy brightness on at 22K, 15K, 11K, 9K and so on: or, Hiss Glitter Rat Fizz Scrape Chug Yowr Snarl, as the labelling goes.The lower ones extend down into high-mids as you’d imagine (at high sample rates they’d work as high-boosts) but that’s another reason I can’t simply label them as frequency controls. These are nasty. They won’t give you clean tidy boosts, not even ‘analog style’ clean tidy boosts. They’re interacting with the sample rate in a nasty way and produce a bunch of extra overtones and skronk so it’s better to leave them as adjectives to avoid even the suggestion that they would give you polite EQ shaping.But if you are looking for brutal, raw electrifying ENERGY I think it’s hard to do better than Energy. The only thing that’s new on this old school super secret weapon, besides denormalization and the noise shaping to the floating point buss and higher resolution internal processing, is the InvDryWet control, which was an obvious call. Since the different sliders can get into strange interactions, since you can play them off against each other, that means you could try to isolate high frequency stuff you don’t want and accentuate it as much as possible… and then, return to dry, and give it just a bit of inverted effect. That’s one way to tame nasty highs (such as from a bad condenser mic). I accept no responsibility if the bad mic, combined with Energy boosts, kills you with treble. That’s kind of Energy’s job :)"
+    "In the continuing series of ‘weird algorithms other people can’t give you’, here’s Energy. What’s the matter with Energy that only Airwindows can/will do it? Pretty simple. It’s a bizarre algorithm which acts like half a super-high-Q boost and can’t be tuned in the normal way. It can only work on integer multiples of the sample rate. So the labels only relate to 44.1K, they’re colorfully named rather than specifying frequencies, and at different sample rates any frequency labels would be lies anyhow… and they can’t be tuned, and the Q can’t be altered. Literally all it does is slam huge amounts of super-aggressive treble on. But what a treble it is! Energy accentuates the attack transient like no other high frequency EQ (especially linear phase, and ‘DSP cookbook’ biquad EQs). The principle of operation is totally different. It didn’t catch on because it’s a weird idea to start with, and it’s completely not adaptable to anything. It’s not even that great at cuts, though you can try it for cuts if you like. It’s really just about slamming a bunch of punchy brightness on at 22K, 15K, 11K, 9K and so on: or, Hiss Glitter Rat Fizz Scrape Chug Yowr Snarl, as the labelling goes. The lower ones extend down into high-mids as you’d imagine (at high sample rates they’d work as high-boosts) but that’s another reason I can’t simply label them as frequency controls. These are nasty. They won’t give you clean tidy boosts, not even ‘analog style’ clean tidy boosts. They’re interacting with the sample rate in a nasty way and produce a bunch of extra overtones and skronk so it’s better to leave them as adjectives to avoid even the suggestion that they would give you polite EQ shaping. But if you are looking for brutal, raw electrifying ENERGY I think it’s hard to do better than Energy. The only thing that’s new on this old school super secret weapon, besides denormalization and the noise shaping to the floating point buss and higher resolution internal processing, is the InvDryWet control, which was an obvious call. Since the different sliders can get into strange interactions, since you can play them off against each other, that means you could try to isolate high frequency stuff you don’t want and accentuate it as much as possible… and then, return to dry, and give it just a bit of inverted effect. That’s one way to tame nasty highs (such as from a bad condenser mic). I accept no responsibility if the bad mic, combined with Energy boosts, kills you with treble. That’s kind of Energy’s job :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Energy final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'ener';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -328,8 +332,7 @@ class Energy final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -339,15 +342,13 @@ class Energy final : public Effect<T>
             case kParamG: G = value; break;
             case kParamH: H = value; break;
             case kParamI: I = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -365,8 +366,7 @@ class Energy final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -384,8 +384,7 @@ class Energy final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "hiss"; break;
             case kParamB: return "glitter"; break;
             case kParamC: return "rat"; break;
@@ -394,7 +393,7 @@ class Energy final : public Effect<T>
             case kParamF: return "chug"; break;
             case kParamG: return "yowr"; break;
             case kParamH: return "snarl"; break;
-            case kParamI: return "i/dr/wt"; break;
+            case kParamI: return "idrwt"; break;
 
             default: break;
         }
@@ -403,8 +402,7 @@ class Energy final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Hiss"; break;
             case kParamB: return "Glitter"; break;
             case kParamC: return "Rat"; break;
@@ -422,40 +420,40 @@ class Energy final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string((B * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string((D * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string((E * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string((F * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string((G * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string((H * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string((I * 2.0) - 1.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -475,8 +473,7 @@ class Energy final : public Effect<T>
         double nintIntensity = -pow((H * 2.0) - 1.0, 3);
         double mix = (I * 2.0) - 1.0;
         // all types of air band are running in parallel, not series
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -489,8 +486,7 @@ class Energy final : public Effect<T>
             double correctionR = 0.0;
             duoFactorL = PrevAL - inputSampleL;
             duoFactorR = PrevAR - inputSampleR;
-            if (flip)
-            {
+            if (flip) {
                 duoEvenL += duoFactorL;
                 duoOddL -= duoFactorL;
                 duoFactorL = duoEvenL * duoIntensity;
@@ -498,8 +494,7 @@ class Energy final : public Effect<T>
                 duoOddR -= duoFactorR;
                 duoFactorR = duoEvenR * duoIntensity;
             }
-            else
-            {
+            else {
                 duoOddL += duoFactorL;
                 duoEvenL -= duoFactorL;
                 duoFactorL = duoOddL * duoIntensity;
@@ -518,8 +513,7 @@ class Energy final : public Effect<T>
             if (countA < 1 || countA > 3) {
                 countA = 1;
             }
-            switch (countA)
-            {
+            switch (countA) {
                 case 1:
                     tripletFactorL = PrevBL - inputSampleL;
                     tripletAL += tripletFactorL;
@@ -564,8 +558,7 @@ class Energy final : public Effect<T>
             if (countB < 1 || countB > 4) {
                 countB = 1;
             }
-            switch (countB)
-            {
+            switch (countB) {
                 case 1:
                     quadFactorL = PrevCL - inputSampleL;
                     quadAL += quadFactorL;
@@ -622,8 +615,7 @@ class Energy final : public Effect<T>
             if (countC < 1 || countC > 5) {
                 countC = 1;
             }
-            switch (countC)
-            {
+            switch (countC) {
                 case 1:
                     quintFactorL = PrevDL - inputSampleL;
                     quintAL += quintFactorL;
@@ -692,8 +684,7 @@ class Energy final : public Effect<T>
             if (countD < 1 || countD > 6) {
                 countD = 1;
             }
-            switch (countD)
-            {
+            switch (countD) {
                 case 1:
                     sextFactorL = PrevEL - inputSampleL;
                     sextAL += sextFactorL;
@@ -774,8 +765,7 @@ class Energy final : public Effect<T>
             if (countE < 1 || countE > 7) {
                 countE = 1;
             }
-            switch (countE)
-            {
+            switch (countE) {
                 case 1:
                     septFactorL = PrevFL - inputSampleL;
                     septAL += septFactorL;
@@ -868,8 +858,7 @@ class Energy final : public Effect<T>
             if (countF < 1 || countF > 8) {
                 countF = 1;
             }
-            switch (countF)
-            {
+            switch (countF) {
                 case 1:
                     octFactorL = PrevGL - inputSampleL;
                     octAL += octFactorL;
@@ -974,8 +963,7 @@ class Energy final : public Effect<T>
             if (countG < 1 || countG > 9) {
                 countG = 1;
             }
-            switch (countG)
-            {
+            switch (countG) {
                 case 1:
                     nintFactorL = PrevHL - inputSampleL;
                     nintAL += nintFactorL;

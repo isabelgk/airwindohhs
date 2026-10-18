@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "NotJustAnotherDither is a next-gen wordlength reducer at 24 bit, with DeRez."
 };
 constexpr std::string_view k_long_description{
-    "The votes are in, and the Internet has spoken. We’ve got a name for the new noise shaping variant on Naturalize, after a January of wild suggestions. Seems most people simply wanted to emphasize that this was not your ordinary dither, not your daddy’s TPDF.This is the plugin (two, in fact) that beats all the other ones, including the original Naturalize. In normal use, this ‘dither’ (in fact it’s not a dither at all: it’s the Benford realness stuff from Naturalize, run with a noise shaper, and all the added random noise taken OUT) will make any fixed-point output sound like infinite resolution. It’s AU, Mac and PC VST. It has a switch for 16/24 bit operation (defaults to 24) and a ‘DeRez’ control where you can get low-bit NJAD audio if you like, or if you want to audition its noise floor behavior.The output levels are low, without a bunch of extra energy coming from the noise shaper: it’s pretty well behaved, though like any hyper-performance ‘dither’ this is really meant for output formats. I don’t think any harm can come from repeatedly using this in processing, but you can always use a normal TPDF if you want no change in tonal balance (plain TPDF dither only adds broadband noise: more opaque, but if it builds up it won’t accentuate anything: dithers with a lot of high frequency energy can end up exaggerating that.)(followup: I added a 16/24 bit switch, and DeRez. Also, the most current version of this is in Monitoring.)"
+    "The votes are in, and the Internet has spoken. We’ve got a name for the new noise shaping variant on Naturalize, after a January of wild suggestions. Seems most people simply wanted to emphasize that this was not your ordinary dither, not your daddy’s TPDF. This is the plugin (two, in fact) that beats all the other ones, including the original Naturalize. In normal use, this ‘dither’ (in fact it’s not a dither at all: it’s the Benford realness stuff from Naturalize, run with a noise shaper, and all the added random noise taken OUT) will make any fixed-point output sound like infinite resolution. It’s AU, Mac and PC VST. It has a switch for 16/24 bit operation (defaults to 24) and a ‘DeRez’ control where you can get low-bit NJAD audio if you like, or if you want to audition its noise floor behavior. The output levels are low, without a bunch of extra energy coming from the noise shaper: it’s pretty well behaved, though like any hyper-performance ‘dither’ this is really meant for output formats. I don’t think any harm can come from repeatedly using this in processing, but you can always use a normal TPDF if you want no change in tonal balance (plain TPDF dither only adds broadband noise: more opaque, but if it builds up it won’t accentuate anything: dithers with a lot of high frequency energy can end up exaggerating that.) (followup: I added a 16/24 bit switch, and DeRez. Also, the most current version of this is in Monitoring.)"
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class NotJustAnotherDither final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'njad';
     double bynL[13];
     double bynR[13];
     double noiseShapingL;
@@ -79,19 +83,16 @@ class NotJustAnotherDither final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -102,8 +103,7 @@ class NotJustAnotherDither final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.0; break;
 
@@ -114,8 +114,7 @@ class NotJustAnotherDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "quant"; break;
             case kParamB: return "derez"; break;
 
@@ -126,8 +125,7 @@ class NotJustAnotherDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Quant"; break;
             case kParamB: return "DeRez"; break;
 
@@ -138,26 +136,33 @@ class NotJustAnotherDither final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 1.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "CD 16", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "HD 24", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -190,8 +195,7 @@ class NotJustAnotherDither final : public Effect<T>
         if (outScale < 8.0) {
             outScale = 8.0;
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -234,8 +238,7 @@ class NotJustAnotherDither final : public Effect<T>
             // hotbin becomes the Benford bin value for this number floored
             double totalA;
             totalA = 0;
-            if ((hotbinA > 0) && (hotbinA < 10))
-            {
+            if ((hotbinA > 0) && (hotbinA < 10)) {
                 bynL[hotbinA] += 1;
                 if (bynL[hotbinA] > 982) {
                     cutbinsL = true;
@@ -267,8 +270,7 @@ class NotJustAnotherDither final : public Effect<T>
             // hotbin becomes the Benford bin value for this number ceiled
             double totalB;
             totalB = 0;
-            if ((hotbinB > 0) && (hotbinB < 10))
-            {
+            if ((hotbinB > 0) && (hotbinB < 10)) {
                 bynL[hotbinB] += 1;
                 if (bynL[hotbinB] > 982) {
                     cutbinsL = true;
@@ -330,8 +332,7 @@ class NotJustAnotherDither final : public Effect<T>
             hotbinA = floor(benfordize);
             // hotbin becomes the Benford bin value for this number floored
             totalA = 0;
-            if ((hotbinA > 0) && (hotbinA < 10))
-            {
+            if ((hotbinA > 0) && (hotbinA < 10)) {
                 bynR[hotbinA] += 1;
                 if (bynR[hotbinA] > 982) {
                     cutbinsR = true;
@@ -361,8 +362,7 @@ class NotJustAnotherDither final : public Effect<T>
             hotbinB = floor(benfordize);
             // hotbin becomes the Benford bin value for this number ceiled
             totalB = 0;
-            if ((hotbinB > 0) && (hotbinB < 10))
-            {
+            if ((hotbinB > 0) && (hotbinB < 10)) {
                 bynR[hotbinB] += 1;
                 if (bynR[hotbinB] > 982) {
                     cutbinsR = true;

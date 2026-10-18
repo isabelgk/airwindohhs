@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kStation is a realistic small room modeled after David Bowie's vocal reverb."
 };
 constexpr std::string_view k_long_description{
-    "Turns out I'm getting asked for smaller reverbs for a reason.Comparatively small spaces can merge with a sound in an interesting way. Rather than adding a sustain, the reverb can turn into part of the tone, thickening and glamorizing it to the point that, if you listened to just the dry signal, it'd be a bit shocking… especially if it was recorded in a dead place like a studio or under a tent of blankets or what have you.This is kStation, another extension of Airwindows reverbs in the direction I'm going. It takes everything you had in kGuitarHall2, the unusual midrange depth that comes across even on a cellphone, the ability to position your source in the virtual room, and it brings it to a tiny space that acts like a room, but isn't inspired by one.Because it's inspired by David Bowie's vocal sound on Station To Station, and that's probably one of the very first digital reverbs.No effort is being made to emulate vintage digital reverb things. None. There's a kind of darkness out of those old discrete converter circuits: that's handled instead by Bezier undersampling and filtering. You can get funny overtones by setting kStation's filter over 0.5 (like the undersampling, the Bezier filter goes two ways) but they aren't vintage-digital overtones, they're something else, something new. You get depth but it's not from modeling an antique reverb, it's from where Airwindows algorithm development is going.It's a unique algorithm, generated to do just this, and it's there to merge with your vocal (or whatever else you wish) and sound like a hit record. Specifically, it wants to give you the richness and sumptuousness of Bowie circa Station To Station. You'll have to sing or it won't work, but this and perhaps some Silken (also a nice trick for that stuff) and you can get a giant head start.There'll be more, but this one is gonna come in real handy. I hope you like it :)"
+    "Turns out I'm getting asked for smaller reverbs for a reason. Comparatively small spaces can merge with a sound in an interesting way. Rather than adding a sustain, the reverb can turn into part of the tone, thickening and glamorizing it to the point that, if you listened to just the dry signal, it'd be a bit shocking… especially if it was recorded in a dead place like a studio or under a tent of blankets or what have you. This is kStation, another extension of Airwindows reverbs in the direction I'm going. It takes everything you had in kGuitarHall2, the unusual midrange depth that comes across even on a cellphone, the ability to position your source in the virtual room, and it brings it to a tiny space that acts like a room, but isn't inspired by one. Because it's inspired by David Bowie's vocal sound on Station To Station, and that's probably one of the very first digital reverbs. No effort is being made to emulate vintage digital reverb things. None. There's a kind of darkness out of those old discrete converter circuits: that's handled instead by Bezier undersampling and filtering. You can get funny overtones by setting kStation's filter over 0.5 (like the undersampling, the Bezier filter goes two ways) but they aren't vintage-digital overtones, they're something else, something new. You get depth but it's not from modeling an antique reverb, it's from where Airwindows algorithm development is going. It's a unique algorithm, generated to do just this, and it's there to merge with your vocal (or whatever else you wish) and sound like a hit record. Specifically, it wants to give you the richness and sumptuousness of Bowie circa Station To Station. You'll have to sing or it won't work, but this and perhaps some Silken (also a nice trick for that stuff) and you can get a giant head start. There'll be more, but this one is gonna come in real handy. I hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -438,15 +438,14 @@ class kStation final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -488,7 +487,7 @@ class kStation final : public Effect<T>
             case kParamC: return "filter"; break;
             case kParamD: return "earlyrf"; break;
             case kParamE: return "positin"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -512,32 +511,34 @@ class kStation final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

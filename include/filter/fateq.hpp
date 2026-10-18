@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "FatEQ balances bands only with density."
 };
 constexpr std::string_view k_long_description{
-    "This experiment has always worked, but I'm not sure people understand why they gravitate to it.Usually when we do an EQ, we take frequency bands and turn them up and down, uniformly. A normal sound will get louder, a loud one louder still. Or, a sound will get quieter, a quieter sound quieter still.FatEQ uses the functions I use in Density (including an upgrade to negative Density settings) so that, if you're boosting, a normal sound will get louder, but a loud one will softclip. If you're cutting, to a certain extent a normal sound will get quieter but a quieter sound will get LOTS quieter. It uses variations on sin() functions to mess with the transfer functions in these ways that are tied to what you're doing with the slider.It's easy to hear what this does by just turning all the bands up. It's super-dense, overdriven, a multiband distortion, and you can totally do that.But as you do it, notice: doesn't everything also seem closer? That's the heart of FatEQ, more than its ability to just crank and overdrive stuff.The way these controls work, if you're making small adjustments you're not just making loudness changes. The softclips and antisaturations have the effect of moving sounds toward you, or farther away. Cutting any control to zero will totally remove that band, but smaller adjustments lean heavily into the 'we're attenuating the quiet detail/we're overdriving the loudest stuff'. As a result, you can EQ spatially: if you have unpleasant low-mids muddying things up, your adjustment can not only turn them down but make them step physically back. You can dial it in based on the sound coming into focus at a desired distance. Top-end too forward? Small adjustments to sit it at the position of the rest of the sound. Lows receding? Well, bring them right out until they're part of the instrument the way you wanted.It's a little unusual, but every time I've done anything like this, including just making EQ-like things that had saturation in 'em, people have loved the result. So, FatEQ just directly delivers what you might like in an EQ. See if it works out for you!"
+    "This experiment has always worked, but I'm not sure people understand why they gravitate to it. Usually when we do an EQ, we take frequency bands and turn them up and down, uniformly. A normal sound will get louder, a loud one louder still. Or, a sound will get quieter, a quieter sound quieter still. FatEQ uses the functions I use in Density (including an upgrade to negative Density settings) so that, if you're boosting, a normal sound will get louder, but a loud one will softclip. If you're cutting, to a certain extent a normal sound will get quieter but a quieter sound will get LOTS quieter. It uses variations on sin() functions to mess with the transfer functions in these ways that are tied to what you're doing with the slider. It's easy to hear what this does by just turning all the bands up. It's super-dense, overdriven, a multiband distortion, and you can totally do that. But as you do it, notice: doesn't everything also seem closer? That's the heart of FatEQ, more than its ability to just crank and overdrive stuff. The way these controls work, if you're making small adjustments you're not just making loudness changes. The softclips and antisaturations have the effect of moving sounds toward you, or farther away. Cutting any control to zero will totally remove that band, but smaller adjustments lean heavily into the 'we're attenuating the quiet detail/we're overdriving the loudest stuff'. As a result, you can EQ spatially: if you have unpleasant low-mids muddying things up, your adjustment can not only turn them down but make them step physically back. You can dial it in based on the sound coming into focus at a desired distance. Top-end too forward? Small adjustments to sit it at the position of the rest of the sound. Lows receding? Well, bring them right out until they're part of the instrument the way you wanted. It's a little unusual, but every time I've done anything like this, including just making EQ-like things that had saturation in 'em, people have loved the result. So, FatEQ just directly delivers what you might like in an EQ. See if it works out for you!"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class FatEQ final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'fatq';
     float A;
     float B;
     float C;
@@ -122,14 +126,13 @@ class FatEQ final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -191,30 +194,32 @@ class FatEQ final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

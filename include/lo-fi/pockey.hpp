@@ -1,11 +1,11 @@
 #pragma once
+#if defined(_MSC_VER)
+#pragma warning(push)
 #pragma warning(disable : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #endif
-
 #include "effect.hpp"
 #include <cmath>
 #include <cstdint>
@@ -18,7 +18,7 @@ constexpr std::string_view k_short_description{
     "Pockey is 12 bit (and under) lo-fi hiphop in a plugin."
 };
 constexpr std::string_view k_long_description{
-    "This plugin is designed to give you the most vibe possible out of a particular target: 12 bit uLaw-sampled lo-fi hiphop. It's based on earlier plugins like DeRez and BitGlitter, but is tailored to deliver just the right kind of warm fuzzy texture like an old sampler… or the Pocket Operator sampler that's a lot more accessible than retro 12-bit is.Pockey uses uLaw encoding to stretch 12 bit sampling to where it sounds pretty nearly CD quality, except there's a whole vibe and texture you get through having the soft, delicate sounds slightly low-bit and the louder sounds even more crunchy than that. The lowest setting on the resolution slider is exactly 12 bit, and everything higher than that gives you progressively more lo-fi in an 'analog bitcrush' mode, meaning that it will gradually build as you turn it up, rather than jump from step to step. That way you can fade smoothly from 4-bit to 12, if you like.The frequency crush effect is also special: it uses an edge-softening algorithm a little bit like PurestDrive, for the purpose of turning the harsh and grating frequency crush you'd normally get from a plugin, into something a little more resonant, more sonorous. It's still a sort of digital nasty, but steps way over in the direction of 'classic sampler digital nasty', again in a way that suits the more chill lo-fi genres. If you're looking to have it be as clean as possible, take your audio and explore in the very lowest settings of the frequency control for a spot that's minimally intrusive, or a digital-sampler overtone that works best with the sounds you're using. All the stuff near 0 ought to be well behaved. Then as you crank it up, you'll get rowdier digital artifacts, but always with that softening that helps lo-fi hiphop provide a soothing backdrop to life: which is partly due to the absence of super-extended frequencies grabbing your attention.It's both an art and a science, and Pockey is there to help you find the art through me digging into the science of how these things are done :)"
+    "This plugin is designed to give you the most vibe possible out of a particular target: 12 bit uLaw-sampled lo-fi hiphop. It's based on earlier plugins like DeRez and BitGlitter, but is tailored to deliver just the right kind of warm fuzzy texture like an old sampler… or the Pocket Operator sampler that's a lot more accessible than retro 12-bit is. Pockey uses uLaw encoding to stretch 12 bit sampling to where it sounds pretty nearly CD quality, except there's a whole vibe and texture you get through having the soft, delicate sounds slightly low-bit and the louder sounds even more crunchy than that. The lowest setting on the resolution slider is exactly 12 bit, and everything higher than that gives you progressively more lo-fi in an 'analog bitcrush' mode, meaning that it will gradually build as you turn it up, rather than jump from step to step. That way you can fade smoothly from 4-bit to 12, if you like. The frequency crush effect is also special: it uses an edge-softening algorithm a little bit like PurestDrive, for the purpose of turning the harsh and grating frequency crush you'd normally get from a plugin, into something a little more resonant, more sonorous. It's still a sort of digital nasty, but steps way over in the direction of 'classic sampler digital nasty', again in a way that suits the more chill lo-fi genres. If you're looking to have it be as clean as possible, take your audio and explore in the very lowest settings of the frequency control for a spot that's minimally intrusive, or a digital-sampler overtone that works best with the sounds you're using. All the stuff near 0 ought to be well behaved. Then as you crank it up, you'll get rowdier digital artifacts, but always with that softening that helps lo-fi hiphop provide a soothing backdrop to life: which is partly due to the absence of super-extended frequencies grabbing your attention. It's both an art and a science, and Pockey is there to help you find the art through me digging into the science of how these things are done :)"
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -27,6 +27,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Pockey final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pock';
     double lastSampleL;
     double heldSampleL;
     double lastSoftenL;
@@ -89,20 +93,17 @@ class Pockey final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -114,8 +115,7 @@ class Pockey final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -127,11 +127,10 @@ class Pockey final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "defreq"; break;
             case kParamB: return "derez"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -140,8 +139,7 @@ class Pockey final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "DeFreq"; break;
             case kParamB: return "DeRez"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -153,28 +151,28 @@ class Pockey final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -196,8 +194,7 @@ class Pockey final : public Effect<T>
         rezB = pow(B * 0.618033988749894848204586, 3) + 0.000244140625;
         // rez is always at least 12 bit truncation
         double wet = C;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -237,16 +234,14 @@ class Pockey final : public Effect<T>
             }
             // end uLaw encode
             double offset = inputSampleL;
-            if (inputSampleL > 0)
-            {
+            if (inputSampleL > 0) {
                 while (offset > 0) {
                     offset -= rez;
                 }
                 inputSampleL -= offset;
                 // it's below 0 so subtracting adds the remainder
             }
-            if (inputSampleL < 0)
-            {
+            if (inputSampleL < 0) {
                 while (offset < 0) {
                     offset += rez;
                 }
@@ -255,16 +250,14 @@ class Pockey final : public Effect<T>
             }
             inputSampleL *= (1.0 - rez);
             offset = inputSampleR;
-            if (inputSampleR > 0)
-            {
+            if (inputSampleR > 0) {
                 while (offset > 0) {
                     offset -= rez;
                 }
                 inputSampleR -= offset;
                 // it's below 0 so subtracting adds the remainder
             }
-            if (inputSampleR < 0)
-            {
+            if (inputSampleR < 0) {
                 while (offset < 0) {
                     offset += rez;
                 }
@@ -299,8 +292,7 @@ class Pockey final : public Effect<T>
             // end uLaw decode
             positionL += freq;
             double outputSample = heldSampleL;
-            if (positionL > 1.0)
-            {
+            if (positionL > 1.0) {
                 positionL -= 1.0;
                 heldSampleL = (lastSampleL * positionL) + (inputSampleL * (1 - positionL));
                 outputSample = (heldSampleL * (1 - positionL)) + (outputSample * positionL);
@@ -316,8 +308,7 @@ class Pockey final : public Effect<T>
             lastSoftenL = outputSample;
             positionR += freq;
             outputSample = heldSampleR;
-            if (positionR > 1.0)
-            {
+            if (positionR > 1.0) {
                 positionR -= 1.0;
                 heldSampleR = (lastSampleR * positionR) + (inputSampleR * (1 - positionR));
                 outputSample = (heldSampleR * (1 - positionR)) + (outputSample * positionR);
@@ -358,8 +349,8 @@ class Pockey final : public Effect<T>
     }
 };
 } // namespace airwindohhs::pockey
-#pragma warning(default : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif

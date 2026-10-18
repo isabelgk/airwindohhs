@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SmoothEQ3 is the most approachable EQ."
 };
 constexpr std::string_view k_long_description{
-    "By request from a patron, here's the EQ section out of ConsoleH, to use standalone in whatever way you like.What makes this special? It's a combination of tech things and design things. The idea for ConsoleH is to combine very tricky and complicated things like a four-band version of HipCrush, with a very basic approachable EQ of unbeatable quality so you can fall back on something that'll always sound good and work in an obvious way.SmoothEQ uses the technique from AngleEQ of constantly reconstructing the original sound from crossover filtering, which I originally came up with to deal with the weird phase behavior of AngleFilter. When you use that on more well-behaved filters like biquad filters, you're sort of protecting from issues that aren't there… but people noticed pretty quickly that the sound was there. SmoothEQ2, which is the backbone of the upcoming ConsoleX2, ran with this technology to allow for much steeper filtering, and created shelving filters that act like sweepable parametrics but still converge on ultimately clear, accurate EQ.SmoothEQ3 steps right back again to simplicity, approachability, with another twist: it goes for the combination of low CPU and steep crossovers. Working on other filters, I did a livestream where mathematically inclined viewers pitched in to set me up with the most accurate way to calculate the perfect IIR filter to match a Butterworth biquad filter. This takes the simplest form of configurable filter without extra resonance, and adds one layer of an even simpler filter at the exact frequency you need to make it steeper without it being obvious. Combining the two filter types kind of blends their sounds, between 'Butterworth' and a softer cutoff that's better for transients, to optimize both.Since it's not crazy steep it's a little bit like my Baxandall filters (a slow transition where transients are great but it's hard to tell where it transitions), so I was able to pick fixed frequencies to cross over at. Since the cutoff frequency is a little ambiguous thanks to the IIR section, it doesn't stand out, but since it's also steeper than a regular Butterworth filter you get to latch onto bass or treble and really boost or cut it without interfering with midrange. You end up with your basic three bands, immediately accessible, and they just do what you want without fuss.And since the IIR filter is very simple, SmoothEQ3 ends up being the most efficient way you can get a steeper-than-Butterworth EQ of this quality. Nearly anything else you could do, would cost more CPU to do the job. And that's also part of using it for ConsoleH: I've done everything I can to let people get big ConsoleH mixes on a potato if they have to, and SmoothEQ3 is the way to get ultimate EQ tone quality under those conditions. Something like SmoothEQ2, for ConsoleX2, is still not that expensive, but it's still doing 192 operations per sample per channel to do its four sophisticated bands of EQ.SmoothEQ3 does 59, including assignments (equals). That's more than three times as efficient than SmoothEQ2. It's partly because if you make a second-order filter this way one of the multiplies ends up being by 1.0 and you don't have to do it… the point is, not only does this EQ sound great but it's also incredibly efficient. And now that it's out in generic-plugin form, it's in Consolidated and in the VCV Rack version and you get to run it on whatever is even weaker than a potato: a lump of coal, maybe?Have fun with the EQ and I'll see ya in 2026 :)"
+    "By request from a patron, here's the EQ section out of ConsoleH, to use standalone in whatever way you like. What makes this special? It's a combination of tech things and design things. The idea for ConsoleH is to combine very tricky and complicated things like a four-band version of HipCrush, with a very basic approachable EQ of unbeatable quality so you can fall back on something that'll always sound good and work in an obvious way. SmoothEQ uses the technique from AngleEQ of constantly reconstructing the original sound from crossover filtering, which I originally came up with to deal with the weird phase behavior of AngleFilter. When you use that on more well-behaved filters like biquad filters, you're sort of protecting from issues that aren't there… but people noticed pretty quickly that the sound was there. SmoothEQ2, which is the backbone of the upcoming ConsoleX2, ran with this technology to allow for much steeper filtering, and created shelving filters that act like sweepable parametrics but still converge on ultimately clear, accurate EQ. SmoothEQ3 steps right back again to simplicity, approachability, with another twist: it goes for the combination of low CPU and steep crossovers. Working on other filters, I did a livestream where mathematically inclined viewers pitched in to set me up with the most accurate way to calculate the perfect IIR filter to match a Butterworth biquad filter. This takes the simplest form of configurable filter without extra resonance, and adds one layer of an even simpler filter at the exact frequency you need to make it steeper without it being obvious. Combining the two filter types kind of blends their sounds, between 'Butterworth' and a softer cutoff that's better for transients, to optimize both. Since it's not crazy steep it's a little bit like my Baxandall filters (a slow transition where transients are great but it's hard to tell where it transitions), so I was able to pick fixed frequencies to cross over at. Since the cutoff frequency is a little ambiguous thanks to the IIR section, it doesn't stand out, but since it's also steeper than a regular Butterworth filter you get to latch onto bass or treble and really boost or cut it without interfering with midrange. You end up with your basic three bands, immediately accessible, and they just do what you want without fuss. And since the IIR filter is very simple, SmoothEQ3 ends up being the most efficient way you can get a steeper-than-Butterworth EQ of this quality. Nearly anything else you could do, would cost more CPU to do the job. And that's also part of using it for ConsoleH: I've done everything I can to let people get big ConsoleH mixes on a potato if they have to, and SmoothEQ3 is the way to get ultimate EQ tone quality under those conditions. Something like SmoothEQ2, for ConsoleX2, is still not that expensive, but it's still doing 192 operations per sample per channel to do its four sophisticated bands of EQ. SmoothEQ3 does 59, including assignments (equals). That's more than three times as efficient than SmoothEQ2. It's partly because if you make a second-order filter this way one of the multiplies ends up being by 1.0 and you don't have to do it… the point is, not only does this EQ sound great but it's also incredibly efficient. And now that it's out in generic-plugin form, it's in Consolidated and in the VCV Rack version and you get to run it on whatever is even weaker than a potato: a lump of coal, maybe? Have fun with the EQ and I'll see ya in 2026 :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SmoothEQ3 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sme3';
     float A;
     float B;
     float C;
@@ -83,12 +87,11 @@ class SmoothEQ3 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -142,26 +145,28 @@ class SmoothEQ3 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

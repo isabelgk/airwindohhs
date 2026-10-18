@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Elliptical highpasses the side channel."
 };
 constexpr std::string_view k_long_description{
-    "So this is by request: I got asked whether it was possible for me to make a great elliptical EQ. And of course I said 'well, ToVinyl does that though it also does some other things', and it's been a while since I did ToVinyl plus it's partly designed to produce sound as if it's FROM vinyl, with the groovewear control (which itself became other plugins like GrooveWear and CrunchyGrooveWear), and what if I was able to do a standalone elliptical EQ that's way better?Here's how I did. ToVinyl uses a weird early technique I liked, trying to steepen a very simple IIR filter by using many poles: this would be great if it worked! Instead, it doesn't really steepen nearly as much, and then it's implemented in a way where it kinda resonates. End result is almost a 'color' EQ, with huge amounts of phase shifting: it will take a distorted bassy clipped noise and turn it into giant bass peaks over a wide range, and that's ToVinyl.And so I was asked back then if I could make a better highpass, just a stereo mastering highpass, by Gregg of Hermetech Mastering, and Hermepass took shape, with way fewer poles but arranged differently: going up to the desired point, but then with each new pole dropping back by the Golden Ratio towards roughly 20 hz at the lowest, and lastly the poles got introduced with mini dry/wet controls between each step, something that got used in the four stages of cascaded filtering in the Z series filters, but Hermepass had this for six stages of increasingly deeper cutoff.It remains a solid, tonally clear highpass filter: not a brickwall, but one where you can cut the lows and really not hear where the cut is. That's the intention. And that's where I got the highpass for Elliptical. If you like the one you'll like the other. The interesting thing about using it for an elliptical filter is, you can filter incredibly hard without hearing it change the sound. In demonstrating it I had to make use of Golem, to show an out-of-phase sound that's literally just the side channel. Otherwise, it fools you into thinking everything's still full bass.And of course that's the goal with an elliptical filter: these aren't about sound effects, they're about stopping the side channel from modulating the depth of a vinyl groove, or about using stereo woofers most efficiently. And that's where Elliptical shines. Keep Golem handy if you have to spot check what the filter's doing, find useful settings and then trust that even though it sounds like there's a lot of heavy stereo bass, it's really just an illusion and Elliptical is controlling the heck out of it, while pretending the sound is unchanged :)"
+    "So this is by request: I got asked whether it was possible for me to make a great elliptical EQ. And of course I said 'well, ToVinyl does that though it also does some other things', and it's been a while since I did ToVinyl plus it's partly designed to produce sound as if it's FROM vinyl, with the groovewear control (which itself became other plugins like GrooveWear and CrunchyGrooveWear), and what if I was able to do a standalone elliptical EQ that's way better? Here's how I did. ToVinyl uses a weird early technique I liked, trying to steepen a very simple IIR filter by using many poles: this would be great if it worked! Instead, it doesn't really steepen nearly as much, and then it's implemented in a way where it kinda resonates. End result is almost a 'color' EQ, with huge amounts of phase shifting: it will take a distorted bassy clipped noise and turn it into giant bass peaks over a wide range, and that's ToVinyl. And so I was asked back then if I could make a better highpass, just a stereo mastering highpass, by Gregg of Hermetech Mastering, and Hermepass took shape, with way fewer poles but arranged differently: going up to the desired point, but then with each new pole dropping back by the Golden Ratio towards roughly 20 hz at the lowest, and lastly the poles got introduced with mini dry/wet controls between each step, something that got used in the four stages of cascaded filtering in the Z series filters, but Hermepass had this for six stages of increasingly deeper cutoff. It remains a solid, tonally clear highpass filter: not a brickwall, but one where you can cut the lows and really not hear where the cut is. That's the intention. And that's where I got the highpass for Elliptical. If you like the one you'll like the other. The interesting thing about using it for an elliptical filter is, you can filter incredibly hard without hearing it change the sound. In demonstrating it I had to make use of Golem, to show an out-of-phase sound that's literally just the side channel. Otherwise, it fools you into thinking everything's still full bass. And of course that's the goal with an elliptical filter: these aren't about sound effects, they're about stopping the side channel from modulating the depth of a vinyl groove, or about using stereo woofers most efficiently. And that's where Elliptical shines. Keep Golem handy if you have to spot check what the filter's doing, find useful settings and then trust that even though it sounds like there's a lot of heavy stereo bass, it's really just an illusion and Elliptical is controlling the heck out of it, while pretending the sound is unchanged :)"
 };
 constexpr std::string_view k_tags{
     "bass"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Elliptical final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'elli';
     float A;
     float B;
     double iirA;
@@ -69,11 +73,10 @@ class Elliptical final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -123,24 +126,26 @@ class Elliptical final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

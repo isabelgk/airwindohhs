@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "NCSeventeen is Dirty Loud!"
 };
 constexpr std::string_view k_long_description{
-    "NC-17 was designed as the loudenator-killer. It uses the same technology as ADClip’s energy redistribution stuff, but on a soft-clipper, and instead of just feeding the energy back in, it uses it to modulate a Chebyshev filter: sort of complicated, but it’s definitely one of those Airwindows things. First to use such a soft clipper as the primary loudness maximizer, and secondly to use such a weird technology after it. Why a Chebyshev? To produce second harmonic. Why do that? To feed deep bass back in despite the loudenating. Okay, so the whole idea is pretty strange.What happens?Firstly, the whole tone changes, whether you’re pushing loudness or not. Check that first. You might immediately dislike the result, or if you seek ‘glue’ maybe you’ll like it, or use it to replace some other ‘glue’ effect. If you’re still with NC-17 after checking that, proceed to turn it up (or mix hotter into it). You’ll find no specific ‘break point’: instead, it just gets dirtier and dirtier the harder you push. The whole texture of loudness dynamics is altered, so you get the loudness cues of distortion but with a bass foundation mere distortion won’t permit, and a continuous spectrum between ‘more or less clean’ and ‘impossibly too loud’.This one will also handle cleaner synthesizer tones, EDM, the kinds of sounds that reveal the artifacts of other loudenators ruthlessly. With NC-17, instead you get a slight ‘grungening’ but then it refuses to break up in the normal sense, just stretches to fit. (this one might be the one you want on drum submixes, too)"
+    "NC-17 was designed as the loudenator-killer. It uses the same technology as ADClip’s energy redistribution stuff, but on a soft-clipper, and instead of just feeding the energy back in, it uses it to modulate a Chebyshev filter: sort of complicated, but it’s definitely one of those Airwindows things. First to use such a soft clipper as the primary loudness maximizer, and secondly to use such a weird technology after it. Why a Chebyshev? To produce second harmonic. Why do that? To feed deep bass back in despite the loudenating. Okay, so the whole idea is pretty strange. What happens? Firstly, the whole tone changes, whether you’re pushing loudness or not. Check that first. You might immediately dislike the result, or if you seek ‘glue’ maybe you’ll like it, or use it to replace some other ‘glue’ effect. If you’re still with NC-17 after checking that, proceed to turn it up (or mix hotter into it). You’ll find no specific ‘break point’: instead, it just gets dirtier and dirtier the harder you push. The whole texture of loudness dynamics is altered, so you get the loudness cues of distortion but with a bass foundation mere distortion won’t permit, and a continuous spectrum between ‘more or less clean’ and ‘impossibly too loud’. This one will also handle cleaner synthesizer tones, EDM, the kinds of sounds that reveal the artifacts of other loudenators ruthlessly. With NC-17, instead you get a slight ‘grungening’ but then it refuses to break up in the normal sense, just stretches to fit. (this one might be the one you want on drum submixes, too)"
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class NCSeventeen final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'ncse';
     double lastSampleL;
     double iirSampleAL;
     double iirSampleBL;
@@ -77,19 +81,16 @@ class NCSeventeen final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -100,8 +101,7 @@ class NCSeventeen final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
 
@@ -112,8 +112,7 @@ class NCSeventeen final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "louder"; break;
             case kParamB: return "output"; break;
 
@@ -124,8 +123,7 @@ class NCSeventeen final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "LOUDER"; break;
             case kParamB: return "Output"; break;
 
@@ -136,26 +134,26 @@ class NCSeventeen final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 24.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -203,8 +201,7 @@ class NCSeventeen final : public Effect<T>
         double plusSampleR;
         double gain = pow(10.0, (A * 24.0) / 20);
         double outlevel = B;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -215,15 +212,13 @@ class NCSeventeen final : public Effect<T>
             }
             inputSampleL *= gain;
             inputSampleR *= gain;
-            if (flip)
-            {
+            if (flip) {
                 iirSampleAL = (iirSampleAL * 0.9) + (inputSampleL * 0.1);
                 lowSampleL = iirSampleAL;
                 iirSampleAR = (iirSampleAR * 0.9) + (inputSampleR * 0.1);
                 lowSampleR = iirSampleAR;
             }
-            else
-            {
+            else {
                 iirSampleBL = (iirSampleBL * 0.9) + (inputSampleL * 0.1);
                 lowSampleL = iirSampleBL;
                 iirSampleBR = (iirSampleBR * 0.9) + (inputSampleR * 0.1);

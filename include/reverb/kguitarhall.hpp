@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "kGuitarHall accentuates loud midrange skronk!"
 };
 constexpr std::string_view k_long_description{
-    "What if reverb, but skronk?kGuitarHall exists to pursue a particular sound experience I had: when I was a kid, the first concert I ever saw was at a hockey rink, at which Night Ranger played. The whole story's a wild one but for the purposes of kGuitarHall, the important part is that they played so loud the air crackled. A lot of that had to do with how echoey the place was… and I've never found any reverb to convey that sensation.This is my attempt to do that sensation, but as a plugin.Skronk is a word that's barely made it into any dictionary: I think the music critic Lester Bangs made it up. Wiktionary describes it as \"A raw, discordant sound produced with electric guitars.\" You've just seen me include it as a slider on the plugin, Mastering: it's sort of the upper midrange between the air band and the next band down on the Kalman filter. It corresponds to 'fire' in the Stonefire plugin, and that's another hint. But simple EQ, even of the most strident upper midranges, won't get you Skronk.So, kGuitarHall draws on my experience evolving kCathedral to essentially go the other direction. A ridiculous number of reverb algorithms got generated, measured and tested, to zero in on which ones would produce the most aggressive, saturated tone in the noisy midrange where guitars talk. It's a balancing act between maximum loudness (which also contributes to how sonorous the reverb tones can be) and just plain unpleasant metallic tonalities. This is independent of 'feedback', by the way: it's exploring how the actual reverb algorithm is constructed, and seeking a different 'color' than just 'clean and pure and free of overtones'.It'd be pretty useless without Discontinuity (the Top dB slider) which, importantly, is inside the reverb's regeneration, not simply on the output. And it'd be pretty ear-splitting… without DeRez, which is able to use Bezier curves to make an interesting-sounding undersampling of the system. That not only makes the reverb work at all sample rates with about the same cost in CPU… but also lets you drop it down to subterranean, vast spaces that barely have any treble or upper mids at all.And when you do that, the skronk is pitched down as well, and turns into strange cavernous sounds as the 'room size' and maximum sustain expands. So, if the ear-splittyness of kGuitarHall doesn't float your boat, you can drown in a sea of reverb with a selection of distinct tone characters by using Derez to darken everything up.kGuitarHall is an experiment, after some years spent trying not to allow metallic skronky reverbs to happen. I don't know if you'll like or hate it, but I feel certain it'll get a strong response either way. So, if there's one person who's like 'oh cool, just what I needed!', then, are you stuck with having that skronk option available?Trick question. I am that person. Enjoy or totally avoid kGuitarHall as you see fit :)"
+    "What if reverb, but skronk? kGuitarHall exists to pursue a particular sound experience I had: when I was a kid, the first concert I ever saw was at a hockey rink, at which Night Ranger played. The whole story's a wild one but for the purposes of kGuitarHall, the important part is that they played so loud the air crackled. A lot of that had to do with how echoey the place was… and I've never found any reverb to convey that sensation. This is my attempt to do that sensation, but as a plugin. Skronk is a word that's barely made it into any dictionary: I think the music critic Lester Bangs made it up. Wiktionary describes it as \"A raw, discordant sound produced with electric guitars.\" You've just seen me include it as a slider on the plugin, Mastering: it's sort of the upper midrange between the air band and the next band down on the Kalman filter. It corresponds to 'fire' in the Stonefire plugin, and that's another hint. But simple EQ, even of the most strident upper midranges, won't get you Skronk. So, kGuitarHall draws on my experience evolving kCathedral to essentially go the other direction. A ridiculous number of reverb algorithms got generated, measured and tested, to zero in on which ones would produce the most aggressive, saturated tone in the noisy midrange where guitars talk. It's a balancing act between maximum loudness (which also contributes to how sonorous the reverb tones can be) and just plain unpleasant metallic tonalities. This is independent of 'feedback', by the way: it's exploring how the actual reverb algorithm is constructed, and seeking a different 'color' than just 'clean and pure and free of overtones'. It'd be pretty useless without Discontinuity (the Top dB slider) which, importantly, is inside the reverb's regeneration, not simply on the output. And it'd be pretty ear-splitting… without DeRez, which is able to use Bezier curves to make an interesting-sounding undersampling of the system. That not only makes the reverb work at all sample rates with about the same cost in CPU… but also lets you drop it down to subterranean, vast spaces that barely have any treble or upper mids at all. And when you do that, the skronk is pitched down as well, and turns into strange cavernous sounds as the 'room size' and maximum sustain expands. So, if the ear-splittyness of kGuitarHall doesn't float your boat, you can drown in a sea of reverb with a selection of distinct tone characters by using Derez to darken everything up. kGuitarHall is an experiment, after some years spent trying not to allow metallic skronky reverbs to happen. I don't know if you'll like or hate it, but I feel certain it'll get a strong response either way. So, if there's one person who's like 'oh cool, just what I needed!', then, are you stuck with having that skronk option available? Trick question. I am that person. Enjoy or totally avoid kGuitarHall as you see fit :)"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -504,14 +504,13 @@ class kGuitarHall final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -546,7 +545,7 @@ class kGuitarHall final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "top db"; break;
+            case kParamA: return "topdb"; break;
             case kParamB: return "regen"; break;
             case kParamC: return "derez"; break;
             case kParamD: return "predlay"; break;
@@ -573,30 +572,32 @@ class kGuitarHall final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 70.0) + 70.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return "dB"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

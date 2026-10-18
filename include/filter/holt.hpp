@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Holt is a synth-like resonant lowpass filter focussed on bass frequencies."
 };
 constexpr std::string_view k_long_description{
-    "Holt is a plugin suggested by one of my Q&A livestream regulars, that treads the waters of professional accountancy. The plugin, that is, not the regular. As far as I know.How is this? Simple: Holt is a method you can use in Excel for predicting sales figures based on trends. It basically uses two variables each of which chase each other to try and cut through the noise of realworld data and produce useful predictive results. My friend from the livestream thought it might make a lowpass that was more fuzzy in tonality. It did not do that thing.Instead, I got something like a low-frequency version of Aura: a resonant lowpass like a synth filter with huge control over the extreme lows. I had to do weird things to get it to track fairly consistently over different resonance settings, because the Holt method doesn’t really have anything like that at all: turning it into a synth filter is strictly my deal. So is the multipole arrangement: this thing morphs seamlessly from no poles (dry) to four poles (24 dB per octave) with intense resonance or no resonance at all, based on how you set it.It’s got an instance of Spiral built in to save you when you make it squawk, because otherwise it’ll blow up your bassbins and just laugh at you. This sucker is MEAN from the midrange on down. The interesting thing is, if you crank the frequency up it tames itself and reverts immediately to dry again. It ONLY does its madness on the lows, and high frequencies are completely tame and nice. You can use it as a sophisticated and well-behaved lowpass on the upper mids and highs, and it’s totally polite. It’s just when you drop the cutoff frequency down that it explodes in juicy bass.There are even several ways to go between that and clean, untouched audio. You can raise the cutoff, or you can use the dry/wet control, OR you can use the poles control (at any resonance setting) to morph it from bassy madness to perfect clarity… because the poles control is four different dry/wet controls bundled into one. This also means that if you’re using less than one pole of filter, you’re not even running through the other stages: less processing, unless you want it.It can act like a DJ ‘isolator’, it can act like a synth bass lowpass, it can damn near self-resonate, and all from just a couple variables (per pole) that interact strangely. It’s a neat example of extreme simplicity (like the Purest series) producing a striking result. Have fun and I hope you like it."
+    "Holt is a plugin suggested by one of my Q&A livestream regulars, that treads the waters of professional accountancy. The plugin, that is, not the regular. As far as I know. How is this? Simple: Holt is a method you can use in Excel for predicting sales figures based on trends. It basically uses two variables each of which chase each other to try and cut through the noise of realworld data and produce useful predictive results. My friend from the livestream thought it might make a lowpass that was more fuzzy in tonality. It did not do that thing. Instead, I got something like a low-frequency version of Aura: a resonant lowpass like a synth filter with huge control over the extreme lows. I had to do weird things to get it to track fairly consistently over different resonance settings, because the Holt method doesn’t really have anything like that at all: turning it into a synth filter is strictly my deal. So is the multipole arrangement: this thing morphs seamlessly from no poles (dry) to four poles (24 dB per octave) with intense resonance or no resonance at all, based on how you set it. It’s got an instance of Spiral built in to save you when you make it squawk, because otherwise it’ll blow up your bassbins and just laugh at you. This sucker is MEAN from the midrange on down. The interesting thing is, if you crank the frequency up it tames itself and reverts immediately to dry again. It ONLY does its madness on the lows, and high frequencies are completely tame and nice. You can use it as a sophisticated and well-behaved lowpass on the upper mids and highs, and it’s totally polite. It’s just when you drop the cutoff frequency down that it explodes in juicy bass. There are even several ways to go between that and clean, untouched audio. You can raise the cutoff, or you can use the dry/wet control, OR you can use the poles control (at any resonance setting) to morph it from bassy madness to perfect clarity… because the poles control is four different dry/wet controls bundled into one. This also means that if you’re using less than one pole of filter, you’re not even running through the other stages: less processing, unless you want it. It can act like a DJ ‘isolator’, it can act like a synth bass lowpass, it can damn near self-resonate, and all from just a couple variables (per pole) that interact strangely. It’s a neat example of extreme simplicity (like the Purest series) producing a striking result. Have fun and I hope you like it."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Holt final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'holt';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -92,22 +96,19 @@ class Holt final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -121,8 +122,7 @@ class Holt final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -136,13 +136,12 @@ class Holt final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "freq"; break;
             case kParamB: return "reso"; break;
             case kParamC: return "poles"; break;
             case kParamD: return "output"; break;
-            case kParamE: return "dry/wet"; break;
+            case kParamE: return "drywet"; break;
 
             default: break;
         }
@@ -151,8 +150,7 @@ class Holt final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Freq"; break;
             case kParamB: return "Reso"; break;
             case kParamC: return "Poles"; break;
@@ -166,32 +164,32 @@ class Holt final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 4.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -241,8 +239,7 @@ class Holt final : public Effect<T>
         // which lets you fall through to simpler processing at lower settings.
         double gain = D;
         double wet = E;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

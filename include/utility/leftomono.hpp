@@ -1,5 +1,7 @@
 #pragma once
 #include "effect.hpp"
+#include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
 namespace airwindohhs::leftomono {
@@ -18,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class LeftoMono final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'lfto';
 
   public:
     LeftoMono()
@@ -31,17 +37,11 @@ class LeftoMono final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
-        }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -50,8 +50,7 @@ class LeftoMono final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -60,8 +59,7 @@ class LeftoMono final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -70,8 +68,7 @@ class LeftoMono final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -80,22 +77,16 @@ class LeftoMono final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -105,8 +96,7 @@ class LeftoMono final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             *out1 = *in1;
             *out2 = *in1;
             *in1++;

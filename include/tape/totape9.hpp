@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ToTape9 is Airwindows tape emulation and brightness compression."
 };
 constexpr std::string_view k_long_description{
-    "ToTape is one of the most successful plugins I've ever had. Step by step, it's come along and incorporated more and more things, but always in an original way. It picked up flutter, bias, Dubly, and then adapted all these things to the needs of the musician. So if you don't know how to calibrate Dubly units for heavy music, you have a Tilt that will give you more of a leaning towards brightness, or darkness… but it's implemented via the Dubly controls so it acts like adjustments on a tape machine. Shape works likewise, going for either more old-school sonority or more big-studio chill. Flutter behaves itself unless you don't want it to, and the input and output controls make it very simple to manage ToTape9's gain staging, for gentle use or aggressive slam.But then the heart of ToTape is completely replaced by what I learned making TapeHack2, itself a giant leap over the original TapeHack, which was itself a huge discovery. When I tried this in the guts of ToTape I was just completely shocked by how huge it sounded. The scale of the sound put the previous version to shame. You do not have to slam this to have it sound amazing, but if slamming's your thing I think this will bring delight and joy.And then it's topped off by not the latest ClipOnly… but the NEXT ClipOnly. The one where I ran with the concept, not completely unlike my old Chrome Oxide plugin but in a new perspective, of 'dithering aliasing'. It turns out you can't actually dither aliasing but there's a large number of interesting effects you can produce by noising up clipping. So when I experimented, I ended up applying it in a way nobody else was doing, introducing noise just faintly as clipping begins to happen, ramping it up, and then as hard clipping takes over, shifting it to the 'edge samples' akin to what ClipOnly and ClipOnly2 have always done, meaning the noise goes back away again (and is never all that loud: sorry, no special FX here)And combining this with the existing ClipOnly2 created a monster.So that's what's on the end of ToTape9. Output at 0.5 means you're just barely bumping this final clip stage. Boost it and you're hitting the output clip harder, cut it back and it's purely the ToTape section. I would imagine mostly leaving it at 0.5 is what most people will do, but it's yours to experiment with. It produces a 'beyond tape slam' that is shockingly big and deep and loud, it applies its work only when clipping is actively happening, it's all within a very tiny amplitude window so it stays clean on most everything, and it gracefully handles Gibbs effect overslew (intersample clipping) without ever applying upsampling or downsampling, so the sound is aggressive and raw the way I like my tape effects to be.Try ToTape9. It's the most intensely tapey plugin I've ever done, with new abilities like the ability to soak up highs like the real thing. It's got all the little details you could ask of a no-compromises real tape model, but adapted to musical purposes so you can think 'tilt towards more brightness' rather than 'should I go with a 355 nanoWebers per meter calibration'. And it's got the most killer output clip stage I've ever made, just to let you use it as a kind of loudness maximizer right out of the box.I hope this brightens your day :)"
+    "ToTape is one of the most successful plugins I've ever had. Step by step, it's come along and incorporated more and more things, but always in an original way. It picked up flutter, bias, Dubly, and then adapted all these things to the needs of the musician. So if you don't know how to calibrate Dubly units for heavy music, you have a Tilt that will give you more of a leaning towards brightness, or darkness… but it's implemented via the Dubly controls so it acts like adjustments on a tape machine. Shape works likewise, going for either more old-school sonority or more big-studio chill. Flutter behaves itself unless you don't want it to, and the input and output controls make it very simple to manage ToTape9's gain staging, for gentle use or aggressive slam. But then the heart of ToTape is completely replaced by what I learned making TapeHack2, itself a giant leap over the original TapeHack, which was itself a huge discovery. When I tried this in the guts of ToTape I was just completely shocked by how huge it sounded. The scale of the sound put the previous version to shame. You do not have to slam this to have it sound amazing, but if slamming's your thing I think this will bring delight and joy. And then it's topped off by not the latest ClipOnly… but the NEXT ClipOnly. The one where I ran with the concept, not completely unlike my old Chrome Oxide plugin but in a new perspective, of 'dithering aliasing'. It turns out you can't actually dither aliasing but there's a large number of interesting effects you can produce by noising up clipping. So when I experimented, I ended up applying it in a way nobody else was doing, introducing noise just faintly as clipping begins to happen, ramping it up, and then as hard clipping takes over, shifting it to the 'edge samples' akin to what ClipOnly and ClipOnly2 have always done, meaning the noise goes back away again (and is never all that loud: sorry, no special FX here) And combining this with the existing ClipOnly2 created a monster. So that's what's on the end of ToTape9. Output at 0.5 means you're just barely bumping this final clip stage. Boost it and you're hitting the output clip harder, cut it back and it's purely the ToTape section. I would imagine mostly leaving it at 0.5 is what most people will do, but it's yours to experiment with. It produces a 'beyond tape slam' that is shockingly big and deep and loud, it applies its work only when clipping is actively happening, it's all within a very tiny amplitude window so it stays clean on most everything, and it gracefully handles Gibbs effect overslew (intersample clipping) without ever applying upsampling or downsampling, so the sound is aggressive and raw the way I like my tape effects to be. Try ToTape9. It's the most intensely tapey plugin I've ever done, with new abilities like the ability to soak up highs like the real thing. It's got all the little details you could ask of a no-compromises real tape model, but adapted to musical purposes so you can think 'tilt towards more brightness' rather than 'should I go with a 355 nanoWebers per meter calibration'. And it's got the most killer output clip stage I've ever made, just to let you use it as a kind of loudness maximizer right out of the box. I hope this brightens your day :)"
 };
 constexpr std::string_view k_tags{
     "tape"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ToTape9 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'tot9';
     float A;
     float B;
     float C;
@@ -260,7 +264,7 @@ class ToTape9 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -270,8 +274,7 @@ class ToTape9 final : public Effect<T>
             case kParamG: G = value; break;
             case kParamH: H = value; break;
             case kParamI: I = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -349,38 +352,40 @@ class ToTape9 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(((H * H) * 175.0) + 25.0, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return "hz"; break;
-            case kParamI: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

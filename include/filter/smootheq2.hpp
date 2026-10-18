@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SmoothEQ2 is a wildly intuitive vibe EQ with clarity and intensity."
 };
 constexpr std::string_view k_long_description{
-    "Turns out there was a lot of potential in SmoothEQ.The idea here was to go to a four-band, like the parametric in ConsoleX, but instead of peaks and notches make it fully use shelves in the manner of the original SmoothEQ, so it can deliver ultimate clarity when subtlety is needed.Then, with the addition of a simpler type of filter (thanks to my livestream chat for knowing exactly how to specify these with great accuracy) it was possible to use even higher orders of filtering, even steeper crossovers for the shelves.Then, the question 'still Bessel, or go with Butterworth for the Q factor?' got drastically derailed by the stranger question 'why not just have all these Q factors vary according to the frequency settings of the bands?'Not the settings of the crossovers, no… the settings of the BANDS. Sweeping a band moves both crossovers bordering it. So does that move a flat shelf around, which sounds like a nice thing to do?Nope, because if you make the resonances track how close each center frequency is to each other, you get shelves that are also tilt EQs accentuating where in the band's travel the band is. So if you push high-mid up, the cutoff against high gets steeper, and the cutoff against low-mid gets shallower, more Bessel-like. Hard to explain. You have a frequency band that is also a tilt EQ for just that shelf, and that follows a center 'resonant peak' which isn't actually there at all.What does this mean? Try it. Boost or cut stuff, sweep the bands around, see how they act like sweepable resonances but are actually tilting shelves. If you can (I know it's unusual) and you have the four joystick design I had Yaeltex make for me, put fingers on all four joysticks and morph a sound into whatever you like on all bands simultaneously. The way this tracks your intentions with EQ, I think that would actually work. Or, any other way you can dedicate eight knobs to a bank of EQs, give that a try too. Or it'll work perfectly fine just in the DAW as sliders, it's just that this one lends itself incredibly well to hands-on control. There's controllers for cheap that have tiny vertical faders with panpots over them: have the vertical faders be band volumes, and the panpot above it be the corresponding frequency.This one I'm building into a Console version just for me :) but here it is, way earlier than that, so you can see what's going into a Console version that comes after the promised ConsoleH. I told you I was going to let you swap out many different Consoles on a track-by-track basis, and I've got ideas for just that. Hope you like the preview that is SmoothEQ2."
+    "Turns out there was a lot of potential in SmoothEQ. The idea here was to go to a four-band, like the parametric in ConsoleX, but instead of peaks and notches make it fully use shelves in the manner of the original SmoothEQ, so it can deliver ultimate clarity when subtlety is needed. Then, with the addition of a simpler type of filter (thanks to my livestream chat for knowing exactly how to specify these with great accuracy) it was possible to use even higher orders of filtering, even steeper crossovers for the shelves. Then, the question 'still Bessel, or go with Butterworth for the Q factor?' got drastically derailed by the stranger question 'why not just have all these Q factors vary according to the frequency settings of the bands?' Not the settings of the crossovers, no… the settings of the BANDS. Sweeping a band moves both crossovers bordering it. So does that move a flat shelf around, which sounds like a nice thing to do? Nope, because if you make the resonances track how close each center frequency is to each other, you get shelves that are also tilt EQs accentuating where in the band's travel the band is. So if you push high-mid up, the cutoff against high gets steeper, and the cutoff against low-mid gets shallower, more Bessel-like. Hard to explain. You have a frequency band that is also a tilt EQ for just that shelf, and that follows a center 'resonant peak' which isn't actually there at all. What does this mean? Try it. Boost or cut stuff, sweep the bands around, see how they act like sweepable resonances but are actually tilting shelves. If you can (I know it's unusual) and you have the four joystick design I had Yaeltex make for me, put fingers on all four joysticks and morph a sound into whatever you like on all bands simultaneously. The way this tracks your intentions with EQ, I think that would actually work. Or, any other way you can dedicate eight knobs to a bank of EQs, give that a try too. Or it'll work perfectly fine just in the DAW as sliders, it's just that this one lends itself incredibly well to hands-on control. There's controllers for cheap that have tiny vertical faders with panpots over them: have the vertical faders be band volumes, and the panpot above it be the corresponding frequency. This one I'm building into a Console version just for me :) but here it is, way earlier than that, so you can see what's going into a Console version that comes after the promised ConsoleH. I told you I was going to let you swap out many different Consoles on a track-by-track basis, and I've got ideas for just that. Hope you like the preview that is SmoothEQ2."
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SmoothEQ2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sme2';
     float A;
     float B;
     float C;
@@ -116,7 +120,7 @@ class SmoothEQ2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -125,8 +129,7 @@ class SmoothEQ2 final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -200,36 +203,38 @@ class SmoothEQ2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

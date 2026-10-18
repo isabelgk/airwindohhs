@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "CrickBass is a flexible but aggressive bass tone for dual pickups."
 };
 constexpr std::string_view k_long_description{
-    "I consider this a utility plugin, and maybe it'll find utility with you too. What's a CrickBass?Chris's Rickenbacker Bass, set up with two DI inputs for neck pickup on the left and bridge pickup on the right.Now you might ask, which Chris? Well, obviously, Chris from Airwindows, but this plugin really came into existence when I worked out some of the details about Chris Squire's Rickenbacker tone… because this is also in the style of what he did.The trick to Crick is, that bridge pickup is rattly and abrasive and would seem to be a great candidate for distortion and re-amping. And the neck pickup's right up by the neck, thin and relatively low impedance, and would seem to be a good candidate for clean and accurate low-end.And that's not what Chris Squire did, and when you hear and play through CrickBass you understand why that's not what he did. Squire liked to overdrive, not the bridge, but the neck pickup. That rattly clangy bridge was kept clean, even though it sounds amazing cranked through an amp.CrickBass is a composite of the Airwindows plugins BigAmp and LilAmp, with BigAmp on the left to take the neck pickup and distort it, and LilAmp on the right to give the right amplike qualities to the bridge pickup. Both share the same set of drive and tone controls, but the controls cover different ranges on the different amps to produce a range of sounds that should all work and adapt to any stereo bass (as in, neck and bridge pickups on separate outputs). Use the controls on the bass to make subtler adjustments. Adjust the drive for how much gain you should have, remembering that the neck pickup is supposed to overdrive enough for a huge foundation of the sound, and that the bridge pickup is meant to be cleaner but not necessarily totally free of grit. Then adjust the tone so that clicks, string handling and so on, hit with the tone quality of whatever snare you're making the bass merge with.Both of these amp sims make a point of applying anti-aliasing filtering as part of the EQ filtering that helps mimic a cab, so they're far from full-range but good at sounding analog. Even when set up to be bright as hell, that's still 'bass amp' bright rather than 'supertweeter' bright. The idea is to match other elements in the track with your bass string percussive noises, so they jump right out and hit like a train.And then if you're NOT aiming for a really abrasive proggy tone… handle the string in such a way that it's not making vicious SKRONK noises :) maybe dial back the tone but do it with your playing, and let the 'amp' continue to deliver midrange articulation to the mix. That'll sit in the mix more effectively than something which sounds deep and bassy in solo.If you're looking to get REAL abrasive, the remaining ingredient is fret buzz, and this combined with a really low action and heavy pick attack will get you into the Chris Squire zone very nicely (which some people don't like one bit… matter of taste and style, really).You can also run a mono bass into it and it'll still work, but the intention is for neck pickup on the left and bridge pickup on the right. It'll sum the two sounds to mono in any event.If this is the sort of thing you like, I might have given you a quick Crick in the neck (and the bridge!) and a real short-cut for bass DI tracking. Since this is a plugin, you can track right through it (zero latency) and then if you must do something else in the final mix, you still can. But it's meant to deliver this sort of tone in the most direct, no-fuss way imaginable. I'm looking forward to using this on everything: the extreme rawness of BigAmp and LilAmp turned out to be ideal for this purpose. If it's also useful to you, then yay! Bonus. Or of course misuse it, run breaks or synths or drums into it. Have fun!"
+    "I consider this a utility plugin, and maybe it'll find utility with you too. What's a CrickBass? Chris's Rickenbacker Bass, set up with two DI inputs for neck pickup on the left and bridge pickup on the right. Now you might ask, which Chris? Well, obviously, Chris from Airwindows, but this plugin really came into existence when I worked out some of the details about Chris Squire's Rickenbacker tone… because this is also in the style of what he did. The trick to Crick is, that bridge pickup is rattly and abrasive and would seem to be a great candidate for distortion and re-amping. And the neck pickup's right up by the neck, thin and relatively low impedance, and would seem to be a good candidate for clean and accurate low-end. And that's not what Chris Squire did, and when you hear and play through CrickBass you understand why that's not what he did. Squire liked to overdrive, not the bridge, but the neck pickup. That rattly clangy bridge was kept clean, even though it sounds amazing cranked through an amp. CrickBass is a composite of the Airwindows plugins BigAmp and LilAmp, with BigAmp on the left to take the neck pickup and distort it, and LilAmp on the right to give the right amplike qualities to the bridge pickup. Both share the same set of drive and tone controls, but the controls cover different ranges on the different amps to produce a range of sounds that should all work and adapt to any stereo bass (as in, neck and bridge pickups on separate outputs). Use the controls on the bass to make subtler adjustments. Adjust the drive for how much gain you should have, remembering that the neck pickup is supposed to overdrive enough for a huge foundation of the sound, and that the bridge pickup is meant to be cleaner but not necessarily totally free of grit. Then adjust the tone so that clicks, string handling and so on, hit with the tone quality of whatever snare you're making the bass merge with. Both of these amp sims make a point of applying anti-aliasing filtering as part of the EQ filtering that helps mimic a cab, so they're far from full-range but good at sounding analog. Even when set up to be bright as hell, that's still 'bass amp' bright rather than 'supertweeter' bright. The idea is to match other elements in the track with your bass string percussive noises, so they jump right out and hit like a train. And then if you're NOT aiming for a really abrasive proggy tone… handle the string in such a way that it's not making vicious SKRONK noises :) maybe dial back the tone but do it with your playing, and let the 'amp' continue to deliver midrange articulation to the mix. That'll sit in the mix more effectively than something which sounds deep and bassy in solo. If you're looking to get REAL abrasive, the remaining ingredient is fret buzz, and this combined with a really low action and heavy pick attack will get you into the Chris Squire zone very nicely (which some people don't like one bit… matter of taste and style, really). You can also run a mono bass into it and it'll still work, but the intention is for neck pickup on the left and bridge pickup on the right. It'll sum the two sounds to mono in any event. If this is the sort of thing you like, I might have given you a quick Crick in the neck (and the bridge!) and a real short-cut for bass DI tracking. Since this is a plugin, you can track right through it (zero latency) and then if you must do something else in the final mix, you still can. But it's meant to deliver this sort of tone in the most direct, no-fuss way imaginable. I'm looking forward to using this on everything: the extreme rawness of BigAmp and LilAmp turned out to be ideal for this purpose. If it's also useful to you, then yay! Bonus. Or of course misuse it, run breaks or synths or drums into it. Have fun!"
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class CrickBass final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'crik';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -88,12 +92,10 @@ class CrickBass final : public Effect<T>
     double fixD[fix_total];
     double fixE[fix_total];
     double fixF[fix_total]; // filtering
-
     double lastSampleR;
     double intermediateR[16];
     bool wasPosClipR;
     bool wasNegClipR; // ClipOnly2
-
     float A;
     float B;
 
@@ -186,19 +188,16 @@ class CrickBass final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -209,8 +208,7 @@ class CrickBass final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
 
@@ -221,8 +219,7 @@ class CrickBass final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drive"; break;
             case kParamB: return "tone"; break;
 
@@ -233,8 +230,7 @@ class CrickBass final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drive"; break;
             case kParamB: return "Tone"; break;
 
@@ -245,26 +241,26 @@ class CrickBass final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -359,8 +355,7 @@ class CrickBass final : public Effect<T>
         fixF[fix_a2] = fixF[fix_a0];
         fixF[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixF[fix_b2] = (1.0 - K / fixF[fix_reso] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -502,16 +497,14 @@ class CrickBass final : public Effect<T>
             iirSampleDR = (iirSampleDR * (1.0 - (offsetR * EQH))) + (inputSampleR * (offsetR * EQH));
             inputSampleR = iirSampleDR;
             // lowpass. Use offset from before gain stage
-            if (flip)
-            {
+            if (flip) {
                 OddDR = OddCR;
                 OddCR = OddBR;
                 OddBR = OddAR;
                 OddAR = inputSampleR;
                 inputSampleR = (OddAR + OddBR + OddCR + OddDR) / 4.0;
             }
-            else
-            {
+            else {
                 EvenDR = EvenCR;
                 EvenCR = EvenBR;
                 EvenBR = EvenAR;
@@ -634,8 +627,7 @@ class CrickBass final : public Effect<T>
                 count = 128;
             }
             double resultBL = 0.0;
-            if (flip)
-            {
+            if (flip) {
                 OddL[count + 128] = OddL[count] = iirSampleHL;
                 resultBL = (OddL[count + down] + OddL[count + side] + OddL[count + diagonal]);
             }

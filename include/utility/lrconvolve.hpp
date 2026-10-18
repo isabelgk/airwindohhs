@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "LRConvolve multiplies each channel by the other!"
 };
 constexpr std::string_view k_long_description{
-    "This experiment created a monster. And yet it's so simple…The idea was, can you convolve one channel by the other. L convolves R. And, since multiplication is commutative, R can convolve L right back! And what do you get when you do this?Swedish Chef from Hell, apparently! See the example video (or convolve any vocal with a simple 1k sine tone in the other channel). But why is it doing this terrible thing?When you use a sine wave as one of the channels, it is multiplying the one by the other. (Technically I have a method for taking the square root of the result so it doesn't simply change the density of the sound too much: this is not complicated, it's just making sure the positives and negatives are still what they 'should' be.) And when you're modulating the polarity of a vocal track at audio rates… you can get very weird distortions of the tonality and vowels.It gets worse: if you use lower tones, you can go full Dalek. That's because this is a nasty form of a ring modulator, when you ask it to be. I'll be working on some more variations, it'll give me something to do :)But what happens when you get bolder? For instance, convolve drums with a heavy guitar, or a race car? Not what you'd think. Remember, polarity flips at the frequency of whatever normal sound you feed in. If there's silence, everything will go silent. But if there's noisy drum sounds, it'll turn everything noisy: you won't hear the guitar, and then if the guitar's midrangey, you also won't hear the bass on the drums. It really hybridizes the sound to become the worst of both worlds, and this particular version is specialized to find the most extreme combination of both sounds, which will bring out the noisiest aspects of both. If you had a track that was just positive (or negative) control voltages or envelopes, you would indeed get a normal VCA out of this. …but what fun is that?This plugin has no controls and will show up as a blank space, possibly with its name written on it. All you do is run one thing into one side, and something else into the other (perhaps with track routing: it's simple to do in Reaper, just send to a track with this on it). If you send mono to it, you will get an odd sound which is the sound full-wave rectified, because the negative wave times negative wave equals positive (because of the square root, no other change happens). If you send a completely out of phase signal to it, you get the sound full-wave rectified only to the negative side (note that it doesn't clip off the sections of audio being rectified, so you can't 'split' into positive and negative waves this way, they would sum to 'no audio').There will be offshoots of this that are more normal. This is just the raw craziness of it in its purest form. If this is the plugin for you, you know who you are! And are probably already playing with it and not listening to me anymore.So, carry on, and I'll come up with some more variations that do different things :)"
+    "This experiment created a monster. And yet it's so simple… The idea was, can you convolve one channel by the other. L convolves R. And, since multiplication is commutative, R can convolve L right back! And what do you get when you do this? Swedish Chef from Hell, apparently! See the example video (or convolve any vocal with a simple 1k sine tone in the other channel). But why is it doing this terrible thing? When you use a sine wave as one of the channels, it is multiplying the one by the other. (Technically I have a method for taking the square root of the result so it doesn't simply change the density of the sound too much: this is not complicated, it's just making sure the positives and negatives are still what they 'should' be.) And when you're modulating the polarity of a vocal track at audio rates… you can get very weird distortions of the tonality and vowels. It gets worse: if you use lower tones, you can go full Dalek. That's because this is a nasty form of a ring modulator, when you ask it to be. I'll be working on some more variations, it'll give me something to do :) But what happens when you get bolder? For instance, convolve drums with a heavy guitar, or a race car? Not what you'd think. Remember, polarity flips at the frequency of whatever normal sound you feed in. If there's silence, everything will go silent. But if there's noisy drum sounds, it'll turn everything noisy: you won't hear the guitar, and then if the guitar's midrangey, you also won't hear the bass on the drums. It really hybridizes the sound to become the worst of both worlds, and this particular version is specialized to find the most extreme combination of both sounds, which will bring out the noisiest aspects of both. If you had a track that was just positive (or negative) control voltages or envelopes, you would indeed get a normal VCA out of this. …but what fun is that? This plugin has no controls and will show up as a blank space, possibly with its name written on it. All you do is run one thing into one side, and something else into the other (perhaps with track routing: it's simple to do in Reaper, just send to a track with this on it). If you send mono to it, you will get an odd sound which is the sound full-wave rectified, because the negative wave times negative wave equals positive (because of the square root, no other change happens). If you send a completely out of phase signal to it, you get the sound full-wave rectified only to the negative side (note that it doesn't clip off the sections of audio being rectified, so you can't 'split' into positive and negative waves this way, they would sum to 'no audio'). There will be offshoots of this that are more normal. This is just the raw craziness of it in its purest form. If this is the plugin for you, you know who you are! And are probably already playing with it and not listening to me anymore. So, carry on, and I'll come up with some more variations that do different things :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class LRConvolve final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'lrcv';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -45,10 +49,6 @@ class LRConvolve final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
-
-            default: break;
-        }
     }
 
     float get_parameter_value(int index)
@@ -89,20 +89,16 @@ class LRConvolve final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
+        std::string text;
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

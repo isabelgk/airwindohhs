@@ -11,51 +11,54 @@ constexpr std::string_view k_short_description{
     "kChamberAR is a take on tape echo into chamber echo."
 };
 constexpr std::string_view k_long_description{
-    "While I'm working on other stuff, here's a wild little toy!I've been struggling to get the sound of the Abbey Road chamber, on my Monday streams. Pretty sure what I'm doing works better with larger spaces (which I'm certainly going to do) and that I've got to dig into other approaches for studio-friendly, nice chambers (which I'm certainly going to do, especially since I might get to my goal June or July and get the Bricasti to study).So I didn't get the Abbey Road chamber, not really. But what did I get?Welcome to kChamberAR! Instead of a nice, classy Abbey Road chamber, it's a tape echo into a chamber gone terribly wrong. Or maybe it won't seem so wrong… but it's dirty, aggressive, and wild. If you crank the regeneration up it distorts and goes into infinite echo. If you crank up the bass cut, it filters way harder than the real Abbey Road STEED unit ('cos why not), and if you mess with the delay time, you get wild pitch modulations, all of which feed into the little, boxy, room.I honestly think this works better as an instrument and didn't work as a capital-C Chamber, much less the Abbey Road chamber. There's better to come, as far as serious chamber emulations go. When I do meet my goal and get the Bricasti to study, chambers will be first in my investigations, and I'll get to the bottom of the problem.Oh… because the delay works like you're speeding up the tape more and more, if you crank it all the way to the left for minimum delay, it's probably eating more CPU. For predelay keep it in the middle and it should be fine for that. The reason it goes that much faster is, you can tune the delay to bass notes like a monstrous Karplus-Strong oscillator which then drives (overdrives) a small room. And this is such a horrifying, awesome sound that I had to let you have it.I'll have more legit stuff coming soon. For now, have fun with the new monstrosity. It won't behave, but nothing you have will make noises like it, and that's always part of what I do :)"
+    "While I'm working on other stuff, here's a wild little toy! I've been struggling to get the sound of the Abbey Road chamber, on my Monday streams. Pretty sure what I'm doing works better with larger spaces (which I'm certainly going to do) and that I've got to dig into other approaches for studio-friendly, nice chambers (which I'm certainly going to do, especially since I might get to my goal June or July and get the Bricasti to study). So I didn't get the Abbey Road chamber, not really. But what did I get? Welcome to kChamberAR! Instead of a nice, classy Abbey Road chamber, it's a tape echo into a chamber gone terribly wrong. Or maybe it won't seem so wrong… but it's dirty, aggressive, and wild. If you crank the regeneration up it distorts and goes into infinite echo. If you crank up the bass cut, it filters way harder than the real Abbey Road STEED unit ('cos why not), and if you mess with the delay time, you get wild pitch modulations, all of which feed into the little, boxy, room. I honestly think this works better as an instrument and didn't work as a capital-C Chamber, much less the Abbey Road chamber. There's better to come, as far as serious chamber emulations go. When I do meet my goal and get the Bricasti to study, chambers will be first in my investigations, and I'll get to the bottom of the problem. Oh… because the delay works like you're speeding up the tape more and more, if you crank it all the way to the left for minimum delay, it's probably eating more CPU. For predelay keep it in the middle and it should be fine for that. The reason it goes that much faster is, you can tune the delay to bass notes like a monstrous Karplus-Strong oscillator which then drives (overdrives) a small room. And this is such a horrifying, awesome sound that I had to let you have it. I'll have more legit stuff coming soon. For now, have fun with the new monstrosity. It won't behave, but nothing you have will make noises like it, and that's always part of what I do :)"
 };
 constexpr std::string_view k_tags{
     "ambience"
 };
 
-const int earlyA = 17;
-const int earlyB = 503;
-const int earlyC = 43;
-const int earlyD = 71;
-const int earlyE = 653;
-const int earlyF = 353;
-const int earlyG = 641;
-const int earlyH = 5;
-const int earlyI = 439;
-const int predelay = 48010; // 1 to 40 ms, 52 seat room. Scarcity, 1 in 53537
-const int delayA = 263;
-const int delayB = 103;
-const int delayC = 43;
-const int delayD = 349;
-const int delayE = 109;
-const int delayF = 71;
-const int delayG = 173;
-const int delayH = 11;
-const int delayI = 311;
-const int delayJ = 331;
-const int delayK = 5;
-const int delayL = 353;
-const int delayM = 359;
-const int delayN = 7;
-const int delayO = 23;
-const int delayP = 367;
-const int delayQ = 29;
-const int delayR = 313;
-const int delayS = 3;
-const int delayT = 251;
-const int delayU = 383;
-const int delayV = 191;
-const int delayW = 17;
-const int delayX = 233;
-const int delayY = 101; // 1 to 40 ms, 52 seat room. Scarcity, 1 in 26639
-
 template <typename T>
 class kChamberAR final : public Effect<T>
 {
+    static constexpr int earlyA = 17;
+    static constexpr int earlyB = 503;
+    static constexpr int earlyC = 43;
+    static constexpr int earlyD = 71;
+    static constexpr int earlyE = 653;
+    static constexpr int earlyF = 353;
+    static constexpr int earlyG = 641;
+    static constexpr int earlyH = 5;
+    static constexpr int earlyI = 439;
+    static constexpr int predelay = 48010;
+    static constexpr int delayA = 263;
+    static constexpr int delayB = 103;
+    static constexpr int delayC = 43;
+    static constexpr int delayD = 349;
+    static constexpr int delayE = 109;
+    static constexpr int delayF = 71;
+    static constexpr int delayG = 173;
+    static constexpr int delayH = 11;
+    static constexpr int delayI = 311;
+    static constexpr int delayJ = 331;
+    static constexpr int delayK = 5;
+    static constexpr int delayL = 353;
+    static constexpr int delayM = 359;
+    static constexpr int delayN = 7;
+    static constexpr int delayO = 23;
+    static constexpr int delayP = 367;
+    static constexpr int delayQ = 29;
+    static constexpr int delayR = 313;
+    static constexpr int delayS = 3;
+    static constexpr int delayT = 251;
+    static constexpr int delayU = 383;
+    static constexpr int delayV = 191;
+    static constexpr int delayW = 17;
+    static constexpr int delayX = 233;
+    static constexpr int delayY = 101;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'kcha';
     double iirAL;
     double iirBL;
     double steedRegenL;
@@ -222,7 +225,6 @@ class kChamberAR final : public Effect<T>
     int countYR;
     int countZ;
     int cycle;
-
     enum
     {
         fix_freq,
@@ -237,30 +239,25 @@ class kChamberAR final : public Effect<T>
         fix_sR1,
         fix_sR2,
         fix_total
-    };
+    }; // fixed frequency biquad filter for ultrasonics, stereo
     double fixA[fix_total];
     double fixC[fix_total];
     double fixD[fix_total];
-
     double prevMulchDL;
     double prevMulchDR;
     double prevMulchEL;
     double prevMulchER;
-
     double prevOutDL;
     double prevOutDR;
     double prevOutEL;
     double prevOutER;
-
     double prevInDL;
     double prevInDR;
     double prevInEL;
     double prevInER;
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
@@ -559,22 +556,19 @@ class kChamberAR final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -588,8 +582,7 @@ class kChamberAR final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.0; break;
@@ -603,12 +596,11 @@ class kChamberAR final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "delay"; break;
             case kParamC: return "regen"; break;
-            case kParamD: return "low cut"; break;
+            case kParamD: return "lowcut"; break;
             case kParamE: return "wetness"; break;
 
             default: break;
@@ -618,8 +610,7 @@ class kChamberAR final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Delay"; break;
             case kParamC: return "Regen"; break;
@@ -633,32 +624,32 @@ class kChamberAR final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -727,8 +718,7 @@ class kChamberAR final : public Effect<T>
         fixC[fix_b1] = fixD[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixC[fix_b2] = fixD[fix_b2] = (1.0 - K / fixD[fix_reso] + K * K) * norm;
         // stereo biquad bandpasses we can put into the tape emu
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

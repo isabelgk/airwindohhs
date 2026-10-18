@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "UnBox is a distortion where only the harmonics that don't alias are allowed to distort."
 };
 constexpr std::string_view k_long_description{
-    "While I’m putting out my library of plugins according to plan, sometimes I need to take a detour into new stuff. UnBox is one example.The idea’s as follows: if you distort stuff digitally, it aliases. This can be seen as harmonics seemingly bouncing off the highest frequency, and going back down again. The idea is that if you have digital saturation or distortion without massive oversampling, you’ll always have aliasing and everything is ruined forever.That’s not quite true. It depends on the frequency, and the form of distortion… and many of my plugins have gentle enough distortion curves that they throw a limited number of harmonics. If you are only generating harmonics within the range of digital audio’s frequencies, you’re fine and there will be no problem until you feed the system a frequency that’s too high. You’re not automatically feeding superhigh frequencies all the time if you’re working with natural recordings: not all sounds contain that kind of high frequency content.If you DO have that sort of high frequency content, what then? It occurred to me I could take the difference between dry and distorted, store it in an averaging filter, and average it. This would suppress high frequency content in only the distortion artifacts. (I then learned that I needed to average the signal being fed to the distortion part, which is Spiral again: it got a little complicated)And I could even highpass the distortion part… and all this is applying only to the distortion part. It’s all handled as a single subtract from the raw signal coming in.What that means is this: UnBox is a distortion that cuts down the level of the signal, but ONLY the mids. Depending on how it’s set, it will let through more and more of the ‘dry’ highs, unaffected. It’ll also let through a hint of bass for definition. Underneath this layer of clarity, the distorted part can be made pretty distorted, but it’ll stay free of aliasing even up into the high frequencies, because those frequencies aren’t actually getting applied to the distortion, and the distortion output’s also being smoothed after the fact. So you’ve got a texture-thickener, an energy-adder, that retains a very analog quality because all of the overtones stay clear of aliasing WITHOUT oversampling. The raw sound is still a direct pass-through and that’s where the clarity comes from."
+    "While I’m putting out my library of plugins according to plan, sometimes I need to take a detour into new stuff. UnBox is one example. The idea’s as follows: if you distort stuff digitally, it aliases. This can be seen as harmonics seemingly bouncing off the highest frequency, and going back down again. The idea is that if you have digital saturation or distortion without massive oversampling, you’ll always have aliasing and everything is ruined forever. That’s not quite true. It depends on the frequency, and the form of distortion… and many of my plugins have gentle enough distortion curves that they throw a limited number of harmonics. If you are only generating harmonics within the range of digital audio’s frequencies, you’re fine and there will be no problem until you feed the system a frequency that’s too high. You’re not automatically feeding superhigh frequencies all the time if you’re working with natural recordings: not all sounds contain that kind of high frequency content. If you DO have that sort of high frequency content, what then? It occurred to me I could take the difference between dry and distorted, store it in an averaging filter, and average it. This would suppress high frequency content in only the distortion artifacts. (I then learned that I needed to average the signal being fed to the distortion part, which is Spiral again: it got a little complicated) And I could even highpass the distortion part… and all this is applying only to the distortion part. It’s all handled as a single subtract from the raw signal coming in. What that means is this: UnBox is a distortion that cuts down the level of the signal, but ONLY the mids. Depending on how it’s set, it will let through more and more of the ‘dry’ highs, unaffected. It’ll also let through a hint of bass for definition. Underneath this layer of clarity, the distorted part can be made pretty distorted, but it’ll stay free of aliasing even up into the high frequencies, because those frequencies aren’t actually getting applied to the distortion, and the distortion output’s also being smoothed after the fact. So you’ve got a texture-thickener, an energy-adder, that retains a very analog quality because all of the overtones stay clear of aliasing WITHOUT oversampling. The raw sound is still a direct pass-through and that’s where the clarity comes from."
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class UnBox final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'unbx';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -82,20 +86,17 @@ class UnBox final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -107,8 +108,7 @@ class UnBox final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.5; break;
@@ -120,8 +120,7 @@ class UnBox final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "unbox"; break;
             case kParamC: return "output"; break;
@@ -133,8 +132,7 @@ class UnBox final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "UnBox"; break;
             case kParamC: return "Output"; break;
@@ -146,28 +144,28 @@ class UnBox final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 2.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 2.0, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -334,8 +332,7 @@ class UnBox final : public Effect<T>
         f[8] /= treble;
         f[9] /= treble;
         // and now it's neatly scaled, too
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (input != 1.0) {

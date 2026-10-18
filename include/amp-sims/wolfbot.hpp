@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Wolfbot is an aggressive Kalman bandpass with evil in its heart."
 };
 constexpr std::string_view k_long_description{
-    "So it's possible that I simply went too far.This was inspired by, and specifically modelled after, the famous transformer DI 'Wolfbox', which I don't have. I had only a youtube video made by somebody who did have a real Wolfbox DI (and at that, not a vintage one) and who was A/Bing it against a different DI. I'm putting this out because I was asked to, but understand that it's a science experiment.And by that I mean, literal science experiment. It answers the question, 'what happens when you use two Kalman filters to mimic the bandpassing of a vintage transformer DI box?' plus there's a bit of saturation on the end. The saturation is not the aggressive distortion you hear: that's the Kalman filters acting as comes naturally! It's possible that DI bass is the single worst signal you could try to put through this plugin that was designed to work on bass, and voiced using examples of bass and DI guitar. It's possible something has gone quite horribly wrong.Or.It's possible that this will come in handy more than anybody imagined. The thing is, I worked real hard to get the 'voice' of this dialed in just right, and THEN checked to see what it was really doing. It has a bit of saturation (should rein in snaps and pops nicely) but the grind it delivers isn't from that, it's from specifically the highpass Kalman filter, which is turning the whole sound into a sort of bass horn! I was shocked to see how much this strange plugin turns otherwise normal DI signals into sort of fat beefy pulse waves. Wolfbot is not gentle, and doesn't have any more controls than the original Wolfbox did, and while some kinds of sounds (drums, snares etc) get voiced in a convincingly 'bandpass' way, other sounds like the DIs it was designed to do, get utterly transformed.It acts more like a bass amp than a transformer DI, but more like some strange new invention than either… and the specific way it retains the hammering, brutal directness of bass low-mids, while wiping out irritating string-gloss (even on a Rickenbacker bridge pickup) and nuking ALL the real bass to make room for kick drums and sub-synths, means in a strange way Wolfbot entirely succeeded. I have a pile of amp-sims, multiple DIs and transformer DIs, and real amps, and none of them are even close to doing this, whatever 'this' is.I need to try it in some mixes, and so can you. I bet I can add deep-bass boosts and get something else out of it, but even just as it is, I can immediately hear how it would fill in a spot where bass guitars are supposed to go. It's just that rather than going crazy on the channel EQ, or running a bass amp and going crazy on that, it will just do that sound right away and it'll sit in an otherwise full-range mix reinforcing exactly what I want the bass guitar to reinforce.I've looked at the output in a wave editor and it's terrifying to think that this monstrous thing is probably my new go-to DI bass plugin, but here we are. Oh, and I bet you anything this makes basses project better on a phone. Have fun :)"
+    "So it's possible that I simply went too far. This was inspired by, and specifically modelled after, the famous transformer DI 'Wolfbox', which I don't have. I had only a youtube video made by somebody who did have a real Wolfbox DI (and at that, not a vintage one) and who was A/Bing it against a different DI. I'm putting this out because I was asked to, but understand that it's a science experiment. And by that I mean, literal science experiment. It answers the question, 'what happens when you use two Kalman filters to mimic the bandpassing of a vintage transformer DI box?' plus there's a bit of saturation on the end. The saturation is not the aggressive distortion you hear: that's the Kalman filters acting as comes naturally! It's possible that DI bass is the single worst signal you could try to put through this plugin that was designed to work on bass, and voiced using examples of bass and DI guitar. It's possible something has gone quite horribly wrong. Or. It's possible that this will come in handy more than anybody imagined. The thing is, I worked real hard to get the 'voice' of this dialed in just right, and THEN checked to see what it was really doing. It has a bit of saturation (should rein in snaps and pops nicely) but the grind it delivers isn't from that, it's from specifically the highpass Kalman filter, which is turning the whole sound into a sort of bass horn! I was shocked to see how much this strange plugin turns otherwise normal DI signals into sort of fat beefy pulse waves. Wolfbot is not gentle, and doesn't have any more controls than the original Wolfbox did, and while some kinds of sounds (drums, snares etc) get voiced in a convincingly 'bandpass' way, other sounds like the DIs it was designed to do, get utterly transformed. It acts more like a bass amp than a transformer DI, but more like some strange new invention than either… and the specific way it retains the hammering, brutal directness of bass low-mids, while wiping out irritating string-gloss (even on a Rickenbacker bridge pickup) and nuking ALL the real bass to make room for kick drums and sub-synths, means in a strange way Wolfbot entirely succeeded. I have a pile of amp-sims, multiple DIs and transformer DIs, and real amps, and none of them are even close to doing this, whatever 'this' is. I need to try it in some mixes, and so can you. I bet I can add deep-bass boosts and get something else out of it, but even just as it is, I can immediately hear how it would fill in a spot where bass guitars are supposed to go. It's just that rather than going crazy on the channel EQ, or running a bass amp and going crazy on that, it will just do that sound right away and it'll sit in an otherwise full-range mix reinforcing exactly what I want the bass guitar to reinforce. I've looked at the output in a wave editor and it's terrifying to think that this monstrous thing is probably my new go-to DI bass plugin, but here we are. Oh, and I bet you anything this makes basses project better on a phone. Have fun :)"
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Wolfbot final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'wolf';
     enum
     {
         prevSampL1,
@@ -48,7 +52,6 @@ class Wolfbot final : public Effect<T>
     };
     double kHP[kal_total];
     double kLP[kal_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -78,17 +81,14 @@ class Wolfbot final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -97,8 +97,7 @@ class Wolfbot final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -107,8 +106,7 @@ class Wolfbot final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -117,8 +115,7 @@ class Wolfbot final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -127,22 +124,22 @@ class Wolfbot final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -157,8 +154,7 @@ class Wolfbot final : public Effect<T>
         overallscale *= Effect<T>::getSampleRate();
         double kalHP = 1.0 - (0.004225 / overallscale);
         double kalLP = 1.0 - (0.954529 / overallscale);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

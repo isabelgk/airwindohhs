@@ -1,6 +1,7 @@
 #pragma once
 #include "effect.hpp"
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
 namespace airwindohhs::studiotan {
@@ -10,7 +11,7 @@ constexpr std::string_view k_short_description{
     "StudioTan is all the 'non-dither' dithers, up to date and convenient."
 };
 constexpr std::string_view k_long_description{
-    "If you were curious about the new work in quantization I’ve been doing… where I’ve put out a series of experimental plugins with names like Dither Me Timbers and RawGlitters and then said they weren’t dithers, or if you tried stuff like Dither Me Timbers and then found your limiter set to 0dB was now giving you overs, or if it just didn’t make sense at the time…This is for you.StudioTan is the sum total of all I’ve been doing with ‘dither’ that isn’t dither, for the last two years. It’s got three algorithms, StudioTan, Dither Me Timbers, and Not Just Another Dither. Each one is brought up to date, optimized, voiced to do what it does best. The first two begin with the use of quantization to apply EQ at ‘noise floor’ levels and the third applies Benford Realness statistics at noise floor levels, and they all use noise shaping to refine that behavior and get a specific tonal result. Not one of these have been quite available before, even from previous versions of Dither Me Timbers or Not Just Another Dither: it’s the latest finetunings of the algorithms. None of them can produce signal outputs beyond -1 to 1 so they can’t produce overs (if you’re ‘mastering’ so hot you get intersample overs, firstly that’s not a great idea and secondly StudioTan can’t help you there). All three come with 24 and 16 bit options right there in the plugin, as experimenter time is over and this is the final form, requiring no more fussing with plugins.The effect of each is more pronounced at 16 bit, and that’ll give you a sense of what is being subliminally imparted at the far subtler 24 bit level.StudioTan is like the posh, glossy, high class output. It sounds kind of like expensive studios and tape, brings up micro-detail but suppresses harshness. It’s slick and makes things sound more flawless and possibly more boring, but satisfying.Dither Me Timbers is like the spatially enhanced, electrically charged output. It makes sonic events spark out of a darker, spacious background, and gives a little energy to transients and attacks. It makes things sound more human and attitude-laden, so it’s more dramatic and attention-getting. It’s got different noise shaping behavior and voicing but in basic character it’s the opposite of StudioTan, and can be approached from that direction.Not Just Another Dither is like the holographic, hi-fi output. It’s a bit darker than previous Not Just Another Dithers and its purpose is to have detail go down to a digital noise floor that’s a balance of all types of artifact (since you’re always going to have a noise floor of something, no matter what you do) without changing character in any way. Since this perceived character is so balanced (this time, not even airy hiss as a ‘identifiable’ floor change) the new Not Just Another Dither is the best choice to seem like infinite resolution without even a noise floor being there. Instead of making ‘a sound’ like the previous two, it’s the one that sounds completely open and unaffected.None of these give sensible results with test tones: you can’t take a sine and enhance high frequency details, so you get purely garbage data. Don’t use Airwindows non-dither dithers for scientific processing or your rocket ships will blow up on the launch pad ;) these are literally tone controls in two cases and an obscure data handling technique for the third, and they are re-voiced for 2019 to best deliver their sonic mojo. You can do test tone stuff to satisfy yourself they aren’t placebo effect: they really do the noise-floor-EQing or Benford Realness stuff, and the source code is open. But for evaluating how they really work, the proof is in the listening.What they do cannot be done any other way, and they’re the final artistic polish on sonic creations done in or outside the DAW. Use them on mixes, or when mastering raw analog captures to lower word lengths for CD. They are ‘final dither’ in function if not strict definition, the way to crystallize high-res audio data into an output file that retains all the magic you intended, whatever flavor of magic that’s meant to be. The three categories of tone color ought to cover your bases there.I know this is all I’ll be using from now on :)(followup: it absolutely was not. I continued to use NJAD in Monitoring until I wrote Dark, have used that some including in Monitoring2 and then came up with a new dither based on Ten Nines into Dark, which is in the original output buss of Console8)"
+    "If you were curious about the new work in quantization I’ve been doing… where I’ve put out a series of experimental plugins with names like Dither Me Timbers and RawGlitters and then said they weren’t dithers, or if you tried stuff like Dither Me Timbers and then found your limiter set to 0dB was now giving you overs, or if it just didn’t make sense at the time… This is for you. StudioTan is the sum total of all I’ve been doing with ‘dither’ that isn’t dither, for the last two years. It’s got three algorithms, StudioTan, Dither Me Timbers, and Not Just Another Dither. Each one is brought up to date, optimized, voiced to do what it does best. The first two begin with the use of quantization to apply EQ at ‘noise floor’ levels and the third applies Benford Realness statistics at noise floor levels, and they all use noise shaping to refine that behavior and get a specific tonal result. Not one of these have been quite available before, even from previous versions of Dither Me Timbers or Not Just Another Dither: it’s the latest finetunings of the algorithms. None of them can produce signal outputs beyond -1 to 1 so they can’t produce overs (if you’re ‘mastering’ so hot you get intersample overs, firstly that’s not a great idea and secondly StudioTan can’t help you there). All three come with 24 and 16 bit options right there in the plugin, as experimenter time is over and this is the final form, requiring no more fussing with plugins. The effect of each is more pronounced at 16 bit, and that’ll give you a sense of what is being subliminally imparted at the far subtler 24 bit level. StudioTan is like the posh, glossy, high class output. It sounds kind of like expensive studios and tape, brings up micro-detail but suppresses harshness. It’s slick and makes things sound more flawless and possibly more boring, but satisfying. Dither Me Timbers is like the spatially enhanced, electrically charged output. It makes sonic events spark out of a darker, spacious background, and gives a little energy to transients and attacks. It makes things sound more human and attitude-laden, so it’s more dramatic and attention-getting. It’s got different noise shaping behavior and voicing but in basic character it’s the opposite of StudioTan, and can be approached from that direction. Not Just Another Dither is like the holographic, hi-fi output. It’s a bit darker than previous Not Just Another Dithers and its purpose is to have detail go down to a digital noise floor that’s a balance of all types of artifact (since you’re always going to have a noise floor of something, no matter what you do) without changing character in any way. Since this perceived character is so balanced (this time, not even airy hiss as a ‘identifiable’ floor change) the new Not Just Another Dither is the best choice to seem like infinite resolution without even a noise floor being there. Instead of making ‘a sound’ like the previous two, it’s the one that sounds completely open and unaffected. None of these give sensible results with test tones: you can’t take a sine and enhance high frequency details, so you get purely garbage data. Don’t use Airwindows non-dither dithers for scientific processing or your rocket ships will blow up on the launch pad ;) these are literally tone controls in two cases and an obscure data handling technique for the third, and they are re-voiced for 2019 to best deliver their sonic mojo. You can do test tone stuff to satisfy yourself they aren’t placebo effect: they really do the noise-floor-EQing or Benford Realness stuff, and the source code is open. But for evaluating how they really work, the proof is in the listening. What they do cannot be done any other way, and they’re the final artistic polish on sonic creations done in or outside the DAW. Use them on mixes, or when mastering raw analog captures to lower word lengths for CD. They are ‘final dither’ in function if not strict definition, the way to crystallize high-res audio data into an output file that retains all the magic you intended, whatever flavor of magic that’s meant to be. The three categories of tone color ought to cover your bases there. I know this is all I’ll be using from now on :) (followup: it absolutely was not. I continued to use NJAD in Monitoring until I wrote Dark, have used that some including in Monitoring2 and then came up with a new dither based on Ten Nines into Dark, which is in the original output buss of Console8)"
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -19,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class StudioTan final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'stan';
     double bynL[13];
     double noiseShapingL;
     double lastSampleL;
@@ -72,18 +77,15 @@ class StudioTan final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -93,8 +95,7 @@ class StudioTan final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -104,8 +105,7 @@ class StudioTan final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "quantzr"; break;
 
             default: break;
@@ -115,8 +115,7 @@ class StudioTan final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Quantzr"; break;
 
             default: break;
@@ -126,24 +125,36 @@ class StudioTan final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 5.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "ST 24", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "DMT 24", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "NJAD 24", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "ST 16", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "DMT 16", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "NJAD 16", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // E as example 'popup' parameter with four values  */
 
-            default: break;
-        }
-        return {};
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
+
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -157,8 +168,7 @@ class StudioTan final : public Effect<T>
         bool brightfloor = true; // for Studio Tan: false for Dither Me Timbers
         bool benford = true; // for Not Just Another Dither: false for newer two
         bool cutbins = false; // for NJAD: only attenuate bins if one gets very full
-        switch ((VstInt32)(A * 5.999))
-        {
+        switch ((VstInt32)(A * 5.999)) {
             case 0: benford = false; break; // Studio Tan 24
             case 1:
                 benford = false;
@@ -176,8 +186,7 @@ class StudioTan final : public Effect<T>
                 break; // Dither Me Timbers 16
             case 5: highres = false; break; // Not Just Another Dither 16
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL;
             double outputSampleL;
             double drySampleL;
@@ -224,8 +233,7 @@ class StudioTan final : public Effect<T>
                 int hotbinA = floor(benfordize);
                 // hotbin becomes the Benford bin value for this number floored
                 double totalA = 0;
-                if ((hotbinA > 0) && (hotbinA < 10))
-                {
+                if ((hotbinA > 0) && (hotbinA < 10)) {
                     bynL[hotbinA] += 1;
                     if (bynL[hotbinA] > 982) {
                         cutbins = true;
@@ -267,8 +275,7 @@ class StudioTan final : public Effect<T>
                 int hotbinB = floor(benfordize);
                 // hotbin becomes the Benford bin value for this number ceiled
                 double totalB = 0;
-                if ((hotbinB > 0) && (hotbinB < 10))
-                {
+                if ((hotbinB > 0) && (hotbinB < 10)) {
                     bynL[hotbinB] += 1;
                     if (bynL[hotbinB] > 982) {
                         cutbins = true;
@@ -288,13 +295,11 @@ class StudioTan final : public Effect<T>
                     hotbinB = 10;
                 }
                 // produce total number- smaller is closer to Benford real
-                if (totalA < totalB)
-                {
+                if (totalA < totalB) {
                     bynL[hotbinA] += 1;
                     outputSampleL = floor(inputSampleL);
                 }
-                else
-                {
+                else {
                     bynL[hotbinB] += 1;
                     outputSampleL = floor(inputSampleL + 1);
                 }
@@ -338,8 +343,7 @@ class StudioTan final : public Effect<T>
                 hotbinA = floor(benfordize);
                 // hotbin becomes the Benford bin value for this number floored
                 totalA = 0;
-                if ((hotbinA > 0) && (hotbinA < 10))
-                {
+                if ((hotbinA > 0) && (hotbinA < 10)) {
                     bynR[hotbinA] += 1;
                     if (bynR[hotbinA] > 982) {
                         cutbins = true;
@@ -381,8 +385,7 @@ class StudioTan final : public Effect<T>
                 hotbinB = floor(benfordize);
                 // hotbin becomes the Benford bin value for this number ceiled
                 totalB = 0;
-                if ((hotbinB > 0) && (hotbinB < 10))
-                {
+                if ((hotbinB > 0) && (hotbinB < 10)) {
                     bynR[hotbinB] += 1;
                     if (bynR[hotbinB] > 982) {
                         cutbins = true;
@@ -402,13 +405,11 @@ class StudioTan final : public Effect<T>
                     hotbinB = 10;
                 }
                 // produce total number- smaller is closer to Benford real
-                if (totalA < totalB)
-                {
+                if (totalA < totalB) {
                     bynR[hotbinA] += 1;
                     outputSampleR = floor(inputSampleR);
                 }
-                else
-                {
+                else {
                     bynR[hotbinB] += 1;
                     outputSampleR = floor(inputSampleR + 1);
                 }

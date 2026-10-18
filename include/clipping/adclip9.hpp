@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ADClip9 is the ClipOnly3 version of a loudenator/biggenator."
 };
 constexpr std::string_view k_long_description{
-    "Update time! As promised, I'm putting out ClipOnly3 as an ADClip (the fundamental concepts are still ADClip, so that makes this ADClip9.)Multiple things have changed since ADClip8, more than two years ago. The way this one works there's no benefit to stacking up instances, so the colorful mode names like 'Apocalypse' go by the wayside… but more useful things in ADClip are retained or even expanded.The three modes are Boost, Match, and ClipOnly. That means you've got a 'pure loudenate' setting, a 'level matched' setting with its own dB-measured control (which kept me up late at night rebuilding everything for the Nth time because it applied the correct amount, but wasn't SHOWING the relevant dB in the interface) and a setting that's silent until you start clipping and then shows the delta: this one can be used if you're looking to not grind against musical content but only transient spikes.The remaining controls are Noise and Ceiling, and technically they're both thresholds. They are NOT measured in dB, they're made to give subtler and subtler control as you go nearer to clipping directly at 0dB. The default settings of 0.7 and 0.75 closely match what ClipOnly3 does, which gets intersample peaks as close to 0 as I dared. If you lower Noise, what you're doing is hitting the 'transition to noise' threshold sooner, without affecting the hard clip limit. If you lower Ceiling, you're lowering the hard clip limit. You'll probably end up moving both, but if you do it's up to you to find your own balance point. Don't expect it to become a 'replace the audio with noise and clip the rest' plugin: Silhouette might be your best bet for that, ADClip9 is still the Airwindows take on 'softening the edges of clips with noise' as found in ClipOnly3.It's been a couple years since I advanced the state of the art in 'unreasonable loudenation' and let people get their hands dirtier than with ClipOnly (which is always designed to be a transparent safety clipper with no controls that happens to behave perfectly.) So here you go, with a bit of luck this'll hold people while I work on the opposite extremes of dynamics :)"
+    "Update time! As promised, I'm putting out ClipOnly3 as an ADClip (the fundamental concepts are still ADClip, so that makes this ADClip9.) Multiple things have changed since ADClip8, more than two years ago. The way this one works there's no benefit to stacking up instances, so the colorful mode names like 'Apocalypse' go by the wayside… but more useful things in ADClip are retained or even expanded. The three modes are Boost, Match, and ClipOnly. That means you've got a 'pure loudenate' setting, a 'level matched' setting with its own dB-measured control (which kept me up late at night rebuilding everything for the Nth time because it applied the correct amount, but wasn't SHOWING the relevant dB in the interface) and a setting that's silent until you start clipping and then shows the delta: this one can be used if you're looking to not grind against musical content but only transient spikes. The remaining controls are Noise and Ceiling, and technically they're both thresholds. They are NOT measured in dB, they're made to give subtler and subtler control as you go nearer to clipping directly at 0dB. The default settings of 0.7 and 0.75 closely match what ClipOnly3 does, which gets intersample peaks as close to 0 as I dared. If you lower Noise, what you're doing is hitting the 'transition to noise' threshold sooner, without affecting the hard clip limit. If you lower Ceiling, you're lowering the hard clip limit. You'll probably end up moving both, but if you do it's up to you to find your own balance point. Don't expect it to become a 'replace the audio with noise and clip the rest' plugin: Silhouette might be your best bet for that, ADClip9 is still the Airwindows take on 'softening the edges of clips with noise' as found in ClipOnly3. It's been a couple years since I advanced the state of the art in 'unreasonable loudenation' and let people get their hands dirtier than with ClipOnly (which is always designed to be a transparent safety clipper with no controls that happens to behave perfectly.) So here you go, with a bit of luck this'll hold people while I work on the opposite extremes of dynamics :)"
 };
 constexpr std::string_view k_tags{
     "clipping"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ADClip9 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'adct';
     float A;
     float B;
     float C;
@@ -88,14 +92,13 @@ class ADClip9 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -157,30 +160,39 @@ class ADClip9 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A * 18.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B * 18.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE:
+                switch ((VstInt32)(E * 2.999)) {
+                    case 0: vst_strncpy(text, "Boost", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Match", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "ClipOnly", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return "dB"; break;
-            case kParamB: return "dB"; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

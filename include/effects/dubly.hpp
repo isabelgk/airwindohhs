@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Dubly is a retro vibe and atmosphere maker."
 };
 constexpr std::string_view k_long_description{
-    "Some people will recognize this instantly… even if you don't do heavy metal in Dubly, you know :)Here's what this is. There's a famous sort of noise reduction, with variations, that's based around the idea of taking the audio, filtering it, compressing it 2:1 and adding that TO the signal. You then record that to tape. And when you play it back, you take that combination, compress it and filter it AGAIN, but this time subtract it from the signal. And hey presto, perfect sound!Well… nope. Doesn't add up. Changes the sound. The thing is… that changed sound is sort of magical.How come? For starters, when you distort tape you get harmonics. If you do that to the sound you start getting harmonics a lot sooner, over a broader range of sounds… but then you're taking the added harmonics you just made, and you're subtracting them again. You're turning them down. You're making the dynamics of your sound come with dynamically varying harmonics, a real color adder, but without the dynamic squashing of just plain saturating. And that's not even getting into when you've got the machines misaligned… or tuned by ear to bring out a particular magical sparkliness and ambience that's NOT really accurate, but maybe is the special sauce for a particular studio's recording machines… we may never know, we know only that these old noise reduction things were fiddly beasts…So what if you strip all that down, Airwindows-style, to only the basic principle?Meet Dubly. It uses uLaw technology (really!) for good, not evil! It does the most general form of that processing, NOT like any specific very proprietary tech, and uses a simple distortion inside rather than any tricky tape emulation (that can come later!). It defaults to 0.5, where it will just bring a delicate aura of retro magic to the sound. But, the way it's calibrated (very tricky, by nature) you can crank it out and mis-calibrate it. And when you do, you'll get more and more into a crazy, hyped, intensified zone that adds a lot of treble energy. But this doesn't make it into a 'single ended' version of the processing (even though that's a known secret weapon). It remains the double-ended, full chain, noise-reducing system (that is, if the single distortion stage was adding noise, which it isn't). Just… twisted.There will obviously be more of this, but for now, you can do your heavy metal in Dubly, you know. It will get a little lighter and spacier and more atmospheric, which is probably why this is Not Done. But who knows, maybe you'll like a little Dubly on your record. Hope you like it :)"
+    "Some people will recognize this instantly… even if you don't do heavy metal in Dubly, you know :) Here's what this is. There's a famous sort of noise reduction, with variations, that's based around the idea of taking the audio, filtering it, compressing it 2:1 and adding that TO the signal. You then record that to tape. And when you play it back, you take that combination, compress it and filter it AGAIN, but this time subtract it from the signal. And hey presto, perfect sound! Well… nope. Doesn't add up. Changes the sound. The thing is… that changed sound is sort of magical. How come? For starters, when you distort tape you get harmonics. If you do that to the sound you start getting harmonics a lot sooner, over a broader range of sounds… but then you're taking the added harmonics you just made, and you're subtracting them again. You're turning them down. You're making the dynamics of your sound come with dynamically varying harmonics, a real color adder, but without the dynamic squashing of just plain saturating. And that's not even getting into when you've got the machines misaligned… or tuned by ear to bring out a particular magical sparkliness and ambience that's NOT really accurate, but maybe is the special sauce for a particular studio's recording machines… we may never know, we know only that these old noise reduction things were fiddly beasts… So what if you strip all that down, Airwindows-style, to only the basic principle? Meet Dubly. It uses uLaw technology (really!) for good, not evil! It does the most general form of that processing, NOT like any specific very proprietary tech, and uses a simple distortion inside rather than any tricky tape emulation (that can come later!). It defaults to 0.5, where it will just bring a delicate aura of retro magic to the sound. But, the way it's calibrated (very tricky, by nature) you can crank it out and mis-calibrate it. And when you do, you'll get more and more into a crazy, hyped, intensified zone that adds a lot of treble energy. But this doesn't make it into a 'single ended' version of the processing (even though that's a known secret weapon). It remains the double-ended, full chain, noise-reducing system (that is, if the single distortion stage was adding noise, which it isn't). Just… twisted. There will obviously be more of this, but for now, you can do your heavy metal in Dubly, you know. It will get a little lighter and spacier and more atmospheric, which is probably why this is Not Done. But who knows, maybe you'll like a little Dubly on your record. Hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Dubly final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dbly';
     double iirSampleAL;
     double iirSampleBL;
     double iirSampleAR;
@@ -59,19 +63,16 @@ class Dubly final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -82,8 +83,7 @@ class Dubly final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 1.0; break;
 
@@ -94,10 +94,9 @@ class Dubly final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "dubly"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -106,8 +105,7 @@ class Dubly final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Dubly"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -118,26 +116,26 @@ class Dubly final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -155,8 +153,7 @@ class Dubly final : public Effect<T>
         double gain = outlyAmount + 1.0;
         double iirAmount = 0.4275 / overallscale;
         double wet = B;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

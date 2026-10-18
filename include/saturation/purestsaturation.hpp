@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PurestSaturation is an experiment in softclipping."
 };
 constexpr std::string_view k_long_description{
-    "Not so long ago, I pushed and pulled the parameters of a sin() function (thing called a Taylor series expansion) to produce TapeHack, which is a softclip that uses the wrong values for a sin() softclip, to produce another softclip that feels more retro and vintage.But what if we did something weirder? Specifically, doing this requires that you divide by increasingly huge numbers. For a real sin() these are factorials (very huge indeed). For TapeHack, I doctored these until the shape of the softclip did exactly what I wanted.Remember how my BitShiftGain works? The ultra-clean gain change I can do (either internal to a plugin, or as the plugin of that name) because if you multiply or divide by exactly powers of 2, in any floating point format, it'll change the game without ever recalculating the 'mantissa' of the number. It only changes the 'exponent'. And if you don't change the mantissa… you never requantize. So you have literal perfect gain change that is totally and perfectly lossless within the entire range of the exponent… as long as you only change by 6.08 dB increments.A bit like the Monty Python skit where a man inherits miles of string, except due to bad planning it is in six inch lengths…But hey, if you're doing a Taylor series, the first stage's subtracted at 15.56 dB down. Then, 41.58 dB down. Then, 74.04 dB and so on.What if instead, -18 and -42 and -72 and -108 and -150 dB? Rather than the correct math, instead using whatever division will make sure the mantissa is exactly the same?And here we are. 'BitShiftGain' but five times over, inside a saturation algorithm, set up to be intentionally wrong but as if we're passing through the parts of the algorithm, losslessly. Except our notion of 'losslessly' is very much Airwindowsized and requires that we use the wrong dividers… except for that's how we have TapeHack.What happens? Try it and find out. I've never heard a sophisticated sine approximation algorithm that completely breaks math in order to be able to get as many mantissas unquantized, before. Remember, it's also a distortion of what a sin() would be, so it's guaranteed to be different and have a distinct sound, but this is somewhat arbitrary. I find it to be more dynamic than ordinary softclip, and I'm still working out the variations and what I might get out of it. Today it's this! Hope you like it :)"
+    "Not so long ago, I pushed and pulled the parameters of a sin() function (thing called a Taylor series expansion) to produce TapeHack, which is a softclip that uses the wrong values for a sin() softclip, to produce another softclip that feels more retro and vintage. But what if we did something weirder? Specifically, doing this requires that you divide by increasingly huge numbers. For a real sin() these are factorials (very huge indeed). For TapeHack, I doctored these until the shape of the softclip did exactly what I wanted. Remember how my BitShiftGain works? The ultra-clean gain change I can do (either internal to a plugin, or as the plugin of that name) because if you multiply or divide by exactly powers of 2, in any floating point format, it'll change the game without ever recalculating the 'mantissa' of the number. It only changes the 'exponent'. And if you don't change the mantissa… you never requantize. So you have literal perfect gain change that is totally and perfectly lossless within the entire range of the exponent… as long as you only change by 6.08 dB increments. A bit like the Monty Python skit where a man inherits miles of string, except due to bad planning it is in six inch lengths… But hey, if you're doing a Taylor series, the first stage's subtracted at 15.56 dB down. Then, 41.58 dB down. Then, 74.04 dB and so on. What if instead, -18 and -42 and -72 and -108 and -150 dB? Rather than the correct math, instead using whatever division will make sure the mantissa is exactly the same? And here we are. 'BitShiftGain' but five times over, inside a saturation algorithm, set up to be intentionally wrong but as if we're passing through the parts of the algorithm, losslessly. Except our notion of 'losslessly' is very much Airwindowsized and requires that we use the wrong dividers… except for that's how we have TapeHack. What happens? Try it and find out. I've never heard a sophisticated sine approximation algorithm that completely breaks math in order to be able to get as many mantissas unquantized, before. Remember, it's also a distortion of what a sin() would be, so it's guaranteed to be different and have a distinct sound, but this is somewhat arbitrary. I find it to be more dynamic than ordinary softclip, and I'm still working out the variations and what I might get out of it. Today it's this! Hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PurestSaturation final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pusa';
     float A;
     float B;
     uint32_t fpdL;
@@ -51,11 +55,10 @@ class PurestSaturation final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -105,24 +108,26 @@ class PurestSaturation final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

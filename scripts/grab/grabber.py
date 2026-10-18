@@ -15,19 +15,6 @@ def escape_cpp_string(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def first_matching_line_index(lines: list[str], match: str, line_rstrip=None) -> int:
-    for index, line in enumerate(lines):
-        if line_rstrip:
-            line = line.rstrip()
-        if match in line:
-            return index
-    raise GrabError(f"Could not find {match} in lines")
-
-
-def next_matching_line_index(lines: list[str], offset: int, match: str) -> int:
-    return first_matching_line_index(lines[offset:], match) + offset
-
-
 def naive_line_filter(lines: list[str]) -> list[str]:
     result = []
     ignore = {"{\n", "}\n", "\n"}
@@ -39,6 +26,22 @@ def naive_line_filter(lines: list[str]) -> list[str]:
                 and line.strip() != "":
             result.append(line)
     return result
+
+
+# Airwindopedia.txt still lists these under the names they shipped with;
+# upstream has since renamed their source directories.
+_SOURCE_DIR_ALIASES = {
+    "PointyGuitar": "PunchyGuitar",
+    "PointyDeluxe": "PunchyDeluxe",
+}
+
+# Plugins whose Airwindopedia.txt entry is headed by a different name than
+# the one its category list uses.
+_DESCRIPTION_TITLE_ALIASES = {
+    "C5RawChannel": "C5RawConsole",
+}
+
+UNCATEGORIZED = "uncategorized"
 
 
 def resolve_source_title(airwindows_root: Path, title: str) -> str:
@@ -105,23 +108,83 @@ def parse_categories(airwindopedia_path: Path) -> tuple[dict[str, str], dict[str
     return categories, categories_transpose
 
 
+def plugin_categories(airwindopedia_path: Path, airwindows_root: Path) -> dict[str, str]:
+    """Plugin title -> category for every plugin to generate: Airwindopedia's
+    categories, plus UNCATEGORIZED for each upstream source directory that
+    no Airwindopedia title (or alias) claims."""
+    categories, _ = parse_categories(airwindopedia_path)
+    claimed = {_SOURCE_DIR_ALIASES.get(t, t).replace(" ", "").casefold() for t in categories}
+    for entry in sorted(Path(airwindows_root).iterdir(), key=lambda e: e.name):
+        if entry.is_dir() and entry.name.casefold() not in claimed:
+            categories[entry.name] = UNCATEGORIZED
+    return categories
+
+
+def header_path(project_root: Path, title: str, category: str) -> Path:
+    return project_root / "include" / category / f"{title.replace(' ', '').lower()}.hpp"
+
+
+def existing_plugins_in_dirs(project_root: Path, categories: dict[str, str], source_dirs: set[str]) -> set[str]:
+    """Titles from `categories` that already have a header and whose upstream
+    source directory is one of `source_dirs`."""
+    wanted = {d.casefold() for d in source_dirs}
+    return {
+        title for title, category in categories.items()
+        if _SOURCE_DIR_ALIASES.get(title, title).replace(" ", "").casefold() in wanted
+        and header_path(project_root, title, category).exists()
+    }
+
+
 def find_missing_plugins(project_root: Path, categories: dict[str, str]) -> list[str]:
     """Plugin titles from `categories` that don't have a generated header yet."""
     missing = []
     for title, category in categories.items():
-        slug = title.replace(" ", "").lower()
-        output_path = project_root / "include" / category / f"{slug}.hpp"
-        if not output_path.exists():
+        if not header_path(project_root, title, category).exists():
             missing.append(title)
     return missing
 
 
 def num_to_alpha(num: int) -> str:
-    return str(chr(65 + num))
+    """Spreadsheet-style column letters: 0 -> A, 25 -> Z, 26 -> AA."""
+    letters = ""
+    num += 1
+    while num:
+        num, rem = divmod(num - 1, 26)
+        letters = chr(65 + rem) + letters
+    return letters
 
 
 def warning(plugin: str, error: str):
     print(f"{plugin} (warning): {error}")
+
+
+_SHADOW_WARNINGS_PUSH = """#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4458)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
+#endif
+"""
+
+_SHADOW_WARNINGS_POP = """#if defined(_MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+"""
+
+
+# A plugin namespace with one of these names (Floor) would hide the math
+# function from every plugin namespace in airwindohhs that calls it unqualified.
+_C_MATH_FUNCTIONS = {
+    "abs", "acos", "acosh", "asin", "asinh", "atan", "atan2", "atanh", "cbrt", "ceil", "copysign",
+    "cos", "cosh", "erf", "erfc", "exp", "exp2", "expm1", "fabs", "fdim", "floor", "fma", "fmax",
+    "fmin", "fmod", "frexp", "hypot", "ilogb", "ldexp", "lgamma", "llrint", "llround", "log",
+    "log10", "log1p", "log2", "logb", "lrint", "lround", "modf", "nan", "nearbyint", "nextafter",
+    "nexttoward", "pow", "remainder", "remquo", "rint", "round", "scalbln", "scalbn", "sin", "sinh",
+    "sqrt", "tan", "tanh", "tgamma", "trunc",
+}
 
 
 class Parameter:
@@ -141,24 +204,17 @@ class Parameter:
     """The slug-ified version of the parameter name"""
     default_value: float
     """The default parameter value"""
-    label: str
-    """The parameter label, often the units of the parameter"""
 
-    def __init__(self, variable: str, title: str, default_value: float, label: str, member: str = None):
+    def __init__(self, variable: str, title: str, default_value: float, member: str = None):
         self.variable = variable
         self.member = member if member is not None else variable
         self.enum_name = f"kParam{variable}"
         self.title = title
         self.slug = self._slug()
         self.default_value = default_value
-        self.label = label
 
     def _slug(self):
-        to_strip = {"-", "/", ""}
-        slug = self.title.lower()
-        for elem in to_strip:
-            slug.replace(elem, "")
-        return slug
+        return re.sub(r"[^a-z0-9]", "", self.title.lower())
 
 
 class Plugin:
@@ -175,27 +231,41 @@ class Plugin:
     initialization_code: str
     private_vars: str
     processing_code: str
+    set_parameter_code: str
+    display_code: str
+    label_code: str
     parameters: dict[str, Parameter]
 
     def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path, title: str,
                  category: str):
         self.project_root = project_root
         self.airwindopedia_path = airwindopedia_path
-        self.title = resolve_source_title(airwindows_root, title.replace(" ", ""))
+        listed_title = title.replace(" ", "")
+        if listed_title in _SOURCE_DIR_ALIASES:
+            source_title = resolve_source_title(airwindows_root, _SOURCE_DIR_ALIASES[listed_title])
+            self.title = listed_title
+        else:
+            source_title = resolve_source_title(airwindows_root, listed_title)
+            self.title = source_title
         self.slug = self.title.lower()
         self.category = category
-        self.short_description, self.long_description = self._init_descriptions()
+        self.short_description, self.long_description = self._init_descriptions(
+            _DESCRIPTION_TITLE_ALIASES.get(listed_title, listed_title))
 
-        self.source_dir = Path(os.path.join(airwindows_root, self.title))
+        self.source_dir = Path(os.path.join(airwindows_root, source_title))
         self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
 
         # deferred import: clang_extractor imports GrabError/naive_line_filter from this module
         from scripts.grab.clang_extractor import PluginAst
-        ast = PluginAst(self.source_dir, self.title)
+        ast = PluginAst(self.source_dir, source_title)
 
         self.initialization_code = ast.initialization_code()
         self.processing_code = ast.processing_code()
         self.private_vars = ast.private_vars()
+        self.set_parameter_code = ast.method_body("setParameter")
+        self.display_code = ast.method_body("getParameterDisplay")
+        self.label_code = ast.method_body("getParameterLabel")
+        self.shadows_members = ast.shadows_members()
         self.parameters = self._init_parameters(ast)
 
         injected, injected_names = ast.uninitialized_members()
@@ -207,7 +277,9 @@ class Plugin:
 
         # Only macros the emitted code references, so plugins that define but
         # never test them don't grow dead directives.
-        emitted = self.private_vars + self.initialization_code + self.processing_code
+        emitted = (self.private_vars + self.initialization_code + self.processing_code
+                   + self.set_parameter_code + self.display_code + self.label_code)
+        self.namespace = f"{self.slug}effect" if self.slug in _C_MATH_FUNCTIONS else self.slug
         self.macros = {
             name: line for name, line in ast.file_scope_macros().items()
             if re.search(rf"\b{re.escape(name)}\b", emitted)
@@ -219,7 +291,6 @@ class Plugin:
             return dict()
 
         name_map = ast.parameter_strings("getParameterName")
-        label_map = ast.parameter_strings("getParameterLabel")
         member_map = ast.parameter_members()
 
         result = dict()
@@ -231,40 +302,34 @@ class Plugin:
                 warning(self.title, "Could not find parameter name; using a default instead")
                 title = variable
 
-            label = label_map.get(variable)
-            if label is None:
-                warning(self.title, f"Could not find parameter label for {variable} -- using empty string")
-                label = ""
-
             member = member_map.get(variable)
             if member is None:
                 warning(self.title, f"Could not find member variable for {variable}; assuming it's named '{variable}'")
                 member = variable
 
             default_value = ast.default_value(member)
-            result[variable] = Parameter(variable, title, default_value, label, member=member)
+            result[variable] = Parameter(variable, title, default_value, member=member)
         return result
 
-    def _init_descriptions(self):
+    def _init_descriptions(self, description_title: str):
         with open(self.airwindopedia_path, "r") as f:
             lines = f.readlines()
 
-        try:
-            begin_index = first_matching_line_index(lines, f"# {self.title}")
-            next_index = next_matching_line_index(lines, begin_index + 1, "# ")
-            short_description = lines[begin_index].replace("#", "").strip()
-
-            chunk = lines[begin_index + 1:next_index]
-            chunk = [line.replace("\n", "") for line in chunk]
-            long_description = "".join(naive_line_filter(chunk))
-            return escape_cpp_string(short_description), escape_cpp_string(long_description)
-        except RuntimeError as e:
+        heading = re.compile(rf"^#+ {re.escape(description_title)}(?![\w-])", re.IGNORECASE)
+        begin_index = next((i for i, line in enumerate(lines) if heading.match(line)), None)
+        if begin_index is None:
             warning(self.title, "could not find descriptions; using empty strings")
             return "", ""
+        next_index = next((i for i in range(begin_index + 1, len(lines)) if lines[i].startswith("#")), len(lines))
+        short_description = lines[begin_index].replace("#", "").strip()
+
+        chunk = [line.replace("\n", "") for line in lines[begin_index + 1:next_index]]
+        long_description = " ".join(line.strip() for line in naive_line_filter(chunk))
+        return escape_cpp_string(short_description), escape_cpp_string(long_description)
 
     def _to_dict(self) -> dict:
         d = {
-            "namespace": self.slug,
+            "namespace": self.namespace,
             "short_description": self.short_description,
             "long_description": self.long_description,
             "tags": self.category,
@@ -277,13 +342,15 @@ class Plugin:
             "macro_undefs": ("\n" if self.macros else "") + "".join(f"#undef {name}\n" for name in self.macros),
             # param-specific:
             "param_enum": self._param_enum(),
-            "set_parameter_value_switch": self._param_set_value_switch(),
+            "set_parameter_value_body": self.set_parameter_code,
             "get_parameter_value_switch": self._param_get_value_switch(),
             "get_parameter_default_switch": self._param_default_switch(),
             "get_parameter_name_switch": self._param_name_switch(),
             "get_parameter_title_switch": self._param_title_switch(),
-            "get_parameter_display_switch": self._parameter_display_switch(),
-            "get_parameter_label_switch": self._parameter_label_switch(),
+            "get_parameter_display_body": self.display_code,
+            "get_parameter_label_body": self.label_code,
+            "shadow_warnings_push": _SHADOW_WARNINGS_PUSH if self.shadows_members else "",
+            "shadow_warnings_pop": _SHADOW_WARNINGS_POP if self.shadows_members else "",
         }
         return d
 
@@ -293,13 +360,6 @@ class Plugin:
             line = f"{param.enum_name} = {index},\n"
             lines.append(line)
         lines.append(f"kNumParameters = {len(self.parameters)}")
-        return "".join(lines)
-
-    def _param_set_value_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: {param.member} = value; break;\n"
-            lines.append(line)
         return "".join(lines)
 
     def _param_get_value_switch(self) -> str:
@@ -330,20 +390,6 @@ class Plugin:
             lines.append(line)
         return "".join(lines)
 
-    def _parameter_display_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return std::to_string({param.member}); break;\n"
-            lines.append(line)
-        return "".join(lines)
-
-    def _parameter_label_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return \"{escape_cpp_string(param.label)}\"; break;\n"
-            lines.append(line)
-        return "".join(lines)
-
     def write(self, project_root: Path, template_header: Path):
         with open(template_header, "r") as f:
             template = f.read()
@@ -368,7 +414,6 @@ class Grabber:
     _airwindopedia_path: Path
     _template_header_path: Path
     _categories: dict[str, str]
-    _categories_transpose: dict[str, list[str]]
 
     def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path,
                  plugin_filter: set[str] = None, category_filter: set[str] = None):
@@ -382,7 +427,7 @@ class Grabber:
 
         self._airwindopedia_path = airwindopedia_path
         self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
-        self._categories, self._categories_transpose = parse_categories(airwindopedia_path)
+        self._categories = plugin_categories(airwindopedia_path, airwindows_root)
         self._init_plugins(plugin_filter, category_filter)
 
     def _init_plugins(self, plugin_filter: set[str] = None, category_filter: set[str] = None):

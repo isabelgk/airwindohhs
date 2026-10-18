@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Dynamics2 is the compressor gate for new Console plugins!"
 };
 constexpr std::string_view k_long_description{
-    "Dynamics is the compressor/gate found in ConsoleX. Well, what's new in compression between last year and this year? BeziComp is what. BeziComp is out, and is my Bezier curve stuff as applied to a compressor. The curve is simply tracking the loudness of the signal and using it as control points.What's that do? It constructs a compression curve that can react VERY quickly, but doesn't follow the normal rules as far as such curves are concerned. It's a gain change with no aliasing because it can never change gain faster than the speed of the curve: it can never get caught on the edges of a waveform and induce artifacts, because it's generating a curve on the fly that can work up to high speed but never just abruptly change the gain causing a noise.My plugins Surge and SurgeTide are a bit like this, and just as free of artifact, but they can't compress in the normal sense, and this can… to some extent. You see, BeziComp is a little unpredictable. You can barely hear it until it's doing crazy things, and it's a striking compression style but not very familiar.So, Dynamics2 adds something else… a whole separate compression routine, also BeziComp, that runs slower. The first compression is run by the Attack control, and you can turn that up to respond extremely fast, or slow it down until attacks are easy to here. Then, the second compression's run by the Release control, and it's always slower than Attack is, and spreads out the response a little. My hope is that it responds more like people need, while retaining the transparency and bounciness BeziCompe can provide.And then, there's the Gate control. Its release speed is shared with the compressor's release speed, and it's a bit sensitive: if it's not kicking in, you might not have the release speed fast enough. The thing about it is, this is another Bezier-curve feature. So, it can snap off very quickly, but without providing a click on either gating or releasing gating.I've got more elaborate gates in store (there's this little thing called DeNoise that's coming out) and it's even possible this will see revision before new versions of Console come out, so this is a good place for feedback on whether this is working nicely for people. The whole engine runs on Bezier curves, so it has some characteristics that automatically beat its predecessor, Dynamics, but that's not to say I can't find ways to update it further.But on a recent livestream, at the end of the day, I asked what people wanted the coming weekend. And I immediately heard back, Dynamics2! And so it is: this week's plugin is a preview or prototype of what goes in ConsoleH, and in ConsoleX2.AU versions contain an extra 'Dynamics2Mono' version, which is coded N to N, meaning it will run pure mono, but also unlinked stereo and any larger number of channels you like (all the AU plugins with 'mono' in the name do this).Let me know how this works for you! There's time to fuss with it a little more, before it's 2026 and it gets built into Console systems!"
+    "Dynamics is the compressor/gate found in ConsoleX. Well, what's new in compression between last year and this year? BeziComp is what. BeziComp is out, and is my Bezier curve stuff as applied to a compressor. The curve is simply tracking the loudness of the signal and using it as control points. What's that do? It constructs a compression curve that can react VERY quickly, but doesn't follow the normal rules as far as such curves are concerned. It's a gain change with no aliasing because it can never change gain faster than the speed of the curve: it can never get caught on the edges of a waveform and induce artifacts, because it's generating a curve on the fly that can work up to high speed but never just abruptly change the gain causing a noise. My plugins Surge and SurgeTide are a bit like this, and just as free of artifact, but they can't compress in the normal sense, and this can… to some extent. You see, BeziComp is a little unpredictable. You can barely hear it until it's doing crazy things, and it's a striking compression style but not very familiar. So, Dynamics2 adds something else… a whole separate compression routine, also BeziComp, that runs slower. The first compression is run by the Attack control, and you can turn that up to respond extremely fast, or slow it down until attacks are easy to here. Then, the second compression's run by the Release control, and it's always slower than Attack is, and spreads out the response a little. My hope is that it responds more like people need, while retaining the transparency and bounciness BeziCompe can provide. And then, there's the Gate control. Its release speed is shared with the compressor's release speed, and it's a bit sensitive: if it's not kicking in, you might not have the release speed fast enough. The thing about it is, this is another Bezier-curve feature. So, it can snap off very quickly, but without providing a click on either gating or releasing gating. I've got more elaborate gates in store (there's this little thing called DeNoise that's coming out) and it's even possible this will see revision before new versions of Console come out, so this is a good place for feedback on whether this is working nicely for people. The whole engine runs on Bezier curves, so it has some characteristics that automatically beat its predecessor, Dynamics, but that's not to say I can't find ways to update it further. But on a recent livestream, at the end of the day, I asked what people wanted the coming weekend. And I immediately heard back, Dynamics2! And so it is: this week's plugin is a preview or prototype of what goes in ConsoleH, and in ConsoleX2. AU versions contain an extra 'Dynamics2Mono' version, which is coded N to N, meaning it will run pure mono, but also unlinked stereo and any larger number of channels you like (all the AU plugins with 'mono' in the name do this). Let me know how this works for you! There's time to fuss with it a little more, before it's 2026 and it gets built into Console systems!"
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Dynamics2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'dyn2';
     float A;
     float B;
     float C;
@@ -86,13 +90,12 @@ class Dynamics2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -150,28 +153,30 @@ class Dynamics2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "CrunchyGrooveWear is a version of GrooveWear for more edge and distortion."
 };
 constexpr std::string_view k_long_description{
-    "GrooveWear began as a feature on ToVinyl. It defaulted to ‘on a tiny bit’ and gave a slight treble lift and sculpting of the highs, following its working principle: averaging/smoothing the rate of change of the signal, something that’s not normally present in audio processing. This would cause the output to try and ‘keep going’ at the speed it was moving, like a phono cartridge needle that had weight and inertia.The thing is, it was also implemented with a bug (or possibly just an unwitting choice). It’d overshoot, and bring on a kind of treble zing that was distorted and didn’t always work for everybody. When I split this feature out into a dedicated plugin, GrooveWear, I found out through trying to incorporate a dry/wet control that I could apply half the effect and then the ‘groove wear’ wouldn’t overshoot. And it produced a treble-eroding plugin with a different operating principle than normal EQs, with the same ‘glue’ effect but none of the tizz or distortion. And that’s GrooveWear, and I considered it a good bugfix and came up with a way to run the dry/wet control in four stages so you could have the new ‘glue’ over an even wider frequency range, from a ‘purest’ one stage to twice the intensity of the original thing in ToVinyl. I still see that as the ‘groove wear’ to have, for realistically getting a ‘vinyl warmth’ effect, and I stand by that version.And yet… some folks missed the zing. So, this is for them.I’ve experimented and I think this is the optimal algorithm for doing that original ‘energy boost’ up top, except now you can apply it, too, at a wider range, and you can also get up to four stages of the effect. Adjusting the dry/wet will dial in a wide range of tones because of the way the effect kicks in (halfway engaged stages give that treble-eroded quality, so the effect is most striking at 0.25, 0.5, 0.75, and 1.0). And if you fully crank it out, you can get a really intense sort of treble hype that’s not like traditional EQs. It’s more exciter-like, and has no pre-echo even though it seems like it’s a very high Q filter with lots of resonance. It’s crunchy and adds zing and character and if you’re actually seeking fake zip of an interesting color, CrunchyGrooveWear has lots of potential. Remember, if you’re looking for the most extreme crunch, use 0.25, 0.5, 0.75 or 1.0 as intermediate settings actively take highs away again (GrooveWear functions linearly so it doesn’t have this behavior). But you’ve got the full range of adjustments, because sometimes it’s nice to let a plugin into the wild that’s extremely weird and untame. This one’s born to be a secret weapon because it’s strange and unpredictable."
+    "GrooveWear began as a feature on ToVinyl. It defaulted to ‘on a tiny bit’ and gave a slight treble lift and sculpting of the highs, following its working principle: averaging/smoothing the rate of change of the signal, something that’s not normally present in audio processing. This would cause the output to try and ‘keep going’ at the speed it was moving, like a phono cartridge needle that had weight and inertia. The thing is, it was also implemented with a bug (or possibly just an unwitting choice). It’d overshoot, and bring on a kind of treble zing that was distorted and didn’t always work for everybody. When I split this feature out into a dedicated plugin, GrooveWear, I found out through trying to incorporate a dry/wet control that I could apply half the effect and then the ‘groove wear’ wouldn’t overshoot. And it produced a treble-eroding plugin with a different operating principle than normal EQs, with the same ‘glue’ effect but none of the tizz or distortion. And that’s GrooveWear, and I considered it a good bugfix and came up with a way to run the dry/wet control in four stages so you could have the new ‘glue’ over an even wider frequency range, from a ‘purest’ one stage to twice the intensity of the original thing in ToVinyl. I still see that as the ‘groove wear’ to have, for realistically getting a ‘vinyl warmth’ effect, and I stand by that version. And yet… some folks missed the zing. So, this is for them. I’ve experimented and I think this is the optimal algorithm for doing that original ‘energy boost’ up top, except now you can apply it, too, at a wider range, and you can also get up to four stages of the effect. Adjusting the dry/wet will dial in a wide range of tones because of the way the effect kicks in (halfway engaged stages give that treble-eroded quality, so the effect is most striking at 0.25, 0.5, 0.75, and 1.0). And if you fully crank it out, you can get a really intense sort of treble hype that’s not like traditional EQs. It’s more exciter-like, and has no pre-echo even though it seems like it’s a very high Q filter with lots of resonance. It’s crunchy and adds zing and character and if you’re actually seeking fake zip of an interesting color, CrunchyGrooveWear has lots of potential. Remember, if you’re looking for the most extreme crunch, use 0.25, 0.5, 0.75 or 1.0 as intermediate settings actively take highs away again (GrooveWear functions linearly so it doesn’t have this behavior). But you’ve got the full range of adjustments, because sometimes it’s nice to let a plugin into the wild that’s extremely weird and untame. This one’s born to be a secret weapon because it’s strange and unpredictable."
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class CrunchyGrooveWear final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cgrv';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -87,19 +91,16 @@ class CrunchyGrooveWear final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -110,8 +111,7 @@ class CrunchyGrooveWear final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.064; break;
             case kParamB: return 1.0; break;
 
@@ -122,8 +122,7 @@ class CrunchyGrooveWear final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "freq"; break;
             case kParamB: return "apply"; break;
 
@@ -134,8 +133,7 @@ class CrunchyGrooveWear final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Freq"; break;
             case kParamB: return "Apply"; break;
 
@@ -146,26 +144,26 @@ class CrunchyGrooveWear final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -410,8 +408,7 @@ class CrunchyGrooveWear final : public Effect<T>
         double drySampleR;
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

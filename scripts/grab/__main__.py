@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from scripts.grab.grabber import Grabber, find_missing_plugins, parse_categories
-from scripts.grab.source_fetch import UpstreamSource, VersionPin, read_version_pin, write_version_pin
+from scripts.grab.grabber import Grabber, existing_plugins_in_dirs, find_missing_plugins, plugin_categories
+from scripts.grab.source_fetch import UpstreamSource, VersionPin, changed_plugin_dirs, read_version_pin, write_version_pin
 
 
 def parse_args(argv=None) -> argparse.Namespace:
@@ -51,6 +51,11 @@ def parse_args(argv=None) -> argparse.Namespace:
         help="Only write airwindows-version.txt (with --update-pin) and exit, without "
              "generating any plugins.",
     )
+    parser.add_argument(
+        "--refresh-changed", action="store_true",
+        help="Only regenerate existing headers whose upstream source directory changed between "
+             "the ref pinned in airwindows-version.txt and the fetched ref.",
+    )
     args = parser.parse_args(argv)
 
     if args.update_pin and not args.airwindows_ref:
@@ -65,6 +70,8 @@ def parse_args(argv=None) -> argparse.Namespace:
         parser.error("--list-missing can't be used with --plugin")
     if args.pin_only and (args.plugin or args.category):
         parser.error("--pin-only can't be used with --plugin or --category")
+    if args.refresh_changed and (args.plugin or args.list_missing or args.pin_only):
+        parser.error("--refresh-changed can't be used with --plugin, --list-missing or --pin-only")
 
     return args
 
@@ -85,10 +92,11 @@ def main(argv=None):
     project_root = args.project_root.resolve()
     version_file = project_root / "airwindows-version.txt"
 
+    old_pin = read_version_pin(version_file)
     source, resolved_pin = resolve_source(args, version_file)
     try:
         if args.list_missing:
-            categories, _ = parse_categories(source.airwindopedia_path)
+            categories = plugin_categories(source.airwindopedia_path, source.plugin_source_dir)
             category_filter = set(args.category) if args.category else None
             if category_filter:
                 categories = {p: c for p, c in categories.items() if c in category_filter}
@@ -101,6 +109,15 @@ def main(argv=None):
             return
 
         plugin_filter = set(args.plugin) if args.plugin else None
+        if args.refresh_changed:
+            categories = plugin_categories(source.airwindopedia_path, source.plugin_source_dir)
+            changed = changed_plugin_dirs(source.root, old_pin.ref)
+            plugin_filter = existing_plugins_in_dirs(project_root, categories, changed)
+            print(f"upstream changed {len(changed)} plugin dirs; refreshing {len(plugin_filter)} existing headers")
+            if not plugin_filter:
+                if args.update_pin:
+                    write_version_pin(version_file, resolved_pin)
+                return
         category_filter = set(args.category) if args.category else None
         Grabber(project_root, source.plugin_source_dir, source.airwindopedia_path, plugin_filter, category_filter)
 

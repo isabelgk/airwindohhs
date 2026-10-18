@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Monitoring is your one-stop shop for final 2-buss work!"
 };
 constexpr std::string_view k_long_description{
-    "Here’s your final plugin on the buss. This is one of those weeks where a lot of work comes together into a final shape. In a single plugin, you’ve got a pile of usefulness that you won’t have seen in one place before.You’ve got Not Just Another Dither (24 AND 16 bit). The 24 bit is also used to make your DAC sound better on the other monitoring options (even if you have 32 bit DACs, it’ll still bring a subliminal naturalness from the Benford Realness calculations). You’ve got PeaksOnly back again, but also SlewOnly and SubsOnly: switch between them and if anything is either out of control or missing in action through these extreme monitoring situations, you know what to do.You’ve got utilities like Mono and Side, for a quick mono check. If you split ’em to stems and then sum them, you ought to get the original signal back again so that’s a handy tool you’ll already be used to. But you’ve also got three new things, Vinyl, Aurat and Phone. This is where the ‘ultra-broad bandpass’ stuff went! It was too vanilla to work as a ‘Interstage’ killer, but the Airwindows biquad bandpass turns out to be ideally suited to test monitoring, where you want the bandwidth very limited but without sounding unusual or vibey about it. Vinyl just barely rolls off the extremes in the manner of traditional lathe electronics, which routinely discard stuff that CDs include. Aurat is a narrower band, like the output of those little one-driver mix check speakers: you can get a decent sense of that voicing, as if your speakers were made that way, without a lot of fake modeling or convolution to muddy things up. And Phone, well… Same, but if it was a cellphone.Update - Aurat now has mono-summed versions that come out of either the left or right speaker, so you can get a true mono grot-box single speaker mix check even if you don’t have one-Phone’s now mono (no special single-speaker tricks, it’s more an afterthought but sure enough, you don’t normally get stereo cellphones)But then you’ve got the crown jewel of Monitoring… Cans A and B. Airwindows Crossfeed for headphones! This isn’t an exact clone of anyone else’s product, this is MY take on what you need. It uses allpasses from PeaksOnly to blur and extend stereo content, first as a slightly delayed/smeared crossfeed, and then back again with a longer allpass to fill in some space. This does two things. It localizes stereo, but it also hints at the kind of information PeaksOnly gives you, so the Cans options both make listening easier, and mixing easier! Cans A is very subtle, much closer to the raw mix you’re working on, but with enough cues to orient you if you’re paying attention. Cans B is much more obvious, and is a good late-night check for if you’re getting fatigued: it’s a lot more blurry and ambient and narrowed, but it takes peak information that could get by you, and makes it obvious like a mini PeaksOnly. It feels like listening to the music off a stage, and presents everything you’ll need. And both of them use Console5 technology, Airwindows allpasses (as found in MV) and all gain operations inside them are done using BitShiftGain. So these monitoring options, whether subtle or plain, are set up to be the highest-fidelity monitoring options you’ll find.Also, TWO new Cans algorithms, Cans C and Cans D.Cans C is just ‘stronger, but basically still normal’, as requested. Cans D is something else again. It’s for really messing up the stereo, like when someone wanted to listen to old Beatles tracks and ‘fix’ the weird dual-mono mix (which I don’t normally approve of). But, since it uses SUCH a strong allpass stereo crossfeed, what you get has also got some characteristics of Peaks, without the exaggerations. So, if you can’t work with Peaks or find it disorienting, there’s a new ‘headphones energy redistributor’ in town and this one attacks exaggerated stereo too. Try it out and see what you think!"
+    "Here’s your final plugin on the buss. This is one of those weeks where a lot of work comes together into a final shape. In a single plugin, you’ve got a pile of usefulness that you won’t have seen in one place before. You’ve got Not Just Another Dither (24 AND 16 bit). The 24 bit is also used to make your DAC sound better on the other monitoring options (even if you have 32 bit DACs, it’ll still bring a subliminal naturalness from the Benford Realness calculations). You’ve got PeaksOnly back again, but also SlewOnly and SubsOnly: switch between them and if anything is either out of control or missing in action through these extreme monitoring situations, you know what to do. You’ve got utilities like Mono and Side, for a quick mono check. If you split ’em to stems and then sum them, you ought to get the original signal back again so that’s a handy tool you’ll already be used to. But you’ve also got three new things, Vinyl, Aurat and Phone. This is where the ‘ultra-broad bandpass’ stuff went! It was too vanilla to work as a ‘Interstage’ killer, but the Airwindows biquad bandpass turns out to be ideally suited to test monitoring, where you want the bandwidth very limited but without sounding unusual or vibey about it. Vinyl just barely rolls off the extremes in the manner of traditional lathe electronics, which routinely discard stuff that CDs include. Aurat is a narrower band, like the output of those little one-driver mix check speakers: you can get a decent sense of that voicing, as if your speakers were made that way, without a lot of fake modeling or convolution to muddy things up. And Phone, well… Same, but if it was a cellphone. Update - Aurat now has mono-summed versions that come out of either the left or right speaker, so you can get a true mono grot-box single speaker mix check even if you don’t have one -Phone’s now mono (no special single-speaker tricks, it’s more an afterthought but sure enough, you don’t normally get stereo cellphones) But then you’ve got the crown jewel of Monitoring… Cans A and B. Airwindows Crossfeed for headphones! This isn’t an exact clone of anyone else’s product, this is MY take on what you need. It uses allpasses from PeaksOnly to blur and extend stereo content, first as a slightly delayed/smeared crossfeed, and then back again with a longer allpass to fill in some space. This does two things. It localizes stereo, but it also hints at the kind of information PeaksOnly gives you, so the Cans options both make listening easier, and mixing easier! Cans A is very subtle, much closer to the raw mix you’re working on, but with enough cues to orient you if you’re paying attention. Cans B is much more obvious, and is a good late-night check for if you’re getting fatigued: it’s a lot more blurry and ambient and narrowed, but it takes peak information that could get by you, and makes it obvious like a mini PeaksOnly. It feels like listening to the music off a stage, and presents everything you’ll need. And both of them use Console5 technology, Airwindows allpasses (as found in MV) and all gain operations inside them are done using BitShiftGain. So these monitoring options, whether subtle or plain, are set up to be the highest-fidelity monitoring options you’ll find. Also, TWO new Cans algorithms, Cans C and Cans D. Cans C is just ‘stronger, but basically still normal’, as requested. Cans D is something else again. It’s for really messing up the stereo, like when someone wanted to listen to old Beatles tracks and ‘fix’ the weird dual-mono mix (which I don’t normally approve of). But, since it uses SUCH a strong allpass stereo crossfeed, what you get has also got some characteristics of Peaks, without the exaggerations. So, if you can’t work with Peaks or find it disorienting, there’s a new ‘headphones energy redistributor’ in town and this one attacks exaggerated stereo too. Try it out and see what you think!"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Monitoring final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'moni';
     double bynL[13], bynR[13];
     double noiseShapingL, noiseShapingR;
     // NJAD
@@ -172,18 +176,15 @@ class Monitoring final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -193,8 +194,7 @@ class Monitoring final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -204,8 +204,7 @@ class Monitoring final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "monitor"; break;
 
             default: break;
@@ -215,8 +214,7 @@ class Monitoring final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Monitor"; break;
 
             default: break;
@@ -226,24 +224,46 @@ class Monitoring final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 16.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Out24", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Out16", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Peaks", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Slew", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Subs", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Mono", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "Side", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "Vinyl", kVstMaxParamStrLen); break;
+                    case 8: vst_strncpy(text, "Aurat", kVstMaxParamStrLen); break;
+                    case 9: vst_strncpy(text, "MonoRat", kVstMaxParamStrLen); break;
+                    case 10: vst_strncpy(text, "MonoLat", kVstMaxParamStrLen); break;
+                    case 11: vst_strncpy(text, "Phone", kVstMaxParamStrLen); break;
+                    case 12: vst_strncpy(text, "Cans A", kVstMaxParamStrLen); break;
+                    case 13: vst_strncpy(text, "Cans B", kVstMaxParamStrLen); break;
+                    case 14: vst_strncpy(text, "Cans C", kVstMaxParamStrLen); break;
+                    case 15: vst_strncpy(text, "Cans D", kVstMaxParamStrLen); break;
+                    case 16: vst_strncpy(text, "V Trick", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -297,8 +317,7 @@ class Monitoring final : public Effect<T>
         biquadR[5] = 2.0 * (K * K - 1.0) * norm;
         biquadR[6] = (1.0 - K / biquadR[1] + K * K) * norm;
         // for Bandpasses
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -307,8 +326,7 @@ class Monitoring final : public Effect<T>
             if (fabs(inputSampleR) < 1.18e-23) {
                 inputSampleR = fpdR * 1.18e-17;
             }
-            switch (processing)
-            {
+            switch (processing) {
                 case 0:
                 case 1:
                     break;
@@ -1159,7 +1177,7 @@ class Monitoring final : public Effect<T>
                     // a darkened Midiverb-style allpass, which is stretching the previous one even more
                     inputSampleL *= 0.25;
                     inputSampleR *= 0.25;
-                    // for all versions of Cans the second level of bloom is this far down
+                    // for all versions of Cans the second level of bloom is this farVal down
                     // and, remains on the opposite speaker rather than crossing again to the original side
                     drySampleL += inputSampleR;
                     drySampleR += inputSampleL; // add the crossfeed and very faint extra verbyness
@@ -1228,8 +1246,7 @@ class Monitoring final : public Effect<T>
             // hotbin becomes the Benford bin value for this number floored
             double totalA;
             totalA = 0;
-            if ((hotbinA > 0) && (hotbinA < 10))
-            {
+            if ((hotbinA > 0) && (hotbinA < 10)) {
                 bynL[hotbinA] += 1;
                 if (bynL[hotbinA] > 982) {
                     cutbinsL = true;
@@ -1261,8 +1278,7 @@ class Monitoring final : public Effect<T>
             // hotbin becomes the Benford bin value for this number ceiled
             double totalB;
             totalB = 0;
-            if ((hotbinB > 0) && (hotbinB < 10))
-            {
+            if ((hotbinB > 0) && (hotbinB < 10)) {
                 bynL[hotbinB] += 1;
                 if (bynL[hotbinB] > 982) {
                     cutbinsL = true;
@@ -1336,8 +1352,7 @@ class Monitoring final : public Effect<T>
             hotbinA = floor(benfordize);
             // hotbin becomes the Benford bin value for this number floored
             totalA = 0;
-            if ((hotbinA > 0) && (hotbinA < 10))
-            {
+            if ((hotbinA > 0) && (hotbinA < 10)) {
                 bynR[hotbinA] += 1;
                 if (bynR[hotbinA] > 982) {
                     cutbinsR = true;
@@ -1367,8 +1382,7 @@ class Monitoring final : public Effect<T>
             hotbinB = floor(benfordize);
             // hotbin becomes the Benford bin value for this number ceiled
             totalB = 0;
-            if ((hotbinB > 0) && (hotbinB < 10))
-            {
+            if ((hotbinB > 0) && (hotbinB < 10)) {
                 bynR[hotbinB] += 1;
                 if (bynR[hotbinB] > 982) {
                     cutbinsR = true;

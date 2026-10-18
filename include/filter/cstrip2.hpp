@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "CStrip2 refines and optimizes CStrip, by request!"
 };
 constexpr std::string_view k_long_description{
-    "It's been a while since we've seen an Airwindows channel strip! Here's why CStrip2 is here.First, I was asked to do it. Specifically, I was asked to take the delay-trim and gate out of CStrip, and also to replace the highpass and lowpass with Capacitor, and keep the compressor exactly as it is, and also could I put a saturation effect on the end? That sort of thing doesn't always click with me, but hang on a moment, there's more.Second, we've got an Airwindows port to VCV Rack (which might expand to a CLAP, or more, along the same lines) but it's limited to ten controls. There are only two Airwindows plugins with more than ten controls. One is Pafnuty (which would be well suited to Rack or Rack-like environments). The other… is CStrip.Or WAS, because CStrip2 is here!There are also related things. It seems to me the EQ technique I use might fit in future versions of Console that include built-in EQ, and model famous recording desks, especially old ones. That's not to say the CStrip EQ is designed to do that, because it's not: but it covers some interesting bases, like saturating boosts to bring them forward and unsaturating cuts to drop them back, and the relatively shallow slopes lend themselves to fixed-frequency built in EQ bands. There are classic desk topologies where the channels and busses have idiosyncratic choices for the EQ bands, and to model that would tend to bring outputs into the realms of classic albums done on those desks. I've got more Console summing algorithms in the works to support this exploration.Oh, and that output saturation goes like this: 0 to 1/3 is dry signal, 1/3 to 2/3 crossfades into Spiral like it is on the plugin Channel (versions 7, 8 and 9 have this) and 2/3 to 1 crossfades into the Density algorithm for maximum fatness and drive. This is probably going to be fun for people to play with, or leave it below 1/3 if you want clean output.That's CStrip2! I hope you like it :)"
+    "It's been a while since we've seen an Airwindows channel strip! Here's why CStrip2 is here. First, I was asked to do it. Specifically, I was asked to take the delay-trim and gate out of CStrip, and also to replace the highpass and lowpass with Capacitor, and keep the compressor exactly as it is, and also could I put a saturation effect on the end? That sort of thing doesn't always click with me, but hang on a moment, there's more. Second, we've got an Airwindows port to VCV Rack (which might expand to a CLAP, or more, along the same lines) but it's limited to ten controls. There are only two Airwindows plugins with more than ten controls. One is Pafnuty (which would be well suited to Rack or Rack-like environments). The other… is CStrip. Or WAS, because CStrip2 is here! There are also related things. It seems to me the EQ technique I use might fit in future versions of Console that include built-in EQ, and model famous recording desks, especially old ones. That's not to say the CStrip EQ is designed to do that, because it's not: but it covers some interesting bases, like saturating boosts to bring them forward and unsaturating cuts to drop them back, and the relatively shallow slopes lend themselves to fixed-frequency built in EQ bands. There are classic desk topologies where the channels and busses have idiosyncratic choices for the EQ bands, and to model that would tend to bring outputs into the realms of classic albums done on those desks. I've got more Console summing algorithms in the works to support this exploration. Oh, and that output saturation goes like this: 0 to 1/3 is dry signal, 1/3 to 2/3 crossfades into Spiral like it is on the plugin Channel (versions 7, 8 and 9 have this) and 2/3 to 1 crossfades into the Density algorithm for maximum fatness and drive. This is probably going to be fun for people to play with, or leave it below 1/3 if you want clean output. That's CStrip2! I hope you like it :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class CStrip2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cst2';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -247,8 +251,7 @@ class CStrip2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -259,15 +262,13 @@ class CStrip2 final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -286,8 +287,7 @@ class CStrip2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -306,8 +306,7 @@ class CStrip2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "treble"; break;
             case kParamB: return "mid"; break;
             case kParamC: return "bass"; break;
@@ -326,8 +325,7 @@ class CStrip2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Treble"; break;
             case kParamB: return "Mid"; break;
             case kParamC: return "Bass"; break;
@@ -346,42 +344,42 @@ class CStrip2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 24.0) - 12.0, text, kVstMaxParamStrLen); break; // Treble -12 to 12
+            case kParamB: float2string((B * 24.0) - 12.0, text, kVstMaxParamStrLen); break; // Mid -12 to 12
+            case kParamC: float2string((C * 24.0) - 12.0, text, kVstMaxParamStrLen); break; // Bass -12 to 12
+            case kParamD: float2string((D * D * 15.0) + 1.0, text, kVstMaxParamStrLen); break; // Lowpass 16.0K log 1 to 16 defaulting to 16K
+            case kParamE: float2string((E * E * 1570.0) + 30.0, text, kVstMaxParamStrLen); break; // TrebFrq 6.0 log 1 to 16 defaulting to 6K
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break; // BassFrq 100.0 log 30 to 1600 defaulting to 100 hz
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break; // Hipass 30.0 log 30 to 1600 defaulting to 30
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break; // Gate 0-1
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break; // Compres 0-1
+            case kParamJ: float2string(J, text, kVstMaxParamStrLen); break; // CompSpd 0-1
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return "dB"; break;
-            case kParamC: return "dB"; break;
-            case kParamD: return "Khz"; break;
-            case kParamE: return "hz"; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-            case kParamJ: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "Khz", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -468,8 +466,7 @@ class CStrip2 final : public Effect<T>
         if (phattity < 0.0) {
             phattity = 0.0;
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -478,14 +475,12 @@ class CStrip2 final : public Effect<T>
             if (fabs(inputSampleR) < 1.18e-23) {
                 inputSampleR = fpdR * 1.18e-17;
             }
-            if (engageCapacitor)
-            {
+            if (engageCapacitor) {
                 count++;
                 if (count > 5) {
                     count = 0;
                 }
-                switch (count)
-                {
+                switch (count) {
                     case 0:
                         iirHighpassAL = (iirHighpassAL * (1.0 - highpassAmount)) + (inputSampleL * highpassAmount);
                         inputSampleL -= iirHighpassAL;
@@ -647,8 +642,7 @@ class CStrip2 final : public Effect<T>
                 // steepens the filter after minimizing artifacts.
             }
             // begin compressor
-            if (engageComp)
-            {
+            if (engageComp) {
                 flip = !flip;
                 // begin L
                 inputSampleL *= inputgain;
@@ -680,39 +674,31 @@ class CStrip2 final : public Effect<T>
                 calcneg = pow((1.0 / targetnegL), 2);
                 // now we have mirrored targets for comp
                 // outputpos and outputneg go from 0 to 1
-                if (inputSampleL > 0)
-                { // working on pos
-                    if (true == flip)
-                    {
+                if (inputSampleL > 0) { // working on pos
+                    if (true == flip) {
                         controlAposL *= divisor;
                         controlAposL += (calcpos * remainder);
                     }
-                    else
-                    {
+                    else {
                         controlBposL *= divisor;
                         controlBposL += (calcpos * remainder);
                     }
                 }
-                else
-                { // working on neg
-                    if (true == flip)
-                    {
+                else { // working on neg
+                    if (true == flip) {
                         controlAnegL *= divisor;
                         controlAnegL += (calcneg * remainder);
                     }
-                    else
-                    {
+                    else {
                         controlBnegL *= divisor;
                         controlBnegL += (calcneg * remainder);
                     }
                 }
                 // this causes each of the four to update only when active and in the correct 'flip'
-                if (true == flip)
-                {
+                if (true == flip) {
                     totalmultiplier = (controlAposL * outputpos) + (controlAnegL * outputneg);
                 }
-                else
-                {
+                else {
                     totalmultiplier = (controlBposL * outputpos) + (controlBnegL * outputneg);
                 }
                 // this combines the sides according to flip, blending relative to the input value
@@ -749,39 +735,31 @@ class CStrip2 final : public Effect<T>
                 calcneg = pow((1.0 / targetnegR), 2);
                 // now we have mirrored targets for comp
                 // outputpos and outputneg go from 0 to 1
-                if (inputSampleR > 0)
-                { // working on pos
-                    if (true == flip)
-                    {
+                if (inputSampleR > 0) { // working on pos
+                    if (true == flip) {
                         controlAposR *= divisor;
                         controlAposR += (calcpos * remainder);
                     }
-                    else
-                    {
+                    else {
                         controlBposR *= divisor;
                         controlBposR += (calcpos * remainder);
                     }
                 }
-                else
-                { // working on neg
-                    if (true == flip)
-                    {
+                else { // working on neg
+                    if (true == flip) {
                         controlAnegR *= divisor;
                         controlAnegR += (calcneg * remainder);
                     }
-                    else
-                    {
+                    else {
                         controlBnegR *= divisor;
                         controlBnegR += (calcneg * remainder);
                     }
                 }
                 // this causes each of the four to update only when active and in the correct 'flip'
-                if (true == flip)
-                {
+                if (true == flip) {
                     totalmultiplier = (controlAposR * outputpos) + (controlAnegR * outputneg);
                 }
-                else
-                {
+                else {
                     totalmultiplier = (controlBposR * outputpos) + (controlBnegR * outputneg);
                 }
                 // this combines the sides according to flip, blending relative to the input value
@@ -791,8 +769,7 @@ class CStrip2 final : public Effect<T>
             }
             // end compressor
             // begin EQ
-            if (engageEQ)
-            {
+            if (engageEQ) {
                 last2SampleL = lastSampleL;
                 lastSampleL = inputSampleL;
                 last2SampleR = lastSampleR;
@@ -801,8 +778,7 @@ class CStrip2 final : public Effect<T>
                 if (flipthree < 1 || flipthree > 3) {
                     flipthree = 1;
                 }
-                switch (flipthree)
-                {
+                switch (flipthree) {
                     case 1:
                         tripletFactorL = last2SampleL - inputSampleL;
                         tripletLA += tripletFactorL;
@@ -866,8 +842,7 @@ class CStrip2 final : public Effect<T>
                 tripletRB /= 2.0;
                 tripletRC /= 2.0;
                 highSampleR = highSampleR + tripletFactorR;
-                if (flip)
-                {
+                if (flip) {
                     iirHighSampleLA = (iirHighSampleLA * (1.0 - iirAmountA)) + (highSampleL * iirAmountA);
                     highSampleL -= iirHighSampleLA;
                     iirLowSampleLA = (iirLowSampleLA * (1.0 - iirAmountB)) + (bassSampleL * iirAmountB);
@@ -877,8 +852,7 @@ class CStrip2 final : public Effect<T>
                     iirLowSampleRA = (iirLowSampleRA * (1.0 - iirAmountB)) + (bassSampleR * iirAmountB);
                     bassSampleR = iirLowSampleRA;
                 }
-                else
-                {
+                else {
                     iirHighSampleLB = (iirHighSampleLB * (1.0 - iirAmountA)) + (highSampleL * iirAmountA);
                     highSampleL -= iirHighSampleLB;
                     iirLowSampleLB = (iirLowSampleLB * (1.0 - iirAmountB)) + (bassSampleL * iirAmountB);

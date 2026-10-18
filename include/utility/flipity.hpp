@@ -1,5 +1,6 @@
 #pragma once
 #include "effect.hpp"
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 
@@ -10,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Flipity is a channel phase flipper/swapper utility."
 };
 constexpr std::string_view k_long_description{
-    "This is per a request. Someone asked for a plugin to flip the phase of the left channel :) well, how about flip the phase of the left or the right channel? Or the phase of the left AND the right channel? Or swap the channels, L for R, R for L? Or, swap the channels and then flip the phase of what is now the left channel? Or swap the channels and then flip the phase of what is now the right channel? Or flip both?That's Flipity. Utility plugin that apparently isn't available on some DAWs. Fair enough then :)"
+    "This is per a request. Someone asked for a plugin to flip the phase of the left channel :) well, how about flip the phase of the left or the right channel? Or the phase of the left AND the right channel? Or swap the channels, L for R, R for L? Or, swap the channels and then flip the phase of what is now the left channel? Or swap the channels and then flip the phase of what is now the right channel? Or flip both? That's Flipity. Utility plugin that apparently isn't available on some DAWs. Fair enough then :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -19,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Flipity final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'fpty';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -47,18 +52,15 @@ class Flipity final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -68,8 +70,7 @@ class Flipity final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -79,8 +80,7 @@ class Flipity final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "flipity"; break;
 
             default: break;
@@ -90,8 +90,7 @@ class Flipity final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Flipity"; break;
 
             default: break;
@@ -101,24 +100,37 @@ class Flipity final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 7.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Dry", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Flip L", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "Flip R", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "Flip LR", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "Swap LR", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Swip L", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "Swip R", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "Swip LR", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // E as example 'popup' parameter with four values
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -137,13 +149,11 @@ class Flipity final : public Effect<T>
         static const int kSwipL = 5;
         static const int kSwipR = 6;
         static const int kSwipLR = 7;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             double temp;
-            switch (flipity)
-            {
+            switch (flipity) {
                 case kDry:
                     break;
                 case kFlipL:

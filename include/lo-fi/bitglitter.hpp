@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BitGlitter is an old-sampler style digital lo-fi plugin."
 };
 constexpr std::string_view k_long_description{
-    "DeRez is the simpler, purer bit and frequency crusher, and is still the best ‘analog setting’ bitcrusher (because it lets you use floating-point or fractional frequency and bit crushes). It’s a very pure example of those things and you can make it gate with a touch of DC offset from DC Voltage, and it’s even got a touch of grit softening when it frequency crushes to improve its tone.BitGlitter, however, isn’t DeRez. BitGlitter’s something a lot more sophisticated: a kind of sampler emulator. At every stage it’s designed not for bitcrush alone, but to get the particular tonalities you can get out of primitive old samplers. An earlier attempt intentionally went after the old Akai sound, but currently BitGlitter has no specific model. It’s just there to dial in a kind of punchy grit that will make beats sit well against other elements: the video demonstates this.Now, I know there are people who get mad when I make plugins like these. They say, ‘stop making the sound worse!’ and I understand what they mean, but sorry, I won’t stop because I know there are elements to certain ‘bad’ sounds that aren’t just ‘bad’ but usefully different. BitGlitter maximizes this as much as I can, and might be the go-to textural element for this sort of thing if generic bitcrushing etc. just never works for you. And then for some people I think it’ll immediately be their best friend, but I don’t need to explain to that crew what this is. For those who aren’t used to ‘crappy old sampler’ magic…First, BitGlitter’s got gain trim going into a stage of Spiral analog-style saturation. You can overdrive the input effectively. Then, it does a hint of bitcrushing and splits into two separate frequency crushers, each set slightly different. This isn’t ‘accurate’ to any real retro sampler, but it helps broaden the sound. The output of these are blended and given an output gain and a dry/wet in case you need to sneak a little clarity back in there, and a slight averaging blur is added to the blend to further emulate analog circuitry.The result is a coarser, more opaque sound which still lacks modern digital ‘edge’: you can plainly see on a metering plugin like Voxengo SPAN how the highs are softened. It’s not a digital bright-maker, it’s a texture-changer and impact-maker. Especially if you go for darker regions of the Bit Glitter control, you can use this to add ridiculous amounts of midrange punch in that ‘retro hip-hop’ kind of way. There’s a visceralness and aliveness to the grunge because it’s made by an algorithm to act like analog gear might: you won’t get the same result out of just a pile of typical DAW bitcrush and EQ. BitGlitter will do the extreme damage you might be looking for, but it’ll do it with a personality that contributes instead of detracts."
+    "DeRez is the simpler, purer bit and frequency crusher, and is still the best ‘analog setting’ bitcrusher (because it lets you use floating-point or fractional frequency and bit crushes). It’s a very pure example of those things and you can make it gate with a touch of DC offset from DC Voltage, and it’s even got a touch of grit softening when it frequency crushes to improve its tone. BitGlitter, however, isn’t DeRez. BitGlitter’s something a lot more sophisticated: a kind of sampler emulator. At every stage it’s designed not for bitcrush alone, but to get the particular tonalities you can get out of primitive old samplers. An earlier attempt intentionally went after the old Akai sound, but currently BitGlitter has no specific model. It’s just there to dial in a kind of punchy grit that will make beats sit well against other elements: the video demonstates this. Now, I know there are people who get mad when I make plugins like these. They say, ‘stop making the sound worse!’ and I understand what they mean, but sorry, I won’t stop because I know there are elements to certain ‘bad’ sounds that aren’t just ‘bad’ but usefully different. BitGlitter maximizes this as much as I can, and might be the go-to textural element for this sort of thing if generic bitcrushing etc. just never works for you. And then for some people I think it’ll immediately be their best friend, but I don’t need to explain to that crew what this is. For those who aren’t used to ‘crappy old sampler’ magic… First, BitGlitter’s got gain trim going into a stage of Spiral analog-style saturation. You can overdrive the input effectively. Then, it does a hint of bitcrushing and splits into two separate frequency crushers, each set slightly different. This isn’t ‘accurate’ to any real retro sampler, but it helps broaden the sound. The output of these are blended and given an output gain and a dry/wet in case you need to sneak a little clarity back in there, and a slight averaging blur is added to the blend to further emulate analog circuitry. The result is a coarser, more opaque sound which still lacks modern digital ‘edge’: you can plainly see on a metering plugin like Voxengo SPAN how the highs are softened. It’s not a digital bright-maker, it’s a texture-changer and impact-maker. Especially if you go for darker regions of the Bit Glitter control, you can use this to add ridiculous amounts of midrange punch in that ‘retro hip-hop’ kind of way. There’s a visceralness and aliveness to the grunge because it’s made by an algorithm to act like analog gear might: you won’t get the same result out of just a pile of typical DAW bitcrush and EQ. BitGlitter will do the extreme damage you might be looking for, but it’ll do it with a personality that contributes instead of detracts."
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BitGlitter final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'btgt';
     uint32_t fpdL;
     uint32_t fpdR;
     double ataLastSampleL;
@@ -93,21 +97,18 @@ class BitGlitter final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -120,8 +121,7 @@ class BitGlitter final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.5; break;
@@ -134,12 +134,11 @@ class BitGlitter final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "glitter"; break;
             case kParamC: return "output"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -148,8 +147,7 @@ class BitGlitter final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Input"; break;
             case kParamB: return "Glitter"; break;
             case kParamC: return "Output"; break;
@@ -162,30 +160,30 @@ class BitGlitter final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 36.0) - 18.0, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string((C * 36.0) - 18.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -209,8 +207,7 @@ class BitGlitter final : public Effect<T>
         double ingain = pow(10.0, ((A * 36.0) - 18.0) / 14.0); // add adjustment factor
         double outgain = pow(10.0, ((C * 36.0) - 18.0) / 14.0); // add adjustment factor
         double wet = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -253,15 +250,13 @@ class BitGlitter final : public Effect<T>
             // begin raw sample L
             positionAL += rateA;
             double outputSampleL = heldSampleAL;
-            if (positionAL > 1.0)
-            {
+            if (positionAL > 1.0) {
                 positionAL -= 1.0;
                 heldSampleAL = (lastSampleL * positionAL) + (inputSampleL * (1 - positionAL));
                 outputSampleL = (outputSampleL * 0.5) + (heldSampleAL * 0.5);
                 // softens the edge of the derez
             }
-            if (outputSampleL > 0)
-            {
+            if (outputSampleL > 0) {
                 offset = outputSampleL;
                 while (offset > 0) {
                     offset -= rezA;
@@ -269,8 +264,7 @@ class BitGlitter final : public Effect<T>
                 outputSampleL -= offset;
                 // it's below 0 so subtracting adds the remainder
             }
-            if (outputSampleL < 0)
-            {
+            if (outputSampleL < 0) {
                 offset = outputSampleL;
                 while (offset < 0) {
                     offset += rezA;
@@ -287,15 +281,13 @@ class BitGlitter final : public Effect<T>
             // begin raw sample R
             positionAR += rateA;
             double outputSampleR = heldSampleAR;
-            if (positionAR > 1.0)
-            {
+            if (positionAR > 1.0) {
                 positionAR -= 1.0;
                 heldSampleAR = (lastSampleR * positionAR) + (inputSampleR * (1 - positionAR));
                 outputSampleR = (outputSampleR * 0.5) + (heldSampleAR * 0.5);
                 // softens the edge of the derez
             }
-            if (outputSampleR > 0)
-            {
+            if (outputSampleR > 0) {
                 offset = outputSampleR;
                 while (offset > 0) {
                     offset -= rezA;
@@ -303,8 +295,7 @@ class BitGlitter final : public Effect<T>
                 outputSampleR -= offset;
                 // it's below 0 so subtracting adds the remainder
             }
-            if (outputSampleR < 0)
-            {
+            if (outputSampleR < 0) {
                 offset = outputSampleR;
                 while (offset < 0) {
                     offset += rezA;
@@ -321,15 +312,13 @@ class BitGlitter final : public Effect<T>
             // begin interpolated sample L
             positionBL += rateB;
             outputSampleL = heldSampleBL;
-            if (positionBL > 1.0)
-            {
+            if (positionBL > 1.0) {
                 positionBL -= 1.0;
                 heldSampleBL = (lastSampleL * positionBL) + (ataHalfwaySampleL * (1 - positionBL));
                 outputSampleL = (outputSampleL * 0.5) + (heldSampleBL * 0.5);
                 // softens the edge of the derez
             }
-            if (outputSampleL > 0)
-            {
+            if (outputSampleL > 0) {
                 offset = outputSampleL;
                 while (offset > 0) {
                     offset -= rezB;
@@ -337,8 +326,7 @@ class BitGlitter final : public Effect<T>
                 outputSampleL -= offset;
                 // it's below 0 so subtracting adds the remainder
             }
-            if (outputSampleL < 0)
-            {
+            if (outputSampleL < 0) {
                 offset = outputSampleL;
                 while (offset < 0) {
                     offset += rezB;
@@ -355,15 +343,13 @@ class BitGlitter final : public Effect<T>
             // begin interpolated sample R
             positionBR += rateB;
             outputSampleR = heldSampleBR;
-            if (positionBR > 1.0)
-            {
+            if (positionBR > 1.0) {
                 positionBR -= 1.0;
                 heldSampleBR = (lastSampleR * positionBR) + (ataHalfwaySampleR * (1 - positionBR));
                 outputSampleR = (outputSampleR * 0.5) + (heldSampleBR * 0.5);
                 // softens the edge of the derez
             }
-            if (outputSampleR > 0)
-            {
+            if (outputSampleR > 0) {
                 offset = outputSampleR;
                 while (offset > 0) {
                     offset -= rezB;
@@ -371,8 +357,7 @@ class BitGlitter final : public Effect<T>
                 outputSampleR -= offset;
                 // it's below 0 so subtracting adds the remainder
             }
-            if (outputSampleR < 0)
-            {
+            if (outputSampleR < 0) {
                 offset = outputSampleR;
                 while (offset < 0) {
                     offset += rezB;

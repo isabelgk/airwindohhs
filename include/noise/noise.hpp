@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Noise is the Airwindows deep noise oscillator, as a sound reinforcer."
 };
 constexpr std::string_view k_long_description{
-    "Noise started out as a plugin called Voice Of The Starship. It’s an algorithm that generates brownian-motion noise which won’t ‘wander’ into excessive DC offset, but without a highpass filter needed! The original Voice Of The Starship can be made to do any sort of deep rumble, including purely subsonic rumble that still works as an audio stream.Noise is like Voice Of The Spaceship, except it also triggers on input sounds. It can pretty closely track rhythms coming in, and you can combine it with underlying stuff with Dry/Wet, and the Distance control applies to both Dry AND Wet, to blend and darken them together."
+    "Noise started out as a plugin called Voice Of The Starship. It’s an algorithm that generates brownian-motion noise which won’t ‘wander’ into excessive DC offset, but without a highpass filter needed! The original Voice Of The Starship can be made to do any sort of deep rumble, including purely subsonic rumble that still works as an audio stream. Noise is like Voice Of The Spaceship, except it also triggers on input sounds. It can pretty closely track rhythms coming in, and you can combine it with underlying stuff with Dry/Wet, and the Distance control applies to both Dry AND Wet, to blend and darken them together."
 };
 constexpr std::string_view k_tags{
     "noise"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Noise final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'nois';
     double noiseAL;
     double noiseBL;
     double noiseCL;
@@ -105,23 +109,20 @@ class Noise final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -136,8 +137,7 @@ class Noise final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -152,14 +152,13 @@ class Noise final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "highcut"; break;
             case kParamB: return "lowcut"; break;
             case kParamC: return "lshape"; break;
             case kParamD: return "decay"; break;
             case kParamE: return "distnc"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -168,8 +167,7 @@ class Noise final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "HighCut"; break;
             case kParamB: return "LowCut"; break;
             case kParamC: return "LShape"; break;
@@ -184,34 +182,34 @@ class Noise final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -457,8 +455,7 @@ class Noise final : public Effect<T>
         f[8] /= overallscale;
         f[9] /= overallscale;
         // and now it's neatly scaled, too
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -469,15 +466,13 @@ class Noise final : public Effect<T>
             }
             drySampleL = inputSampleL;
             drySampleR = inputSampleR;
-            if (surgeL < fabs(inputSampleL))
-            {
+            if (surgeL < fabs(inputSampleL)) {
                 surgeL += (double(fpdL) / UINT32_MAX) * (fabs(inputSampleL) - surgeL);
                 if (surgeL > 1.0) {
                     surgeL = 1.0;
                 }
             }
-            else
-            {
+            else {
                 surgeL -= ((double(fpdL) / UINT32_MAX) * (surgeL - fabs(inputSampleL)) * decay);
                 if (surgeL < 0.0) {
                     surgeL = 0.0;
@@ -489,15 +484,13 @@ class Noise final : public Effect<T>
             }
             invcutoffL = 1.0 - cutoffL;
             // set up modified cutoff L
-            if (surgeR < fabs(inputSampleR))
-            {
+            if (surgeR < fabs(inputSampleR)) {
                 surgeR += (double(fpdR) / UINT32_MAX) * (fabs(inputSampleR) - surgeR);
                 if (surgeR > 1.0) {
                     surgeR = 1.0;
                 }
             }
-            else
-            {
+            else {
                 surgeR -= ((double(fpdR) / UINT32_MAX) * (surgeR - fabs(inputSampleR)) * decay);
                 if (surgeR < 0.0) {
                     surgeR = 0.0;
@@ -513,8 +506,7 @@ class Noise final : public Effect<T>
             flipR = !flipR;
             filterflip = !filterflip;
             quadratic -= 1;
-            if (quadratic < 0)
-            {
+            if (quadratic < 0) {
                 position += 1;
                 quadratic = position * position;
                 quadratic = quadratic % 170003; //% is C++ mod operator
@@ -558,8 +550,7 @@ class Noise final : public Effect<T>
             else {
                 noiseAR -= (double(fpdR) / UINT32_MAX);
             }
-            if (filterflip)
-            {
+            if (filterflip) {
                 noiseBL *= invcutoffL;
                 noiseBL += (noiseAL * cutoffL);
                 inputSampleL = noiseBL + noiseCL;
@@ -571,8 +562,7 @@ class Noise final : public Effect<T>
                 rumbleAR *= (1.0 - rumblecutoff);
                 rumbleAR += (inputSampleR * rumblecutoff);
             }
-            else
-            {
+            else {
                 noiseCL *= invcutoffL;
                 noiseCL += (noiseAL * cutoffL);
                 inputSampleL = noiseBL + noiseCL;

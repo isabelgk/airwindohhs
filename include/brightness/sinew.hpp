@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Sinew combines sines and slew clipping for a tape bias effect!"
 };
 constexpr std::string_view k_long_description{
-    "Looks like I'm working on three major fronts at the moment, and here's a key advance on at least one of them :)Sinew is the answer to the question, 'what if slew clipping, but it was more restrictive the closer you got to what would be regular clipping?'I realize the answer is typically going to be 'slew what now?' but Airwindows fans are long aware of the strange pleasures of slew clipping. What you don't know is, the real answer to that question is 'then you get something that acts like analog tape's inability to capture super loud high frequencies'… but without the actual tape saturation!This might have all kinds of uses: I know it's going to find its way into a ToTape update. For now, you can have the raw version, the one where (like other Slew-oriented plugins) you can set it to extreme values and screw up the sound in interesting ways. Sinew might be just the thing for making heavy guitars louder, or adding guts to drums, but you can try it on whatever you like.It'll hang on to brightness for quite a long time, until suddenly it's really stepping on the sound. What's happening there is, you can't hear it doing more subtle work, so you only hear it when it's turned up too far. Listen to the character of things and you might hear it kicking in without apparently cutting back brightness at all! This is the farthest thing from a simple filter. Good luck experimenting with Sinew!"
+    "Looks like I'm working on three major fronts at the moment, and here's a key advance on at least one of them :) Sinew is the answer to the question, 'what if slew clipping, but it was more restrictive the closer you got to what would be regular clipping?' I realize the answer is typically going to be 'slew what now?' but Airwindows fans are long aware of the strange pleasures of slew clipping. What you don't know is, the real answer to that question is 'then you get something that acts like analog tape's inability to capture super loud high frequencies'… but without the actual tape saturation! This might have all kinds of uses: I know it's going to find its way into a ToTape update. For now, you can have the raw version, the one where (like other Slew-oriented plugins) you can set it to extreme values and screw up the sound in interesting ways. Sinew might be just the thing for making heavy guitars louder, or adding guts to drums, but you can try it on whatever you like. It'll hang on to brightness for quite a long time, until suddenly it's really stepping on the sound. What's happening there is, you can't hear it doing more subtle work, so you only hear it when it's turned up too far. Listen to the character of things and you might hear it kicking in without apparently cutting back brightness at all! This is the farthest thing from a simple filter. Good luck experimenting with Sinew!"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Sinew final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sinw';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -52,18 +56,15 @@ class Sinew final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -73,8 +74,7 @@ class Sinew final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -84,8 +84,7 @@ class Sinew final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "sinew"; break;
 
             default: break;
@@ -95,8 +94,7 @@ class Sinew final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Sinew"; break;
 
             default: break;
@@ -106,24 +104,24 @@ class Sinew final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -137,8 +135,7 @@ class Sinew final : public Effect<T>
         overallscale /= 44100.0;
         overallscale *= Effect<T>::getSampleRate();
         double threshSinew = pow((1.0 - A), 4) / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -157,6 +154,12 @@ class Sinew final : public Effect<T>
                 temp = lastSinewL - sinew;
             }
             inputSampleL = lastSinewL = temp;
+            if (lastSinewL > 1.0) {
+                lastSinewL = 1.0;
+            }
+            if (lastSinewL < -1.0) {
+                lastSinewL = -1.0;
+            }
             temp = inputSampleR;
             clamp = inputSampleR - lastSinewR;
             sinew = threshSinew * cos(lastSinewR * lastSinewR);
@@ -167,6 +170,12 @@ class Sinew final : public Effect<T>
                 temp = lastSinewR - sinew;
             }
             inputSampleR = lastSinewR = temp;
+            if (lastSinewR > 1.0) {
+                lastSinewR = 1.0;
+            }
+            if (lastSinewR < -1.0) {
+                lastSinewR = -1.0;
+            }
             // begin 64 bit stereo floating point dither
             // int expon; frexp((double)inputSampleL, &expon);
             fpdL ^= fpdL << 13;

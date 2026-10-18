@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Pressure5 expands Pressure4 with after-boost and built-in ClipOnly2."
 };
 constexpr std::string_view k_long_description{
-    "This plugin builds on 2017’s Pressure4 in numerous ways. I made it for my own use: I was mixing an album in Console7 that had to follow a previous album I’d mixed on an analog board, and I needed extensive 2-buss management and the ability to deliver a final output and control mix density across a lot of parameters measured by a meter I’ve invented (which isn’t available, it’s just for my personal use and doesn’t work properly in a releasable way). And now Pressure5 is out and you can have it!Pressure is a compressor with some unusual controls: there’s a ‘mewiness’ control that manages the way the ratio engages. You can dial in the intensity with which it ‘dynamic inverts’ and super-squishes the audio. It’s got a very wide speed range that can go real fast for a dense, distorted sort of sound, and it’s now got an additional control that nobody else has: ‘PawClaw’. This manages the way ‘mewiness’ handles transients, the intent being to extra-squish the spiky transients on ‘Paw’ or to let them through more on ‘Claw’. It’s very subtle, but it’s there to tailor the way stuff hits the compression in an entirely unique way. I don’t think anything else has a ‘PawClaw’ control, but now you have one :)The other part of Pressure5 is the output stage: Pressure5’s output control has the capacity to boost, into a built-in ClipOnly2. So it’s got that chunky, non-edgy hard clipping drive, that works at all sample rates, as part of the plugin. I intend Pressure5 to be used as a final buss comp/clip stage letting you dial in whatever you need, and then just taking the output and dithering it and being done. If you don’t want to go direct to final release, pad the output control so you’re not clipping anymore and ClipOnly2 will bypass itself like it’s not even there, serving as only a safety clipper."
+    "This plugin builds on 2017’s Pressure4 in numerous ways. I made it for my own use: I was mixing an album in Console7 that had to follow a previous album I’d mixed on an analog board, and I needed extensive 2-buss management and the ability to deliver a final output and control mix density across a lot of parameters measured by a meter I’ve invented (which isn’t available, it’s just for my personal use and doesn’t work properly in a releasable way). And now Pressure5 is out and you can have it! Pressure is a compressor with some unusual controls: there’s a ‘mewiness’ control that manages the way the ratio engages. You can dial in the intensity with which it ‘dynamic inverts’ and super-squishes the audio. It’s got a very wide speed range that can go real fast for a dense, distorted sort of sound, and it’s now got an additional control that nobody else has: ‘PawClaw’. This manages the way ‘mewiness’ handles transients, the intent being to extra-squish the spiky transients on ‘Paw’ or to let them through more on ‘Claw’. It’s very subtle, but it’s there to tailor the way stuff hits the compression in an entirely unique way. I don’t think anything else has a ‘PawClaw’ control, but now you have one :) The other part of Pressure5 is the output stage: Pressure5’s output control has the capacity to boost, into a built-in ClipOnly2. So it’s got that chunky, non-edgy hard clipping drive, that works at all sample rates, as part of the plugin. I intend Pressure5 to be used as a final buss comp/clip stage letting you dial in whatever you need, and then just taking the output and dithering it and being done. If you don’t want to go direct to final release, pad the output control so you’re not clipping anymore and ClipOnly2 will bypass itself like it’s not even there, serving as only a safety clipper."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Pressure5 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'prs5';
     double muVary;
     double muAttack;
     double muNewSpeed;
@@ -47,7 +51,6 @@ class Pressure5 final : public Effect<T>
     };
     double fixA[fix_total];
     double fixB[fix_total]; // fixed frequency biquad filter for ultrasonics, stereo
-
     double lastSampleL;
     double intermediateL[16];
     bool wasPosClipL;
@@ -56,19 +59,17 @@ class Pressure5 final : public Effect<T>
     double intermediateR[16];
     bool wasPosClipR;
     bool wasNegClipR; // Stereo ClipOnly2
-
     double slewMax; // to adust mewiness
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
     float D;
     float E;
     float F; // parameters. Always 0-1, and we scale/alter them elsewhere.
+
   public:
     Pressure5()
     {
@@ -125,23 +126,20 @@ class Pressure5 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -156,8 +154,7 @@ class Pressure5 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.25; break;
             case kParamC: return 1.0; break;
@@ -172,14 +169,13 @@ class Pressure5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "pressre"; break;
             case kParamB: return "speed"; break;
             case kParamC: return "mewines"; break;
             case kParamD: return "pawclaw"; break;
             case kParamE: return "output"; break;
-            case kParamF: return "dry/wet"; break;
+            case kParamF: return "drywet"; break;
 
             default: break;
         }
@@ -188,8 +184,7 @@ class Pressure5 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Pressre"; break;
             case kParamB: return "Speed"; break;
             case kParamC: return "Mewines"; break;
@@ -204,34 +199,34 @@ class Pressure5 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -278,8 +273,7 @@ class Pressure5 final : public Effect<T>
             fixB[x] = fixA[x];
         }
         // make the second filter same as the first, don't use sample slots
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -314,25 +308,20 @@ class Pressure5 final : public Effect<T>
                 positivemu = false;
                 mewiness = -mewiness;
             }
-            if (flip)
-            {
-                if (inputSense > threshold)
-                {
+            if (flip) {
+                if (inputSense > threshold) {
                     muVary = threshold / inputSense;
                     muAttack = sqrt(fabs(muSpeedA));
                     muCoefficientA = muCoefficientA * (muAttack - 1.0);
-                    if (muVary < threshold)
-                    {
+                    if (muVary < threshold) {
                         muCoefficientA = muCoefficientA + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientA = muCoefficientA + muVary;
                     }
                     muCoefficientA = muCoefficientA / muAttack;
                 }
-                else
-                {
+                else {
                     muCoefficientA = muCoefficientA * ((muSpeedA * muSpeedA) - 1.0);
                     muCoefficientA = muCoefficientA + 1.0;
                     muCoefficientA = muCoefficientA / (muSpeedA * muSpeedA);
@@ -341,25 +330,20 @@ class Pressure5 final : public Effect<T>
                 muNewSpeed = muNewSpeed + fabs(inputSense * release) + fastest;
                 muSpeedA = muNewSpeed / muSpeedA;
             }
-            else
-            {
-                if (inputSense > threshold)
-                {
+            else {
+                if (inputSense > threshold) {
                     muVary = threshold / inputSense;
                     muAttack = sqrt(fabs(muSpeedB));
                     muCoefficientB = muCoefficientB * (muAttack - 1);
-                    if (muVary < threshold)
-                    {
+                    if (muVary < threshold) {
                         muCoefficientB = muCoefficientB + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientB = muCoefficientB + muVary;
                     }
                     muCoefficientB = muCoefficientB / muAttack;
                 }
-                else
-                {
+                else {
                     muCoefficientB = muCoefficientB * ((muSpeedB * muSpeedB) - 1.0);
                     muCoefficientB = muCoefficientB + 1.0;
                     muCoefficientB = muCoefficientB / (muSpeedB * muSpeedB);

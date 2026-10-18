@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PurestWarm is a subtle tone shaper and warmth adder."
 };
 constexpr std::string_view k_long_description{
-    "PurestWarm is a little bit like PurestDrive (anxiously awaited by quite a few people) but not quite as sophisticated… however, in its simplicity is part of its usefulness. It applies an Airwindows softest-possible-saturation effect (like what you can get out of Density, or Channel) but it’s polarized: you pick which side of the waveform the saturation applies to. For the other half of the waveform, it’ll pass through the exact bits that came in. So it’s half a plugin: I’m not sure there’s ever been anything quite like that, on one half of the wave a full Airwindows (noise shaped to floating point) ultra-quality saturation, and on the other half of the wave, ‘bypass’ and literal bit-identical pass-through. I made sure even the noise shaping wasn’t applying for the ‘bypass’ half.The result is this: waveforms that need a little sweetening, can have that texture (not frequency or EQ, texture) subtly added to the track, in a way that utterly and totally maintains the integrity of the signal. In some ways this is ‘purer’ than any of the other Purest line, since by its nature it’s true bypass for literally half the time. It’s also one of the minimal ones, with just a switch: there’s no way to get the perfect integration of bypass and effected halves (they switch off like a push-pull power amp) otherwise, and it produces an obvious enough effect but one that’s harmonious and doesn’t get in the way. In some circumstances it hints at being like a ‘bass optimizer’ since it’ll push some second harmonic by its nature. You’ll probably find that for any given sound (especially an electric bass guitar) there’ll be one polarity that’s clearly better: I think for basses where the string swings near the pickup and produces extra voltage on that side of the wave, PurestWarm will saturate that side of the wave really well and it’ll give you an ideal bass tone with no extra fiddling or processing required."
+    "PurestWarm is a little bit like PurestDrive (anxiously awaited by quite a few people) but not quite as sophisticated… however, in its simplicity is part of its usefulness. It applies an Airwindows softest-possible-saturation effect (like what you can get out of Density, or Channel) but it’s polarized: you pick which side of the waveform the saturation applies to. For the other half of the waveform, it’ll pass through the exact bits that came in. So it’s half a plugin: I’m not sure there’s ever been anything quite like that, on one half of the wave a full Airwindows (noise shaped to floating point) ultra-quality saturation, and on the other half of the wave, ‘bypass’ and literal bit-identical pass-through. I made sure even the noise shaping wasn’t applying for the ‘bypass’ half. The result is this: waveforms that need a little sweetening, can have that texture (not frequency or EQ, texture) subtly added to the track, in a way that utterly and totally maintains the integrity of the signal. In some ways this is ‘purer’ than any of the other Purest line, since by its nature it’s true bypass for literally half the time. It’s also one of the minimal ones, with just a switch: there’s no way to get the perfect integration of bypass and effected halves (they switch off like a push-pull power amp) otherwise, and it produces an obvious enough effect but one that’s harmonious and doesn’t get in the way. In some circumstances it hints at being like a ‘bass optimizer’ since it’ll push some second harmonic by its nature. You’ll probably find that for any given sound (especially an electric bass guitar) there’ll be one polarity that’s clearly better: I think for basses where the string swings near the pickup and produces extra voltage on that side of the wave, PurestWarm will saturate that side of the wave really well and it’ll give you an ideal bass tone with no extra fiddling or processing required."
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PurestWarm final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'puwm';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -48,18 +52,15 @@ class PurestWarm final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -69,8 +70,7 @@ class PurestWarm final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -80,8 +80,7 @@ class PurestWarm final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "polarity"; break;
 
             default: break;
@@ -91,8 +90,7 @@ class PurestWarm final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Polarity"; break;
 
             default: break;
@@ -102,24 +100,31 @@ class PurestWarm final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 1.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Normal", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "Inverse", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -132,8 +137,7 @@ class PurestWarm final : public Effect<T>
         int polarity = (int)(A * 1.999);
         double inputSampleL;
         double inputSampleR;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -142,10 +146,8 @@ class PurestWarm final : public Effect<T>
             if (fabs(inputSampleR) < 1.18e-23) {
                 inputSampleR = fpdR * 1.18e-17;
             }
-            if (polarity == 1)
-            {
-                if (inputSampleL < 0)
-                {
+            if (polarity == 1) {
+                if (inputSampleL < 0) {
                     inputSampleL = -(sin(-inputSampleL * 1.57079634) / 1.57079634);
                     // begin 64 bit stereo floating point dither
                     // int expon; frexp((double)inputSampleL, &expon);
@@ -160,8 +162,7 @@ class PurestWarm final : public Effect<T>
                     // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
                     // end 64 bit stereo floating point dither
                 }
-                if (inputSampleR < 0)
-                {
+                if (inputSampleR < 0) {
                     inputSampleR = -(sin(-inputSampleR * 1.57079634) / 1.57079634);
                     // begin 64 bit stereo floating point dither
                     // int expon; frexp((double)inputSampleL, &expon);
@@ -178,8 +179,7 @@ class PurestWarm final : public Effect<T>
                 }
             }
             else {
-                if (inputSampleL > 0)
-                {
+                if (inputSampleL > 0) {
                     inputSampleL = sin(inputSampleL * 1.57079634) / 1.57079634;
                     // begin 64 bit stereo floating point dither
                     // int expon; frexp((double)inputSampleL, &expon);
@@ -194,8 +194,7 @@ class PurestWarm final : public Effect<T>
                     // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
                     // end 64 bit stereo floating point dither
                 }
-                if (inputSampleR > 0)
-                {
+                if (inputSampleR > 0) {
                     inputSampleR = sin(inputSampleR * 1.57079634) / 1.57079634;
                     // begin 64 bit stereo floating point dither
                     // int expon; frexp((double)inputSampleL, &expon);

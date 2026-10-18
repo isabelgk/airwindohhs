@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "XLowpass is a distorted digital EQ, inspired by retro sampler DSP."
 };
 constexpr std::string_view k_long_description{
-    "Welcome to the Airwindows journey into vintage sampler land! This might prove to be a long journey, but every journey starts with a first step.Maybe the first step was Mackity and MackEQ: hardware mixer emulations. (that’s not necessarily done, either: it’s the 1202, beloved to French House music, that I did, but the DnB-hounds liked the 8-buss.) But the follow-up is just the sort of thing I might want to look into: certain of the E-mu Z-plane filters. Apparently not even the really fancy stuff… but the way that the simple lowpasses and highpasses would distort when you abused them. And it seems nobody’s that interested in exploring that, because these are not analog filters or particularly sought-after, except by those in the know.And we know some stuff about them, because the information is out there… but a lot of devs don’t think of them as interesting. They’re biquads, with hard clipping inside the EQ code, and implemented in certain ways for efficiency: and if you can have properly made stock DAW filters, why would you want lower-bit calculation or clipping or stuff like that?XLowpass… is NOT the end destination. There will be more like it but the X series of Airwindows filters (handy to look up in the plugin list) are NOT the carefully tailored E-mu emulation (or at least tone-alike, to the best of my ability?) XLowpass is getting familiar with the CONCEPT, an internally distorted multi-stage biquad and how I can manipulate it to get sounds out of it. It’s not meant to itself sound like an E-mu e6400 (that being the sampler I have, so far), but it’s a plugin that can dial in a whole range of the craziness people had to go to a lot of trouble to do in the real sampler (internal distorting and so on). And you can run it into Mackity and see whether you’re within striking distance of some of the more gnarly DnB tones that belonged to the 90s, seemingly lost to time.And when the Y series comes out, things will be even more off the hook, because Y stands for “WHY would you DO that?!?” and it means I do the same thing, except with wavefolding on the internal distortion. So those should get GNARLY.And then when I get to work on the eventual ZLowpass etc, and stack them up against real Z-plane hardware (note, however, I will not be cloning the algorithms, I am just going to try and get the tone the same), then I’ll have some practice under my belt."
+    "Welcome to the Airwindows journey into vintage sampler land! This might prove to be a long journey, but every journey starts with a first step. Maybe the first step was Mackity and MackEQ: hardware mixer emulations. (that’s not necessarily done, either: it’s the 1202, beloved to French House music, that I did, but the DnB-hounds liked the 8-buss.) But the follow-up is just the sort of thing I might want to look into: certain of the E-mu Z-plane filters. Apparently not even the really fancy stuff… but the way that the simple lowpasses and highpasses would distort when you abused them. And it seems nobody’s that interested in exploring that, because these are not analog filters or particularly sought-after, except by those in the know. And we know some stuff about them, because the information is out there… but a lot of devs don’t think of them as interesting. They’re biquads, with hard clipping inside the EQ code, and implemented in certain ways for efficiency: and if you can have properly made stock DAW filters, why would you want lower-bit calculation or clipping or stuff like that? XLowpass… is NOT the end destination. There will be more like it but the X series of Airwindows filters (handy to look up in the plugin list) are NOT the carefully tailored E-mu emulation (or at least tone-alike, to the best of my ability?) XLowpass is getting familiar with the CONCEPT, an internally distorted multi-stage biquad and how I can manipulate it to get sounds out of it. It’s not meant to itself sound like an E-mu e6400 (that being the sampler I have, so far), but it’s a plugin that can dial in a whole range of the craziness people had to go to a lot of trouble to do in the real sampler (internal distorting and so on). And you can run it into Mackity and see whether you’re within striking distance of some of the more gnarly DnB tones that belonged to the 90s, seemingly lost to time. And when the Y series comes out, things will be even more off the hook, because Y stands for “WHY would you DO that?!?” and it means I do the same thing, except with wavefolding on the internal distortion. So those should get GNARLY. And then when I get to work on the eventual ZLowpass etc, and stack them up against real Z-plane hardware (note, however, I will not be cloning the algorithms, I am just going to try and get the tone the same), then I’ll have some practice under my belt."
 };
 constexpr std::string_view k_tags{
     "xyz-filters"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class XLowpass final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'xlop';
     double biquad[15];
     double biquadA[15];
     double biquadB[15];
@@ -69,21 +73,18 @@ class XLowpass final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -96,8 +97,7 @@ class XLowpass final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 1.0; break;
             case kParamC: return 0.0; break;
@@ -110,12 +110,11 @@ class XLowpass final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "gain"; break;
             case kParamB: return "freq"; break;
             case kParamC: return "nuke"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -124,8 +123,7 @@ class XLowpass final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Gain"; break;
             case kParamB: return "Freq"; break;
             case kParamC: return "Nuke"; break;
@@ -138,30 +136,30 @@ class XLowpass final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -217,8 +215,7 @@ class XLowpass final : public Effect<T>
         // beyond that point: this is a way to progressively add a 'black box' sound processing
         // which lets you fall through to simpler processing at lower settings.
         double outSample = 0.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

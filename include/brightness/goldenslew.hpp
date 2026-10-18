@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "GoldenSlew is a multistage slew clipper based on the Golden Ratio."
 };
 constexpr std::string_view k_long_description{
-    "Slew clipping is a fairly uncommon effect: it takes the bright off sounds, but replaces it with a distorty edge. You've already got Slew to do slew clipping with, and if you like Channel part of what you like is its built-in slew clipping… but what if you could expand on what slew clipping does?GoldenSlew is a chain of slew clippers becoming increasingly restrictive as they go, each one scaled by a factor related to the Golden Ratio (if it was applied to the 'slew' control). You would think this would produce a simple result: the sound would always be restricted to the smallest amount in the chain, and it'd sound just like Slew.Except it SO doesn't… because each new value's working from what the previous one was clipped to. And so, when you apply slew clipping as a chain, you get a completely different effect. And what it sounds like… is distant, roaring, big, loud, powerful in a way you just don't get from slew clipping alone.Be warned: for this plugin, like Slew, if you have audio going through it and you crank the slew clipping ALL the way to 1.0, what you're telling it is 'stop slewing completely, don't budge' which means sample and hold which means you're stuck on a DC voltage. There are reasons why you might do this, for instance if you're in VCV Rack and using it on a control voltage and you want to do sample and hold on that voltage. Don't crank it up to 1.0 on audio signals or you might hurt your speakers if they're DC coupled.This is one of a series of plugins starting with Slew and continuing with GoldenSlew, where they're refinements of a tone I like using for analog emulation. When used for that, you typically want to keep the setting fairly low, less than 0.5 certainly. It's for controlling the digital-ness of the highs without apparently making them quieter: remember this is a clipper, not an EQ, and it'll kick in only on LOUD treble. There will be more explorations of this concept because I'll need a really good test-bed to use for when I start dialing in sounds of actual classic analog consoles: it's not just the maximum restriction of slew (like in the Channel plugins), it's about the sound character as we hit that limit.You can use GoldenSlew on things like drums, final mixes: anywhere you want the effect of extreme loudness, but don't want the treble coming forward and poking at you. Hope you like GoldenSlew!"
+    "Slew clipping is a fairly uncommon effect: it takes the bright off sounds, but replaces it with a distorty edge. You've already got Slew to do slew clipping with, and if you like Channel part of what you like is its built-in slew clipping… but what if you could expand on what slew clipping does? GoldenSlew is a chain of slew clippers becoming increasingly restrictive as they go, each one scaled by a factor related to the Golden Ratio (if it was applied to the 'slew' control). You would think this would produce a simple result: the sound would always be restricted to the smallest amount in the chain, and it'd sound just like Slew. Except it SO doesn't… because each new value's working from what the previous one was clipped to. And so, when you apply slew clipping as a chain, you get a completely different effect. And what it sounds like… is distant, roaring, big, loud, powerful in a way you just don't get from slew clipping alone. Be warned: for this plugin, like Slew, if you have audio going through it and you crank the slew clipping ALL the way to 1.0, what you're telling it is 'stop slewing completely, don't budge' which means sample and hold which means you're stuck on a DC voltage. There are reasons why you might do this, for instance if you're in VCV Rack and using it on a control voltage and you want to do sample and hold on that voltage. Don't crank it up to 1.0 on audio signals or you might hurt your speakers if they're DC coupled. This is one of a series of plugins starting with Slew and continuing with GoldenSlew, where they're refinements of a tone I like using for analog emulation. When used for that, you typically want to keep the setting fairly low, less than 0.5 certainly. It's for controlling the digital-ness of the highs without apparently making them quieter: remember this is a clipper, not an EQ, and it'll kick in only on LOUD treble. There will be more explorations of this concept because I'll need a really good test-bed to use for when I start dialing in sounds of actual classic analog consoles: it's not just the maximum restriction of slew (like in the Channel plugins), it's about the sound character as we hit that limit. You can use GoldenSlew on things like drums, final mixes: anywhere you want the effect of extreme loudness, but don't want the treble coming forward and poking at you. Hope you like GoldenSlew!"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class GoldenSlew final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'gdsl';
     enum
     {
         prevSampL1,
@@ -55,11 +59,9 @@ class GoldenSlew final : public Effect<T>
         gslew_total
     }; // fixed frequency pear filter for ultrasonics, stereo
     double gslew[gslew_total]; // probably worth just using a number here
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
 
   public:
@@ -88,18 +90,15 @@ class GoldenSlew final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -109,8 +108,7 @@ class GoldenSlew final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -120,8 +118,7 @@ class GoldenSlew final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "slew"; break;
 
             default: break;
@@ -131,8 +128,7 @@ class GoldenSlew final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Slew"; break;
 
             default: break;
@@ -142,24 +138,24 @@ class GoldenSlew final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -193,8 +189,7 @@ class GoldenSlew final : public Effect<T>
         source *= 1.618033988749894848204586;
         gslew[threshold1] = source;
         source *= 1.618033988749894848204586;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

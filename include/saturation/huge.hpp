@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Huge is a dirty, dirty loudenator."
 };
 constexpr std::string_view k_long_description{
-    "So the idea here was to explore a trick people are doing with Pafnuty: adding just a few odd harmonics, to get really smooth and mellow saturation. You can keep going, and the more harmonics you add the closer you get to a square wave (or just really intense saturation), but when you intentionally pick just a couple it means all your lower frequencies are totally free of aliasing, since you're not really saturating: just doing a transform that gives you only the added harmonics. If those are below the Nyquist frequency, you automatically have zero aliasing.But what do you get if you do this, and then magically omit all the frequencies that are so high that they'd be aliasing?Probably wonderful ultimate loudenation. And Huge is not that.Instead, it's tracking the slew rates of all the outputs and just watches to see if those high frequencies are wiggling too fast… and cuts them off if they are. So in theory it's doing the wonderful clean ultimate high saturation with never an aliasing frequency.And in practice it's just STUPID LOUD with extra bassiness and a level of dirt and grunge you wouldn't believe, from all those harmonics switching on and off. Clearly there are still some bugs in the system. This is not the lovely pure pristine loudenator, it's a kind of monster, unlike anything I've heard.There is one control apart from the boost control (that's roughly unity gain at about 0.2: it's simply an input trim, that's all it does). The other control is Nasty. You could also call it Placebo, as damn if I can work out whether it's doing much: I find it, too, seems good at around 0.2 but I could be wrong. It's controlling how aggressively the plugin cuts off harmonics, so when you increase Nasty, it should allow the harmonics to go closer to aliasing. That said, if you send test tones through this, you'll get a confusing mess, and if you send clean sounds through it, you'll get a rude shock.If you send loud aggressive sounds through it you will level buildings. Choose wisely, and enjoy :)"
+    "So the idea here was to explore a trick people are doing with Pafnuty: adding just a few odd harmonics, to get really smooth and mellow saturation. You can keep going, and the more harmonics you add the closer you get to a square wave (or just really intense saturation), but when you intentionally pick just a couple it means all your lower frequencies are totally free of aliasing, since you're not really saturating: just doing a transform that gives you only the added harmonics. If those are below the Nyquist frequency, you automatically have zero aliasing. But what do you get if you do this, and then magically omit all the frequencies that are so high that they'd be aliasing? Probably wonderful ultimate loudenation. And Huge is not that. Instead, it's tracking the slew rates of all the outputs and just watches to see if those high frequencies are wiggling too fast… and cuts them off if they are. So in theory it's doing the wonderful clean ultimate high saturation with never an aliasing frequency. And in practice it's just STUPID LOUD with extra bassiness and a level of dirt and grunge you wouldn't believe, from all those harmonics switching on and off. Clearly there are still some bugs in the system. This is not the lovely pure pristine loudenator, it's a kind of monster, unlike anything I've heard. There is one control apart from the boost control (that's roughly unity gain at about 0.2: it's simply an input trim, that's all it does). The other control is Nasty. You could also call it Placebo, as damn if I can work out whether it's doing much: I find it, too, seems good at around 0.2 but I could be wrong. It's controlling how aggressively the plugin cuts off harmonics, so when you increase Nasty, it should allow the harmonics to go closer to aliasing. That said, if you send test tones through this, you'll get a confusing mess, and if you send clean sounds through it, you'll get a rude shock. If you send loud aggressive sounds through it you will level buildings. Choose wisely, and enjoy :)"
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Huge final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'huge';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -81,19 +85,16 @@ class Huge final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -104,8 +105,7 @@ class Huge final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.2; break;
             case kParamB: return 0.2; break;
 
@@ -116,8 +116,7 @@ class Huge final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "huge"; break;
             case kParamB: return "nasty"; break;
 
@@ -128,8 +127,7 @@ class Huge final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Huge"; break;
             case kParamB: return "Nasty"; break;
 
@@ -140,26 +138,26 @@ class Huge final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -176,8 +174,7 @@ class Huge final : public Effect<T>
         double threshold = (B * 0.05) + 0.05;
         double attack = (threshold * 8.0) / overallscale;
         double release = (threshold * 8.0) / overallscale;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

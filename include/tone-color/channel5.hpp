@@ -1,6 +1,7 @@
 #pragma once
 #include "effect.hpp"
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
 namespace airwindohhs::channel5 {
@@ -10,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Channel5 is Channel for 2018, with new subtleties."
 };
 constexpr std::string_view k_long_description{
-    "Channel has long been a sort of test-bed of mine, and so when I started working with new methods for some of my stuff it was an obvious choice. I’ve been asked for an extra Output level control, which it has (for those of you who are really into level matching, can’t fault you for that though sometimes I think it’s not relevant) but if you set Output to 1.0 it bypasses itself and becomes exactly, exactly the same as Channel4.Except for two things, which first appeared in Atmosphere: this lets you A/B them with the original versions, using Channel 4 and 5.One, I introduced the concept of live air denormalizing: before this (and on plugins I think are suited to it), Airwindows plugins watched for total digital black silence, and if it was present, produced an impossibly faint hiss sound, at around 300 dB down. If there was any audio at all that wasn’t digital black, this got switched off. With Atmosphere, it’s different: the denormalizing signal is always there, and if the result WITH the signal is digital black, then the signal’s subtracted again. Same result, but there’s a permanent noise hundreds of times quieter than typical ‘noise adding plugins’. The idea is that there can be no ‘dead’ silence, only ‘alive’ silence: you can’t save the file in normal formats and retain it (24 bit audio saving will simply turn this noise to digital black again), you most likely can’t hear it ever no matter what you do, but I wanted the deepest darkest silence to be alive rather than dead black nothingness.Two, it noise shapes to the floating point buss differently, and on the one hand I bet you can’t consistently hear it but on the other, I think it matters. Before, I used an interleaving technique much like I often use in IIR filters and plugs such as Capacitor. It related to the sample rate by forcing everything to be considered as the interaction between two or more samples, and the energy being brought back into the output audio provided corrections at high frequencies. What began with Atmosphere, and what you’ll (maybe) hear with Channel5, is a completely different and more radical approach. These plugins noise shape ALL the error energy back into the audio. It accumulates, sticks around, and so it can contribute to bass energy in tiny amounts because it persists over thousands and thousands of samples. There’s a ‘pull-back’ in the form of multiplying the amount by something like 0.999999, which will bleed built-up energy away, but this multiply doesn’t happen on a per-sample basis. It happens per BUFFER. So, in the world of noise shaping floating point error, this is the one that stores up every tiniest bit of error and applies it, not interleaved but very smoothly, to the audio.What should happen as a result of this is, there’s a sense of ease from switching from interleaved to the smooth way. It might seem a little less lively, and I’ll have some plugins that retain the other way. But due to the greatly increased time during which the error is held, plugins that use the new noise shaping will be crazy good at presenting analog-like, seamless bass and mids. So, more soothing, possibly less exciting, but a huge jump in depth and naturalness.…in RELATIVE terms to what was there before. That’s the thing. I feel it’s possible that when you get used to it the change can be dimly sensed as a good thing. I don’t think you, or I, or anyone would be able to pick this out double blind. I can think of a mastering guy or two that MIGHT, but they’d struggle: these are people who take pains to dither to 24 bit and say that they sense something wrong if they don’t. It’s on the order of that, or even more subtle.But I do feel that one eventually senses the full range of a sound one works with, and more importantly if I can make something better I will do so, without hesitating.Have fun playing with Channel5. And if anyone needs to sound the alarm and say HEY! You need to stop using the new stuff! That noise is driving me crazy, and your noise shaping sounds awful now!…well, that’d be pretty funny :)"
+    "Channel has long been a sort of test-bed of mine, and so when I started working with new methods for some of my stuff it was an obvious choice. I’ve been asked for an extra Output level control, which it has (for those of you who are really into level matching, can’t fault you for that though sometimes I think it’s not relevant) but if you set Output to 1.0 it bypasses itself and becomes exactly, exactly the same as Channel4. Except for two things, which first appeared in Atmosphere: this lets you A/B them with the original versions, using Channel 4 and 5. One, I introduced the concept of live air denormalizing: before this (and on plugins I think are suited to it), Airwindows plugins watched for total digital black silence, and if it was present, produced an impossibly faint hiss sound, at around 300 dB down. If there was any audio at all that wasn’t digital black, this got switched off. With Atmosphere, it’s different: the denormalizing signal is always there, and if the result WITH the signal is digital black, then the signal’s subtracted again. Same result, but there’s a permanent noise hundreds of times quieter than typical ‘noise adding plugins’. The idea is that there can be no ‘dead’ silence, only ‘alive’ silence: you can’t save the file in normal formats and retain it (24 bit audio saving will simply turn this noise to digital black again), you most likely can’t hear it ever no matter what you do, but I wanted the deepest darkest silence to be alive rather than dead black nothingness. Two, it noise shapes to the floating point buss differently, and on the one hand I bet you can’t consistently hear it but on the other, I think it matters. Before, I used an interleaving technique much like I often use in IIR filters and plugs such as Capacitor. It related to the sample rate by forcing everything to be considered as the interaction between two or more samples, and the energy being brought back into the output audio provided corrections at high frequencies. What began with Atmosphere, and what you’ll (maybe) hear with Channel5, is a completely different and more radical approach. These plugins noise shape ALL the error energy back into the audio. It accumulates, sticks around, and so it can contribute to bass energy in tiny amounts because it persists over thousands and thousands of samples. There’s a ‘pull-back’ in the form of multiplying the amount by something like 0.999999, which will bleed built-up energy away, but this multiply doesn’t happen on a per-sample basis. It happens per BUFFER. So, in the world of noise shaping floating point error, this is the one that stores up every tiniest bit of error and applies it, not interleaved but very smoothly, to the audio. What should happen as a result of this is, there’s a sense of ease from switching from interleaved to the smooth way. It might seem a little less lively, and I’ll have some plugins that retain the other way. But due to the greatly increased time during which the error is held, plugins that use the new noise shaping will be crazy good at presenting analog-like, seamless bass and mids. So, more soothing, possibly less exciting, but a huge jump in depth and naturalness. …in RELATIVE terms to what was there before. That’s the thing. I feel it’s possible that when you get used to it the change can be dimly sensed as a good thing. I don’t think you, or I, or anyone would be able to pick this out double blind. I can think of a mastering guy or two that MIGHT, but they’d struggle: these are people who take pains to dither to 24 bit and say that they sense something wrong if they don’t. It’s on the order of that, or even more subtle. But I do feel that one eventually senses the full range of a sound one works with, and more importantly if I can make something better I will do so, without hesitating. Have fun playing with Channel5. And if anyone needs to sound the alarm and say HEY! You need to stop using the new stuff! That noise is driving me crazy, and your noise shaping sounds awful now! …well, that’d be pretty funny :)"
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -19,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Channel5 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cha5';
     double fpNShapeL;
     double fpNShapeR;
     bool fpFlip;
@@ -65,12 +70,31 @@ class Channel5 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: consoletype = value; break;
             case kParamB: drive = value; break;
             case kParamC: output = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
+        }
+        // we can also set other defaults here, and do calculations that only have to happen
+        // once when parameters actually change. Here is the 'popup' setting its (global) values.
+        // variables can also be set in the processreplacing loop, and there they'll be set every buffersize
+        // here they're set when a parameter's actually changed, which should be less frequent, but
+        // you must use global variables in the Channel4.h file to do it.
+        switch ((VstInt32)(consoletype * 2.999)) {
+            case 0:
+                iirAmount = 0.005832;
+                threshold = 0.33362176;
+                break; // Neve
+            case 1:
+                iirAmount = 0.004096;
+                threshold = 0.59969536;
+                break; // API
+            case 2:
+                iirAmount = 0.004913;
+                threshold = 0.84934656;
+                break; // SSL
+            default: break; // should not happen
         }
     }
 
@@ -101,7 +125,7 @@ class Channel5 final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "console type"; break;
+            case kParamA: return "consoletype"; break;
             case kParamB: return "drive"; break;
             case kParamC: return "output"; break;
 
@@ -124,26 +148,36 @@ class Channel5 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(consoletype); break;
-            case kParamB: return std::to_string(drive); break;
-            case kParamC: return std::to_string(output); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(consoletype * 2.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Neve", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "API", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "SSL", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: int2string((VstInt32)(drive * 100), text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(output, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return "%"; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "%", kVstMaxParamStrLen); break; // the percent
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

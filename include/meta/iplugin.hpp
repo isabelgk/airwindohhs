@@ -19,7 +19,7 @@ class IPlugin
     virtual std::string_view parameter_name(int index) = 0;
     virtual std::string_view parameter_title(int index) = 0;
     virtual std::string get_parameter_display(int index) = 0;
-    virtual std::string_view parameter_label(int index) = 0;
+    virtual std::string parameter_label(int index) = 0;
 
     virtual void setSampleRate(T sampleRate) = 0;
     virtual T getSampleRate() = 0;

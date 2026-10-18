@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "VinylDither is a high-performance dither that converts digital noise to ‘groove noise’."
 };
 constexpr std::string_view k_long_description{
-    "To explain this dither, I’ve got to talk about SACD (DSD) a little.There’s a super-hi-fi digital format known as DSD (direct stream digital). It uses a sample rate in the megahertz, but not as many bits (as few as one, even!) and is tricky to work with. It’s a bit like having Class D amplifiers: those also use an incredibly high frequency switching system, and produce a clear, fluid sound that totally lacks some audio flaws.DSD is like that. There are some things it does incredibly well, and other things it gets wrong. Notably, it’s incredibly good at delivering accuracy on deep bass notes, but it’s all over the place on supersonic frequencies and can produce a ‘splat’ of high-frequency overreaction if you drive it too hard there. The performance of DSD increases as frequency lowers. All its ugly is reserved for the super-highs, but nothing comes close in the midrange, low mids, bass and so on. That’s fundamental to how the format works: accuracy becomes a statistical pitch-related thing and the deeper you go, the more of a lock DSD has on the sonic truth.What if it was possible to emulate this behavior in a dither? First, you’d need to use a really intense noise shaper, not just dither noise. Then, you’d have to make it have the same frequency-related thing where lows get increased accuracy. And lastly, you’d pay the same price: it’d drive the error of the system into the highs and do a lot of unpredictable, ugly things there.Meet VinylDither! It’s the extension of an old dither I had called Ten Nines, which does exactly this. With Ten Nines I was able to get a noise floor under -200db on 16 bit audio (if I remember correctly)… but only at frequencies ten hertz and below! It also spit out loudish crackling noises at high frequencies. The experiment worked, but not everybody loved it.However, if you weren’t paying close attention, the noise behavior was kind of like record surface noise, and that gave me ideas.VinylDither is the result of pursuing those ideas. It’s a dither/noise shaper which completely removes the ‘steady white noise’ noise floor of normal dithered digital, and replaces it with a more crackly, surface-noise kind of sound. That’s produced from storing up error energy that would mess up your midrange and bass, and releasing it in bursts and sparks. VinylDither is the first of three dithers I’m releasing that are professional quality, boutique dithers and sonically better than TPDF. If it’s really important to you for your noise floor to be featureless and sound like white noise down there, you won’t want this. However, if you’re an analogophile and like vinyl records, you’ll instantly recognize the ‘vibe’ of this one. It does an incredibly good job at giving ‘vinyl’ clues down at the threshold of hearing but this is not a ‘sound effect’ being added, it’s the natural digital error being rearranged to get that effect.So, if you want ‘vinyl’ effects added to your mix so it sounds like a retro vinyl record coming off the computer, this is the single subtlest way you can do that, plus you could combine it with other things (like the Audio Unit ‘ToVinyl’ which does elliptical EQ and has an amazing groove wear emulation built in) and get a completely different vibe. Wrecking your sounds with heavy overprocessing isn’t necessary! You can just pick specific things to give a more subtle vinyl feel, and VinylDither is the perfect dither choice for it. Yes, it’s got more depth and warmth and vibe than plain old TPDF (or truncation), but I think the interesting part is examining the faults of VinylDither (crackling noises, not smooth noise) and understanding how they can be turned into advantages (crackling noises OK, do not correct! As it says on my vinyl copy of Live At Leeds cooge )"
+    "To explain this dither, I’ve got to talk about SACD (DSD) a little. There’s a super-hi-fi digital format known as DSD (direct stream digital). It uses a sample rate in the megahertz, but not as many bits (as few as one, even!) and is tricky to work with. It’s a bit like having Class D amplifiers: those also use an incredibly high frequency switching system, and produce a clear, fluid sound that totally lacks some audio flaws. DSD is like that. There are some things it does incredibly well, and other things it gets wrong. Notably, it’s incredibly good at delivering accuracy on deep bass notes, but it’s all over the place on supersonic frequencies and can produce a ‘splat’ of high-frequency overreaction if you drive it too hard there. The performance of DSD increases as frequency lowers. All its ugly is reserved for the super-highs, but nothing comes close in the midrange, low mids, bass and so on. That’s fundamental to how the format works: accuracy becomes a statistical pitch-related thing and the deeper you go, the more of a lock DSD has on the sonic truth. What if it was possible to emulate this behavior in a dither? First, you’d need to use a really intense noise shaper, not just dither noise. Then, you’d have to make it have the same frequency-related thing where lows get increased accuracy. And lastly, you’d pay the same price: it’d drive the error of the system into the highs and do a lot of unpredictable, ugly things there. Meet VinylDither! It’s the extension of an old dither I had called Ten Nines, which does exactly this. With Ten Nines I was able to get a noise floor under -200db on 16 bit audio (if I remember correctly)… but only at frequencies ten hertz and below! It also spit out loudish crackling noises at high frequencies. The experiment worked, but not everybody loved it. However, if you weren’t paying close attention, the noise behavior was kind of like record surface noise, and that gave me ideas. VinylDither is the result of pursuing those ideas. It’s a dither/noise shaper which completely removes the ‘steady white noise’ noise floor of normal dithered digital, and replaces it with a more crackly, surface-noise kind of sound. That’s produced from storing up error energy that would mess up your midrange and bass, and releasing it in bursts and sparks. VinylDither is the first of three dithers I’m releasing that are professional quality, boutique dithers and sonically better than TPDF. If it’s really important to you for your noise floor to be featureless and sound like white noise down there, you won’t want this. However, if you’re an analogophile and like vinyl records, you’ll instantly recognize the ‘vibe’ of this one. It does an incredibly good job at giving ‘vinyl’ clues down at the threshold of hearing but this is not a ‘sound effect’ being added, it’s the natural digital error being rearranged to get that effect. So, if you want ‘vinyl’ effects added to your mix so it sounds like a retro vinyl record coming off the computer, this is the single subtlest way you can do that, plus you could combine it with other things (like the Audio Unit ‘ToVinyl’ which does elliptical EQ and has an amazing groove wear emulation built in) and get a completely different vibe. Wrecking your sounds with heavy overprocessing isn’t necessary! You can just pick specific things to give a more subtle vinyl feel, and VinylDither is the perfect dither choice for it. Yes, it’s got more depth and warmth and vibe than plain old TPDF (or truncation), but I think the interesting part is examining the faults of VinylDither (crackling noises, not smooth noise) and understanding how they can be turned into advantages (crackling noises OK, do not correct! As it says on my vinyl copy of Live At Leeds cooge )"
 };
 constexpr std::string_view k_tags{
     "dithers"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class VinylDither final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'vdth';
     double NSOddL;
     double prevL;
     double nsL[16];
@@ -93,19 +97,16 @@ class VinylDither final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -116,8 +117,7 @@ class VinylDither final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.0; break;
 
@@ -128,8 +128,7 @@ class VinylDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "quant"; break;
             case kParamB: return "derez"; break;
 
@@ -140,8 +139,7 @@ class VinylDither final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Quant"; break;
             case kParamB: return "DeRez"; break;
 
@@ -152,26 +150,33 @@ class VinylDither final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 1.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "CD 16", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "HD 24", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -205,8 +210,7 @@ class VinylDither final : public Effect<T>
         if (outScale < 8.0) {
             outScale = 8.0;
         }
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

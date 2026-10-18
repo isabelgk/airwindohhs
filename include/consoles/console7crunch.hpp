@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Console7Crunch shows you Cascade but with its EQ weighted for more edge and grit."
 };
 constexpr std::string_view k_long_description{
-    "Console7Crunch is a variation on Console7Cascade, to experiment with something. Cascade stacked up distortion algorithms inside an instance of Ultrasonic, basically. For that reason, it distorted the super-highs very early on, and compensated for this in later stages, rolling off brightness and smoothing the distortion out. Well, with experiments like UltrasonX, and some upcoming even-more-intense filtering of that nature, I wanted to do a variation on Console7Cascade where the ONLY thing I changed was the order of the filtering. They’re supposed to combine to a perfectly flat multistage filter, and they do… but the way it hits nonlinearities and clipping is a whole other story.The result is a Console7Cascade that’s more crunchy, with more obvious clipping and an additional ability to deliver distorted punch in the extreme highs: Console7Crunch. It’s not wildly different (all this is meant to be ultrasonic! But of course it affects everything anyhow) but it’s a noticeably different color for when you’re looking for higher gain in the Console7 system. I hope you like it, and I found the experiment interesting."
+    "Console7Crunch is a variation on Console7Cascade, to experiment with something. Cascade stacked up distortion algorithms inside an instance of Ultrasonic, basically. For that reason, it distorted the super-highs very early on, and compensated for this in later stages, rolling off brightness and smoothing the distortion out. Well, with experiments like UltrasonX, and some upcoming even-more-intense filtering of that nature, I wanted to do a variation on Console7Cascade where the ONLY thing I changed was the order of the filtering. They’re supposed to combine to a perfectly flat multistage filter, and they do… but the way it hits nonlinearities and clipping is a whole other story. The result is a Console7Cascade that’s more crunchy, with more obvious clipping and an additional ability to deliver distorted punch in the extreme highs: Console7Crunch. It’s not wildly different (all this is meant to be ultrasonic! But of course it affects everything anyhow) but it’s a noticeably different color for when you’re looking for higher gain in the Console7 system. I hope you like it, and I found the experiment interesting."
 };
 constexpr std::string_view k_tags{
     "consoles"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Console7Crunch final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cont';
     double gainchase;
     double chasespeed;
     double biquadA[15];
@@ -64,18 +68,15 @@ class Console7Crunch final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -85,8 +86,7 @@ class Console7Crunch final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.39; break;
 
             default: break;
@@ -96,8 +96,7 @@ class Console7Crunch final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "crunch"; break;
 
             default: break;
@@ -107,8 +106,7 @@ class Console7Crunch final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Crunch"; break;
 
             default: break;
@@ -118,24 +116,24 @@ class Console7Crunch final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -196,8 +194,7 @@ class Console7Crunch final : public Effect<T>
         biquadE[4] = biquadE[2];
         biquadE[5] = 2.0 * (K * K - 1.0) * norm;
         biquadE[6] = (1.0 - K / biquadE[1] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

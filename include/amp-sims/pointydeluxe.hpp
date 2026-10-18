@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PointyDeluxe devours all mix space."
 };
 constexpr std::string_view k_long_description{
-    "So this is one of the strangest things I've ever made. This is not normal.What happens with PointyGuitar is, successive stages of EQ and saturation zero in on the tone of a guitar sound, which is also gated and run through a separate filterbank that's just a very steep and intensely colorful cutoff. You get intense tone shaping and the type of sonic confinement a speaker cab would give, at least to some extent: and though the colorfulness twists the phase like a physical speaker might, there are no resonances or colorations so there's a sonority there.So what happens when you remove the gate and also the extra filterbank and use all the controls solely for fine-grained control over the core amp engine?Terrifying, bad things :)The thing is, PointyGuitar has the same number of bands PointyDeluxe has. Internally, it uses double the filter bands that you see in the controls. What it's doing is splitting the difference, smoothing the curve by applying intermediate settings.With PointyDeluxe, you get to make a radical departure from this, and boost or cut much narrower bands… but it's using the AngleEQ code, which is not as stable as you'd think. So, in the same way that PointyGuitar can get frisky when you twist the knobs too much, PointyDeluxe can be unstable… more. In particular, if you boost a band and try to cut the band just below it, things get real messy. If you boost any band, that's where added gain comes from: it'll track whatever is the loudest band and set the gain from that. If you cut, there's a built-in pad which attenuates the whole output based on which band is the least. Any band set to zero will silence the plugin. If you set bands to almost nearly zero… it will probably not stop PointyDeluxe from exploding with strange howling noise.Such are the fates of deeply abnormal plugins… at least Airwindows ones. This is one of the best plugins I've ever made for resembling a strange circuit board found in a drawer, which delivers wild pungent noises before it burns out. However, PointyDeluxe, being software, needn't burn out.When you try to use it for good, what happens? The bands are named after Slipperman's Distorted Guitars From Hell, which seems appropriate. You can take a suitable band like 'Pick' and crank it up until it chugs. You can cut back the top two bands, Fizz and Hell (as in 'road to hell, lose a windshield up here') until the chug isn't that grating. You'll have to dial back the lows as the boost affects them too, and you'll have to make two slopes, one dialing it back until you reach another boost at H Meat or L Meat, and then below that you'll have to dial it back more, though you can't go too steep. All the 'sweet spots' for every band will be very fussy. But because of the topology of PointyDeluxe, you can do it. It'll be trying to blow up every second… some settings will sound like the amp is literally melting… but it can be done, you can replicate the tonal signature of a huge high-gain amp in PointyDeluxe.And it sounds totally insane. What is it? It's distilled essence of heavy guitar without any blur or coloration. It's the searing intensity of a heavy amp (because of up to fifteen stages of EQ and overdrive) but this applies only to the chug, and because of how high gain distortion works, the full range sound is also constantly present around the edges. Functionally, that means the guitar sound gets shaped into chug or other sorts of intensity, but it also takes up ALL the space. There's no gloss to the highs, no rumble to the lows, it's stripped and bare in the weirdest way and three guitars of high gain PointyDeluxe might as well be a hundred.My hope was to make the densest, most brutal heavy guitar tone ever. Didn't occur to me to ask 'is there such a thing as too brutal?' until I'd fired it up, using a new budget extended range guitar I got just for the purpose, and heard what I'd made.There is probably such a thing as too brutal, and this is probably it. If you have a place for that, have fun!"
+    "So this is one of the strangest things I've ever made. This is not normal. What happens with PointyGuitar is, successive stages of EQ and saturation zero in on the tone of a guitar sound, which is also gated and run through a separate filterbank that's just a very steep and intensely colorful cutoff. You get intense tone shaping and the type of sonic confinement a speaker cab would give, at least to some extent: and though the colorfulness twists the phase like a physical speaker might, there are no resonances or colorations so there's a sonority there. So what happens when you remove the gate and also the extra filterbank and use all the controls solely for fine-grained control over the core amp engine? Terrifying, bad things :) The thing is, PointyGuitar has the same number of bands PointyDeluxe has. Internally, it uses double the filter bands that you see in the controls. What it's doing is splitting the difference, smoothing the curve by applying intermediate settings. With PointyDeluxe, you get to make a radical departure from this, and boost or cut much narrower bands… but it's using the AngleEQ code, which is not as stable as you'd think. So, in the same way that PointyGuitar can get frisky when you twist the knobs too much, PointyDeluxe can be unstable… more. In particular, if you boost a band and try to cut the band just below it, things get real messy. If you boost any band, that's where added gain comes from: it'll track whatever is the loudest band and set the gain from that. If you cut, there's a built-in pad which attenuates the whole output based on which band is the least. Any band set to zero will silence the plugin. If you set bands to almost nearly zero… it will probably not stop PointyDeluxe from exploding with strange howling noise. Such are the fates of deeply abnormal plugins… at least Airwindows ones. This is one of the best plugins I've ever made for resembling a strange circuit board found in a drawer, which delivers wild pungent noises before it burns out. However, PointyDeluxe, being software, needn't burn out. When you try to use it for good, what happens? The bands are named after Slipperman's Distorted Guitars From Hell, which seems appropriate. You can take a suitable band like 'Pick' and crank it up until it chugs. You can cut back the top two bands, Fizz and Hell (as in 'road to hell, lose a windshield up here') until the chug isn't that grating. You'll have to dial back the lows as the boost affects them too, and you'll have to make two slopes, one dialing it back until you reach another boost at H Meat or L Meat, and then below that you'll have to dial it back more, though you can't go too steep. All the 'sweet spots' for every band will be very fussy. But because of the topology of PointyDeluxe, you can do it. It'll be trying to blow up every second… some settings will sound like the amp is literally melting… but it can be done, you can replicate the tonal signature of a huge high-gain amp in PointyDeluxe. And it sounds totally insane. What is it? It's distilled essence of heavy guitar without any blur or coloration. It's the searing intensity of a heavy amp (because of up to fifteen stages of EQ and overdrive) but this applies only to the chug, and because of how high gain distortion works, the full range sound is also constantly present around the edges. Functionally, that means the guitar sound gets shaped into chug or other sorts of intensity, but it also takes up ALL the space. There's no gloss to the highs, no rumble to the lows, it's stripped and bare in the weirdest way and three guitars of high gain PointyDeluxe might as well be a hundred. My hope was to make the densest, most brutal heavy guitar tone ever. Didn't occur to me to ask 'is there such a thing as too brutal?' until I'd fired it up, using a new budget extended range guitar I got just for the purpose, and heard what I'd made. There is probably such a thing as too brutal, and this is probably it. If you have a place for that, have fun!"
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PointyDeluxe final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pudx';
     float A;
     float B;
     float C;
@@ -30,19 +34,33 @@ class PointyDeluxe final : public Effect<T>
     float H;
     float I;
     float J;
+    enum
+    {
+        bip_dvLA,
+        bip_dvLB,
+        bip_dvLC,
+        bip_dvLD,
+        bip_pvLA,
+        bip_pvLB,
+        bip_pvLC,
+        bip_pvLD,
+        bip_dvRA,
+        bip_dvRB,
+        bip_dvRC,
+        bip_dvRD,
+        bip_pvRA,
+        bip_pvRB,
+        bip_pvRC,
+        bip_pvRD,
+        bip_total // each distortion section can have one of these, it stacks well
+    }; // not remotely elliptic BLEP antialiasing, instead it is derivative BIP :D
+    double bip[bip_total][16];
+    double bop[bip_total];
     double angSL[18][16];
     double angAL[18][16];
     double angSR[18][16];
     double angAR[18][16];
     double angG[16];
-    double lastSampleL;
-    double intermediateL[16];
-    bool wasPosClipL;
-    bool wasNegClipL;
-    double lastSampleR;
-    double intermediateR[16];
-    bool wasPosClipR;
-    bool wasNegClipR; // Stereo ClipOnly2
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -70,16 +88,12 @@ class PointyDeluxe final : public Effect<T>
         }
         for (int y = 0; y < 14; y++) {
             angG[y] = 0.0;
+            for (int x = 0; x < bip_total; x++) {
+                bip[x][y] = 0.0;
+            }
         }
-        lastSampleL = 0.0;
-        wasPosClipL = false;
-        wasNegClipL = false;
-        lastSampleR = 0.0;
-        wasPosClipR = false;
-        wasNegClipR = false;
-        for (int x = 0; x < 16; x++) {
-            intermediateL[x] = 0.0;
-            intermediateR[x] = 0.0;
+        for (int x = 0; x < bip_total; x++) {
+            bop[x] = 0.0;
         }
         fpdL = 1.0;
         while (fpdL < 16386) {
@@ -109,7 +123,7 @@ class PointyDeluxe final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -120,8 +134,7 @@ class PointyDeluxe final : public Effect<T>
             case kParamH: H = value; break;
             case kParamI: I = value; break;
             case kParamJ: J = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -172,8 +185,8 @@ class PointyDeluxe final : public Effect<T>
             case kParamD: return "satan"; break;
             case kParamE: return "danger"; break;
             case kParamF: return "crtical"; break;
-            case kParamG: return "h meat"; break;
-            case kParamH: return "l meat"; break;
+            case kParamG: return "hmeat"; break;
+            case kParamH: return "lmeat"; break;
             case kParamI: return "swing"; break;
             case kParamJ: return "rarely"; break;
 
@@ -203,40 +216,42 @@ class PointyDeluxe final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
-            case kParamJ: return std::to_string(J); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string(J, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-            case kParamJ: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -330,13 +345,6 @@ class PointyDeluxe final : public Effect<T>
         pad = sqrt(pad);
         int poles = (int)(drive * 11.0);
         double tune = 0.618 + (overallscale * 0.0055);
-        int spacing = floor(overallscale); // should give us working basic scaling, usually 2 or 4
-        if (spacing < 1) {
-            spacing = 1;
-        }
-        if (spacing > 16) {
-            spacing = 16;
-        }
         while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
@@ -360,7 +368,42 @@ class PointyDeluxe final : public Effect<T>
                 }
                 inputSampleL += band;
                 inputSampleL *= drive;
-                inputSampleL -= fmin(fmax((inputSampleL * (fabs(inputSampleL) * 0.654) * (fabs(inputSampleL) * 0.654)), -1.0), 1.0);
+                double bip_delta = inputSampleL; // delta can be just local and re-used
+                inputSampleL = fmin(fmax(inputSampleL, -M_PI_2), M_PI_2);
+                long double X = inputSampleL;
+                X *= X; // long double for even
+                long double temp = inputSampleL * X; // the initial multiplies
+                inputSampleL -= temp * 0.16666666666666666666666666666666666;
+                temp *= X;
+                inputSampleL += temp * 0.00833333333333333333333333333333333;
+                temp *= X;
+                inputSampleL -= temp * 0.00019841269841269841269841269841269;
+                temp *= X;
+                inputSampleL += temp * 0.00000275573192239858906525573192239;
+                temp *= X;
+                inputSampleL -= temp * 0.00000002505210838544171877521083854;
+                temp *= X;
+                inputSampleL += temp * 0.00000000016059043836821614599392377;
+                temp *= X;
+                inputSampleL -= temp * 0.00000000000076471637318198164759011;
+                temp *= X;
+                inputSampleL += temp * 0.00000000000000281145725434552076319;
+                temp *= X;
+                inputSampleL -= temp * 0.00000000000000000822063524662432971;
+                temp *= X;
+                inputSampleL += temp * 0.00000000000000000001957294106339126;
+                // retain mantissa of a long double increasing power function
+                // long double probably doesn't handle more than 36 digits or so
+                bip[bip_dvLA][x] = bip_delta - inputSampleL; // these are derivatives: raw clip is position
+                bip[bip_dvLB][x] = bip[bip_pvLA][x] - bip[bip_dvLA][x];
+                bip[bip_pvLA][x] = bip[bip_dvLA][x]; // velocity
+                bip[bip_dvLC][x] = bip[bip_pvLB][x] - bip[bip_dvLB][x];
+                bip[bip_pvLB][x] = bip[bip_dvLB][x]; // acceleration
+                bip[bip_dvLD][x] = bip[bip_pvLC][x] - bip[bip_dvLC][x];
+                bip[bip_pvLC][x] = bip[bip_dvLC][x]; // jerk
+                double bip_dvE = bip[bip_pvLD][x] - bip[bip_dvLD][x];
+                bip[bip_pvLD][x] = bip[bip_dvLD][x]; // snap
+                inputSampleL *= (1.0 + (fabs(bip[bip_dvLC][x]) * 0.0618) + (fabs(bip[bip_dvLD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
                 fr = (0.92 / overallscale) + (overallscale * 0.01);
                 band = inputSampleR;
                 inputSampleR = 0.0;
@@ -374,101 +417,135 @@ class PointyDeluxe final : public Effect<T>
                 }
                 inputSampleR += band;
                 inputSampleR *= drive;
-                inputSampleR -= fmin(fmax((inputSampleR * (fabs(inputSampleR) * 0.654) * (fabs(inputSampleR) * 0.654)), -1.0), 1.0);
+                bip_delta = inputSampleR; // delta can be just local and re-used
+                inputSampleR = fmin(fmax(inputSampleR, -M_PI_2), M_PI_2);
+                X = inputSampleR;
+                X *= X; // long double for even
+                temp = inputSampleR * X; // the initial multiplies
+                inputSampleR -= temp * 0.16666666666666666666666666666666666;
+                temp *= X;
+                inputSampleR += temp * 0.00833333333333333333333333333333333;
+                temp *= X;
+                inputSampleR -= temp * 0.00019841269841269841269841269841269;
+                temp *= X;
+                inputSampleR += temp * 0.00000275573192239858906525573192239;
+                temp *= X;
+                inputSampleR -= temp * 0.00000002505210838544171877521083854;
+                temp *= X;
+                inputSampleR += temp * 0.00000000016059043836821614599392377;
+                temp *= X;
+                inputSampleR -= temp * 0.00000000000076471637318198164759011;
+                temp *= X;
+                inputSampleR += temp * 0.00000000000000281145725434552076319;
+                temp *= X;
+                inputSampleR -= temp * 0.00000000000000000822063524662432971;
+                temp *= X;
+                inputSampleR += temp * 0.00000000000000000001957294106339126;
+                // retain mantissa of a long double increasing power function
+                // long double probably doesn't handle more than 36 digits or so
+                bip[bip_dvRA][x] = bip_delta - inputSampleR; // these are derivatives: raw clip is position
+                bip[bip_dvRB][x] = bip[bip_pvRA][x] - bip[bip_dvRA][x];
+                bip[bip_pvRA][x] = bip[bip_dvRA][x]; // velocity
+                bip[bip_dvRC][x] = bip[bip_pvRB][x] - bip[bip_dvRB][x];
+                bip[bip_pvRB][x] = bip[bip_dvRB][x]; // acceleration
+                bip[bip_dvRD][x] = bip[bip_pvRC][x] - bip[bip_dvRC][x];
+                bip[bip_pvRC][x] = bip[bip_dvRC][x]; // jerk
+                bip_dvE = bip[bip_pvRD][x] - bip[bip_dvRD][x];
+                bip[bip_pvRD][x] = bip[bip_dvRD][x]; // snap
+                inputSampleR *= (1.0 + (fabs(bip[bip_dvRC][x]) * 0.0618) + (fabs(bip[bip_dvRD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
             }
             if (pad < 1.0) {
                 inputSampleL *= pad;
                 inputSampleR *= pad;
             }
-            // begin ClipOnly2 stereo as a little, compressed chunk that can be dropped into code
-            if (inputSampleL > 4.0) {
-                inputSampleL = 4.0;
-            }
-            if (inputSampleL < -4.0) {
-                inputSampleL = -4.0;
-            }
-            if (wasPosClipL == true) { // current will be over
-                if (inputSampleL < lastSampleL) {
-                    lastSampleL = 0.7058208 + (inputSampleL * 0.2609148);
-                }
-                else {
-                    lastSampleL = 0.2491717 + (lastSampleL * 0.7390851);
-                }
-            }
-            wasPosClipL = false;
-            if (inputSampleL > 0.9549925859) {
-                wasPosClipL = true;
-                inputSampleL = 0.7058208 + (lastSampleL * 0.2609148);
-            }
-            if (wasNegClipL == true) { // current will be -over
-                if (inputSampleL > lastSampleL) {
-                    lastSampleL = -0.7058208 + (inputSampleL * 0.2609148);
-                }
-                else {
-                    lastSampleL = -0.2491717 + (lastSampleL * 0.7390851);
-                }
-            }
-            wasNegClipL = false;
-            if (inputSampleL < -0.9549925859) {
-                wasNegClipL = true;
-                inputSampleL = -0.7058208 + (lastSampleL * 0.2609148);
-            }
-            intermediateL[spacing] = inputSampleL;
-            inputSampleL = lastSampleL; // Latency is however many samples equals one 44.1k sample
-            for (int x = spacing; x > 0; x--) {
-                intermediateL[x - 1] = intermediateL[x];
-            }
-            lastSampleL = intermediateL[0]; // run a little buffer to handle this
-            if (inputSampleR > 4.0) {
-                inputSampleR = 4.0;
-            }
-            if (inputSampleR < -4.0) {
-                inputSampleR = -4.0;
-            }
-            if (wasPosClipR == true) { // current will be over
-                if (inputSampleR < lastSampleR) {
-                    lastSampleR = 0.7058208 + (inputSampleR * 0.2609148);
-                }
-                else {
-                    lastSampleR = 0.2491717 + (lastSampleR * 0.7390851);
-                }
-            }
-            wasPosClipR = false;
-            if (inputSampleR > 0.9549925859) {
-                wasPosClipR = true;
-                inputSampleR = 0.7058208 + (lastSampleR * 0.2609148);
-            }
-            if (wasNegClipR == true) { // current will be -over
-                if (inputSampleR > lastSampleR) {
-                    lastSampleR = -0.7058208 + (inputSampleR * 0.2609148);
-                }
-                else {
-                    lastSampleR = -0.2491717 + (lastSampleR * 0.7390851);
-                }
-            }
-            wasNegClipR = false;
-            if (inputSampleR < -0.9549925859) {
-                wasNegClipR = true;
-                inputSampleR = -0.7058208 + (lastSampleR * 0.2609148);
-            }
-            intermediateR[spacing] = inputSampleR;
-            inputSampleR = lastSampleR; // Latency is however many samples equals one 44.1k sample
-            for (int x = spacing; x > 0; x--) {
-                intermediateR[x - 1] = intermediateR[x];
-            }
-            lastSampleR = intermediateR[0]; // run a little buffer to handle this
-            // end ClipOnly2 stereo as a little, compressed chunk that can be dropped into code
+            double bop_delta = inputSampleL; // delta can be just local and re-used
+            inputSampleL = fmin(fmax(inputSampleL, -M_PI_2), M_PI_2);
+            long double X = inputSampleL;
+            X *= X; // long double for even
+            long double temp = inputSampleL * X; // the initial multiplies
+            inputSampleL -= temp * 0.16666666666666666666666666666666666;
+            temp *= X;
+            inputSampleL += temp * 0.00833333333333333333333333333333333;
+            temp *= X;
+            inputSampleL -= temp * 0.00019841269841269841269841269841269;
+            temp *= X;
+            inputSampleL += temp * 0.00000275573192239858906525573192239;
+            temp *= X;
+            inputSampleL -= temp * 0.00000002505210838544171877521083854;
+            temp *= X;
+            inputSampleL += temp * 0.00000000016059043836821614599392377;
+            temp *= X;
+            inputSampleL -= temp * 0.00000000000076471637318198164759011;
+            temp *= X;
+            inputSampleL += temp * 0.00000000000000281145725434552076319;
+            temp *= X;
+            inputSampleL -= temp * 0.00000000000000000822063524662432971;
+            temp *= X;
+            inputSampleL += temp * 0.00000000000000000001957294106339126;
+            // retain mantissa of a long double increasing power function
+            // long double probably doesn't handle more than 36 digits or so
+            bop[bip_dvLA] = bop_delta - inputSampleL; // these are derivatives: raw clip is position
+            bop[bip_dvLB] = bop[bip_pvLA] - bop[bip_dvLA];
+            bop[bip_pvLA] = bop[bip_dvLA]; // velocity
+            bop[bip_dvLC] = bop[bip_pvLB] - bop[bip_dvLB];
+            bop[bip_pvLB] = bop[bip_dvLB]; // acceleration
+            bop[bip_dvLD] = bop[bip_pvLC] - bop[bip_dvLC];
+            bop[bip_pvLC] = bop[bip_dvLC]; // jerk
+            double bop_dvE = bop[bip_pvLD] - bop[bip_dvLD];
+            bop[bip_pvLD] = bop[bip_dvLD]; // snap
+            inputSampleL *= (1.0 + (fabs(bop[bip_dvLC]) * 0.0618) + (fabs(bop[bip_dvLD]) * -0.05982) + (fabs(bop_dvE) * 0.0206));
+            bop_delta = inputSampleR; // delta can be just local and re-used
+            inputSampleR = fmin(fmax(inputSampleR, -M_PI_2), M_PI_2);
+            X = inputSampleR;
+            X *= X; // long double for even
+            temp = inputSampleR * X; // the initial multiplies
+            inputSampleR -= temp * 0.16666666666666666666666666666666666;
+            temp *= X;
+            inputSampleR += temp * 0.00833333333333333333333333333333333;
+            temp *= X;
+            inputSampleR -= temp * 0.00019841269841269841269841269841269;
+            temp *= X;
+            inputSampleR += temp * 0.00000275573192239858906525573192239;
+            temp *= X;
+            inputSampleR -= temp * 0.00000002505210838544171877521083854;
+            temp *= X;
+            inputSampleR += temp * 0.00000000016059043836821614599392377;
+            temp *= X;
+            inputSampleR -= temp * 0.00000000000076471637318198164759011;
+            temp *= X;
+            inputSampleR += temp * 0.00000000000000281145725434552076319;
+            temp *= X;
+            inputSampleR -= temp * 0.00000000000000000822063524662432971;
+            temp *= X;
+            inputSampleR += temp * 0.00000000000000000001957294106339126;
+            // retain mantissa of a long double increasing power function
+            // long double probably doesn't handle more than 36 digits or so
+            bop[bip_dvRA] = bop_delta - inputSampleR; // these are derivatives: raw clip is position
+            bop[bip_dvRB] = bop[bip_pvRA] - bop[bip_dvRA];
+            bop[bip_pvRA] = bop[bip_dvRA]; // velocity
+            bop[bip_dvRC] = bop[bip_pvRB] - bop[bip_dvRB];
+            bop[bip_pvRB] = bop[bip_dvRB]; // acceleration
+            bop[bip_dvRD] = bop[bip_pvRC] - bop[bip_dvRC];
+            bop[bip_pvRC] = bop[bip_dvRC]; // jerk
+            bop_dvE = bop[bip_pvRD] - bop[bip_dvRD];
+            bop[bip_pvRD] = bop[bip_dvRD]; // snap
+            inputSampleR *= (1.0 + (fabs(bop[bip_dvRC]) * 0.0618) + (fabs(bop[bip_dvRD]) * -0.05982) + (fabs(bop_dvE) * 0.0206));
             // begin 64 bit stereo floating point dither
             // int expon; frexp((double)inputSampleL, &expon);
             fpdL ^= fpdL << 13;
             fpdL ^= fpdL >> 17;
             fpdL ^= fpdL << 5;
-            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 3.553e-44l * pow(2,expon+62));
             // frexp((double)inputSampleR, &expon);
             fpdR ^= fpdR << 13;
             fpdR ^= fpdR >> 17;
             fpdR ^= fpdR << 5;
-            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
+            if (fpdL - fpdR < 1073741824 || fpdR - fpdL < 1073741824) {
+                fpdR ^= fpdR << 13;
+                fpdR ^= fpdR >> 17;
+                fpdR ^= fpdR << 5;
+            }
+            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 3.553e-44l * pow(2,expon+62));
             // end 64 bit stereo floating point dither
             *out1 = inputSampleL;
             *out2 = inputSampleR;

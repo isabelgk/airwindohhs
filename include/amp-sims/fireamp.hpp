@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "FireAmp is a bright, loud, tubey amp sim for leads and dirt guitar."
 };
 constexpr std::string_view k_long_description{
-    "FireAmp is sort of Marshally, compared to the other Airwindows amp sims. It is midrangey and doesn't give very heavy bass or chug, but it's got a characteristic high-mid tone and would work well for some kinds of guitars/tracks, or as layering to bring more of its quality to a larger mix.FireAmp’s the first in a set of old/new plugins I’m doing. They’re the opposite of your usual guitar plugin arsenal: no multi-effects, no squishy thick tone color, barely even settings. FireAmp is ONE tone, that aligns with some kinds of things I like to do with guitars. It sits in the mix like a classic rock track: you’re hearing it with a set of retro tones that blend with FireAmp (in fact, the bass is a Rickenbacker, and the neck pickup’s through another upcoming Airwindows amp sim but the bridge pickup is also through FireAmp).If you want to get freaky with it and want a tone stack, you might try putting ZNotch in front of it, or MackEQ… your tone stack doesn’t HAVE to be part of the amp sim plugin. Just sayin’.It runs zero latency so you can track through it. It’s loud, bright and sonorous, raw as hell, high impact, no gloss or glitz. Even if it’s not your pet sound you might find a use for FireAmp on layered guitars or other sounds… and unlike the original, it has undersampled FireCab built in for its matched tone, and it has a sophisticated dry/wet control that begins giving you raw amp AND raw signal to provide a range of more open tonalities through the high gain amp sim madness. This makes it an interesting choice for dirtying up non-guitar signals: the dry/wet will let you tailor that in interesting ways.I hope you like it. There’s more to come, all of them just as quirky and one-trick pony as FireAmp. Back in the day, I liked to alternate real miked guitar amp usage, with stuff like the Rockman, to get different textures. FireAmp is one such different texture, and you never can tell when it might be useful :)"
+    "FireAmp is sort of Marshally, compared to the other Airwindows amp sims. It is midrangey and doesn't give very heavy bass or chug, but it's got a characteristic high-mid tone and would work well for some kinds of guitars/tracks, or as layering to bring more of its quality to a larger mix. FireAmp’s the first in a set of old/new plugins I’m doing. They’re the opposite of your usual guitar plugin arsenal: no multi-effects, no squishy thick tone color, barely even settings. FireAmp is ONE tone, that aligns with some kinds of things I like to do with guitars. It sits in the mix like a classic rock track: you’re hearing it with a set of retro tones that blend with FireAmp (in fact, the bass is a Rickenbacker, and the neck pickup’s through another upcoming Airwindows amp sim but the bridge pickup is also through FireAmp). If you want to get freaky with it and want a tone stack, you might try putting ZNotch in front of it, or MackEQ… your tone stack doesn’t HAVE to be part of the amp sim plugin. Just sayin’. It runs zero latency so you can track through it. It’s loud, bright and sonorous, raw as hell, high impact, no gloss or glitz. Even if it’s not your pet sound you might find a use for FireAmp on layered guitars or other sounds… and unlike the original, it has undersampled FireCab built in for its matched tone, and it has a sophisticated dry/wet control that begins giving you raw amp AND raw signal to provide a range of more open tonalities through the high gain amp sim madness. This makes it an interesting choice for dirtying up non-guitar signals: the dry/wet will let you tailor that in interesting ways. I hope you like it. There’s more to come, all of them just as quirky and one-trick pony as FireAmp. Back in the day, I liked to alternate real miked guitar amp usage, with stuff like the Rockman, to get different textures. FireAmp is one such different texture, and you never can tell when it might be useful :)"
 };
 constexpr std::string_view k_tags{
     "amp-sims"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class FireAmp final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'fira';
     double lastSampleL;
     double storeSampleL;
     double smoothAL;
@@ -118,11 +122,9 @@ class FireAmp final : public Effect<T>
     double fixD[fix_total];
     double fixE[fix_total];
     double fixF[fix_total]; // filtering
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     float A;
     float B;
     float C;
@@ -248,21 +250,18 @@ class FireAmp final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -275,8 +274,7 @@ class FireAmp final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.8; break;
@@ -289,12 +287,11 @@ class FireAmp final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "gain"; break;
             case kParamB: return "tone"; break;
             case kParamC: return "output"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -303,8 +300,7 @@ class FireAmp final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Gain"; break;
             case kParamB: return "Tone"; break;
             case kParamC: return "Output"; break;
@@ -317,30 +313,30 @@ class FireAmp final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -438,8 +434,7 @@ class FireAmp final : public Effect<T>
         fixF[fix_a2] = fixF[fix_a0];
         fixF[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixF[fix_b2] = (1.0 - K / fixF[fix_reso] + K * K) * norm;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -819,15 +814,13 @@ class FireAmp final : public Effect<T>
             }
             double resultBL = 0.0;
             double resultBR = 0.0;
-            if (flip)
-            {
+            if (flip) {
                 OddL[count + 128] = OddL[count] = iirSpkAL;
                 resultBL = (OddL[count + down] + OddL[count + side] + OddL[count + diagonal]);
                 OddR[count + 128] = OddR[count] = iirSpkAR;
                 resultBR = (OddR[count + down] + OddR[count + side] + OddR[count + diagonal]);
             }
-            else
-            {
+            else {
                 EvenL[count + 128] = EvenL[count] = iirSpkAL;
                 resultBL = (EvenL[count + down] + EvenL[count + side] + EvenL[count + diagonal]);
                 EvenR[count + 128] = EvenR[count] = iirSpkAR;

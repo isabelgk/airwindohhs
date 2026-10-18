@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Nikola is an Audio Tesla Coil plugin! Note: audio tesla coils don't sound nice."
 };
 constexpr std::string_view k_long_description{
-    "Sorry/not sorry!Nikola was, I think, an April Fool’s plugin back in the day. In porting it to VST and making it available for the first time on Windows and Linux, I thought up some improvements, so its Voltage control now combines two different effects: at low Voltage it’s brighter and airier with little roar and sustaining industrial scrunch. At high voltage it goes more midrangey and turns into a complete disaster area.An audio Tesla Coil fires bolts of lightning at audio rate. This is based off real recordings of such a coil, but the thing is it’s like trying to record fireworks: if you use good mics you just get a ‘pop’ because mics don’t react the way our ears do. So, for the full effect, turn Voltage way up and run it into a lot of distortion and reverb.Or, you can use it to mangle individual tracks in a really industrial way: it’s a bit unpredictable what you’ll get, but the concept is of firing off impulse responses. But firing off lots of impulses gives you a convolution reverb: this is different, it retriggers the ‘zap’ at every zero crossing causing a different effect.It’s a legacy plugin based on old experiments, so it doesn’t adapt to sample rates: in the video I’m running it at 96K which makes it sound different. If you’re at 192k it might be too pitch-shifted to be useful (though it’ll track the notes in the underlying track without issue). It’s useless to oversample this plugin, for this reason. If you can somehow undersample it that might be neat? Definitely one for the sound designers."
+    "Sorry/not sorry! Nikola was, I think, an April Fool’s plugin back in the day. In porting it to VST and making it available for the first time on Windows and Linux, I thought up some improvements, so its Voltage control now combines two different effects: at low Voltage it’s brighter and airier with little roar and sustaining industrial scrunch. At high voltage it goes more midrangey and turns into a complete disaster area. An audio Tesla Coil fires bolts of lightning at audio rate. This is based off real recordings of such a coil, but the thing is it’s like trying to record fireworks: if you use good mics you just get a ‘pop’ because mics don’t react the way our ears do. So, for the full effect, turn Voltage way up and run it into a lot of distortion and reverb. Or, you can use it to mangle individual tracks in a really industrial way: it’s a bit unpredictable what you’ll get, but the concept is of firing off impulse responses. But firing off lots of impulses gives you a convolution reverb: this is different, it retriggers the ‘zap’ at every zero crossing causing a different effect. It’s a legacy plugin based on old experiments, so it doesn’t adapt to sample rates: in the video I’m running it at 96K which makes it sound different. If you’re at 192k it might be too pitch-shifted to be useful (though it’ll track the notes in the underlying track without issue). It’s useless to oversample this plugin, for this reason. If you can somehow undersample it that might be neat? Definitely one for the sound designers."
 };
 constexpr std::string_view k_tags{
     "effects"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Nikola final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'niko';
     int framenumberL;
     bool WasNegativeL;
     double outlevelL;
@@ -63,19 +67,16 @@ class Nikola final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -86,8 +87,7 @@ class Nikola final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 1.0; break;
 
@@ -98,10 +98,9 @@ class Nikola final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "voltage"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -110,8 +109,7 @@ class Nikola final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Voltage"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -122,26 +120,26 @@ class Nikola final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -154,8 +152,7 @@ class Nikola final : public Effect<T>
         double decay = pow(A, 3) * 32767.0;
         int HighsBoost = 16 - (int)(pow(A, 2) * 16);
         double wet = B;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -205,10 +202,8 @@ class Nikola final : public Effect<T>
                 WasNegativeR = true;
             }
             // our crossover trigger. If framenumber is 0, we've just gone into the positive cycle of the wave.
-            if ((framenumberL > 0) && (framenumberL < 469))
-            {
-                switch (framenumberL)
-                {
+            if ((framenumberL > 0) && (framenumberL < 469)) {
+                switch (framenumberL) {
                     case 0: inputSampleL = 0.0; break;
                     case 1: inputSampleL = 0.043397916539811392; break;
                     case 2: inputSampleL = 0.083011537904293956; break;
@@ -680,10 +675,8 @@ class Nikola final : public Effect<T>
                     case 468: inputSampleL = -0.001281896610614424; break;
                 }
             }
-            if ((framenumberR > 0) && (framenumberR < 469))
-            {
-                switch (framenumberR)
-                {
+            if ((framenumberR > 0) && (framenumberR < 469)) {
+                switch (framenumberR) {
                     case 0: inputSampleR = 0.0; break;
                     case 1: inputSampleR = 0.043397916539811392; break;
                     case 2: inputSampleR = 0.083011537904293956; break;

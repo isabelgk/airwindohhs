@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Elation is a re-release of another old Character plugin."
 };
 constexpr std::string_view k_long_description{
-    "This is Elation, which is NOT REALLY a sort of LA-2A like thing. That’s because it builds a distinct sound out of LA-2A convolution impulses, makes it already not an LA-2A, and then doesn’t properly compress :D it does something, but it doesn’t count as compressing. I’m not sure what I was up to here.But it’s got the Character plugin ‘character slider’ that lets you greatly accentuate the tonal effect (this is another one that steals bass if that interests you) and a drive slider that lets you crunch things, and unlike typical plugins it has a dry/wet on the top for some reason! So, if you’re looking for a ‘analog-ifier’ based on dynamic convolution that can hype up a sound in an interesting way, and it’s important to you that you use something other people won’t have or aren’t using, this is your silver bullet: like the other Character plugins, it’s a weird secret weapon that won’t sound like other peoples’ plugin chains. If you can work with what this one has, then you can bring a bit of color that people won’t have constantly heard."
+    "This is Elation, which is NOT REALLY a sort of LA-2A like thing. That’s because it builds a distinct sound out of LA-2A convolution impulses, makes it already not an LA-2A, and then doesn’t properly compress :D it does something, but it doesn’t count as compressing. I’m not sure what I was up to here. But it’s got the Character plugin ‘character slider’ that lets you greatly accentuate the tonal effect (this is another one that steals bass if that interests you) and a drive slider that lets you crunch things, and unlike typical plugins it has a dry/wet on the top for some reason! So, if you’re looking for a ‘analog-ifier’ based on dynamic convolution that can hype up a sound in an interesting way, and it’s important to you that you use something other people won’t have or aren’t using, this is your silver bullet: like the other Character plugins, it’s a weird secret weapon that won’t sound like other peoples’ plugin chains. If you can work with what this one has, then you can bring a bit of color that people won’t have constantly heard."
 };
 constexpr std::string_view k_tags{
     "tone-color"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Elation final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'elat';
     double compAL;
     double compBL;
     double compCL;
@@ -93,21 +97,18 @@ class Elation final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -120,8 +121,7 @@ class Elation final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
             case kParamB: return 0.3333333; break;
             case kParamC: return 0.3333333; break;
@@ -134,9 +134,8 @@ class Elation final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dry/wet"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "drywet"; break;
             case kParamB: return "persnlty"; break;
             case kParamC: return "drive"; break;
             case kParamD: return "output"; break;
@@ -148,8 +147,7 @@ class Elation final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Dry/Wet"; break;
             case kParamB: return "Persnlty"; break;
             case kParamC: return "Drive"; break;
@@ -162,30 +160,30 @@ class Elation final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B * 3.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C * 3.0, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -216,8 +214,7 @@ class Elation final : public Effect<T>
         double threshSample;
         double abSample;
         double outputSample;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -240,36 +237,29 @@ class Elation final : public Effect<T>
             }
             // calibrated to match gain through convolution and -0.3 correction
             // quick lil compression
-            if (threshSample > 2.0)
-            {
+            if (threshSample > 2.0) {
                 compAL = (compAL + (1.0 / threshSample)) / 2.0;
                 compBL = (compBL + (1.0 / threshSample)) / 2.0;
             }
-            if (flip)
-            {
+            if (flip) {
                 inputSampleL *= compAL;
                 threshSample *= compAL;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compAL = (compAL + compAL + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compAL < 1.0) {
                         compAL += pow((1.0 - compAL) * recoveryspd, 7);
                     }
                 }
             }
-            else
-            {
+            else {
                 inputSampleL *= compBL;
                 threshSample *= compBL;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compBL = (compBL + compBL + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compBL < 1.0) {
                         compBL += pow((1.0 - compBL) * recoveryspd, 7);
                     }
@@ -285,36 +275,29 @@ class Elation final : public Effect<T>
             }
             // calibrated to match gain through convolution and -0.3 correction
             // quick lil compression
-            if (threshSample > 2.0)
-            {
+            if (threshSample > 2.0) {
                 compAR = (compAR + (1.0 / threshSample)) / 2.0;
                 compBR = (compBR + (1.0 / threshSample)) / 2.0;
             }
-            if (flip)
-            {
+            if (flip) {
                 inputSampleR *= compAR;
                 threshSample *= compAR;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compAR = (compAR + compAR + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compAR < 1.0) {
                         compAR += pow((1.0 - compAR) * recoveryspd, 7);
                     }
                 }
             }
-            else
-            {
+            else {
                 inputSampleR *= compBR;
                 threshSample *= compBR;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compBR = (compBR + compBR + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compBR < 1.0) {
                         compBR += pow((1.0 - compBR) * recoveryspd, 7);
                     }
@@ -468,36 +451,29 @@ class Elation final : public Effect<T>
             }
             // calibrated to match gain through convolution and -0.3 correction
             // quick lil compression
-            if (threshSample > 2.0)
-            {
+            if (threshSample > 2.0) {
                 compCL = (compCL + (1.0 / threshSample)) / 2.0;
                 compDL = (compDL + (1.0 / threshSample)) / 2.0;
             }
-            if (flip)
-            {
+            if (flip) {
                 inputSampleL *= compCL;
                 threshSample *= compCL;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compCL = (compCL + compCL + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compCL < 1.0) {
                         compCL += pow((1.0 - compCL) * recoveryspd, 7);
                     }
                 }
             }
-            else
-            {
+            else {
                 inputSampleL *= compDL;
                 threshSample *= compDL;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compDL = (compDL + compDL + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compDL < 1.0) {
                         compDL += pow((1.0 - compDL) * recoveryspd, 7);
                     }
@@ -514,36 +490,29 @@ class Elation final : public Effect<T>
             }
             // calibrated to match gain through convolution and -0.3 correction
             // quick lil compression
-            if (threshSample > 2.0)
-            {
+            if (threshSample > 2.0) {
                 compCR = (compCR + (1.0 / threshSample)) / 2.0;
                 compDR = (compDR + (1.0 / threshSample)) / 2.0;
             }
-            if (flip)
-            {
+            if (flip) {
                 inputSampleR *= compCR;
                 threshSample *= compCR;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compCR = (compCR + compCR + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compCR < 1.0) {
                         compCR += pow((1.0 - compCR) * recoveryspd, 7);
                     }
                 }
             }
-            else
-            {
+            else {
                 inputSampleR *= compDR;
                 threshSample *= compDR;
-                if (threshSample > compthreshold)
-                {
+                if (threshSample > compthreshold) {
                     compDR = (compDR + compDR + (compthreshold / threshSample)) / 3.0;
                 }
-                else
-                {
+                else {
                     if (compDR < 1.0) {
                         compDR += pow((1.0 - compDR) * recoveryspd, 7);
                     }

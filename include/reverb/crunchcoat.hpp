@@ -11,32 +11,35 @@ constexpr std::string_view k_short_description{
     "CrunchCoat is a cursed retro digital reverb!"
 };
 constexpr std::string_view k_long_description{
-    "Such was the reaction of my livestream as this one came to life. Cursed retro digital is such an evocative term, isn't it? Gives you an idea of what you're in store for.This is no simple bitcrusher. What it's doing, is taking the existing ClearCoat reverb, a bright-ambiences reverb, into unknown territory through relentless abuse of undersampling. This is a first for me: rather than use undersampling to cleanly deliver appropriate reverb sounds whether at 2x or 4x sample rates, this time we're just running with that functionality and allowing you to crunch the sample rate down to about 40 hertz, if you like.What happens to the waveform when you only get a 'sample' every now and then? In this case, the plugin interpolates so it's not all square-wavey. Good news and/or bad news: it's not doing a clever interpolation. It's basically drawing straight lines between the points. So, depending on what the reverb's doing, you can get fairly soft waves… or pointy spikey nastiness. This, combined with the primitive input not-filtering, means you get a LOT of color and texture, but not the texture it was when it started. Instead… well, 'cursed retro digital' sums it up. Also, you can wildly pitch-swoop the entire reverb and crank up the regeneration to infinite sustain (or cut it out completely, even more than ClearCoat), which I'm sure nobody is going to use for evil at all.This will lead to great new things for all my reverbs going forward. But this specific reverb is for only certain people, and you know who you are. Have fun!"
+    "Such was the reaction of my livestream as this one came to life. Cursed retro digital is such an evocative term, isn't it? Gives you an idea of what you're in store for. This is no simple bitcrusher. What it's doing, is taking the existing ClearCoat reverb, a bright-ambiences reverb, into unknown territory through relentless abuse of undersampling. This is a first for me: rather than use undersampling to cleanly deliver appropriate reverb sounds whether at 2x or 4x sample rates, this time we're just running with that functionality and allowing you to crunch the sample rate down to about 40 hertz, if you like. What happens to the waveform when you only get a 'sample' every now and then? In this case, the plugin interpolates so it's not all square-wavey. Good news and/or bad news: it's not doing a clever interpolation. It's basically drawing straight lines between the points. So, depending on what the reverb's doing, you can get fairly soft waves… or pointy spikey nastiness. This, combined with the primitive input not-filtering, means you get a LOT of color and texture, but not the texture it was when it started. Instead… well, 'cursed retro digital' sums it up. Also, you can wildly pitch-swoop the entire reverb and crank up the regeneration to infinite sustain (or cut it out completely, even more than ClearCoat), which I'm sure nobody is going to use for evil at all. This will lead to great new things for all my reverbs going forward. But this specific reverb is for only certain people, and you know who you are. Have fun!"
 };
 constexpr std::string_view k_tags{
     "reverb"
 };
 
-const int kshortA = 350;
-const int kshortB = 1710;
-const int kshortC = 1610;
-const int kshortD = 835;
-const int kshortE = 700;
-const int kshortF = 1260;
-const int kshortG = 1110;
-const int kshortH = 1768;
-const int kshortI = 280;
-const int kshortJ = 2645;
-const int kshortK = 1410;
-const int kshortL = 1175;
-const int kshortM = 12;
-const int kshortN = 3110;
-const int kshortO = 120;
-const int kshortP = 2370;
-
 template <typename T>
 class CrunchCoat final : public Effect<T>
 {
+    static constexpr int kshortA = 350;
+    static constexpr int kshortB = 1710;
+    static constexpr int kshortC = 1610;
+    static constexpr int kshortD = 835;
+    static constexpr int kshortE = 700;
+    static constexpr int kshortF = 1260;
+    static constexpr int kshortG = 1110;
+    static constexpr int kshortH = 1768;
+    static constexpr int kshortI = 280;
+    static constexpr int kshortJ = 2645;
+    static constexpr int kshortK = 1410;
+    static constexpr int kshortL = 1175;
+    static constexpr int kshortM = 12;
+    static constexpr int kshortN = 3110;
+    static constexpr int kshortO = 120;
+    static constexpr int kshortP = 2370;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'crco';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -320,21 +323,18 @@ class CrunchCoat final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -347,8 +347,7 @@ class CrunchCoat final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -361,12 +360,11 @@ class CrunchCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "select"; break;
             case kParamB: return "regen"; break;
             case kParamC: return "derez"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -375,8 +373,7 @@ class CrunchCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Select"; break;
             case kParamB: return "Regen"; break;
             case kParamC: return "DeRez"; break;
@@ -389,30 +386,30 @@ class CrunchCoat final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((VstInt32)(A * 16.999), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -523,8 +520,7 @@ class CrunchCoat final : public Effect<T>
             countNR = 1;
             countOR = 1;
             countPR = 1;
-            switch (clearcoat)
-            {
+            switch (clearcoat) {
                 case 0:
                     shortA = 65;
                     shortB = 124;
@@ -872,8 +868,7 @@ class CrunchCoat final : public Effect<T>
         // this reverb makes 50% full dry AND full wet, not crossfaded.
         // that's so it can be on submixes without cutting back dry channel when adjusted:
         // unless you go super heavy, you are only adjusting the added verb loudness.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

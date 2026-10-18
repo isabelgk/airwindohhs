@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ButterComp2 is improved ButterComp with an output control and sound upgrades."
 };
 constexpr std::string_view k_long_description{
-    "So here’s what happened: in working on the new ButterComp, I found a mistake. Because of a thing C programming lets you do (assign, in an if statement) it turned out the original ButterComp didn’t actually use the interleaved compressors after all. The one in CStrip does, but actual ButterComp (which has its own distinct fans!) doesn’t. It’s strictly a bi-polar compressor: it does each half of the wave different, and blends them.Because of this, I’ve made the source code (also being released) represent what the plugin actually does in practice. It’s a little simplified, and it’s worth paying attention to, for people who like the simplest most minimal form of ButterComp.But, because of this, I get to release ButterComp2 as very much its own thing! I even came up with a subtle tweak: it modifies its release just a touch, slowing it when the signal’s hot. That’s on a sample-by-sample basis… and it’s on the OUTPUT of the compressor. So, this further smoothing effect is subject to the output level control. And the dry/wet. In fact if you had it all dry, the release modification is therefore as if you had it on the input… making it blend not only between positive and negative wave compression, but also between feedback and feed-forward release time modifications :)But really what you need to do is listen to it.With the interleaved compressors fully working AND the bi-polar compression on each, there is indeed the four distinct compressors working in parallel. The whole thing is very gentle (hence the name) but you’ll get a glue and tonal reshaping out of it as it will even out the bulk of the waveform, making it balanced between positive and negative. It’ll also soak up treble detail in a characteristic way, and you’ll really hear the quality of ButterComp2 on ambiences and reverb tails. It’ll float things in space in this holographic way… I thought it made for a significant tonal improvement over the simpler ButterComp."
+    "So here’s what happened: in working on the new ButterComp, I found a mistake. Because of a thing C programming lets you do (assign, in an if statement) it turned out the original ButterComp didn’t actually use the interleaved compressors after all. The one in CStrip does, but actual ButterComp (which has its own distinct fans!) doesn’t. It’s strictly a bi-polar compressor: it does each half of the wave different, and blends them. Because of this, I’ve made the source code (also being released) represent what the plugin actually does in practice. It’s a little simplified, and it’s worth paying attention to, for people who like the simplest most minimal form of ButterComp. But, because of this, I get to release ButterComp2 as very much its own thing! I even came up with a subtle tweak: it modifies its release just a touch, slowing it when the signal’s hot. That’s on a sample-by-sample basis… and it’s on the OUTPUT of the compressor. So, this further smoothing effect is subject to the output level control. And the dry/wet. In fact if you had it all dry, the release modification is therefore as if you had it on the input… making it blend not only between positive and negative wave compression, but also between feedback and feed-forward release time modifications :) But really what you need to do is listen to it. With the interleaved compressors fully working AND the bi-polar compression on each, there is indeed the four distinct compressors working in parallel. The whole thing is very gentle (hence the name) but you’ll get a glue and tonal reshaping out of it as it will even out the bulk of the waveform, making it balanced between positive and negative. It’ll also soak up treble detail in a characteristic way, and you’ll really hear the quality of ButterComp2 on ambiences and reverb tails. It’ll float things in space in this holographic way… I thought it made for a significant tonal improvement over the simpler ButterComp."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ButterComp2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'btcq';
     double controlAposL;
     double controlAnegL;
     double controlBposL;
@@ -84,20 +88,17 @@ class ButterComp2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -109,8 +110,7 @@ class ButterComp2 final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -122,11 +122,10 @@ class ButterComp2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "compress"; break;
             case kParamB: return "output"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -135,8 +134,7 @@ class ButterComp2 final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Compress"; break;
             case kParamB: return "Output"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -148,28 +146,28 @@ class ButterComp2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B * 2.0, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -191,8 +189,7 @@ class ButterComp2 final : public Effect<T>
         outputgain -= 1.0;
         outputgain /= 1.5;
         outputgain += 1.0;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             static int noisesourceL = 0;
@@ -275,28 +272,22 @@ class ButterComp2 final : public Effect<T>
             double calcnegL = pow((1.0 / targetnegL), 2);
             // now we have mirrored targets for comp
             // outputpos and outputneg go from 0 to 1
-            if (inputSampleL > 0)
-            { // working on pos
-                if (flip)
-                {
+            if (inputSampleL > 0) { // working on pos
+                if (flip) {
                     controlAposL *= divisor;
                     controlAposL += (calcposL * remainder);
                 }
-                else
-                {
+                else {
                     controlBposL *= divisor;
                     controlBposL += (calcposL * remainder);
                 }
             }
-            else
-            { // working on neg
-                if (flip)
-                {
+            else { // working on neg
+                if (flip) {
                     controlAnegL *= divisor;
                     controlAnegL += (calcnegL * remainder);
                 }
-                else
-                {
+                else {
                     controlBnegL *= divisor;
                     controlBnegL += (calcnegL * remainder);
                 }
@@ -334,28 +325,22 @@ class ButterComp2 final : public Effect<T>
             double calcnegR = pow((1.0 / targetnegR), 2);
             // now we have mirrored targets for comp
             // outputpos and outputneg go from 0 to 1
-            if (inputSampleR > 0)
-            { // working on pos
-                if (flip)
-                {
+            if (inputSampleR > 0) { // working on pos
+                if (flip) {
                     controlAposR *= divisor;
                     controlAposR += (calcposR * remainder);
                 }
-                else
-                {
+                else {
                     controlBposR *= divisor;
                     controlBposR += (calcposR * remainder);
                 }
             }
-            else
-            { // working on neg
-                if (flip)
-                {
+            else { // working on neg
+                if (flip) {
                     controlAnegR *= divisor;
                     controlAnegR += (calcnegR * remainder);
                 }
-                else
-                {
+                else {
                     controlBnegR *= divisor;
                     controlBnegR += (calcnegR * remainder);
                 }
@@ -363,13 +348,11 @@ class ButterComp2 final : public Effect<T>
             // this causes each of the four to update only when active and in the correct 'flip'
             double totalmultiplierL;
             double totalmultiplierR;
-            if (flip)
-            {
+            if (flip) {
                 totalmultiplierL = (controlAposL * outputposL) + (controlAnegL * outputnegL);
                 totalmultiplierR = (controlAposR * outputposR) + (controlAnegR * outputnegR);
             }
-            else
-            {
+            else {
                 totalmultiplierL = (controlBposL * outputposL) + (controlBnegL * outputnegL);
                 totalmultiplierR = (controlBposR * outputposR) + (controlBnegR * outputnegR);
             }

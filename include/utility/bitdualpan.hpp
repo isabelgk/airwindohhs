@@ -1,6 +1,7 @@
 #pragma once
 #include "effect.hpp"
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
 namespace airwindohhs::bitdualpan {
@@ -10,7 +11,7 @@ constexpr std::string_view k_short_description{
     "BitDualPan is dual pan that's almost BitShiftGain."
 };
 constexpr std::string_view k_long_description{
-    "This is by request, and also a sort of experiment.There's a PurestDualPan already. It's out, it's free, it's yours. There is also a BitShiftPan, which is a lot like BitShiftGain except you can control the sides independently. The first, PurestDualPan, is simply a dual pan in long double precision and dithered to the audio buss. This is unreasonable overkill but I've always been fine with that. I'm trying to get a sound and only have bits to work with. So in the 'bit' versions, they manage to get the sound of 'utterly pristine and undiminished' through gain changes by applying simple gain changes but only in 6dB increments.In floating point, whether it's 32 bit or 64 bit double precision, if you do that something special happens. A floating point number has two parts: a mantissa and an exponent. The mantissa is literally a tiny chunk of fixed point audio data (well, unless it's just math data, but the same thing applies). The exponent? That's how loud to play the first chunk. All the 'bit' plugins do is alter only the exponent, and pass through the mantissa untouched. Perfect audio… in 6.08dB increments.For BitDualPan, that's what you get… almost.If you leave the sides hard-panned, the mantissas are untouched. If you swap the sides, same deal! If you set one side, or the other, to zero (silence) and then do anything at all with the other side, same deal. And then, if you pan in the sides (in 6dB increments, still) and leave both audible, that means both sides will be altered. They're added together, so they're a floating point add from two sources both of which were bit-shift gain staged, meaning the mantissa will be altered, and that means… what?I honestly don't know. I'm sure I don't have the nicest playback system of anybody who uses my plugins, or the best ear: I'm just willing to try stuff and this becomes a new form of minimal processing. Instead of dithered multiplies, it's summing a couple of floating-point inputs in such a way that there is only an add, nothing else. It's certainly not gonna be any worse than any ordinary DAW summing, but does it gain anything from setting up the source audio so both sources are the exact mantissa of the input channels? It reduces the whole thing to a single add (per channel) and no multiplies, which are normally what you see in this sort of thing.If you feel this one, use it in good spirits. It manages to cut the digital math to an absolute minimum but then apply it in a way I don't often see, and it sits in the 'dual pan' role that I've long overlooked. And it uses the mechanic the Bit plugins enjoy: when you're not touching the mantissa, you also don't dither because the output's already perfect. So, BitDualPan also doesn't floating-point dither, to see if there's a sound that comes out of the only mechanic being a floating-point add.I'll get right back to plugins that have more going on. There's only so much you can do with 'what is the sound of one floating point add per channel?' But here you are, to compare with PurestDualPan. Now you can pick whichever you like best :)"
+    "This is by request, and also a sort of experiment. There's a PurestDualPan already. It's out, it's free, it's yours. There is also a BitShiftPan, which is a lot like BitShiftGain except you can control the sides independently. The first, PurestDualPan, is simply a dual pan in long double precision and dithered to the audio buss. This is unreasonable overkill but I've always been fine with that. I'm trying to get a sound and only have bits to work with. So in the 'bit' versions, they manage to get the sound of 'utterly pristine and undiminished' through gain changes by applying simple gain changes but only in 6dB increments. In floating point, whether it's 32 bit or 64 bit double precision, if you do that something special happens. A floating point number has two parts: a mantissa and an exponent. The mantissa is literally a tiny chunk of fixed point audio data (well, unless it's just math data, but the same thing applies). The exponent? That's how loud to play the first chunk. All the 'bit' plugins do is alter only the exponent, and pass through the mantissa untouched. Perfect audio… in 6.08dB increments. For BitDualPan, that's what you get… almost. If you leave the sides hard-panned, the mantissas are untouched. If you swap the sides, same deal! If you set one side, or the other, to zero (silence) and then do anything at all with the other side, same deal. And then, if you pan in the sides (in 6dB increments, still) and leave both audible, that means both sides will be altered. They're added together, so they're a floating point add from two sources both of which were bit-shift gain staged, meaning the mantissa will be altered, and that means… what? I honestly don't know. I'm sure I don't have the nicest playback system of anybody who uses my plugins, or the best ear: I'm just willing to try stuff and this becomes a new form of minimal processing. Instead of dithered multiplies, it's summing a couple of floating-point inputs in such a way that there is only an add, nothing else. It's certainly not gonna be any worse than any ordinary DAW summing, but does it gain anything from setting up the source audio so both sources are the exact mantissa of the input channels? It reduces the whole thing to a single add (per channel) and no multiplies, which are normally what you see in this sort of thing. If you feel this one, use it in good spirits. It manages to cut the digital math to an absolute minimum but then apply it in a way I don't often see, and it sits in the 'dual pan' role that I've long overlooked. And it uses the mechanic the Bit plugins enjoy: when you're not touching the mantissa, you also don't dither because the output's already perfect. So, BitDualPan also doesn't floating-point dither, to see if there's a sound that comes out of the only mechanic being a floating-point add. I'll get right back to plugins that have more going on. There's only so much you can do with 'what is the sound of one floating point add per channel?' But here you are, to compare with PurestDualPan. Now you can pick whichever you like best :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -19,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class BitDualPan final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bitd';
     float A;
     float B;
     float C;
@@ -46,13 +51,12 @@ class BitDualPan final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -85,10 +89,10 @@ class BitDualPan final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "l vol"; break;
-            case kParamB: return "l pan"; break;
-            case kParamC: return "r vol"; break;
-            case kParamD: return "r pan"; break;
+            case kParamA: return "lvol"; break;
+            case kParamB: return "lpan"; break;
+            case kParamC: return "rvol"; break;
+            case kParamD: return "rpan"; break;
 
             default: break;
         }
@@ -110,28 +114,30 @@ class BitDualPan final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

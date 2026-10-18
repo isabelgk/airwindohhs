@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "ResEQ is a bank of mostly midrange resonances."
 };
 constexpr std::string_view k_long_description{
-    "Sometimes I’m just contrarian, and sometimes it’s for a reason.I keep getting asked to make a ‘Soothe’ plugin. I get that: it’s hyped, it lets you make stuff louder, my plugins are free and open source, why not etc etc. I understand why I’m getting asked to do that.However, I’m here to explain why this week’s Airwindows plugin is an OPPOSITE ‘Soothe’, and why you would want to do the opposite of Soothe (a sophisticated and very busy plugin that scans for resonant peaks and whacks just the frequencies that are resonating the hardest).ResEQ is literally the farthest from that you can get. It’s a bit like the filter banks on an old Polymoog. You set up frequencies (as many as eight, in parallel) and hear ONLY what those tight resonances let through. It’ll kill other sounds as much as 90 or 100 dB down, nuke them completely beyond hearing. Far from evening out the tapestry of the sound and removing frequencies that poke out, it turns the WHOLE track into just beams of narrowly defined frequency.You can do this with light, too. I think Polaroid experimented with this. You can reconstruct a full-color image from several bands of tightly resonant color, because of how the eye interprets them. The same is true for the ear. Given enough distinct bands of super-resonant audio you get a kind of facsimile of the original sound, and it begins to sound like an insane, ultra-resonant fullrange sound, just completely weirded out. (if you try to put this on a mix buss you have only yourself to blame)So… WHY?!?Because if you do that on a track in your mix, all the other tracks can speak clearly past the weird ResEQ one. It remains super-audible but completely gets out of the way. This is not really what you’d put on a front-and-center track, a lead vocal, an orchestra stem. Nope. You’d put this on the third set of guitar overdubs (the thickener!), on that background synth, on the horn buried in the back of the mix, on that extra drums overdub that’s a little wacky. ResEQ goes on the colorful elements, the stuff that should have BIG COLOR but not get in the way. How do you get some quirky element or extra thing to jump way out without getting in the way? Set up ResEQ on it, voice it so it’s covering the range you want. Tweak it until it has the right vibe (you can isolate or remove really narrow sound characteristics, truly transform a recording with it) and then sit it back or let it jump up front and slap peoples’ ears. Either way, that track will make its presence known, bigtime, whether it’s quiet or loud. It’s all about the mids, high or low: if you need super high or super low, you’ll be using something else. Mids are where mojo lives.It’s got a dry/wet control, too. So you COULD use it sort of like a normal EQ. But why would you do that when you can reconstruct an ear-grabbing caricature of the sound, with tons of character and mojo, AND have that sound sit easily in the mix making space for everything else?"
+    "Sometimes I’m just contrarian, and sometimes it’s for a reason. I keep getting asked to make a ‘Soothe’ plugin. I get that: it’s hyped, it lets you make stuff louder, my plugins are free and open source, why not etc etc. I understand why I’m getting asked to do that. However, I’m here to explain why this week’s Airwindows plugin is an OPPOSITE ‘Soothe’, and why you would want to do the opposite of Soothe (a sophisticated and very busy plugin that scans for resonant peaks and whacks just the frequencies that are resonating the hardest). ResEQ is literally the farthest from that you can get. It’s a bit like the filter banks on an old Polymoog. You set up frequencies (as many as eight, in parallel) and hear ONLY what those tight resonances let through. It’ll kill other sounds as much as 90 or 100 dB down, nuke them completely beyond hearing. Far from evening out the tapestry of the sound and removing frequencies that poke out, it turns the WHOLE track into just beams of narrowly defined frequency. You can do this with light, too. I think Polaroid experimented with this. You can reconstruct a full-color image from several bands of tightly resonant color, because of how the eye interprets them. The same is true for the ear. Given enough distinct bands of super-resonant audio you get a kind of facsimile of the original sound, and it begins to sound like an insane, ultra-resonant fullrange sound, just completely weirded out. (if you try to put this on a mix buss you have only yourself to blame) So… WHY?!? Because if you do that on a track in your mix, all the other tracks can speak clearly past the weird ResEQ one. It remains super-audible but completely gets out of the way. This is not really what you’d put on a front-and-center track, a lead vocal, an orchestra stem. Nope. You’d put this on the third set of guitar overdubs (the thickener!), on that background synth, on the horn buried in the back of the mix, on that extra drums overdub that’s a little wacky. ResEQ goes on the colorful elements, the stuff that should have BIG COLOR but not get in the way. How do you get some quirky element or extra thing to jump way out without getting in the way? Set up ResEQ on it, voice it so it’s covering the range you want. Tweak it until it has the right vibe (you can isolate or remove really narrow sound characteristics, truly transform a recording with it) and then sit it back or let it jump up front and slap peoples’ ears. Either way, that track will make its presence known, bigtime, whether it’s quiet or loud. It’s all about the mids, high or low: if you need super high or super low, you’ll be using something else. Mids are where mojo lives. It’s got a dry/wet control, too. So you COULD use it sort of like a normal EQ. But why would you do that when you can reconstruct an ear-grabbing caricature of the sound, with tons of character and mojo, AND have that sound sit easily in the mix making space for everything else?"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class ResEQ final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'reso';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -84,8 +88,7 @@ class ResEQ final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -95,15 +98,13 @@ class ResEQ final : public Effect<T>
             case kParamG: G = value; break;
             case kParamH: H = value; break;
             case kParamI: I = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -121,8 +122,7 @@ class ResEQ final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 0.0; break;
@@ -140,17 +140,16 @@ class ResEQ final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "reso 1"; break;
-            case kParamB: return "reso 2"; break;
-            case kParamC: return "reso 3"; break;
-            case kParamD: return "reso 4"; break;
-            case kParamE: return "reso 5"; break;
-            case kParamF: return "reso 6"; break;
-            case kParamG: return "reso 7"; break;
-            case kParamH: return "reso 8"; break;
-            case kParamI: return "dry/wet"; break;
+        switch (static_cast<params>(index)) {
+            case kParamA: return "reso1"; break;
+            case kParamB: return "reso2"; break;
+            case kParamC: return "reso3"; break;
+            case kParamD: return "reso4"; break;
+            case kParamE: return "reso5"; break;
+            case kParamF: return "reso6"; break;
+            case kParamG: return "reso7"; break;
+            case kParamH: return "reso8"; break;
+            case kParamI: return "drywet"; break;
 
             default: break;
         }
@@ -159,8 +158,7 @@ class ResEQ final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Reso 1"; break;
             case kParamB: return "Reso 2"; break;
             case kParamC: return "Reso 3"; break;
@@ -178,40 +176,40 @@ class ResEQ final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -467,8 +465,7 @@ class ResEQ final : public Effect<T>
             fR[framenumber] += (cos(framenumber * f8) * falloff * v8);
         }
         // done updating the kernel for this go-round
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

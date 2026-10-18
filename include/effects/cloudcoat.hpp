@@ -11,31 +11,35 @@ constexpr std::string_view k_short_description{
     "CloudCoat is an array of blur effects with a taste for evil."
 };
 constexpr std::string_view k_long_description{
-    "Welcome back to the dark side of Airwindows!CloudCoat starts as an experiment. What if there was ClearCoat (a bank of small reverbs) except all the delays were allpasses?Okay, so a bit of explanation: allpasses are like reverb parts, but they make stuff sound smeary and blurred, like bloom reverbs. I've got a bloom reverb, MV, which is just a stack of allpasses. Most of my recent work is about avoiding allpasses completely by using reverb matrixes that give me LOTS of echo returns, impossible numbers, so I don't have to cheat with allpasses. This kind of works and kind of doesn't (work in progress, see my recent livestreams). But what would happen if you took what was clearly a reverb, and just replaced all the delays with allpasses?That's ClearCoat and CloudCoat. The idea was I could give a completely different texture, but using literally all the same reverb constants, and then I could hear what it was like. I expected it to be more a cloudy, diffuse texture, hence 'cloudcoat'.You might notice one difference right away: ClearCoat sounds a lot roomier. That's because it's designed with a little bit of feedback to fill it out. Sustain, if you will. It's also way more spacious, and way more metallic and ringy. This is in line with how it only uses delays, and is all part of the research.CloudCoat with sustain all the way off, is quite different. Depth and spaciousness is almost gone, but there's no metallicness either. It's like essence of fake artificial reverb blur. Remember, this too is a 4x4 Householder matrix: it's a complicated pile of allpasses, not something primitive like MV. I think it might find uses on pads or ambient sounds, or could be used to feed into ClearCoat at the same 'select' setting to create a more powerful room sound. With sustain all the way off, you can do many polite and nice things with CloudCoat.Then, throw it on some drums and turn the sustain up and ALL HELL BREAKS LOOSE :)CloudCoat is applying a kind of nonlinear reverb, like your classic 'nonlin' gated verb settings, but Airwindowsized. I'm allowing feedback, but of the four 'channels' of Householder feedback, each is also modulated by the output of the one next to it (a totally different sound)… WITHOUT smoothing. So the feedback is broken up by four banks of allpass output and cranked up to the point of meltdown, and that's CloudCoat. It disrupts the signal wildly and fiercely.Why?Because I tried it, on a livestream, and the drums absolutely exploded like nothing I've ever heard. There's rasp and rattle and an effect much like extreme compression while in a stone drum room, but there's no compression and no stone room. It just makes that sound. Instead of making it out of compressed, flat-topped compression smash, it's making the madness happen INSIDE the sound, meaning you can make it brutal and unbearable with ClearCoat and THEN loudenate it, unlike any other sort of compression or distortion. CloudCoat adds a whole new type of trash that is dynamic with your sound (again, nonlin) and automatically dials itself back if the source energy level does. It's a huge, nasty, energy-laden meltdown that can be escalated to pretty much any degree… and then dialed back down again, to pretty much any level of controllability, so long as you're using it on noisy percussion and as long as you're okay with its signature trash-sound, which is not like anything else and which is independent of added compression and distortion.And then you can do blur/texture effects with the sustain on 0. Just don't bother trying to make it work with tiny amounts of sustain: it basically can't. 0 or trash are your only options, and then there is a universe of trash and meltdown if trash you choose.But seriously, why?Because it makes me laugh with delight when snares go off like something out of the imagination of Trent Reznor. I don't know what to tell you. Enjoy CloudCoat, if it's the kind of thing you enjoy."
+    "Welcome back to the dark side of Airwindows! CloudCoat starts as an experiment. What if there was ClearCoat (a bank of small reverbs) except all the delays were allpasses? Okay, so a bit of explanation: allpasses are like reverb parts, but they make stuff sound smeary and blurred, like bloom reverbs. I've got a bloom reverb, MV, which is just a stack of allpasses. Most of my recent work is about avoiding allpasses completely by using reverb matrixes that give me LOTS of echo returns, impossible numbers, so I don't have to cheat with allpasses. This kind of works and kind of doesn't (work in progress, see my recent livestreams). But what would happen if you took what was clearly a reverb, and just replaced all the delays with allpasses? That's ClearCoat and CloudCoat. The idea was I could give a completely different texture, but using literally all the same reverb constants, and then I could hear what it was like. I expected it to be more a cloudy, diffuse texture, hence 'cloudcoat'. You might notice one difference right away: ClearCoat sounds a lot roomier. That's because it's designed with a little bit of feedback to fill it out. Sustain, if you will. It's also way more spacious, and way more metallic and ringy. This is in line with how it only uses delays, and is all part of the research. CloudCoat with sustain all the way off, is quite different. Depth and spaciousness is almost gone, but there's no metallicness either. It's like essence of fake artificial reverb blur. Remember, this too is a 4x4 Householder matrix: it's a complicated pile of allpasses, not something primitive like MV. I think it might find uses on pads or ambient sounds, or could be used to feed into ClearCoat at the same 'select' setting to create a more powerful room sound. With sustain all the way off, you can do many polite and nice things with CloudCoat. Then, throw it on some drums and turn the sustain up and ALL HELL BREAKS LOOSE :) CloudCoat is applying a kind of nonlinear reverb, like your classic 'nonlin' gated verb settings, but Airwindowsized. I'm allowing feedback, but of the four 'channels' of Householder feedback, each is also modulated by the output of the one next to it (a totally different sound)… WITHOUT smoothing. So the feedback is broken up by four banks of allpass output and cranked up to the point of meltdown, and that's CloudCoat. It disrupts the signal wildly and fiercely. Why? Because I tried it, on a livestream, and the drums absolutely exploded like nothing I've ever heard. There's rasp and rattle and an effect much like extreme compression while in a stone drum room, but there's no compression and no stone room. It just makes that sound. Instead of making it out of compressed, flat-topped compression smash, it's making the madness happen INSIDE the sound, meaning you can make it brutal and unbearable with ClearCoat and THEN loudenate it, unlike any other sort of compression or distortion. CloudCoat adds a whole new type of trash that is dynamic with your sound (again, nonlin) and automatically dials itself back if the source energy level does. It's a huge, nasty, energy-laden meltdown that can be escalated to pretty much any degree… and then dialed back down again, to pretty much any level of controllability, so long as you're using it on noisy percussion and as long as you're okay with its signature trash-sound, which is not like anything else and which is independent of added compression and distortion. And then you can do blur/texture effects with the sustain on 0. Just don't bother trying to make it work with tiny amounts of sustain: it basically can't. 0 or trash are your only options, and then there is a universe of trash and meltdown if trash you choose. But seriously, why? Because it makes me laugh with delight when snares go off like something out of the imagination of Trent Reznor. I don't know what to tell you. Enjoy CloudCoat, if it's the kind of thing you enjoy."
 };
 constexpr std::string_view k_tags{
     "effects"
 };
-constexpr int kshortA = 350;
-constexpr int kshortB = 1710;
-constexpr int kshortC = 1610;
-constexpr int kshortD = 835;
-constexpr int kshortE = 700;
-constexpr int kshortF = 1260;
-constexpr int kshortG = 1110;
-constexpr int kshortH = 1768;
-constexpr int kshortI = 280;
-constexpr int kshortJ = 2645;
-constexpr int kshortK = 1410;
-constexpr int kshortL = 1175;
-constexpr int kshortM = 12;
-constexpr int kshortN = 3110;
-constexpr int kshortO = 120;
-constexpr int kshortP = 2370;
 
 template <typename T>
 class CloudCoat final : public Effect<T>
 {
+    static constexpr int kshortA = 350;
+    static constexpr int kshortB = 1710;
+    static constexpr int kshortC = 1610;
+    static constexpr int kshortD = 835;
+    static constexpr int kshortE = 700;
+    static constexpr int kshortF = 1260;
+    static constexpr int kshortG = 1110;
+    static constexpr int kshortH = 1768;
+    static constexpr int kshortI = 280;
+    static constexpr int kshortJ = 2645;
+    static constexpr int kshortK = 1410;
+    static constexpr int kshortL = 1175;
+    static constexpr int kshortM = 12;
+    static constexpr int kshortN = 3110;
+    static constexpr int kshortO = 120;
+    static constexpr int kshortP = 2370;
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'cloc';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -332,20 +336,17 @@ class CloudCoat final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -357,8 +358,7 @@ class CloudCoat final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 1.0; break;
@@ -370,11 +370,10 @@ class CloudCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "select"; break;
             case kParamB: return "sustain"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -383,8 +382,7 @@ class CloudCoat final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Select"; break;
             case kParamB: return "Sustain"; break;
             case kParamC: return "Dry/Wet"; break;
@@ -396,28 +394,28 @@ class CloudCoat final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((VstInt32)(A * 16.999), text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -539,8 +537,7 @@ class CloudCoat final : public Effect<T>
             countNR = 1;
             countOR = 1;
             countPR = 1;
-            switch (cloudcoat)
-            {
+            switch (cloudcoat) {
                 case 0:
                     shortA = 65;
                     shortB = 124;
@@ -888,8 +885,7 @@ class CloudCoat final : public Effect<T>
         // this reverb makes 50% full dry AND full wet, not crossfaded.
         // that's so it can be on submixes without cutting back dry channel when adjusted:
         // unless you go super heavy, you are only adjusting the added verb loudness.
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PearEQ is a six-band Pear-based graphic EQ."
 };
 constexpr std::string_view k_long_description{
-    "Turns out Pear wasn't done, even though it's been around for years. Pear, Pear2 for more nonlinearity, ConsoleMC and MD, ConsoleLA… all based on my filter derived from the Holt filter. I've done it by itself, I've stacked it up in the traditional way for making a steep multipole filter, I've taken those and made multi-band units nineteen Pear filters deep.And all of that was before I started fooling with AngleEQ, which is incapable of doing what Pear or a biquad filter can do. Angle screws up the phase so thoroughly that if you generate a rolled-off filtered crossover, and subtract the filtered part from dry, the result still has just as much bass as before.So, the trick was reconstructing the original sound out of however many bands you have, EACH pole of the filter. Seemingly a pointless endeavor, but when you do that… suddenly the weird filter is able to filter both ways. So what happens if you do that to a biquad filter that was already able to do both things?You get SmoothEQ2. That's what I did to make the hyper-flexible filter with tilty shelves. And that's great, and Pear was just sitting there, waiting for me to try it.PearEQ combines an intensely natural, analog-sounding character around the sharpness of the filter edges, with a steepness otherwise unavailable to that kind of sound. It's a completely different sound from any other way you'd get that Q factor. You can take any biquad filter (for instance, any DAW standard filter) and crank up the steepness, and you'll get that sharp of a crossover… with obvious resonance, and it'll sound totally different. You can construct an isolator filter out of biquads and it'll still act different: Pear produces an increasingly steep drop-off into the stopband, and biquads won't. It's just different, and PearEQ lets you use that differentness either for great subtlety and natural tone… or to rip and boost frequencies WAY more than you should.Go right ahead, and I'll keep working on more out of all this, as it comes together and shows its usefulness :)"
+    "Turns out Pear wasn't done, even though it's been around for years. Pear, Pear2 for more nonlinearity, ConsoleMC and MD, ConsoleLA… all based on my filter derived from the Holt filter. I've done it by itself, I've stacked it up in the traditional way for making a steep multipole filter, I've taken those and made multi-band units nineteen Pear filters deep. And all of that was before I started fooling with AngleEQ, which is incapable of doing what Pear or a biquad filter can do. Angle screws up the phase so thoroughly that if you generate a rolled-off filtered crossover, and subtract the filtered part from dry, the result still has just as much bass as before. So, the trick was reconstructing the original sound out of however many bands you have, EACH pole of the filter. Seemingly a pointless endeavor, but when you do that… suddenly the weird filter is able to filter both ways. So what happens if you do that to a biquad filter that was already able to do both things? You get SmoothEQ2. That's what I did to make the hyper-flexible filter with tilty shelves. And that's great, and Pear was just sitting there, waiting for me to try it. PearEQ combines an intensely natural, analog-sounding character around the sharpness of the filter edges, with a steepness otherwise unavailable to that kind of sound. It's a completely different sound from any other way you'd get that Q factor. You can take any biquad filter (for instance, any DAW standard filter) and crank up the steepness, and you'll get that sharp of a crossover… with obvious resonance, and it'll sound totally different. You can construct an isolator filter out of biquads and it'll still act different: Pear produces an increasingly steep drop-off into the stopband, and biquads won't. It's just different, and PearEQ lets you use that differentness either for great subtlety and natural tone… or to rip and boost frequencies WAY more than you should. Go right ahead, and I'll keep working on more out of all this, as it comes together and shows its usefulness :)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PearEQ final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'peaq';
     float A;
     float B;
     float C;
@@ -123,15 +127,14 @@ class PearEQ final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -197,32 +200,34 @@ class PearEQ final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

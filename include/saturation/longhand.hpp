@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Longhand is an experiment in softclipping."
 };
 constexpr std::string_view k_long_description{
-    "A sine is a very interesting thing, in part because it's so very simple.Think of a circle. A sine (and cosine) is what gives you that shape. It's a simple arc in space. If you use the mathematical function sin(), it gives you a waveshaper, but if you don't clamp it to half of pi (a constant called M_PI_2) you get a wave FOLDER for your trouble. As your wave gets louder it starts to wrap around again, first to zero and then all the way to negative 1 (the output of sin(), no matter what the input, will return something between 1 and -1).Very simple, and it's the waveshaper with the absolute gentlest transtion between linearity and clipping. Interestingly this means there's a sharp transition at exactly zero when the rate of curvature flips, and this gave rise to my plugin Spiral (and newer versions of Channel), but as a simple function sin() has the softest clipping anything can have.Does that make sin(), in every C compiler and every computer, perfect?There's a catch. To implement sin(), nothing out there really does it in the cumbersome, calculating way. There's optimizations. As you hit exactly 1.0 (or -1.0) in the output, that's when you can begin referring to a lookup table, but backwards. You can store a series of values and interpolate between them. You can build a dedicated hardware unit into your CPU to do it, or your GPU. You might get ambitious with this, since you're probably drawing triangles and can't be bothered with details. sin() is simple, but implementing it can be hacktastic. And of course it'll still be perfect, because it's math and it's a computer, and what else could it be?Longhand's an experiment in checking this notion, for the purposes of audio.First, there was PurestSaturation. It uses a form of approximation known as a Taylor Series, where you make a temporary number, and keep multiplying it by itself, and then alternately adding and subtracting the results by very specific amounts. The purpose of PurestSaturation was, 'what if we make a sin()-like saturation, but intentionally use fewer terms than you'd normally have, so there's less math in it? and then to top it off, what if we only use powers of 2 for the adding and subtracting and the scaling, so we're retaining the mantissas of the temp variables even though our sine isn't accurate anymore? It'll be close, but it'll be a different thing. What happens then?'And so, that's PurestSaturation. TapeHack has some similarities to this. Both are intentional departures from the majesty of sin().But… what if we put our working variables in long double precision just for sheer overkill, and then rather than departing, we worked out LOTS of terms for a Taylor Series of sin(), beyond the point that even long double can follow? For starters, we are only doing simple multiplies and additions and subtractions. That's all a Taylor Series is. What that does is, rather than model a sine in discrete quadrants and mapping it to where it's needed, we're calculating the wave as ONE continuous function. Every new term means more calculation, but also another layer by which this continuous function can wrap around, wavefold again and again, and produce a sine as a result.Once we stop adding more powers to the temp variable, it stops being a sine and becomes a runaway wave-shaper, producing an output that's no longer countered by a higher order of temp variable pushing the opposite direction… and at that point we have to clip or otherwise stop, or we get infinity out of the equation. It's never a perfect wavefolder unless it's infinite processing… but one thing it is, is a continuous function. It'll wavefold around without ever transitioning to a lookup table or using any sort of optimization. Longhand, in a word.What does it SOUND like?The answer to that question is also why the dry/wet control doesn't work as expected. Turns out I followed this one all the way through to release, without removing one little detail: it includes 'dry' in its gain trim, which can slam the processing right up to its final, no-further-wavefolds, ultimate peak. I had some consternation trying to figure out what I was even doing but that's what it was. The maximum gain (substantial!) is what it takes to get Longhand to its final peak. The inputs are hardclipped, -1.0 to 1.0, for that exact reason and no other. There's a taper to the control but 0.5 is not unity gain, it's just pretty close to it. All of this was so I could run dry into normal 'sin()' and then subtract it and use BitShiftGain to bump up the delta and see what, if anything, was there.And there really is the tiniest difference between the math library, optimized one, and Longhand. It made sounds when nulled out in this way. Does that make Longhand better? It's certainly the tiniest amount more linear as the waveform rounds over the top, because it's continuing the same algorithm. Now, of course, the dry/wet is returned to its original purpose… sort of. But since it's not true Dry, it instead is an output that can boost past clipping. Any DAW that can run Longhand is a floating point buss, so you can pad it down again, getting a dry/wet where you're effectively blending between dry and a soft-saturation that's also lowering its clip threshold as it goes. Or, you can ignore dry/wet unless you're using Longhand for an ultra soft clip and it's not soft ENOUGH. If you've got any Dry in the signal and you're not clipping the output, that guarantees Longhand is giving you a softclip that's even softer than sin().This was an experiment that got out of the laboratory since I've been scrambling so hard to finish up more demanding plugins. If you leave dry/wet out of it, Longhand is the purest and most continuous of soft saturators. Apologies for the odd behavior of the dry/wet, it got past me and there is so much else to do that I'm going to have to let it stand. Apart from that, is this a giant improvement over math_library sin()? No, because there's no way to have it be a big change and also still be sin(). But it is different, in that it's a very very high accuracy approximation that is continuous through the point where the math library uses an approximation, mirroring, and quadrants to return a result from any value you pass in.This is not that, it's very restricted and goes the cumbersome long way round to return a value. But if there's fluidity to be had by working the answer out in longhand, this is how that's done, and that's the experiment."
+    "A sine is a very interesting thing, in part because it's so very simple. Think of a circle. A sine (and cosine) is what gives you that shape. It's a simple arc in space. If you use the mathematical function sin(), it gives you a waveshaper, but if you don't clamp it to half of pi (a constant called M_PI_2) you get a wave FOLDER for your trouble. As your wave gets louder it starts to wrap around again, first to zero and then all the way to negative 1 (the output of sin(), no matter what the input, will return something between 1 and -1). Very simple, and it's the waveshaper with the absolute gentlest transtion between linearity and clipping. Interestingly this means there's a sharp transition at exactly zero when the rate of curvature flips, and this gave rise to my plugin Spiral (and newer versions of Channel), but as a simple function sin() has the softest clipping anything can have. Does that make sin(), in every C compiler and every computer, perfect? There's a catch. To implement sin(), nothing out there really does it in the cumbersome, calculating way. There's optimizations. As you hit exactly 1.0 (or -1.0) in the output, that's when you can begin referring to a lookup table, but backwards. You can store a series of values and interpolate between them. You can build a dedicated hardware unit into your CPU to do it, or your GPU. You might get ambitious with this, since you're probably drawing triangles and can't be bothered with details. sin() is simple, but implementing it can be hacktastic. And of course it'll still be perfect, because it's math and it's a computer, and what else could it be? Longhand's an experiment in checking this notion, for the purposes of audio. First, there was PurestSaturation. It uses a form of approximation known as a Taylor Series, where you make a temporary number, and keep multiplying it by itself, and then alternately adding and subtracting the results by very specific amounts. The purpose of PurestSaturation was, 'what if we make a sin()-like saturation, but intentionally use fewer terms than you'd normally have, so there's less math in it? and then to top it off, what if we only use powers of 2 for the adding and subtracting and the scaling, so we're retaining the mantissas of the temp variables even though our sine isn't accurate anymore? It'll be close, but it'll be a different thing. What happens then?' And so, that's PurestSaturation. TapeHack has some similarities to this. Both are intentional departures from the majesty of sin(). But… what if we put our working variables in long double precision just for sheer overkill, and then rather than departing, we worked out LOTS of terms for a Taylor Series of sin(), beyond the point that even long double can follow? For starters, we are only doing simple multiplies and additions and subtractions. That's all a Taylor Series is. What that does is, rather than model a sine in discrete quadrants and mapping it to where it's needed, we're calculating the wave as ONE continuous function. Every new term means more calculation, but also another layer by which this continuous function can wrap around, wavefold again and again, and produce a sine as a result. Once we stop adding more powers to the temp variable, it stops being a sine and becomes a runaway wave-shaper, producing an output that's no longer countered by a higher order of temp variable pushing the opposite direction… and at that point we have to clip or otherwise stop, or we get infinity out of the equation. It's never a perfect wavefolder unless it's infinite processing… but one thing it is, is a continuous function. It'll wavefold around without ever transitioning to a lookup table or using any sort of optimization. Longhand, in a word. What does it SOUND like? The answer to that question is also why the dry/wet control doesn't work as expected. Turns out I followed this one all the way through to release, without removing one little detail: it includes 'dry' in its gain trim, which can slam the processing right up to its final, no-further-wavefolds, ultimate peak. I had some consternation trying to figure out what I was even doing but that's what it was. The maximum gain (substantial!) is what it takes to get Longhand to its final peak. The inputs are hardclipped, -1.0 to 1.0, for that exact reason and no other. There's a taper to the control but 0.5 is not unity gain, it's just pretty close to it. All of this was so I could run dry into normal 'sin()' and then subtract it and use BitShiftGain to bump up the delta and see what, if anything, was there. And there really is the tiniest difference between the math library, optimized one, and Longhand. It made sounds when nulled out in this way. Does that make Longhand better? It's certainly the tiniest amount more linear as the waveform rounds over the top, because it's continuing the same algorithm. Now, of course, the dry/wet is returned to its original purpose… sort of. But since it's not true Dry, it instead is an output that can boost past clipping. Any DAW that can run Longhand is a floating point buss, so you can pad it down again, getting a dry/wet where you're effectively blending between dry and a soft-saturation that's also lowering its clip threshold as it goes. Or, you can ignore dry/wet unless you're using Longhand for an ultra soft clip and it's not soft ENOUGH. If you've got any Dry in the signal and you're not clipping the output, that guarantees Longhand is giving you a softclip that's even softer than sin(). This was an experiment that got out of the laboratory since I've been scrambling so hard to finish up more demanding plugins. If you leave dry/wet out of it, Longhand is the purest and most continuous of soft saturators. Apologies for the odd behavior of the dry/wet, it got past me and there is so much else to do that I'm going to have to let it stand. Apart from that, is this a giant improvement over math_library sin()? No, because there's no way to have it be a big change and also still be sin(). But it is different, in that it's a very very high accuracy approximation that is continuous through the point where the math library uses an approximation, mirroring, and quadrants to return a result from any value you pass in. This is not that, it's very restricted and goes the cumbersome long way round to return a value. But if there's fluidity to be had by working the answer out in longhand, this is how that's done, and that's the experiment."
 };
 constexpr std::string_view k_tags{
     "saturation"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Longhand final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'lonh';
     float A;
     float B;
     float C;
@@ -54,12 +58,11 @@ class Longhand final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -92,7 +95,7 @@ class Longhand final : public Effect<T>
         switch (static_cast<params>(index)) {
             case kParamA: return "input"; break;
             case kParamB: return "output"; break;
-            case kParamC: return "dry/wet"; break;
+            case kParamC: return "drywet"; break;
 
             default: break;
         }
@@ -113,26 +116,28 @@ class Longhand final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -142,7 +147,7 @@ class Longhand final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        double inputGain = pow(A, 2.0) * 7.72; // normalized input does not wavefold too far
+        double inputGain = pow(A, 2.0) * 7.72; // normalized input does not wavefold too farVal
         double outputGain = B;
         double wet = C;
         while (--sampleFrames >= 0) {

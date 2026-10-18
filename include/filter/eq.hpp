@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "EQ is just the EQ parts of CStrip."
 };
 constexpr std::string_view k_long_description{
-    "CStrip actually came out of this: a set of EQs specially coded to work together. It’s a lossless three-band (as in, the bands are made by different IIR filtrations being subtracted from each other, so if it’s flat it’s totally bit-identical output and also it has no pre-echo) with a special highpass and lowpass. Each of these things gets switched out of the circuit if not in use (much like CStrip). That makes EQ a very nice default EQ for broad-stroke filtering.The slopes aren’t super high, but that just helps it sound more natural (for a more striking-sounding filter, try Capacitor which is a more aggressively sloped highpass and lowpass). I could have given it set frequencies, but it seems like that’s kind of handy. This plugin is given to you (in AU, and Mac/Win/Linux VST) by request, as I’ve had a user ask for it even though CStrip is already out. So, for a simpler and more approachable Airwindows EQ, here’s EQ :)This work is supported by my Patreon, and I’m happy to say I’m back in the top 50 of the ‘Music’ section at ‘Graphtreon‘: I always like that, feels like I’m getting somewhere with all this. I also like something else, too: I’m definitely giving you folks ‘Aura’ this month. It’s thanks in large part to a mysterious creature known as Slipperman who got involved, and in his honor, next month you’re getting ‘Golem’. Remember, the bigger a success the Patreon is, the more I’m able to persuade people that my way of doing things is good. So if you want this sort of thing to catch on, throw money as that’s all people pay attention to these days…Other stuff I’m working on is Atmosphere, DeRez, and the latest Righteous, Righteous4. Also, if anybody wants to meet me, and also enjoy a rather special academic experience, I’m attending a scholarly lecture by a certain Doctor Bill Bruford in Albany NY this Tuesday, which I’m very excited for. I have no idea how well this’ll go over but I have a smaller version of the famous bent cymbal he discovered (the real one tragically broke after much use), and I mean to give it to him as a gift in honor of his creativity in the field of timbre. Anyway, wild horses wouldn’t keep me away from there, so if my car behaves itself you can meet both me and a REAL great person ;)(as a follow-up, by 2022 I'm hanging down just above 100 in the global Patreon music rankings, and I did in fact get to Albany and the lecture by Bill Bruford. I got in late, and confused him with my cymbal gift after the lecture (Bruford: 'but it's not the one!' which, true, it was not, and I got quite flustered. I hope he understood in some way that I just wanted to give him something, somehow. And no Airwindows people were there, which simplified things I guess)"
+    "CStrip actually came out of this: a set of EQs specially coded to work together. It’s a lossless three-band (as in, the bands are made by different IIR filtrations being subtracted from each other, so if it’s flat it’s totally bit-identical output and also it has no pre-echo) with a special highpass and lowpass. Each of these things gets switched out of the circuit if not in use (much like CStrip). That makes EQ a very nice default EQ for broad-stroke filtering. The slopes aren’t super high, but that just helps it sound more natural (for a more striking-sounding filter, try Capacitor which is a more aggressively sloped highpass and lowpass). I could have given it set frequencies, but it seems like that’s kind of handy. This plugin is given to you (in AU, and Mac/Win/Linux VST) by request, as I’ve had a user ask for it even though CStrip is already out. So, for a simpler and more approachable Airwindows EQ, here’s EQ :) This work is supported by my Patreon, and I’m happy to say I’m back in the top 50 of the ‘Music’ section at ‘Graphtreon‘: I always like that, feels like I’m getting somewhere with all this. I also like something else, too: I’m definitely giving you folks ‘Aura’ this month. It’s thanks in large part to a mysterious creature known as Slipperman who got involved, and in his honor, next month you’re getting ‘Golem’. Remember, the bigger a success the Patreon is, the more I’m able to persuade people that my way of doing things is good. So if you want this sort of thing to catch on, throw money as that’s all people pay attention to these days… Other stuff I’m working on is Atmosphere, DeRez, and the latest Righteous, Righteous4. Also, if anybody wants to meet me, and also enjoy a rather special academic experience, I’m attending a scholarly lecture by a certain Doctor Bill Bruford in Albany NY this Tuesday, which I’m very excited for. I have no idea how well this’ll go over but I have a smaller version of the famous bent cymbal he discovered (the real one tragically broke after much use), and I mean to give it to him as a gift in honor of his creativity in the field of timbre. Anyway, wild horses wouldn’t keep me away from there, so if my car behaves itself you can meet both me and a REAL great person ;) (as a follow-up, by 2022 I'm hanging down just above 100 in the global Patreon music rankings, and I did in fact get to Albany and the lecture by Bill Bruford. I got in late, and confused him with my cymbal gift after the lecture (Bruford: 'but it's not the one!' which, true, it was not, and I got quite flustered. I hope he understood in some way that I just wanted to give him something, somehow. And no Airwindows people were there, which simplified things I guess)"
 };
 constexpr std::string_view k_tags{
     "filter"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class EQ final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'eqeq';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -231,8 +235,7 @@ class EQ final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -241,15 +244,13 @@ class EQ final : public Effect<T>
             case kParamF: F = value; break;
             case kParamG: G = value; break;
             case kParamH: H = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -266,8 +267,7 @@ class EQ final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -284,8 +284,7 @@ class EQ final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "treble"; break;
             case kParamB: return "mid"; break;
             case kParamC: return "bass"; break;
@@ -302,8 +301,7 @@ class EQ final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Treble"; break;
             case kParamB: return "Mid"; break;
             case kParamC: return "Bass"; break;
@@ -320,38 +318,38 @@ class EQ final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string((A * 24.0) - 12.0, text, kVstMaxParamStrLen); break; // Treble -12 to 12
+            case kParamB: float2string((B * 24.0) - 12.0, text, kVstMaxParamStrLen); break; // Mid -12 to 12
+            case kParamC: float2string((C * 24.0) - 12.0, text, kVstMaxParamStrLen); break; // Bass -12 to 12
+            case kParamD: float2string((D * D * 15.0) + 1.0, text, kVstMaxParamStrLen); break; // Lowpass 16.0K log 1 to 16 defaulting to 16K
+            case kParamE: float2string((E * E * 15.0) + 1.0, text, kVstMaxParamStrLen); break; // TrebFrq 6.0 log 1 to 16 defaulting to 6K
+            case kParamF: float2string((F * F * 1570.0) + 30.0, text, kVstMaxParamStrLen); break; // BassFrq 100.0 log 30 to 1600 defaulting to 100 hz
+            case kParamG: float2string((G * G * 1570.0) + 30.0, text, kVstMaxParamStrLen); break; // Hipass 30.0 log 30 to 1600 defaulting to 30
+            case kParamH: float2string((H * 36.0) - 18.0, text, kVstMaxParamStrLen); break; // OutGain -18 to 18
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "dB"; break;
-            case kParamB: return "dB"; break;
-            case kParamC: return "dB"; break;
-            case kParamD: return "Khz"; break;
-            case kParamE: return "Khz"; break;
-            case kParamF: return "hz"; break;
-            case kParamG: return "hz"; break;
-            case kParamH: return "dB"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "Khz", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "Khz", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "hz", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "dB", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -411,8 +409,7 @@ class EQ final : public Effect<T>
         double outC = fabs(densityC);
         // end EQ
         double outputgain = pow(10.0, ((H * 36.0) - 18.0) / 20.0);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -432,10 +429,8 @@ class EQ final : public Effect<T>
             }
             // counters
             // begin highpass
-            if (engageHighpass)
-            {
-                if (flip)
-                {
+            if (engageHighpass) {
+                if (flip) {
                     highpassSampleLAA = (highpassSampleLAA * (1.0 - iirAmountD)) + (inputSampleL * iirAmountD);
                     inputSampleL -= highpassSampleLAA;
                     highpassSampleLBA = (highpassSampleLBA * (1.0 - iirAmountD)) + (inputSampleL * iirAmountD);
@@ -445,8 +440,7 @@ class EQ final : public Effect<T>
                     highpassSampleLDA = (highpassSampleLDA * (1.0 - iirAmountD)) + (inputSampleL * iirAmountD);
                     inputSampleL -= highpassSampleLDA;
                 }
-                else
-                {
+                else {
                     highpassSampleLAB = (highpassSampleLAB * (1.0 - iirAmountD)) + (inputSampleL * iirAmountD);
                     inputSampleL -= highpassSampleLAB;
                     highpassSampleLBB = (highpassSampleLBB * (1.0 - iirAmountD)) + (inputSampleL * iirAmountD);
@@ -460,8 +454,7 @@ class EQ final : public Effect<T>
                 inputSampleL -= highpassSampleLE;
                 highpassSampleLF = (highpassSampleLF * (1.0 - iirAmountD)) + (inputSampleL * iirAmountD);
                 inputSampleL -= highpassSampleLF;
-                if (flip)
-                {
+                if (flip) {
                     highpassSampleRAA = (highpassSampleRAA * (1.0 - iirAmountD)) + (inputSampleR * iirAmountD);
                     inputSampleR -= highpassSampleRAA;
                     highpassSampleRBA = (highpassSampleRBA * (1.0 - iirAmountD)) + (inputSampleR * iirAmountD);
@@ -471,8 +464,7 @@ class EQ final : public Effect<T>
                     highpassSampleRDA = (highpassSampleRDA * (1.0 - iirAmountD)) + (inputSampleR * iirAmountD);
                     inputSampleR -= highpassSampleRDA;
                 }
-                else
-                {
+                else {
                     highpassSampleRAB = (highpassSampleRAB * (1.0 - iirAmountD)) + (inputSampleR * iirAmountD);
                     inputSampleR -= highpassSampleRAB;
                     highpassSampleRBB = (highpassSampleRBB * (1.0 - iirAmountD)) + (inputSampleR * iirAmountD);
@@ -489,10 +481,8 @@ class EQ final : public Effect<T>
             }
             // end highpass
             // begin EQ
-            if (engageEQ)
-            {
-                switch (flipthree)
-                {
+            if (engageEQ) {
+                switch (flipthree) {
                     case 1:
                         tripletFactorL = last2SampleL - inputSampleL;
                         tripletLA += tripletFactorL;
@@ -556,8 +546,7 @@ class EQ final : public Effect<T>
                 tripletRB /= 2.0;
                 tripletRC /= 2.0;
                 highSampleR = highSampleR + tripletFactorR;
-                if (flip)
-                {
+                if (flip) {
                     iirHighSampleLA = (iirHighSampleLA * (1.0 - iirAmountA)) + (highSampleL * iirAmountA);
                     highSampleL -= iirHighSampleLA;
                     iirLowSampleLA = (iirLowSampleLA * (1.0 - iirAmountB)) + (bassSampleL * iirAmountB);
@@ -567,8 +556,7 @@ class EQ final : public Effect<T>
                     iirLowSampleRA = (iirLowSampleRA * (1.0 - iirAmountB)) + (bassSampleR * iirAmountB);
                     bassSampleR = iirLowSampleRA;
                 }
-                else
-                {
+                else {
                     iirHighSampleLB = (iirHighSampleLB * (1.0 - iirAmountA)) + (highSampleL * iirAmountA);
                     highSampleL -= iirHighSampleLB;
                     iirLowSampleLB = (iirLowSampleLB * (1.0 - iirAmountB)) + (bassSampleL * iirAmountB);
@@ -718,10 +706,8 @@ class EQ final : public Effect<T>
             }
             // end EQ
             // EQ lowpass is after all processing like the compressor that might produce hash
-            if (engageLowpass)
-            {
-                if (flip)
-                {
+            if (engageLowpass) {
+                if (flip) {
                     lowpassSampleLAA = (lowpassSampleLAA * (1.0 - iirAmountC)) + (inputSampleL * iirAmountC);
                     inputSampleL = lowpassSampleLAA;
                     lowpassSampleLBA = (lowpassSampleLBA * (1.0 - iirAmountC)) + (inputSampleL * iirAmountC);
@@ -743,8 +729,7 @@ class EQ final : public Effect<T>
                     lowpassSampleRE = (lowpassSampleRE * (1.0 - iirAmountC)) + (inputSampleR * iirAmountC);
                     inputSampleR = lowpassSampleRE;
                 }
-                else
-                {
+                else {
                     lowpassSampleLAB = (lowpassSampleLAB * (1.0 - iirAmountC)) + (inputSampleL * iirAmountC);
                     inputSampleL = lowpassSampleLAB;
                     lowpassSampleLBB = (lowpassSampleLBB * (1.0 - iirAmountC)) + (inputSampleL * iirAmountC);

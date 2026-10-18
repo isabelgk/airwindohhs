@@ -1,11 +1,11 @@
 #pragma once
+#if defined(_MSC_VER)
+#pragma warning(push)
 #pragma warning(disable : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshadow"
 #endif
-
 #include "effect.hpp"
 #include <cmath>
 #include <cstdint>
@@ -18,7 +18,7 @@ constexpr std::string_view k_short_description{
     "Surge is a compressor for accentuating beats and pulses."
 };
 constexpr std::string_view k_long_description{
-    "What is ‘ballistics’ when it comes to audio gear? It’s the way the gear handles dynamics coming in. It’s the swing of a VU meter that can tell you what your music feels like.Or, since this is Airwindows and we don’t do no steenkin’ meters, ballistics is the way dynamics hit this compressor to produce outrageous groove.This is also a good reason to keep me around working on stuff… this plugin wouldn’t exist if not for an earlier free VST plug from me, called SurgeTide. That one controls dynamics by altering the rate of change of the rate of change OF the rate of change of the audio. What, you may ask, would happen if you did that? I’ll tell you: firstly, there is no smoother compressor. It’s utterly, totally fluid and artifact-less, organic to the Nth degree. But, it doesn’t sound like it’s doing anything until suddenly it kicks in and starts making the dynamics swing up wildly to boost every beat. Incredibly hard to control. You really can get a sense of ‘huge surges of the musical tide’ emphasizing the deepest rhythms, but it’s a bear to set up!And since I’m still out there working on stuff thanks to my Patreon, now there’s a whole new version, so different it counts as a separate compressor: Surge.Here’s the thing. Compressors are as unique as, say, guitar overdrives. You can search for the magic one, but there can be all different sorts of ‘right one’, with hugely different characters to ’em. I made Pyewacket as a free VST. It delivers a super-articulate attack transient and leans out the sound rather than simply turning it down, and gives a ‘British Classic Rock’ vibe without any silly adding of faux-analog mud: that one clamps down on the body of sounds while leaving tons of intensity and headroom to the tone. Its ‘ballistics’ are very simple and it’s more about delivering a certain kind of attack, and making stuff more even and consistent.Surge isn’t anything like that. It’s SurgeTide, but easier to control: just bring it up until it starts compressing enough, and don’t go too far to where it inverts the dynamics. You can hear it easily, unlike SurgeTide. But it still retains most of the uncanny fluid organic quality SurgeTide has, and most importantly, it has the ballistics. That means that if you put a pumping, rhythmic mix through it… it will accentuate the beats in a very aggressive way that’s not like anything you’ve heard before. The attacks pop way out, including the deepest bass pulses: this is yet another way to handle compressed bassy mixes and transform them into something punchier. And unlike SurgeTide, it’s very controllable.You might want to push it hard enough that the dynamics jump way out. You might want to use it as ‘glue’ and hit it only very gently, and take advantage of that extreme fluid openness (a result of the way its control is so abstracted: again, it alters the rate of change of the rate of change OF the rate of change). The one thing it won’t do at all is limiter-like behavior, it’s way too funky for that! So anywhere you need to use a compressor that is just ultimately funky, bouncy, squishy… try Surge. It might be right up your alley.Summary: Surge is more obvious and responds easier, SurgeTide is cleaner and harder to control."
+    "What is ‘ballistics’ when it comes to audio gear? It’s the way the gear handles dynamics coming in. It’s the swing of a VU meter that can tell you what your music feels like. Or, since this is Airwindows and we don’t do no steenkin’ meters, ballistics is the way dynamics hit this compressor to produce outrageous groove. This is also a good reason to keep me around working on stuff… this plugin wouldn’t exist if not for an earlier free VST plug from me, called SurgeTide. That one controls dynamics by altering the rate of change of the rate of change OF the rate of change of the audio. What, you may ask, would happen if you did that? I’ll tell you: firstly, there is no smoother compressor. It’s utterly, totally fluid and artifact-less, organic to the Nth degree. But, it doesn’t sound like it’s doing anything until suddenly it kicks in and starts making the dynamics swing up wildly to boost every beat. Incredibly hard to control. You really can get a sense of ‘huge surges of the musical tide’ emphasizing the deepest rhythms, but it’s a bear to set up! And since I’m still out there working on stuff thanks to my Patreon, now there’s a whole new version, so different it counts as a separate compressor: Surge. Here’s the thing. Compressors are as unique as, say, guitar overdrives. You can search for the magic one, but there can be all different sorts of ‘right one’, with hugely different characters to ’em. I made Pyewacket as a free VST. It delivers a super-articulate attack transient and leans out the sound rather than simply turning it down, and gives a ‘British Classic Rock’ vibe without any silly adding of faux-analog mud: that one clamps down on the body of sounds while leaving tons of intensity and headroom to the tone. Its ‘ballistics’ are very simple and it’s more about delivering a certain kind of attack, and making stuff more even and consistent. Surge isn’t anything like that. It’s SurgeTide, but easier to control: just bring it up until it starts compressing enough, and don’t go too far to where it inverts the dynamics. You can hear it easily, unlike SurgeTide. But it still retains most of the uncanny fluid organic quality SurgeTide has, and most importantly, it has the ballistics. That means that if you put a pumping, rhythmic mix through it… it will accentuate the beats in a very aggressive way that’s not like anything you’ve heard before. The attacks pop way out, including the deepest bass pulses: this is yet another way to handle compressed bassy mixes and transform them into something punchier. And unlike SurgeTide, it’s very controllable. You might want to push it hard enough that the dynamics jump way out. You might want to use it as ‘glue’ and hit it only very gently, and take advantage of that extreme fluid openness (a result of the way its control is so abstracted: again, it alters the rate of change of the rate of change OF the rate of change). The one thing it won’t do at all is limiter-like behavior, it’s way too funky for that! So anywhere you need to use a compressor that is just ultimately funky, bouncy, squishy… try Surge. It might be right up your alley. Summary: Surge is more obvious and responds easier, SurgeTide is cleaner and harder to control."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -27,6 +27,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Surge final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'srge';
     uint32_t fpdL;
     uint32_t fpdR;
     bool flip;
@@ -69,19 +73,16 @@ class Surge final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-            case kParamB: B = value; break;
-
-            default: break;
+            case kParamB: B = value; break; // percent. Using this value, it'll be 0-100 everywhere
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
 
@@ -92,10 +93,9 @@ class Surge final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
-            case kParamB: return 0.0; break;
+            case kParamB: return 1.0; break;
 
             default: break;
         }
@@ -104,10 +104,9 @@ class Surge final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "surge"; break;
-            case kParamB: return "dry/wet"; break;
+            case kParamB: return "drywet"; break;
 
             default: break;
         }
@@ -116,8 +115,7 @@ class Surge final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Surge"; break;
             case kParamB: return "Dry/Wet"; break;
 
@@ -128,26 +126,26 @@ class Surge final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break; // also display 0-1 as percent
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return " "; break;
-            case kParamB: return " "; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, " ", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, " ", kVstMaxParamStrLen); break; // the percent
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -171,8 +169,7 @@ class Surge final : public Effect<T>
         double wet = B;
         // removed extra dry variable
         double inputSense;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             inputSampleL = *in1;
             inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -262,8 +259,8 @@ class Surge final : public Effect<T>
     }
 };
 } // namespace airwindohhs::surge
-#pragma warning(default : 4458)
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif

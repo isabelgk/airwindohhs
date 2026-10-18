@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Balanced lets you run an XLR input into a stereo input, sum it to mono, and use it."
 };
 constexpr std::string_view k_long_description{
-    "Balanced is inspired by the adorably tiny Teenage Engineering TX-6 mixer. You might know that the TX-6 is notorious for being wildly overpriced as a small line mixer, since you can get a Bastl Dude for one-twelveth the price and have almost as many inputs (five jacks to plug in, rather than six). If you multiply that by twelve you've got sixty jacks, ten times as many inputs per dollar, and pretty much as tiny.But the TX-6 is a digital mixer, not analog. And its inputs are stereo. And it also functions as a ADC, a converter for getting stuff into your DAW (at 48k, granted, but 32 bit audio). And that means it can serve other functions, like replacing other multichannel converters… and it's normal for multichannel converters to be sort of costly.But how much can it replace? Enter Airwindows Balanced (and some patchcords you will have to make).Firstly, with breakout cables (also very expensive, from Teenage Engineering) you can get twelve inputs. You will have to process them in pairs or leave them untouched: the TX-6 will do stuff ITB on input before sending the result to your DAW, but I don't think it can operate on sides of its stereo channels, so the processing has to match.With Airwindows Balanced, you can plug a balanced, professional XLR output into your TX-6 (or ANY consumer grade stereo input of any kind) and turn it into a mono channel with all the benefits of balanced operation. In fact if your poor-quality consumer input hums or buzzes the same on both channels, Airwindows Balanced will cancel that out as if it was interference in the analog domain. It flips one of the sides and then sums to mono, with a handy gain trim based on BitShiftGain to let you gain-stage stuff that might come in very quiet.The reason that's an interesting option is this: with Airwindows Balanced and Teenage Engineering TX-6, you can record certain things at professional quality in multichannel WITHOUT professional mic pres. And that makes TX-6 the budget option. Completely aside from its tininess and portability… or the fact that everything in this portable rig is internally battery powered and can exist, in any combination of professional mic input and stereo line input, miles away from mains power.The key here is that you can get a battery-powered 48v phantom power box (I'm using Xvive P1s, which charge off a laptop or charger) and power a high-headroom and high-output condenser mic (I'm using Roswell Mini K47s), make a XLR to TRS 1/8\" cable, and put the mic in front of LOUD things.The key is that the TX - 6(and some other bad quality line inputs on laptops and such) is not professional line level.It 's consumer line level. There' s no headroom, it maxes out way short of professional grade.And that means when you put your mics in front of loud things(and I mean brutally loud drums, stage amps, etc) the peaks won 't be limited by the phantom power box. They won' t clip a mic pre inside the TX - 6 as there isn 't one. And it' s a bit like trying to run your mic into a line input and getting no signal… BUT, with the right signals, you will actually get peaks within 6dB or so of clipping.Hell, if you clip the TX - 6 it doesn 't sound particularly bad, it handles clipping gracefully compared to some boutique ADCs: and it would take impossibly high loudness to do that off a mic.The budget gear you can record with can' t do that, not even close.In the 'loud into condenser mic into DAW' scenario, this setup with the Xvive P1 and TX - 6 compares most closely with APIs and Lavrys, just without 96k capability, and everything on the budget side comes off as congested and flat by comparison.My hope is that Airwindows Balanced also helps other recording situations.You should be able to take a hot XLR condenser mic, a 48V phantom power box, make the cable(these do not exist as far as I know) and a cheap old laptop with a 1/8\" stereo line input, and get a respectable and good sound as a mono capture… also entirely on batteries, and anywhere. My hope is that if you're not buying tiny $1000 digital mixers on a whim you can still get value out of this.But if you're able to get the TX-6 and scorned it, check out what I was able to make it do. I could have put up four other mics, all on things that would crush budget pres and converters, and carried the whole rig in a backpack including the laptop to anywhere I wanted to record, and also would never have to set a level because by definition nothing the mics can do can ever overload the inputs in a negative way. That makes setup quicker. Just saying.I can give you Balanced. You gotta make the cables yourself, as I did :)"
+    "Balanced is inspired by the adorably tiny Teenage Engineering TX-6 mixer. You might know that the TX-6 is notorious for being wildly overpriced as a small line mixer, since you can get a Bastl Dude for one-twelveth the price and have almost as many inputs (five jacks to plug in, rather than six). If you multiply that by twelve you've got sixty jacks, ten times as many inputs per dollar, and pretty much as tiny. But the TX-6 is a digital mixer, not analog. And its inputs are stereo. And it also functions as a ADC, a converter for getting stuff into your DAW (at 48k, granted, but 32 bit audio). And that means it can serve other functions, like replacing other multichannel converters… and it's normal for multichannel converters to be sort of costly. But how much can it replace? Enter Airwindows Balanced (and some patchcords you will have to make). Firstly, with breakout cables (also very expensive, from Teenage Engineering) you can get twelve inputs. You will have to process them in pairs or leave them untouched: the TX-6 will do stuff ITB on input before sending the result to your DAW, but I don't think it can operate on sides of its stereo channels, so the processing has to match. With Airwindows Balanced, you can plug a balanced, professional XLR output into your TX-6 (or ANY consumer grade stereo input of any kind) and turn it into a mono channel with all the benefits of balanced operation. In fact if your poor-quality consumer input hums or buzzes the same on both channels, Airwindows Balanced will cancel that out as if it was interference in the analog domain. It flips one of the sides and then sums to mono, with a handy gain trim based on BitShiftGain to let you gain-stage stuff that might come in very quiet. The reason that's an interesting option is this: with Airwindows Balanced and Teenage Engineering TX-6, you can record certain things at professional quality in multichannel WITHOUT professional mic pres. And that makes TX-6 the budget option. Completely aside from its tininess and portability… or the fact that everything in this portable rig is internally battery powered and can exist, in any combination of professional mic input and stereo line input, miles away from mains power. The key here is that you can get a battery-powered 48v phantom power box (I'm using Xvive P1s, which charge off a laptop or charger) and power a high-headroom and high-output condenser mic (I'm using Roswell Mini K47s), make a XLR to TRS 1/8\" cable, and put the mic in front of LOUD things. The key is that the TX-6 (and some other bad quality line inputs on laptops and such) is not professional line level. It's consumer line level. There's no headroom, it maxes out way short of professional grade. And that means when you put your mics in front of loud things (and I mean brutally loud drums, stage amps, etc) the peaks won't be limited by the phantom power box. They won't clip a mic pre inside the TX-6 as there isn't one. And it's a bit like trying to run your mic into a line input and getting no signal… BUT, with the right signals, you will actually get peaks within 6dB or so of clipping. Hell, if you clip the TX-6 it doesn't sound particularly bad, it handles clipping gracefully compared to some boutique ADCs: and it would take impossibly high loudness to do that off a mic. The budget gear you can record with can't do that, not even close. In the 'loud into condenser mic into DAW' scenario, this setup with the Xvive P1 and TX-6 compares most closely with APIs and Lavrys, just without 96k capability, and everything on the budget side comes off as congested and flat by comparison. My hope is that Airwindows Balanced also helps other recording situations. You should be able to take a hot XLR condenser mic, a 48V phantom power box, make the cable (these do not exist as far as I know) and a cheap old laptop with a 1/8\" stereo line input, and get a respectable and good sound as a mono capture… also entirely on batteries, and anywhere. My hope is that if you're not buying tiny $1000 digital mixers on a whim you can still get value out of this. But if you're able to get the TX-6 and scorned it, check out what I was able to make it do. I could have put up four other mics, all on things that would crush budget pres and converters, and carried the whole rig in a backpack including the laptop to anywhere I wanted to record, and also would never have to set a level because by definition nothing the mics can do can ever overload the inputs in a negative way. That makes setup quicker. Just saying. I can give you Balanced. You gotta make the cables yourself, as I did :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Balanced final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'bala';
     float A;
     uint32_t fpdL;
     uint32_t fpdR;
@@ -48,18 +52,15 @@ class Balanced final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -69,8 +70,7 @@ class Balanced final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
 
             default: break;
@@ -80,8 +80,7 @@ class Balanced final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "bitshift"; break;
 
             default: break;
@@ -91,8 +90,7 @@ class Balanced final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "BitShift"; break;
 
             default: break;
@@ -102,24 +100,24 @@ class Balanced final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((VstInt32)(A * 8), text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return "bits"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "bits", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -131,8 +129,7 @@ class Balanced final : public Effect<T>
 
         int bitshiftBalanced = (A * 8);
         double gain = 1.0;
-        switch (bitshiftBalanced)
-        {
+        switch (bitshiftBalanced) {
             case 0: gain = 0.5; break;
             case 1: gain = 1.0; break;
             case 2: gain = 2.0; break;
@@ -144,8 +141,7 @@ class Balanced final : public Effect<T>
             case 8: gain = 128.0; break;
         }
         // we are directly punching in the gain values rather than calculating them
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

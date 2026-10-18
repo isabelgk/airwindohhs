@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Hype is a treble softening experiment gone strangely awry :)"
 };
 constexpr std::string_view k_long_description{
-    "I may have mentioned that Console8 attempted a treble softening thing that went terribly wrong and acted like an aural exciter?This is it :)No controls, and in fact it fought my attempts to add any. If you use external controls, for instance the dry/wet you can get in Reaper, it will not behave nicely and will do weird things at intermediate settings. I have no idea what will happen if you try and oversample it: it, and you, may die, so you have been warned. This is the Airwindows experiment that went TOO weird to use as the treble softening in Console8, which is already pushing the limits of reasonableness in certain ways.Can’t even describe this, just drop it into your mix anywhere and see what it does. It’s like it tries to do a treble soften, but doesn’t get the concept entirely. In the video I made, you can see that stacking about six to eight of these up gets you into obvious distorted crackling territory. The original use in Console8 had three of these stacked, and I knew there was trouble when instead of softening the tone subtly and nicely, it was like a light turned on inside things. Don’t stack up too many of them if you want things to be more reasonable.I also can’t blend between this and the final Console8 treble softening. Nor am I interested in adding a switch so all Console8 (‘in’ plugs) have this, it’s just too eccentric, more like what Console7Cascade was, except Console8 now leans a little bit in the direction of what Console7Cascade was. That said, simply adding this to Console8 doesn’t replicate what the original experiment did, this is just that part of it stripped out and isolated in a sort of featureless plugin test-tube so you can play with the effect all by itself."
+    "I may have mentioned that Console8 attempted a treble softening thing that went terribly wrong and acted like an aural exciter? This is it :) No controls, and in fact it fought my attempts to add any. If you use external controls, for instance the dry/wet you can get in Reaper, it will not behave nicely and will do weird things at intermediate settings. I have no idea what will happen if you try and oversample it: it, and you, may die, so you have been warned. This is the Airwindows experiment that went TOO weird to use as the treble softening in Console8, which is already pushing the limits of reasonableness in certain ways. Can’t even describe this, just drop it into your mix anywhere and see what it does. It’s like it tries to do a treble soften, but doesn’t get the concept entirely. In the video I made, you can see that stacking about six to eight of these up gets you into obvious distorted crackling territory. The original use in Console8 had three of these stacked, and I knew there was trouble when instead of softening the tone subtly and nicely, it was like a light turned on inside things. Don’t stack up too many of them if you want things to be more reasonable. I also can’t blend between this and the final Console8 treble softening. Nor am I interested in adding a switch so all Console8 (‘in’ plugs) have this, it’s just too eccentric, more like what Console7Cascade was, except Console8 now leans a little bit in the direction of what Console7Cascade was. That said, simply adding this to Console8 doesn’t replicate what the original experiment did, this is just that part of it stripped out and isolated in a sort of featureless plugin test-tube so you can play with the effect all by itself."
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Hype final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'hype';
     double softL[11];
     double softR[11];
     int cycleEnd;
@@ -67,17 +71,14 @@ class Hype final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -86,8 +87,7 @@ class Hype final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -96,8 +96,7 @@ class Hype final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -106,8 +105,7 @@ class Hype final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
 
             default: break;
         }
@@ -116,22 +114,22 @@ class Hype final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-
-            default: break;
+        std::string text;
+        switch (index) {
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -141,8 +139,7 @@ class Hype final : public Effect<T>
         T* out1 = outputs[0];
         T* out2 = outputs[1];
 
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

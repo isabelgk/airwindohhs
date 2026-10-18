@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "HipCrush is the de-rez section for ConsoleH."
 };
 constexpr std::string_view k_long_description{
-    "So when I said I needed to write transformative plugins in order to give ConsoleH a true ability to invent new sounds and genres, this is what I meant.Is it de-rez, bit-crush, sampler emulations? Yes and no. In particular, it's very very bitcrush, but in a way you've certainly not heard before. But to start explaining, I need to talk about another plugin I did once, ResEQ. That was among my first plugins, and it generated multiple resonant peaks and added them to a convolution kernel in order to make a tone entirely out of multiple really tight resonances.HipCrush begins as a replacement for what, in ConsoleX, is an SSL-like four-band parametric. The ConsoleX one even uses nonlinearity to emulate real-world capacitors in order to bring a more ratty old SSL vibe to its boosts and cuts, all pretty tight and raunchy-sounding. All good fun. That's not what HipCrush is about at all.Instead, it's not boosts and cuts. You pick three boosts (in ConsoleH it will be four) and the lowest setting isn't a cut, it's silence. With all the levels at zero, it makes no sound (unless you're using the dry/wet). As you bring up the gains, the boosts start pretty broad, and get tighter and more intense as they go. With all three (or four in ConsoleH) bands in play, the level is roughly the same across various settings, but the original tone is completely replaced by pungent, resonant wah-like effects.This is already useful in its way. If you reconstruct a tone so it more or less covers the frequencies you need, it'll have a similar vibe to the dry signal but will be WAY more clear in the mix. You're doing an opposite-Soothe: you're replacing the whole sound with vivid resonant tones like cocked wahs, several at once, and this is incredible at clearing up a mix. HipCrush always does this unless you use the dry/wet (in ConsoleH, you'll crossfade between this and a simple three-band great-sounding EQ, SmoothEQ3, which is also coming soon).You can layer tracks using HipCrush just as a three-peak resonant filter, balance the frequency ranges and find areas of power to reinforce, and get a really intense mix where your layering tracks refuse to get in the way of full-range tracks because they're doing that ResEQ thing.But then it gets REALLY transformative, as in 'use Eagles songs as your backing rhythms, why not, they'll be unrecognizable' transformative.The remaining control for each band is called Crush. Like some of my recent reverb controls, at the center it's disabled and isn't crushing anything (if it's perfectly centered at 0.5 all crush is bypassed and your filters are full double precision floating point) but if you turn it clockwise (to the right) it's Compress and counterclockwise, to the left, it's Gate.It doesn't really compress, or gate. That's just what you get to do with the bitcrush, in a continuous adjustment from 16 bit right down to one bit or less.What does that mean? Turn up the control for the 'compress' and you progressively bitcrush with the transition between bits located exactly at 0.0. Unless your actual signal is DC-offset, what this will do is bring up a bitcrush 'noise floor' that roars and screams and is a blast of noise. (In ConsoleH, you'll have a gate in the dynamics section that can turn it into gated roar, as it'll trigger off the signal before the effect hits).If you turn the control down from 0.5, you bring up the same noisefloor, but offset exactly half a bit. That means that where the roaring out of control version becomes full blast, that's where the gate version will cut out entirely. In this way you can isolate stuff in the sound and make it pop in with a gating effect and cut out again, cut off exactly where you want it to cut off. Or, do a crunchy low-fi effect that's less extreme but still defines and reshapes the sound of the band's contribution.That's right: these independent bidirectional bitcrushes are PER BAND. But I've not made myself entirely clear. Everything I said?It runs between the two staggered filters that make up each resonant band. All separate.That means you can crank up the treble one to catch a hi-hat, gate that hat to make it much louder, brighter and more staccato, and the gated sound runs through ANOTHER level of even more resonant peak-filter. Adds flavor. It means you can isolate a kick drum, have the bass bitcrush-gate ONLY trigger off the kick, and then it filters that bitcrush again for a beefy, reinvented sound. If other parts of the kick show up in mids or highs, you can include them too, with separate gate dynamics! And you can balance all this with dry/wet if you really want to bring in the original sound.And then you can crank the mid crush UP all the way and sweep it around for the most savage de-rezzed roar you ever heard. And on ConsoleH you'll be able to apply a gate… but you'll also be able to apply speaker-like lowpass and highpass to give your nastiness a more organic, textural flavor after you used HipCrush to generate it. (and you can do that now, by using last week's plugin, Cabs2)Looking forward to getting out ConsoleH before 2026, and now I really do believe I'll be able to give hip-hop and all related/subsequent genres something by which new sounds can be invented, even for kids on laptops or Raspberry Pis. And then I'll put out ConsoleX2, and you can mix and match any and all of those as you please. Have fun! :)"
+    "So when I said I needed to write transformative plugins in order to give ConsoleH a true ability to invent new sounds and genres, this is what I meant. Is it de-rez, bit-crush, sampler emulations? Yes and no. In particular, it's very very bitcrush, but in a way you've certainly not heard before. But to start explaining, I need to talk about another plugin I did once, ResEQ. That was among my first plugins, and it generated multiple resonant peaks and added them to a convolution kernel in order to make a tone entirely out of multiple really tight resonances. HipCrush begins as a replacement for what, in ConsoleX, is an SSL-like four-band parametric. The ConsoleX one even uses nonlinearity to emulate real-world capacitors in order to bring a more ratty old SSL vibe to its boosts and cuts, all pretty tight and raunchy-sounding. All good fun. That's not what HipCrush is about at all. Instead, it's not boosts and cuts. You pick three boosts (in ConsoleH it will be four) and the lowest setting isn't a cut, it's silence. With all the levels at zero, it makes no sound (unless you're using the dry/wet). As you bring up the gains, the boosts start pretty broad, and get tighter and more intense as they go. With all three (or four in ConsoleH) bands in play, the level is roughly the same across various settings, but the original tone is completely replaced by pungent, resonant wah-like effects. This is already useful in its way. If you reconstruct a tone so it more or less covers the frequencies you need, it'll have a similar vibe to the dry signal but will be WAY more clear in the mix. You're doing an opposite-Soothe: you're replacing the whole sound with vivid resonant tones like cocked wahs, several at once, and this is incredible at clearing up a mix. HipCrush always does this unless you use the dry/wet (in ConsoleH, you'll crossfade between this and a simple three-band great-sounding EQ, SmoothEQ3, which is also coming soon). You can layer tracks using HipCrush just as a three-peak resonant filter, balance the frequency ranges and find areas of power to reinforce, and get a really intense mix where your layering tracks refuse to get in the way of full-range tracks because they're doing that ResEQ thing. But then it gets REALLY transformative, as in 'use Eagles songs as your backing rhythms, why not, they'll be unrecognizable' transformative. The remaining control for each band is called Crush. Like some of my recent reverb controls, at the center it's disabled and isn't crushing anything (if it's perfectly centered at 0.5 all crush is bypassed and your filters are full double precision floating point) but if you turn it clockwise (to the right) it's Compress and counterclockwise, to the left, it's Gate. It doesn't really compress, or gate. That's just what you get to do with the bitcrush, in a continuous adjustment from 16 bit right down to one bit or less. What does that mean? Turn up the control for the 'compress' and you progressively bitcrush with the transition between bits located exactly at 0.0. Unless your actual signal is DC-offset, what this will do is bring up a bitcrush 'noise floor' that roars and screams and is a blast of noise. (In ConsoleH, you'll have a gate in the dynamics section that can turn it into gated roar, as it'll trigger off the signal before the effect hits). If you turn the control down from 0.5, you bring up the same noisefloor, but offset exactly half a bit. That means that where the roaring out of control version becomes full blast, that's where the gate version will cut out entirely. In this way you can isolate stuff in the sound and make it pop in with a gating effect and cut out again, cut off exactly where you want it to cut off. Or, do a crunchy low-fi effect that's less extreme but still defines and reshapes the sound of the band's contribution. That's right: these independent bidirectional bitcrushes are PER BAND. But I've not made myself entirely clear. Everything I said? It runs between the two staggered filters that make up each resonant band. All separate. That means you can crank up the treble one to catch a hi-hat, gate that hat to make it much louder, brighter and more staccato, and the gated sound runs through ANOTHER level of even more resonant peak-filter. Adds flavor. It means you can isolate a kick drum, have the bass bitcrush-gate ONLY trigger off the kick, and then it filters that bitcrush again for a beefy, reinvented sound. If other parts of the kick show up in mids or highs, you can include them too, with separate gate dynamics! And you can balance all this with dry/wet if you really want to bring in the original sound. And then you can crank the mid crush UP all the way and sweep it around for the most savage de-rezzed roar you ever heard. And on ConsoleH you'll be able to apply a gate… but you'll also be able to apply speaker-like lowpass and highpass to give your nastiness a more organic, textural flavor after you used HipCrush to generate it. (and you can do that now, by using last week's plugin, Cabs2) Looking forward to getting out ConsoleH before 2026, and now I really do believe I'll be able to give hip-hop and all related/subsequent genres something by which new sounds can be invented, even for kids on laptops or Raspberry Pis. And then I'll put out ConsoleX2, and you can mix and match any and all of those as you please. Have fun! :)"
 };
 constexpr std::string_view k_tags{
     "lo-fi"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class HipCrush final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'hpch';
     float TRF;
     float TRG;
     float TRB;
@@ -110,7 +114,7 @@ class HipCrush final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: TRF = value; break;
             case kParamB: TRG = value; break;
             case kParamC: TRB = value; break;
@@ -121,8 +125,7 @@ class HipCrush final : public Effect<T>
             case kParamH: LMG = value; break;
             case kParamI: LMB = value; break;
             case kParamJ: DW = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -167,16 +170,16 @@ class HipCrush final : public Effect<T>
     constexpr std::string_view get_parameter_name(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return "hi freq"; break;
+            case kParamA: return "hifreq"; break;
             case kParamB: return "high"; break;
             case kParamC: return "hicrush"; break;
             case kParamD: return "midfreq"; break;
             case kParamE: return "mid"; break;
             case kParamF: return "mdcrush"; break;
-            case kParamG: return "lo freq"; break;
+            case kParamG: return "lofreq"; break;
             case kParamH: return "low"; break;
             case kParamI: return "locrush"; break;
-            case kParamJ: return "dry/wet"; break;
+            case kParamJ: return "drywet"; break;
 
             default: break;
         }
@@ -204,40 +207,42 @@ class HipCrush final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(TRF); break;
-            case kParamB: return std::to_string(TRG); break;
-            case kParamC: return std::to_string(TRB); break;
-            case kParamD: return std::to_string(HMF); break;
-            case kParamE: return std::to_string(HMG); break;
-            case kParamF: return std::to_string(HMB); break;
-            case kParamG: return std::to_string(LMF); break;
-            case kParamH: return std::to_string(LMG); break;
-            case kParamI: return std::to_string(LMB); break;
-            case kParamJ: return std::to_string(DW); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(TRF, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(TRG, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(TRB, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(HMF, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(HMG, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(HMB, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(LMF, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(LMG, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(LMB, text, kVstMaxParamStrLen); break;
+            case kParamJ: float2string(DW, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return "High"; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return "Mid"; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return "Low"; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-            case kParamJ: return "Wet"; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "High", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "Mid", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "Low", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamJ: vst_strncpy(text, "Wet", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

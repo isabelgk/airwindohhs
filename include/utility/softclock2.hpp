@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "SoftClock2 is a groove-oriented time reference."
 };
 constexpr std::string_view k_long_description{
-    "SoftClock2, entrainment boogaloo!You might or might not have heard of the first SoftClock. It came out shortly after I'd developed it because people desperately wanted to play with it, and before I was able to use it much. (still can't, too busy with plugins.) It's the metronome made of waving, wobbling tones where the beat is always a swoop of a (mostly) sine wave that goes up to a high point. Inspired by a joke metronome of dog woofs that proved strangely inspiring to play along to, SoftClock is the machine tempo with perfect regularity but no actual beat, where you have to place the 'click' of your notes wherever it SEEMS to be.Turns out there are some refinements to be made with SoftClock2. None of them involve ever specifying exactly where a click really is, or letting it sync with a DAW grid. The click is ONLY where you think it to be, and at its best the click is a shape in time defined by your riffs, a terrific way to swing along with really grooving time or dramatic flourishes. It's the anti-machine rhythm.This is because SoftClock2 swings along with the 'entrainment' of your limbs and musical gestures. Generally you don't play music in sudden microsecond-long bursts of your arms or fingers. You have to swing your arm or lean into a kick or, if you're Les Claypool, stomp your foot along to the beat to get yourself moving to the music. The weight of your motion helps you to keep things steady.SoftClock2 gives an audio picture of that motion, not of any specific point where the note hits. That makes it a lot more friendly and encouraging to play along to than a traditional click.And this, you'll need, if you take advantage of SoftClock2's capacity for strange grooves and polyrhythms. Here's where one of the updates is found: on at least the generic VST version of the plugin, the 'Count' control tells you not only which beat it's doing, but after that, the time signature. Many times that's predictable, like a 5 or a 7 or a 4/4. But then you have many variations on 11, 13, 17, 19, 23… just a wide gamut of freaky proggy things to count. The count always works like this: the nonaccented notes start high with the One, swing down to halfway, and then ramp up again to the One. The accents follow patterns: if you want to interpret the count differently (or just have a steady pulse) that's fine, but it's meant to give you subdivisions, typically repeated long subdivisions ending with a short one. For instance, all the 19s are counted that way, like going 5-5-5-4 because the idea is a good weird groove sets up patterns you can track, and a departure at the end. So, SoftClock2 was always designed to do that.There's a change, though. The original had a 'BigBeat' control and a Swing control. Swing hesitated alternate beats up to and beyond doing a triplet shuffle feel, and BigBeat always took the 'valley' and treated it as the snare hit, which you could hesitate to make a weightier backbeat or a pocket backbeat. Doesn't take much.The trouble is, people kept hearing the peak as the snare backbeat.So, SoftClock2 simply lets you decide. This is most relevant to simpler beats, and the weird crazy time signatures may still sound best with the beats ramping up to the One. But if you're just doing a 4 or an 8, or need to reverse the feel of something, or you're doing a reggae where the One is the valley but you need it to hit well behind the beat to groove properly… increase the Valley control instead, and now that accent is slowed. Or, if you're using a simple beat but you hear it ramping up to the snare hit, increase the Peak control and it gets more weight and swing behind it. You can sync it with settings of Swing too, or even construct perfectly steady but wonky grooves this way.If you're using an AU version, or a DAW where it's not constantly redrawing the plugin labelling, or if you're using Consolidated and it doesn't update what's next to Count quickly enough, I found that closing and opening the plugin interface does seem to update what's shown to the current setting. It's just that some DAWs live-draw this label constantly, and others cache it and stop recalculating it. I can't control that part, but you can get a reference to what you did with a little extra trouble. Count it, it should be doing spaced accents with a departure right at the end to give you the funny time. You, too, can do 17s and 19s that are actually catchy, if you make 'em out of sub-riffs in this way.And then if you want to be really annoying you can lay down SoftClock with whatever you're doing, and what if you'd like to overdub a complete departure? Like you're in 4/4 but you'd like to put down part of the riff where it's 7 notes in the space of 4?Cheat. Start with Tuple in 4 to lay down the main riff, and then elsewhere in the arrange window, do a separate pass with Tuple set to 7. It'll be quite a bit faster. Groove whatever you want to that, get a good snippet, and then fly that over to the middle of your 4 groove… and it will line up perfectly with the notes you did in 4, because Tuple is just as accurate in 7 as it is in 4. It'll do the math for you, so you can construct all sorts of peculiar things but make them groove like anything.Play with it, have fun. There's no wrong way to use this, and you don't have to make it over-fancy. It's just able to scale up to the most unreasonable things and make them seem like you have amazing powers of odd-time-having. The best part is, you do it all playing live to the wobbling tone in SoftClock, so it won't seem artificial. Just kind of alien :)"
+    "SoftClock2, entrainment boogaloo! You might or might not have heard of the first SoftClock. It came out shortly after I'd developed it because people desperately wanted to play with it, and before I was able to use it much. (still can't, too busy with plugins.) It's the metronome made of waving, wobbling tones where the beat is always a swoop of a (mostly) sine wave that goes up to a high point. Inspired by a joke metronome of dog woofs that proved strangely inspiring to play along to, SoftClock is the machine tempo with perfect regularity but no actual beat, where you have to place the 'click' of your notes wherever it SEEMS to be. Turns out there are some refinements to be made with SoftClock2. None of them involve ever specifying exactly where a click really is, or letting it sync with a DAW grid. The click is ONLY where you think it to be, and at its best the click is a shape in time defined by your riffs, a terrific way to swing along with really grooving time or dramatic flourishes. It's the anti-machine rhythm. This is because SoftClock2 swings along with the 'entrainment' of your limbs and musical gestures. Generally you don't play music in sudden microsecond-long bursts of your arms or fingers. You have to swing your arm or lean into a kick or, if you're Les Claypool, stomp your foot along to the beat to get yourself moving to the music. The weight of your motion helps you to keep things steady. SoftClock2 gives an audio picture of that motion, not of any specific point where the note hits. That makes it a lot more friendly and encouraging to play along to than a traditional click. And this, you'll need, if you take advantage of SoftClock2's capacity for strange grooves and polyrhythms. Here's where one of the updates is found: on at least the generic VST version of the plugin, the 'Count' control tells you not only which beat it's doing, but after that, the time signature. Many times that's predictable, like a 5 or a 7 or a 4/4. But then you have many variations on 11, 13, 17, 19, 23… just a wide gamut of freaky proggy things to count. The count always works like this: the nonaccented notes start high with the One, swing down to halfway, and then ramp up again to the One. The accents follow patterns: if you want to interpret the count differently (or just have a steady pulse) that's fine, but it's meant to give you subdivisions, typically repeated long subdivisions ending with a short one. For instance, all the 19s are counted that way, like going 5-5-5-4 because the idea is a good weird groove sets up patterns you can track, and a departure at the end. So, SoftClock2 was always designed to do that. There's a change, though. The original had a 'BigBeat' control and a Swing control. Swing hesitated alternate beats up to and beyond doing a triplet shuffle feel, and BigBeat always took the 'valley' and treated it as the snare hit, which you could hesitate to make a weightier backbeat or a pocket backbeat. Doesn't take much. The trouble is, people kept hearing the peak as the snare backbeat. So, SoftClock2 simply lets you decide. This is most relevant to simpler beats, and the weird crazy time signatures may still sound best with the beats ramping up to the One. But if you're just doing a 4 or an 8, or need to reverse the feel of something, or you're doing a reggae where the One is the valley but you need it to hit well behind the beat to groove properly… increase the Valley control instead, and now that accent is slowed. Or, if you're using a simple beat but you hear it ramping up to the snare hit, increase the Peak control and it gets more weight and swing behind it. You can sync it with settings of Swing too, or even construct perfectly steady but wonky grooves this way. If you're using an AU version, or a DAW where it's not constantly redrawing the plugin labelling, or if you're using Consolidated and it doesn't update what's next to Count quickly enough, I found that closing and opening the plugin interface does seem to update what's shown to the current setting. It's just that some DAWs live-draw this label constantly, and others cache it and stop recalculating it. I can't control that part, but you can get a reference to what you did with a little extra trouble. Count it, it should be doing spaced accents with a departure right at the end to give you the funny time. You, too, can do 17s and 19s that are actually catchy, if you make 'em out of sub-riffs in this way. And then if you want to be really annoying you can lay down SoftClock with whatever you're doing, and what if you'd like to overdub a complete departure? Like you're in 4/4 but you'd like to put down part of the riff where it's 7 notes in the space of 4? Cheat. Start with Tuple in 4 to lay down the main riff, and then elsewhere in the arrange window, do a separate pass with Tuple set to 7. It'll be quite a bit faster. Groove whatever you want to that, get a good snippet, and then fly that over to the middle of your 4 groove… and it will line up perfectly with the notes you did in 4, because Tuple is just as accurate in 7 as it is in 4. It'll do the math for you, so you can construct all sorts of peculiar things but make them groove like anything. Play with it, have fun. There's no wrong way to use this, and you don't have to make it over-fancy. It's just able to scale up to the most unreasonable things and make them seem like you have amazing powers of odd-time-having. The best part is, you do it all playing live to the wobbling tone in SoftClock, so it won't seem artificial. Just kind of alien :)"
 };
 constexpr std::string_view k_tags{
     "utility"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class SoftClock2 final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'sfc2';
     float A;
     float B;
     float C;
@@ -122,7 +126,7 @@ class SoftClock2 final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
@@ -132,8 +136,7 @@ class SoftClock2 final : public Effect<T>
             case kParamG: G = value; break;
             case kParamH: H = value; break;
             case kParamI: I = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -211,38 +214,78 @@ class SoftClock2 final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
-            case kParamG: return std::to_string(G); break;
-            case kParamH: return std::to_string(H); break;
-            case kParamI: return std::to_string(I); break;
+        std::string text;
+        switch (index) {
+            case kParamA: int2string((int)(A * 200.99) + 40, text, kVstMaxParamStrLen); break;
+            case kParamB: int2string((int)(B * 32.99), text, kVstMaxParamStrLen); break;
+            case kParamC: int2string((int)(C * 16.99), text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF: float2string(F, text, kVstMaxParamStrLen); break;
+            case kParamG: float2string(G, text, kVstMaxParamStrLen); break;
+            case kParamH: float2string(H, text, kVstMaxParamStrLen); break;
+            case kParamI: float2string(I, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return "bpm"; break;
-            case kParamB: return "0"; break;
-            case kParamC: return "th note"; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-            case kParamG: return ""; break;
-            case kParamH: return ""; break;
-            case kParamI: return ""; break;
-
-            default: break;
+        std::string text;
+        int beatCode = (int)(B * 32.99);
+        switch (index) {
+            case kParamA: vst_strncpy(text, "bpm", kVstMaxParamStrLen); break;
+            case kParamB:
+                switch (beatCode) {
+                    case 0: vst_strncpy(text, "0", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "1", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "2", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "3", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "4", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "5", kVstMaxParamStrLen); break;
+                    case 6: vst_strncpy(text, "6", kVstMaxParamStrLen); break;
+                    case 7: vst_strncpy(text, "7", kVstMaxParamStrLen); break;
+                    case 8: vst_strncpy(text, "8", kVstMaxParamStrLen); break;
+                    case 9: vst_strncpy(text, "9", kVstMaxParamStrLen); break;
+                    case 10: vst_strncpy(text, "10", kVstMaxParamStrLen); break;
+                    case 11: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 12: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 13: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 14: vst_strncpy(text, "11", kVstMaxParamStrLen); break;
+                    case 15: vst_strncpy(text, "13", kVstMaxParamStrLen); break;
+                    case 16: vst_strncpy(text, "16", kVstMaxParamStrLen); break;
+                    case 17: vst_strncpy(text, "13", kVstMaxParamStrLen); break;
+                    case 18: vst_strncpy(text, "13", kVstMaxParamStrLen); break;
+                    case 19: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 20: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 21: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 22: vst_strncpy(text, "17", kVstMaxParamStrLen); break;
+                    case 23: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 24: vst_strncpy(text, "24", kVstMaxParamStrLen); break;
+                    case 25: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 26: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 27: vst_strncpy(text, "19", kVstMaxParamStrLen); break;
+                    case 28: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 29: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 30: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 31: vst_strncpy(text, "23", kVstMaxParamStrLen); break;
+                    case 32: vst_strncpy(text, "32", kVstMaxParamStrLen); break;
+                    default: break;
+                }
+                break;
+            case kParamC: vst_strncpy(text, "th note", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamG: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamH: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamI: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

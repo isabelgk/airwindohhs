@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "UltrasonX is a method for rolling your own Console-type systems with total control over your ultrasonic filtering."
 };
 constexpr std::string_view k_long_description{
-    "A little while back, I made a simpler ‘Ultrasonic’ filter, with the intention of making a lighter-weight utility that could be used where Ultrasonic might go. The idea was, Ultrasonic (which is already available) was too heavy: it uses five stages of biquad filtering and I thought doing the same thing with just one or two stages would be better.Turns out you can do that, but if you stack them up you start losing the super-highs. The one or two-stage versions weren’t steep enough: didn’t bring out the super highs close enough to the ultrasonic zone. But, the five stage version is still just too much processing to put all over the mix. What do?UltrasonX solves this problem (that maybe nobody but me had :) ).This is a plugin that does any one of the five stages in Ultrasonic, one at a time. It’s got settings for A, B, C, D and E stages. Each of these are a carefully calibrated resonance value, that add up to nice and flat and clear all the way up to the supersonic region.Console7Cascade does something like this, internally, and gets a particular tone because its ‘more resonant A stage filter) is before distortion, and the softer unresonant filters that compensate for this are after the distortions.But here’s the thing: if you want to make a Console topology where the channels aren’t overly brightening, but you’re feeding a submix buss that is more crunchy and shouldn’t be hit too hard, you can do that too. This is likely going to end up my problem but now you can experiment!To do that, construct a Console system, using an earlier Console or PurestConsole (the original) and see to it that there are exactly five instances of UltrasonX in each signal path. Maybe two on each channel, two on the submix, one on the 2-buss! Or, one on each channel before hitting the PurestConsoleChannel, one on the 2-buss before the PurestConsoleBuss, and then three more sprinkled between your 2-buss processing. And any of these can be the ‘pre-brightening’ or ‘complementary darkening’ ones, meaning you could have the brightness boost after summing for a bit of air in between your instruments, or early on for softening saturation and adding glue.Or, you could use it anywhere, or on one single channel (that didn’t have ultrasonic filtering) as long as you’ve got room to fit five individual filter plugins. Bottom line is, if your audio goes through ABCDE and comes out the other end, it should be correct. The rest is up to you :)"
+    "A little while back, I made a simpler ‘Ultrasonic’ filter, with the intention of making a lighter-weight utility that could be used where Ultrasonic might go. The idea was, Ultrasonic (which is already available) was too heavy: it uses five stages of biquad filtering and I thought doing the same thing with just one or two stages would be better. Turns out you can do that, but if you stack them up you start losing the super-highs. The one or two-stage versions weren’t steep enough: didn’t bring out the super highs close enough to the ultrasonic zone. But, the five stage version is still just too much processing to put all over the mix. What do? UltrasonX solves this problem (that maybe nobody but me had :) ). This is a plugin that does any one of the five stages in Ultrasonic, one at a time. It’s got settings for A, B, C, D and E stages. Each of these are a carefully calibrated resonance value, that add up to nice and flat and clear all the way up to the supersonic region. Console7Cascade does something like this, internally, and gets a particular tone because its ‘more resonant A stage filter) is before distortion, and the softer unresonant filters that compensate for this are after the distortions. But here’s the thing: if you want to make a Console topology where the channels aren’t overly brightening, but you’re feeding a submix buss that is more crunchy and shouldn’t be hit too hard, you can do that too. This is likely going to end up my problem but now you can experiment! To do that, construct a Console system, using an earlier Console or PurestConsole (the original) and see to it that there are exactly five instances of UltrasonX in each signal path. Maybe two on each channel, two on the submix, one on the 2-buss! Or, one on each channel before hitting the PurestConsoleChannel, one on the 2-buss before the PurestConsoleBuss, and then three more sprinkled between your 2-buss processing. And any of these can be the ‘pre-brightening’ or ‘complementary darkening’ ones, meaning you could have the brightness boost after summing for a bit of air in between your instruments, or early on for softening saturation and adding glue. Or, you could use it anywhere, or on one single channel (that didn’t have ultrasonic filtering) as long as you’ve got room to fit five individual filter plugins. Bottom line is, if your audio goes through ABCDE and comes out the other end, it should be correct. The rest is up to you :)"
 };
 constexpr std::string_view k_tags{
     "brightness"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class UltrasonX final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'ultx';
     enum
     {
         fix_freq,
@@ -36,17 +40,14 @@ class UltrasonX final : public Effect<T>
         fix_total
     }; // fixed frequency biquad filter for ultrasonics, stereo
     double fixA[fix_total];
-
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
-
     static const int kA = 0;
     static const int kB = 1;
     static const int kC = 2;
     static const int kD = 3;
     static const int kE = 4;
-
     float A;
 
   public:
@@ -76,18 +77,15 @@ class UltrasonX final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
 
             default: break;
@@ -97,8 +95,7 @@ class UltrasonX final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
 
             default: break;
@@ -108,8 +105,7 @@ class UltrasonX final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "q"; break;
 
             default: break;
@@ -119,8 +115,7 @@ class UltrasonX final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Q"; break;
 
             default: break;
@@ -130,24 +125,34 @@ class UltrasonX final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
+        std::string text;
+        switch (index) {
+            case kParamA:
+                switch ((VstInt32)(A * 4.999)) // 0 to almost edge of # of params
+                {
+                    case kA: vst_strncpy(text, "Reso A", kVstMaxParamStrLen); break;
+                    case kB: vst_strncpy(text, "Reso B", kVstMaxParamStrLen); break;
+                    case kC: vst_strncpy(text, "Reso C", kVstMaxParamStrLen); break;
+                    case kD: vst_strncpy(text, "Reso D", kVstMaxParamStrLen); break;
+                    case kE: vst_strncpy(text, "Reso E", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -158,8 +163,7 @@ class UltrasonX final : public Effect<T>
         T* out2 = outputs[1];
 
         fixA[fix_freq] = 21000.0 / Effect<T>::getSampleRate();
-        switch ((VstInt32)(A * 4.999))
-        {
+        switch ((VstInt32)(A * 4.999)) {
             case kA:
                 fixA[fix_reso] = 3.19622661;
                 break;
@@ -184,8 +188,7 @@ class UltrasonX final : public Effect<T>
         fixA[fix_b1] = 2.0 * (K * K - 1.0) * norm;
         fixA[fix_b2] = (1.0 - K / fixA[fix_reso] + K * K) * norm;
         // for the fixed-position biquad filter
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Mastering is Airwindows style, and can do things nothing else can!"
 };
 constexpr std::string_view k_long_description{
-    "This plugin was a wild beast when I started working on it: it's now tamed to the point where I don't think you can do lots of harm by accident with it. It began as FOUR bands of Kalman filtering complete with the treble management available in Air4, and I had to run one of the bands backwards to make it work (as far as the direction you moved the control), and it constantly tried to do huge tone-obliterating things with the tiniest movements of the bands against each other.Soon sorted THAT out. Meet Airwindows Mastering. You're meant to use it with Meter, to adjust stuff in the 'peak clouds' that wouldn't be immediately obvious to the ear. This isn't 'an EQ and a limiter/clipper/etc'.The top control is Glue. It defaults to zero. You can turn it up to handle the most brutal unpleasant super-highs, but it's meant to be used around the middle, where it will moderate the 'red spikes' high treble can give you, controlling them without entirely making them go away. The idea is that you still want variation in those, rather than just 'clipping' them all to one point.Scope is like Air4, or the air band on ConsoleX. It's named that, because it's how you control the amount of super-fine detail on things. If you crank this, everything will seem like it's under a micro-Scope. In case you don't want that, you can safely turn it down to retain 'highs' but tame just the glitter. This works in conjunction with Glue.Skronk and Girth are sort of like 'tone' controls, except they are relative to the lower sub-lows band, also done with Kalman filters, which moves separately in conjunction with these. The way it works, if you boost Girth stuff gets way bigger and fuller, to where it'll immediately start filling your peaks region with bassy information. If you cut it, it doesn't seem to remove the bass, but the whole texture of it changes and becomes more leaned out and sparse, without in any way lessening bass impact. Girth is specifically about the sensation of over-fatness or lack of it. Skronk is that, but for aggressive high mids. Cut Skronk and things get a lot more polite. Boost it, and the thickness steps back a bit to allow the aggression to step out. This is not really about frequencies, it's about the interactions with the Kalman filters which don't just stick to certain frequencies (get too lively with these and you'll hear an unusual grind to the sound that's probably best avoided: middle settings are best)And you might think you know what Drive is, but NOPE. In fact, it started out as Airwindows 'Zoom', and then stopped even being anything like that. Drive ended up being a simplified, cleaner form of Zoom that governs, not an output stage, but a trim amount for the individual Zoom controls on EACH other control. Namely, Scope, Skronk and Girth (the subs are left clean as they are what Girth hinges off).So the adjustments to these three controls also affect the subtler forms of Zoom on them, and Drive lets you offset each of those a little more, to finetune the effect. It will also end up boosting, or cutting, the overall level a bit. However, bear in mind this ties in with the three controls above it, so if things are getting over-dense, over-girthy, if Skronk is getting too aggressive, you can use Drive to pull everything back a little. If you're getting a sound, but it's just slamming things too hard, you can dial in the optimal 'peak cloud' keeping everything pretty well maxed but not as just a featureless line of smashed audio.This is not for loudenating. This is for getting your PEAKS to slam in exactly the optimum way, which in fact will make your stuff hit harder relative to loudenated stuff that has been normalized down to matched volume. In a replay gain situation you can do some damage with this if you know what you're doing, and if Meter is showing you where every peak is getting to, and whether they're bassy or loud or bright.Lastly, Dither lets you bypass (for instance, if you're using a later dither to do 16 bit CD audio: this only does 24 bit dither for modern day work), or use Dark (same as Monitoring2), or Ten Nines (same as Monitoring3), or TPDFWide, PaulWide, or Not Just Another Dither (same as the original Monitoring). It's more or less in order of 'liveliness', and since it's 24 bit it's entirely subliminal and you can't really do any harm with it. If you've got a favorite, choose that, or try to get a sense of what suits a given project or track. Other adjustments will have more effect, but you get to choose among Dark/TenNines/TPDFWide/PaulWide/NJAD/Bypass as inspiration for your other adjustments. It's like Ditherbox, but up to date. If you don't want to be fancy and you're producing 24 bit output, just use TPDFWide, which is regulation TPDF that just happens to resist picking random values that act like it's mono dither :)This is not mastering as you know it, but it's Airwindows Mastering. I'm confident this will work for me (I won't be trying to master over headphones in real world use, though!) and if you were interested in getting things bent to your will in Airwindows Meter, you'll find this surprisingly effective. Have fun!"
+    "This plugin was a wild beast when I started working on it: it's now tamed to the point where I don't think you can do lots of harm by accident with it. It began as FOUR bands of Kalman filtering complete with the treble management available in Air4, and I had to run one of the bands backwards to make it work (as far as the direction you moved the control), and it constantly tried to do huge tone-obliterating things with the tiniest movements of the bands against each other. Soon sorted THAT out. Meet Airwindows Mastering. You're meant to use it with Meter, to adjust stuff in the 'peak clouds' that wouldn't be immediately obvious to the ear. This isn't 'an EQ and a limiter/clipper/etc'. The top control is Glue. It defaults to zero. You can turn it up to handle the most brutal unpleasant super-highs, but it's meant to be used around the middle, where it will moderate the 'red spikes' high treble can give you, controlling them without entirely making them go away. The idea is that you still want variation in those, rather than just 'clipping' them all to one point. Scope is like Air4, or the air band on ConsoleX. It's named that, because it's how you control the amount of super-fine detail on things. If you crank this, everything will seem like it's under a micro-Scope. In case you don't want that, you can safely turn it down to retain 'highs' but tame just the glitter. This works in conjunction with Glue. Skronk and Girth are sort of like 'tone' controls, except they are relative to the lower sub-lows band, also done with Kalman filters, which moves separately in conjunction with these. The way it works, if you boost Girth stuff gets way bigger and fuller, to where it'll immediately start filling your peaks region with bassy information. If you cut it, it doesn't seem to remove the bass, but the whole texture of it changes and becomes more leaned out and sparse, without in any way lessening bass impact. Girth is specifically about the sensation of over-fatness or lack of it. Skronk is that, but for aggressive high mids. Cut Skronk and things get a lot more polite. Boost it, and the thickness steps back a bit to allow the aggression to step out. This is not really about frequencies, it's about the interactions with the Kalman filters which don't just stick to certain frequencies (get too lively with these and you'll hear an unusual grind to the sound that's probably best avoided: middle settings are best) And you might think you know what Drive is, but NOPE. In fact, it started out as Airwindows 'Zoom', and then stopped even being anything like that. Drive ended up being a simplified, cleaner form of Zoom that governs, not an output stage, but a trim amount for the individual Zoom controls on EACH other control. Namely, Scope, Skronk and Girth (the subs are left clean as they are what Girth hinges off). So the adjustments to these three controls also affect the subtler forms of Zoom on them, and Drive lets you offset each of those a little more, to finetune the effect. It will also end up boosting, or cutting, the overall level a bit. However, bear in mind this ties in with the three controls above it, so if things are getting over-dense, over-girthy, if Skronk is getting too aggressive, you can use Drive to pull everything back a little. If you're getting a sound, but it's just slamming things too hard, you can dial in the optimal 'peak cloud' keeping everything pretty well maxed but not as just a featureless line of smashed audio. This is not for loudenating. This is for getting your PEAKS to slam in exactly the optimum way, which in fact will make your stuff hit harder relative to loudenated stuff that has been normalized down to matched volume. In a replay gain situation you can do some damage with this if you know what you're doing, and if Meter is showing you where every peak is getting to, and whether they're bassy or loud or bright. Lastly, Dither lets you bypass (for instance, if you're using a later dither to do 16 bit CD audio: this only does 24 bit dither for modern day work), or use Dark (same as Monitoring2), or Ten Nines (same as Monitoring3), or TPDFWide, PaulWide, or Not Just Another Dither (same as the original Monitoring). It's more or less in order of 'liveliness', and since it's 24 bit it's entirely subliminal and you can't really do any harm with it. If you've got a favorite, choose that, or try to get a sense of what suits a given project or track. Other adjustments will have more effect, but you get to choose among Dark/TenNines/TPDFWide/PaulWide/NJAD/Bypass as inspiration for your other adjustments. It's like Ditherbox, but up to date. If you don't want to be fancy and you're producing 24 bit output, just use TPDFWide, which is regulation TPDF that just happens to resist picking random values that act like it's mono dither :) This is not mastering as you know it, but it's Airwindows Mastering. I'm confident this will work for me (I won't be trying to master over headphones in real world use, though!) and if you were interested in getting things bent to your will in Airwindows Meter, you'll find this surprisingly effective. Have fun!"
 };
 constexpr std::string_view k_tags{
     "subtlety"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Mastering final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'mast';
     float A;
     float B;
     float C;
@@ -252,15 +256,14 @@ class Mastering final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index)) {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
             case kParamE: E = value; break;
             case kParamF: F = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
@@ -326,32 +329,45 @@ class Mastering final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
-            case kParamE: return std::to_string(E); break;
-            case kParamF: return std::to_string(F); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            case kParamE: float2string(E, text, kVstMaxParamStrLen); break;
+            case kParamF:
+                switch ((VstInt32)(F * 5.999)) // 0 to almost edge of # of params
+                {
+                    case 0: vst_strncpy(text, "Dark", kVstMaxParamStrLen); break;
+                    case 1: vst_strncpy(text, "TenNines", kVstMaxParamStrLen); break;
+                    case 2: vst_strncpy(text, "TPDFWde", kVstMaxParamStrLen); break;
+                    case 3: vst_strncpy(text, "PaulWde", kVstMaxParamStrLen); break;
+                    case 4: vst_strncpy(text, "NJAD", kVstMaxParamStrLen); break;
+                    case 5: vst_strncpy(text, "Bypass", kVstMaxParamStrLen); break;
+                    default: break; // unknown parameter, shouldn't happen!
+                }
+                break; // completed consoletype 'popup' parameter, exit
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index)) {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-            case kParamE: return ""; break;
-            case kParamF: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamE: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamF: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)

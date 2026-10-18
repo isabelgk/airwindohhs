@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Infinity is a MatrixVerb specifically designed to sustain and layer sounds forever."
 };
 constexpr std::string_view k_long_description{
-    "Here’s a follow-up to what I’ve been doing with Householder reverbs, and my recent plugins MatrixVerb (for flexibility) and Reverb (optimized for size variation only). The algorithm I’m using has one more specialty: infinity! The way it works, if you do nothing else except feed it back on itself, it will sustain infinitely: that’s its basic, natural state.And so I did. :)Of course that’s too simple: there’s a filter (not in the feedback path) that will let you sweep its frequencies in and out, from deep space to bright and unnatural textures. There’s a size control that will let you resize the space from gong-like tones to the depths of galaxies… and a damping control that does NOT make the reverberations die away. Instead, it just applies a subtle darkening, useful if you’re looking for darker spaces.More importantly, Infinity is tailored to handle anything from subtle noises to the full blast of a mix: if you saturate it and keep adding sound, what’ll happen is that it’ll begin to squeeze out earlier infinity to make room for what’s coming in. That way, the maximum level will stay under control, but it’ll also tend to emphasize the most recent thing you did (as long as it’s loud). If you’re not adding loud things, you’ll continue to build up the texture as you go.It’s also a dual mono effect. What that means is, you’re adding things to infinitely sustain at distinct places in the stereo image. What’s on the left stays on the left, likewise with the right, centered stuff will stay centered. This is different from both MatrixVerb and Reverb, both of which will ‘spread’ centered information as the reverb continues. Infinity doesn’t have the stereo pitch shifting that would cause that to happen, because it’s entirely dedicated to providing pads and spaces that can literally sustain forever without change. So, it can also sustain a sound-space across the stereo field that doesn’t change the stereo mix, either. You can keep things mostly panned to the center, or put in super-wide stuff that’s fully L or R, or both.My hope is that this is an inspiring tool for those who like making ambient spaces. You can combine it with MatrixVerb to have a distinct, unvarying source of infinite sound which is then broadened and made richer by the added options of MatrixVerb in a way you couldn’t do from MatrixVerb alone. Or, you can just use it as its own little instrument. Hope you like it!"
+    "Here’s a follow-up to what I’ve been doing with Householder reverbs, and my recent plugins MatrixVerb (for flexibility) and Reverb (optimized for size variation only). The algorithm I’m using has one more specialty: infinity! The way it works, if you do nothing else except feed it back on itself, it will sustain infinitely: that’s its basic, natural state. And so I did. :) Of course that’s too simple: there’s a filter (not in the feedback path) that will let you sweep its frequencies in and out, from deep space to bright and unnatural textures. There’s a size control that will let you resize the space from gong-like tones to the depths of galaxies… and a damping control that does NOT make the reverberations die away. Instead, it just applies a subtle darkening, useful if you’re looking for darker spaces. More importantly, Infinity is tailored to handle anything from subtle noises to the full blast of a mix: if you saturate it and keep adding sound, what’ll happen is that it’ll begin to squeeze out earlier infinity to make room for what’s coming in. That way, the maximum level will stay under control, but it’ll also tend to emphasize the most recent thing you did (as long as it’s loud). If you’re not adding loud things, you’ll continue to build up the texture as you go. It’s also a dual mono effect. What that means is, you’re adding things to infinitely sustain at distinct places in the stereo image. What’s on the left stays on the left, likewise with the right, centered stuff will stay centered. This is different from both MatrixVerb and Reverb, both of which will ‘spread’ centered information as the reverb continues. Infinity doesn’t have the stereo pitch shifting that would cause that to happen, because it’s entirely dedicated to providing pads and spaces that can literally sustain forever without change. So, it can also sustain a sound-space across the stereo field that doesn’t change the stereo mix, either. You can keep things mostly panned to the center, or put in super-wide stuff that’s fully L or R, or both. My hope is that this is an inspiring tool for those who like making ambient spaces. You can combine it with MatrixVerb to have a distinct, unvarying source of infinite sound which is then broadened and made richer by the added options of MatrixVerb in a way you couldn’t do from MatrixVerb alone. Or, you can just use it as its own little instrument. Hope you like it!"
 };
 constexpr std::string_view k_tags{
     "reverb"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class Infinity final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'infi';
     double biquadA[11];
     double biquadB[11];
     double biquadC[11];
@@ -207,21 +211,18 @@ class Infinity final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -234,11 +235,10 @@ class Infinity final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 1.0; break;
-            case kParamB: return 1.0; break;
-            case kParamC: return 1.0; break;
+            case kParamB: return 0.0; break;
+            case kParamC: return 0.5; break;
             case kParamD: return 1.0; break;
 
             default: break;
@@ -248,12 +248,11 @@ class Infinity final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "filter"; break;
             case kParamB: return "damping"; break;
             case kParamC: return "size"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -262,8 +261,7 @@ class Infinity final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Filter"; break;
             case kParamB: return "Damping"; break;
             case kParamC: return "Size"; break;
@@ -276,30 +274,30 @@ class Infinity final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -349,8 +347,7 @@ class Infinity final : public Effect<T>
         delayJ = 41 * size;
         delayK = 37 * size;
         delayL = 31 * size;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

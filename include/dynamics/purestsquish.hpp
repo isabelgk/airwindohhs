@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "PurestSquish is an open-sounding compressor with bass bloom."
 };
 constexpr std::string_view k_long_description{
-    "PurestSquish is a compressor, with its own sound. In the video I compare it to Pressure4, Logical4, and SurgeTide, and also show how it can be used in conjunction with SurgeTide (a real ‘sleeper’ plugin not easily understood) to produce amazingly transparent dynamics control. That said, this is not at all a normal compressor plugin and won't act normal.I also spent some time torturing it with sine sweeps, showing how Pressure and Logical are more like ‘analog emulations’ and produce harmonics, while PurestSquish instead does a weird thing when you turn off and on signal generators. So if you’re looking for ways to say ‘this is broken forever!’ watch those parts of the video :)If this doesn’t worry you, PurestSquish also has a bass bloom control that lets you pass subsonics or bass notes through uncompressed, to taste. If it does worry you, chalk it up to PurestSquish running simultaneous two-and-three-sample-interleaved compressors, much like Capacitor runs two-and-three-sample-interleaved filters, and use one of the other compressors I’ve put out, perhaps one of the three also featured in the PurestSquish video."
+    "PurestSquish is a compressor, with its own sound. In the video I compare it to Pressure4, Logical4, and SurgeTide, and also show how it can be used in conjunction with SurgeTide (a real ‘sleeper’ plugin not easily understood) to produce amazingly transparent dynamics control. That said, this is not at all a normal compressor plugin and won't act normal. I also spent some time torturing it with sine sweeps, showing how Pressure and Logical are more like ‘analog emulations’ and produce harmonics, while PurestSquish instead does a weird thing when you turn off and on signal generators. So if you’re looking for ways to say ‘this is broken forever!’ watch those parts of the video :) If this doesn’t worry you, PurestSquish also has a bass bloom control that lets you pass subsonics or bass notes through uncompressed, to taste. If it does worry you, chalk it up to PurestSquish running simultaneous two-and-three-sample-interleaved compressors, much like Capacitor runs two-and-three-sample-interleaved filters, and use one of the other compressors I’ve put out, perhaps one of the three also featured in the PurestSquish video."
 };
 constexpr std::string_view k_tags{
     "dynamics"
@@ -20,6 +20,10 @@ constexpr std::string_view k_tags{
 template <typename T>
 class PurestSquish final : public Effect<T>
 {
+    static constexpr int kNumPrograms = 0;
+    static constexpr int kNumInputs = 2;
+    static constexpr int kNumOutputs = 2;
+    static constexpr unsigned long kUniqueId = 'pusq';
     uint32_t fpdL;
     uint32_t fpdR;
     // default stuff
@@ -153,21 +157,18 @@ class PurestSquish final : public Effect<T>
 
     void set_parameter_value(int index, float value)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (index) {
             case kParamA: A = value; break;
             case kParamB: B = value; break;
             case kParamC: C = value; break;
             case kParamD: D = value; break;
-
-            default: break;
+            default: break; // unknown parameter, shouldn't happen!
         }
     }
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -180,8 +181,7 @@ class PurestSquish final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.0; break;
             case kParamB: return 0.0; break;
             case kParamC: return 1.0; break;
@@ -194,12 +194,11 @@ class PurestSquish final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "squish"; break;
             case kParamB: return "bassblm"; break;
             case kParamC: return "output"; break;
-            case kParamD: return "dry/wet"; break;
+            case kParamD: return "drywet"; break;
 
             default: break;
         }
@@ -208,8 +207,7 @@ class PurestSquish final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Squish"; break;
             case kParamB: return "BassBlm"; break;
             case kParamC: return "Output"; break;
@@ -222,30 +220,30 @@ class PurestSquish final : public Effect<T>
 
     std::string get_parameter_display(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return std::to_string(A); break;
-            case kParamB: return std::to_string(B); break;
-            case kParamC: return std::to_string(C); break;
-            case kParamD: return std::to_string(D); break;
+        std::string text;
+        switch (index) {
+            case kParamA: float2string(A, text, kVstMaxParamStrLen); break;
+            case kParamB: float2string(B, text, kVstMaxParamStrLen); break;
+            case kParamC: float2string(C, text, kVstMaxParamStrLen); break;
+            case kParamD: float2string(D, text, kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
+        } // this displays the values and handles 'popups' where it's discrete choices
 
-            default: break;
-        }
-        return {};
+        return text;
     }
 
-    constexpr std::string_view get_parameter_label(int index) const
+    std::string get_parameter_label(int index) const
     {
-        switch (static_cast<params>(index))
-        {
-            case kParamA: return ""; break;
-            case kParamB: return ""; break;
-            case kParamC: return ""; break;
-            case kParamD: return ""; break;
-
-            default: break;
+        std::string text;
+        switch (index) {
+            case kParamA: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamB: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamC: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            case kParamD: vst_strncpy(text, "", kVstMaxParamStrLen); break;
+            default: break; // unknown parameter, shouldn't happen!
         }
-        return {};
+
+        return text;
     }
 
     void process(T** inputs, T** outputs, long sampleFrames)
@@ -266,8 +264,7 @@ class PurestSquish final : public Effect<T>
         double iirAmount = pow(B, 4) / overallscale;
         double output = C;
         double wet = D;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -313,29 +310,24 @@ class PurestSquish final : public Effect<T>
             if (count < 1 || count > 3) {
                 count = 1;
             }
-            switch (count)
-            {
+            switch (count) {
                 case 1:
                     // begin L
                     iirSampleAL = (iirSampleAL * (1 - iirAmount)) + (highpassSampleL * iirAmount);
                     highpassSampleL -= iirSampleAL;
-                    if (fabs(highpassSampleL) > threshold)
-                    {
+                    if (fabs(highpassSampleL) > threshold) {
                         muVaryL = threshold / fabs(highpassSampleL);
                         muAttackL = sqrt(fabs(muSpeedAL));
                         muCoefficientAL = muCoefficientAL * (muAttackL - 1.0);
-                        if (muVaryL < threshold)
-                        {
+                        if (muVaryL < threshold) {
                             muCoefficientAL = muCoefficientAL + threshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientAL = muCoefficientAL + muVaryL;
                         }
                         muCoefficientAL = muCoefficientAL / muAttackL;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientAL = muCoefficientAL * ((muSpeedAL * muSpeedAL) - 1.0);
                         muCoefficientAL = muCoefficientAL + 1.0;
                         muCoefficientAL = muCoefficientAL / (muSpeedAL * muSpeedAL);
@@ -353,23 +345,19 @@ class PurestSquish final : public Effect<T>
                     // begin R
                     iirSampleAR = (iirSampleAR * (1 - iirAmount)) + (highpassSampleR * iirAmount);
                     highpassSampleR -= iirSampleAR;
-                    if (fabs(highpassSampleR) > threshold)
-                    {
+                    if (fabs(highpassSampleR) > threshold) {
                         muVaryR = threshold / fabs(highpassSampleR);
                         muAttackR = sqrt(fabs(muSpeedAR));
                         muCoefficientAR = muCoefficientAR * (muAttackR - 1.0);
-                        if (muVaryR < threshold)
-                        {
+                        if (muVaryR < threshold) {
                             muCoefficientAR = muCoefficientAR + threshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientAR = muCoefficientAR + muVaryR;
                         }
                         muCoefficientAR = muCoefficientAR / muAttackR;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientAR = muCoefficientAR * ((muSpeedAR * muSpeedAR) - 1.0);
                         muCoefficientAR = muCoefficientAR + 1.0;
                         muCoefficientAR = muCoefficientAR / (muSpeedAR * muSpeedAR);
@@ -389,23 +377,19 @@ class PurestSquish final : public Effect<T>
                     // begin L
                     iirSampleBL = (iirSampleBL * (1 - iirAmount)) + (highpassSampleL * iirAmount);
                     highpassSampleL -= iirSampleBL;
-                    if (fabs(highpassSampleL) > threshold)
-                    {
+                    if (fabs(highpassSampleL) > threshold) {
                         muVaryL = threshold / fabs(highpassSampleL);
                         muAttackL = sqrt(fabs(muSpeedBL));
                         muCoefficientBL = muCoefficientBL * (muAttackL - 1);
-                        if (muVaryL < threshold)
-                        {
+                        if (muVaryL < threshold) {
                             muCoefficientBL = muCoefficientBL + threshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientBL = muCoefficientBL + muVaryL;
                         }
                         muCoefficientBL = muCoefficientBL / muAttackL;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientBL = muCoefficientBL * ((muSpeedBL * muSpeedBL) - 1.0);
                         muCoefficientBL = muCoefficientBL + 1.0;
                         muCoefficientBL = muCoefficientBL / (muSpeedBL * muSpeedBL);
@@ -423,23 +407,19 @@ class PurestSquish final : public Effect<T>
                     // begin R
                     iirSampleBR = (iirSampleBR * (1 - iirAmount)) + (highpassSampleR * iirAmount);
                     highpassSampleR -= iirSampleBR;
-                    if (fabs(highpassSampleR) > threshold)
-                    {
+                    if (fabs(highpassSampleR) > threshold) {
                         muVaryR = threshold / fabs(highpassSampleR);
                         muAttackR = sqrt(fabs(muSpeedBR));
                         muCoefficientBR = muCoefficientBR * (muAttackR - 1);
-                        if (muVaryR < threshold)
-                        {
+                        if (muVaryR < threshold) {
                             muCoefficientBR = muCoefficientBR + threshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientBR = muCoefficientBR + muVaryR;
                         }
                         muCoefficientBR = muCoefficientBR / muAttackR;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientBR = muCoefficientBR * ((muSpeedBR * muSpeedBR) - 1.0);
                         muCoefficientBR = muCoefficientBR + 1.0;
                         muCoefficientBR = muCoefficientBR / (muSpeedBR * muSpeedBR);
@@ -459,23 +439,19 @@ class PurestSquish final : public Effect<T>
                     // begin L
                     iirSampleCL = (iirSampleCL * (1 - iirAmount)) + (highpassSampleL * iirAmount);
                     highpassSampleL -= iirSampleCL;
-                    if (fabs(highpassSampleL) > threshold)
-                    {
+                    if (fabs(highpassSampleL) > threshold) {
                         muVaryL = threshold / fabs(highpassSampleL);
                         muAttackL = sqrt(fabs(muSpeedCL));
                         muCoefficientCL = muCoefficientCL * (muAttackL - 1);
-                        if (muVaryL < threshold)
-                        {
+                        if (muVaryL < threshold) {
                             muCoefficientCL = muCoefficientCL + threshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientCL = muCoefficientCL + muVaryL;
                         }
                         muCoefficientCL = muCoefficientCL / muAttackL;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientCL = muCoefficientCL * ((muSpeedCL * muSpeedCL) - 1.0);
                         muCoefficientCL = muCoefficientCL + 1.0;
                         muCoefficientCL = muCoefficientCL / (muSpeedCL * muSpeedCL);
@@ -493,23 +469,19 @@ class PurestSquish final : public Effect<T>
                     // begin R
                     iirSampleCR = (iirSampleCR * (1 - iirAmount)) + (highpassSampleR * iirAmount);
                     highpassSampleR -= iirSampleCR;
-                    if (fabs(highpassSampleR) > threshold)
-                    {
+                    if (fabs(highpassSampleR) > threshold) {
                         muVaryR = threshold / fabs(highpassSampleR);
                         muAttackR = sqrt(fabs(muSpeedCR));
                         muCoefficientCR = muCoefficientCR * (muAttackR - 1);
-                        if (muVaryR < threshold)
-                        {
+                        if (muVaryR < threshold) {
                             muCoefficientCR = muCoefficientCR + threshold;
                         }
-                        else
-                        {
+                        else {
                             muCoefficientCR = muCoefficientCR + muVaryR;
                         }
                         muCoefficientCR = muCoefficientCR / muAttackR;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientCR = muCoefficientCR * ((muSpeedCR * muSpeedCR) - 1.0);
                         muCoefficientCR = muCoefficientCR + 1.0;
                         muCoefficientCR = muCoefficientCR / (muSpeedCR * muSpeedCR);
@@ -533,23 +505,19 @@ class PurestSquish final : public Effect<T>
                 // begin L
                 iirSampleDL = (iirSampleDL * (1 - iirAmount)) + (highpassSampleBL * iirAmount);
                 highpassSampleBL -= iirSampleDL;
-                if (fabs(highpassSampleBL) > threshold)
-                {
+                if (fabs(highpassSampleBL) > threshold) {
                     muVaryL = threshold / fabs(highpassSampleBL);
                     muAttackL = sqrt(fabs(muSpeedDL));
                     muCoefficientDL = muCoefficientDL * (muAttackL - 1.0);
-                    if (muVaryL < threshold)
-                    {
+                    if (muVaryL < threshold) {
                         muCoefficientDL = muCoefficientDL + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientDL = muCoefficientDL + muVaryL;
                     }
                     muCoefficientDL = muCoefficientDL / muAttackL;
                 }
-                else
-                {
+                else {
                     muCoefficientDL = muCoefficientDL * ((muSpeedDL * muSpeedDL) - 1.0);
                     muCoefficientDL = muCoefficientDL + 1.0;
                     muCoefficientDL = muCoefficientDL / (muSpeedDL * muSpeedDL);
@@ -567,23 +535,19 @@ class PurestSquish final : public Effect<T>
                 // begin R
                 iirSampleDR = (iirSampleDR * (1 - iirAmount)) + (highpassSampleBR * iirAmount);
                 highpassSampleBR -= iirSampleDR;
-                if (fabs(highpassSampleBR) > threshold)
-                {
+                if (fabs(highpassSampleBR) > threshold) {
                     muVaryR = threshold / fabs(highpassSampleBR);
                     muAttackR = sqrt(fabs(muSpeedDR));
                     muCoefficientDR = muCoefficientDR * (muAttackR - 1.0);
-                    if (muVaryR < threshold)
-                    {
+                    if (muVaryR < threshold) {
                         muCoefficientDR = muCoefficientDR + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientDR = muCoefficientDR + muVaryR;
                     }
                     muCoefficientDR = muCoefficientDR / muAttackR;
                 }
-                else
-                {
+                else {
                     muCoefficientDR = muCoefficientDR * ((muSpeedDR * muSpeedDR) - 1.0);
                     muCoefficientDR = muCoefficientDR + 1.0;
                     muCoefficientDR = muCoefficientDR / (muSpeedDR * muSpeedDR);
@@ -603,23 +567,19 @@ class PurestSquish final : public Effect<T>
                 // begin L
                 iirSampleEL = (iirSampleEL * (1 - iirAmount)) + (highpassSampleBL * iirAmount);
                 highpassSampleBL -= iirSampleEL;
-                if (fabs(highpassSampleBL) > threshold)
-                {
+                if (fabs(highpassSampleBL) > threshold) {
                     muVaryL = threshold / fabs(highpassSampleBL);
                     muAttackL = sqrt(fabs(muSpeedEL));
                     muCoefficientEL = muCoefficientEL * (muAttackL - 1.0);
-                    if (muVaryL < threshold)
-                    {
+                    if (muVaryL < threshold) {
                         muCoefficientEL = muCoefficientEL + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientEL = muCoefficientEL + muVaryL;
                     }
                     muCoefficientEL = muCoefficientEL / muAttackL;
                 }
-                else
-                {
+                else {
                     muCoefficientEL = muCoefficientEL * ((muSpeedEL * muSpeedEL) - 1.0);
                     muCoefficientEL = muCoefficientEL + 1.0;
                     muCoefficientEL = muCoefficientEL / (muSpeedEL * muSpeedEL);
@@ -637,23 +597,19 @@ class PurestSquish final : public Effect<T>
                 // begin R
                 iirSampleER = (iirSampleER * (1 - iirAmount)) + (highpassSampleBR * iirAmount);
                 highpassSampleBR -= iirSampleER;
-                if (fabs(highpassSampleBR) > threshold)
-                {
+                if (fabs(highpassSampleBR) > threshold) {
                     muVaryR = threshold / fabs(highpassSampleBR);
                     muAttackR = sqrt(fabs(muSpeedER));
                     muCoefficientER = muCoefficientER * (muAttackR - 1.0);
-                    if (muVaryR < threshold)
-                    {
+                    if (muVaryR < threshold) {
                         muCoefficientER = muCoefficientER + threshold;
                     }
-                    else
-                    {
+                    else {
                         muCoefficientER = muCoefficientER + muVaryR;
                     }
                     muCoefficientER = muCoefficientER / muAttackR;
                 }
-                else
-                {
+                else {
                     muCoefficientER = muCoefficientER * ((muSpeedER * muSpeedER) - 1.0);
                     muCoefficientER = muCoefficientER + 1.0;
                     muCoefficientER = muCoefficientER / (muSpeedER * muSpeedER);
