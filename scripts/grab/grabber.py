@@ -117,7 +117,13 @@ def find_missing_plugins(project_root: Path, categories: dict[str, str]) -> list
 
 
 def num_to_alpha(num: int) -> str:
-    return str(chr(65 + num))
+    """Spreadsheet-style column letters: 0 -> A, 25 -> Z, 26 -> AA."""
+    letters = ""
+    num += 1
+    while num:
+        num, rem = divmod(num - 1, 26)
+        letters = chr(65 + rem) + letters
+    return letters
 
 
 def warning(plugin: str, error: str):
