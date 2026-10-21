@@ -28,13 +28,6 @@ def naive_line_filter(lines: list[str]) -> list[str]:
     return result
 
 
-# Airwindopedia.txt still lists these under the names they shipped with;
-# upstream has since renamed their source directories.
-_SOURCE_DIR_ALIASES = {
-    "PointyGuitar": "PunchyGuitar",
-    "PointyDeluxe": "PunchyDeluxe",
-}
-
 # Plugins whose Airwindopedia.txt entry is headed by a different name than
 # the one its category list uses.
 _DESCRIPTION_TITLE_ALIASES = {
@@ -111,9 +104,9 @@ def parse_categories(airwindopedia_path: Path) -> tuple[dict[str, str], dict[str
 def plugin_categories(airwindopedia_path: Path, airwindows_root: Path) -> dict[str, str]:
     """Plugin title -> category for every plugin to generate: Airwindopedia's
     categories, plus UNCATEGORIZED for each upstream source directory that
-    no Airwindopedia title (or alias) claims."""
+    no Airwindopedia title claims."""
     categories, _ = parse_categories(airwindopedia_path)
-    claimed = {_SOURCE_DIR_ALIASES.get(t, t).replace(" ", "").casefold() for t in categories}
+    claimed = {t.replace(" ", "").casefold() for t in categories}
     for entry in sorted(Path(airwindows_root).iterdir(), key=lambda e: e.name):
         if entry.is_dir() and entry.name.casefold() not in claimed:
             categories[entry.name] = UNCATEGORIZED
@@ -130,7 +123,7 @@ def existing_plugins_in_dirs(project_root: Path, categories: dict[str, str], sou
     wanted = {d.casefold() for d in source_dirs}
     return {
         title for title, category in categories.items()
-        if _SOURCE_DIR_ALIASES.get(title, title).replace(" ", "").casefold() in wanted
+        if title.replace(" ", "").casefold() in wanted
         and header_path(project_root, title, category).exists()
     }
 
@@ -241,12 +234,8 @@ class Plugin:
         self.project_root = project_root
         self.airwindopedia_path = airwindopedia_path
         listed_title = title.replace(" ", "")
-        if listed_title in _SOURCE_DIR_ALIASES:
-            source_title = resolve_source_title(airwindows_root, _SOURCE_DIR_ALIASES[listed_title])
-            self.title = listed_title
-        else:
-            source_title = resolve_source_title(airwindows_root, listed_title)
-            self.title = source_title
+        source_title = resolve_source_title(airwindows_root, listed_title)
+        self.title = source_title
         self.slug = self.title.lower()
         self.category = category
         self.short_description, self.long_description = self._init_descriptions(

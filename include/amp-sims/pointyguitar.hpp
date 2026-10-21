@@ -23,7 +23,7 @@ class PointyGuitar final : public Effect<T>
     static constexpr int kNumPrograms = 0;
     static constexpr int kNumInputs = 2;
     static constexpr int kNumOutputs = 2;
-    static constexpr unsigned long kUniqueId = 'pugt';
+    static constexpr unsigned long kUniqueId = 'pgtr';
     float A;
     float B;
     float C;
@@ -34,27 +34,6 @@ class PointyGuitar final : public Effect<T>
     float H;
     float I;
     float J;
-    enum
-    {
-        bip_dvLA,
-        bip_dvLB,
-        bip_dvLC,
-        bip_dvLD,
-        bip_pvLA,
-        bip_pvLB,
-        bip_pvLC,
-        bip_pvLD,
-        bip_dvRA,
-        bip_dvRB,
-        bip_dvRC,
-        bip_dvRD,
-        bip_pvRA,
-        bip_pvRB,
-        bip_pvRC,
-        bip_pvRD,
-        bip_total // each distortion section can have one of these, it stacks well
-    }; // not remotely elliptic BLEP antialiasing, instead it is derivative BIP :D
-    double bip[bip_total][12];
     double angSL[18][12];
     double angAL[18][12];
     double iirHPositionL[37];
@@ -83,16 +62,16 @@ class PointyGuitar final : public Effect<T>
   public:
     PointyGuitar()
     {
-        A = 0.7;
-        B = 0.1;
+        A = 0.6;
+        B = 0.5;
         C = 0.8;
         D = 0.6;
         E = 0.4;
-        F = 0.1;
-        G = 0.8;
-        H = 0.5;
+        F = 0.5;
+        G = 0.7;
+        H = 0.4;
         I = 0.0;
-        J = 0.3;
+        J = 0.7;
         for (int x = 0; x < 17; x++) {
             for (int y = 0; y < 11; y++) {
                 angSL[x][y] = 0.0;
@@ -103,9 +82,6 @@ class PointyGuitar final : public Effect<T>
         }
         for (int y = 0; y < 11; y++) {
             angG[y] = 0.0;
-            for (int x = 0; x < bip_total; x++) {
-                bip[x][y] = 0.0;
-            }
         }
         for (int count = 0; count < 36; count++) {
             iirHPositionL[count] = 0.0;
@@ -190,16 +166,16 @@ class PointyGuitar final : public Effect<T>
     T get_parameter_default(int index)
     {
         switch (static_cast<params>(index)) {
-            case kParamA: return 0.7; break;
-            case kParamB: return 0.1; break;
+            case kParamA: return 0.6; break;
+            case kParamB: return 0.5; break;
             case kParamC: return 0.8; break;
             case kParamD: return 0.6; break;
             case kParamE: return 0.4; break;
-            case kParamF: return 0.1; break;
-            case kParamG: return 0.8; break;
-            case kParamH: return 0.5; break;
+            case kParamF: return 0.5; break;
+            case kParamG: return 0.7; break;
+            case kParamH: return 0.4; break;
             case kParamI: return 0.0; break;
-            case kParamJ: return 0.3; break;
+            case kParamJ: return 0.7; break;
 
             default: break;
         }
@@ -385,42 +361,7 @@ class PointyGuitar final : public Effect<T>
                 }
                 inputSampleL += (band * angG[9]);
                 inputSampleL *= drive;
-                double bip_delta = inputSampleL; // delta can be just local and re-used
-                inputSampleL = fmin(fmax(inputSampleL, -M_PI_2), M_PI_2);
-                long double X = inputSampleL;
-                X *= X; // long double for even
-                long double temp = inputSampleL * X; // the initial multiplies
-                inputSampleL -= temp * 0.16666666666666666666666666666666666;
-                temp *= X;
-                inputSampleL += temp * 0.00833333333333333333333333333333333;
-                temp *= X;
-                inputSampleL -= temp * 0.00019841269841269841269841269841269;
-                temp *= X;
-                inputSampleL += temp * 0.00000275573192239858906525573192239;
-                temp *= X;
-                inputSampleL -= temp * 0.00000002505210838544171877521083854;
-                temp *= X;
-                inputSampleL += temp * 0.00000000016059043836821614599392377;
-                temp *= X;
-                inputSampleL -= temp * 0.00000000000076471637318198164759011;
-                temp *= X;
-                inputSampleL += temp * 0.00000000000000281145725434552076319;
-                temp *= X;
-                inputSampleL -= temp * 0.00000000000000000822063524662432971;
-                temp *= X;
-                inputSampleL += temp * 0.00000000000000000001957294106339126;
-                // retain mantissa of a long double increasing power function
-                // long double probably doesn't handle more than 36 digits or so
-                bip[bip_dvLA][x] = bip_delta - inputSampleL; // these are derivatives: raw clip is position
-                bip[bip_dvLB][x] = bip[bip_pvLA][x] - bip[bip_dvLA][x];
-                bip[bip_pvLA][x] = bip[bip_dvLA][x]; // velocity
-                bip[bip_dvLC][x] = bip[bip_pvLB][x] - bip[bip_dvLB][x];
-                bip[bip_pvLB][x] = bip[bip_dvLB][x]; // acceleration
-                bip[bip_dvLD][x] = bip[bip_pvLC][x] - bip[bip_dvLC][x];
-                bip[bip_pvLC][x] = bip[bip_dvLC][x]; // jerk
-                double bip_dvE = bip[bip_pvLD][x] - bip[bip_dvLD][x];
-                bip[bip_pvLD][x] = bip[bip_dvLD][x]; // snap
-                inputSampleL *= (1.0 + (fabs(bip[bip_dvLC][x]) * 0.0618) + (fabs(bip[bip_dvLD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
+                inputSampleL -= fmin(fmax((inputSampleL * (fabs(inputSampleL) * 0.654) * (fabs(inputSampleL) * 0.654)), -1.0), 1.0);
             }
             if (gaterollerL < 1.0) {
                 gateL = gaterollerL;
@@ -513,42 +454,7 @@ class PointyGuitar final : public Effect<T>
                 }
                 inputSampleR += (band * angG[9]);
                 inputSampleR *= drive;
-                double bip_delta = inputSampleR; // delta can be just local and re-used
-                inputSampleR = fmin(fmax(inputSampleR, -M_PI_2), M_PI_2);
-                long double X = inputSampleR;
-                X *= X; // long double for even
-                long double temp = inputSampleR * X; // the initial multiplies
-                inputSampleR -= temp * 0.16666666666666666666666666666666666;
-                temp *= X;
-                inputSampleR += temp * 0.00833333333333333333333333333333333;
-                temp *= X;
-                inputSampleR -= temp * 0.00019841269841269841269841269841269;
-                temp *= X;
-                inputSampleR += temp * 0.00000275573192239858906525573192239;
-                temp *= X;
-                inputSampleR -= temp * 0.00000002505210838544171877521083854;
-                temp *= X;
-                inputSampleR += temp * 0.00000000016059043836821614599392377;
-                temp *= X;
-                inputSampleR -= temp * 0.00000000000076471637318198164759011;
-                temp *= X;
-                inputSampleR += temp * 0.00000000000000281145725434552076319;
-                temp *= X;
-                inputSampleR -= temp * 0.00000000000000000822063524662432971;
-                temp *= X;
-                inputSampleR += temp * 0.00000000000000000001957294106339126;
-                // retain mantissa of a long double increasing power function
-                // long double probably doesn't handle more than 36 digits or so
-                bip[bip_dvRA][x] = bip_delta - inputSampleR; // these are derivatives: raw clip is position
-                bip[bip_dvRB][x] = bip[bip_pvRA][x] - bip[bip_dvRA][x];
-                bip[bip_pvRA][x] = bip[bip_dvRA][x]; // velocity
-                bip[bip_dvRC][x] = bip[bip_pvRB][x] - bip[bip_dvRB][x];
-                bip[bip_pvRB][x] = bip[bip_dvRB][x]; // acceleration
-                bip[bip_dvRD][x] = bip[bip_pvRC][x] - bip[bip_dvRC][x];
-                bip[bip_pvRC][x] = bip[bip_dvRC][x]; // jerk
-                double bip_dvE = bip[bip_pvRD][x] - bip[bip_dvRD][x];
-                bip[bip_pvRD][x] = bip[bip_dvRD][x]; // snap
-                inputSampleR *= (1.0 + (fabs(bip[bip_dvRC][x]) * 0.0618) + (fabs(bip[bip_dvRD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
+                inputSampleR -= fmin(fmax((inputSampleR * (fabs(inputSampleR) * 0.654) * (fabs(inputSampleR) * 0.654)), -1.0), 1.0);
             }
             if (gaterollerR < 1.0) {
                 gateR = gaterollerR;
@@ -585,17 +491,12 @@ class PointyGuitar final : public Effect<T>
             fpdL ^= fpdL << 13;
             fpdL ^= fpdL >> 17;
             fpdL ^= fpdL << 5;
-            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 3.553e-44l * pow(2,expon+62));
+            // inputSampleL += ((double(fpdL)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
             // frexp((double)inputSampleR, &expon);
             fpdR ^= fpdR << 13;
             fpdR ^= fpdR >> 17;
             fpdR ^= fpdR << 5;
-            if (fpdL - fpdR < 1073741824 || fpdR - fpdL < 1073741824) {
-                fpdR ^= fpdR << 13;
-                fpdR ^= fpdR >> 17;
-                fpdR ^= fpdR << 5;
-            }
-            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 3.553e-44l * pow(2,expon+62));
+            // inputSampleR += ((double(fpdR)-uint32_t(0x7fffffff)) * 1.1e-44l * pow(2,expon+62));
             // end 64 bit stereo floating point dither
             *out1 = inputSampleL;
             *out2 = inputSampleR;
