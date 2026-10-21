@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-project(airwindohhs VERSION 0.3.0)
+project(airwindohhs VERSION 0.3.1)
 
 add_library(Airwindohhs INTERFACE)
 add_library(Airwindohhs::Airwindohhs ALIAS Airwindohhs)
