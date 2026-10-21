@@ -469,6 +469,7 @@
 #include "uncategorized/cstrip.hpp"
 #include "uncategorized/echojam.hpp"
 #include "uncategorized/pafnuty.hpp"
+#include "uncategorized/punchydeluxe.hpp"
 #include "uncategorized/purestconsole4buss.hpp"
 #include "uncategorized/purestconsole4channel.hpp"
 #include "uncategorized/spiral3.hpp"
@@ -4220,6 +4221,14 @@ inline std::unique_ptr<IPlugin<T>> make_pafnuty()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_punchydeluxe()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::punchydeluxe::PunchyDeluxe>>(
+        airwindohhs::punchydeluxe::k_name, airwindohhs::punchydeluxe::k_tags,
+        airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_purestconsole4buss()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::purestconsole4buss::PurestConsole4Buss>>(
@@ -5219,6 +5228,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::cstrip::k_name, "cstrip", "uncategorized", airwindohhs::cstrip::k_tags, airwindohhs::cstrip::k_short_description, airwindohhs::cstrip::k_long_description, static_cast<int>(airwindohhs::cstrip::CStrip<T>::kNumParameters), &make_cstrip<T> },
         { airwindohhs::echojam::k_name, "echojam", "uncategorized", airwindohhs::echojam::k_tags, airwindohhs::echojam::k_short_description, airwindohhs::echojam::k_long_description, static_cast<int>(airwindohhs::echojam::Echojam<T>::kNumParameters), &make_echojam<T> },
         { airwindohhs::pafnuty::k_name, "pafnuty", "uncategorized", airwindohhs::pafnuty::k_tags, airwindohhs::pafnuty::k_short_description, airwindohhs::pafnuty::k_long_description, static_cast<int>(airwindohhs::pafnuty::Pafnuty<T>::kNumParameters), &make_pafnuty<T> },
+        { airwindohhs::punchydeluxe::k_name, "punchydeluxe", "uncategorized", airwindohhs::punchydeluxe::k_tags, airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description, static_cast<int>(airwindohhs::punchydeluxe::PunchyDeluxe<T>::kNumParameters), &make_punchydeluxe<T> },
         { airwindohhs::purestconsole4buss::k_name, "purestconsole4buss", "uncategorized", airwindohhs::purestconsole4buss::k_tags, airwindohhs::purestconsole4buss::k_short_description, airwindohhs::purestconsole4buss::k_long_description, static_cast<int>(airwindohhs::purestconsole4buss::PurestConsole4Buss<T>::kNumParameters), &make_purestconsole4buss<T> },
         { airwindohhs::purestconsole4channel::k_name, "purestconsole4channel", "uncategorized", airwindohhs::purestconsole4channel::k_tags, airwindohhs::purestconsole4channel::k_short_description, airwindohhs::purestconsole4channel::k_long_description, static_cast<int>(airwindohhs::purestconsole4channel::PurestConsole4Channel<T>::kNumParameters), &make_purestconsole4channel<T> },
         { airwindohhs::spiral3::k_name, "spiral3", "uncategorized", airwindohhs::spiral3::k_tags, airwindohhs::spiral3::k_short_description, airwindohhs::spiral3::k_long_description, static_cast<int>(airwindohhs::spiral3::Spiral3<T>::kNumParameters), &make_spiral3<T> },
