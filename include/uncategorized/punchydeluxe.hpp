@@ -140,8 +140,7 @@ class PunchyDeluxe final : public Effect<T>
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -160,8 +159,7 @@ class PunchyDeluxe final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.5; break;
             case kParamB: return 0.5; break;
             case kParamC: return 0.5; break;
@@ -180,8 +178,7 @@ class PunchyDeluxe final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "hell"; break;
             case kParamB: return "fizz"; break;
             case kParamC: return "pick"; break;
@@ -200,8 +197,7 @@ class PunchyDeluxe final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Hell"; break;
             case kParamB: return "Fizz"; break;
             case kParamC: return "Pick"; break;
@@ -349,8 +345,7 @@ class PunchyDeluxe final : public Effect<T>
         pad = sqrt(pad);
         int poles = (int)(drive * 11.0);
         double tune = 0.618 + (overallscale * 0.0055);
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {

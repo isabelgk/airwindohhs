@@ -170,8 +170,7 @@ class PunchyGuitar final : public Effect<T>
 
     float get_parameter_value(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return A; break;
             case kParamB: return B; break;
             case kParamC: return C; break;
@@ -190,8 +189,7 @@ class PunchyGuitar final : public Effect<T>
 
     T get_parameter_default(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return 0.7; break;
             case kParamB: return 0.1; break;
             case kParamC: return 0.8; break;
@@ -210,8 +208,7 @@ class PunchyGuitar final : public Effect<T>
 
     constexpr std::string_view get_parameter_name(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "drive"; break;
             case kParamB: return "presnce"; break;
             case kParamC: return "high"; break;
@@ -230,8 +227,7 @@ class PunchyGuitar final : public Effect<T>
 
     constexpr std::string_view get_parameter_title(int index)
     {
-        switch (static_cast<params>(index))
-        {
+        switch (static_cast<params>(index)) {
             case kParamA: return "Drive"; break;
             case kParamB: return "Presnce"; break;
             case kParamC: return "High"; break;
@@ -319,8 +315,7 @@ class PunchyGuitar final : public Effect<T>
         double absmax = 220.9;
         // end Gate
         double output = J;
-        while (--sampleFrames >= 0)
-        {
+        while (--sampleFrames >= 0) {
             double inputSampleL = *in1;
             double inputSampleR = *in2;
             if (fabs(inputSampleL) < 1.18e-23) {
@@ -330,8 +325,7 @@ class PunchyGuitar final : public Effect<T>
                 inputSampleR = fpdR * 1.18e-17;
             }
             // begin Gate
-            if (inputSampleL > 0.0)
-            {
+            if (inputSampleL > 0.0) {
                 if (WasNegativeL == true) {
                     ZeroCrossL = absmax * 0.3;
                 }
@@ -344,11 +338,9 @@ class PunchyGuitar final : public Effect<T>
             if (ZeroCrossL > absmax) {
                 ZeroCrossL = absmax;
             }
-            if (gateL == 0.0)
-            {
+            if (gateL == 0.0) {
                 // if gateL is totally silent
-                if (fabs(inputSampleL) > onthreshold)
-                {
+                if (fabs(inputSampleL) > onthreshold) {
                     if (gaterollerL == 0.0) {
                         gaterollerL = ZeroCrossL;
                     }
@@ -363,8 +355,7 @@ class PunchyGuitar final : public Effect<T>
             }
             else {
                 // gateL is not silent but closing
-                if (fabs(inputSampleL) > offthreshold)
-                {
+                if (fabs(inputSampleL) > offthreshold) {
                     if (gaterollerL < ZeroCrossL) {
                         gaterollerL = ZeroCrossL;
                     }
@@ -431,8 +422,7 @@ class PunchyGuitar final : public Effect<T>
                 bip[bip_pvLD][x] = bip[bip_dvLD][x]; // snap
                 inputSampleL *= (1.0 + (fabs(bip[bip_dvLC][x]) * 0.0618) + (fabs(bip[bip_dvLD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
             }
-            if (gaterollerL < 1.0)
-            {
+            if (gaterollerL < 1.0) {
                 gateL = gaterollerL;
                 double bridgerectifier = 1 - cos(fabs(inputSampleL));
                 if (inputSampleL > 0) {
@@ -463,8 +453,7 @@ class PunchyGuitar final : public Effect<T>
             } // the lowpass
             inputSampleL *= output;
             // begin Gate
-            if (inputSampleR > 0.0)
-            {
+            if (inputSampleR > 0.0) {
                 if (WasNegativeR == true) {
                     ZeroCrossR = absmax * 0.3;
                 }
@@ -477,11 +466,9 @@ class PunchyGuitar final : public Effect<T>
             if (ZeroCrossR > absmax) {
                 ZeroCrossR = absmax;
             }
-            if (gateR == 0.0)
-            {
+            if (gateR == 0.0) {
                 // if gateR is totally silent
-                if (fabs(inputSampleR) > onthreshold)
-                {
+                if (fabs(inputSampleR) > onthreshold) {
                     if (gaterollerR == 0.0) {
                         gaterollerR = ZeroCrossR;
                     }
@@ -496,8 +483,7 @@ class PunchyGuitar final : public Effect<T>
             }
             else {
                 // gateR is not silent but closing
-                if (fabs(inputSampleR) > offthreshold)
-                {
+                if (fabs(inputSampleR) > offthreshold) {
                     if (gaterollerR < ZeroCrossR) {
                         gaterollerR = ZeroCrossR;
                     }
@@ -564,8 +550,7 @@ class PunchyGuitar final : public Effect<T>
                 bip[bip_pvRD][x] = bip[bip_dvRD][x]; // snap
                 inputSampleR *= (1.0 + (fabs(bip[bip_dvRC][x]) * 0.0618) + (fabs(bip[bip_dvRD][x]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
             }
-            if (gaterollerR < 1.0)
-            {
+            if (gaterollerR < 1.0) {
                 gateR = gaterollerR;
                 double bridgerectifier = 1 - cos(fabs(inputSampleR));
                 if (inputSampleR > 0) {
