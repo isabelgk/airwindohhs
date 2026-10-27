@@ -434,4 +434,7 @@ def generate(project_root: Path, airwindows_root: Path, airwindopedia_path: Path
         except GrabError as e:
             print(f">>> Failure... {e}\n")
             failures.append((plugin, str(e)))
+        except Exception as e:
+            print(f">>> Crash... {type(e).__name__}: {e}\n")
+            failures.append((plugin, f"{type(e).__name__}: {e}"))
     return failures

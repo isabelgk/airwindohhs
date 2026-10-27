@@ -1,4 +1,5 @@
 import argparse
+import sys
 from pathlib import Path
 
 from scripts.grab.grabber import (existing_plugins_in_dirs, find_missing_plugins, find_recategorized_headers,
@@ -27,8 +28,8 @@ def parse_args(argv=None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--update-pin", action="store_true",
-        help="Rewrite airwindows-version.txt to the fetched ref after a fully successful run. "
-             "Only valid together with --airwindows-ref.",
+        help="Rewrite airwindows-version.txt to the fetched ref, unless any plugin failed to "
+             "generate. Only valid together with --airwindows-ref.",
     )
     parser.add_argument(
         "--plugin", action="append", default=None,
@@ -132,6 +133,12 @@ def main(argv=None):
             if header_path(project_root, title, categories[title]).exists():
                 for stale in stale_headers:
                     stale.unlink()
+
+        if failures:
+            print(f"{len(failures)} plugins failed:")
+            for title, message in failures:
+                print(f"  {title}: {message}")
+            sys.exit(1)
 
         if args.update_pin:
             write_version_pin(version_file, resolved_pin)
