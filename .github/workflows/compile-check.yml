@@ -13,10 +13,10 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y clang
 
-      - run: python3 scripts/check_compile.py --cxx clang++
+      - run: python3 -m scripts.check_compile --cxx clang++
 
       - run: |
-          python3 scripts/gen_meta.py
+          python3 -m scripts.gen_meta
           git diff --exit-code include/meta/registry.hpp
 
       - run: |

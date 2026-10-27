@@ -114,7 +114,7 @@ jobs:
       - if: steps.verify.outputs.generated == 'true'
         env:
           FILE: ${{ steps.verify.outputs.file }}
-        run: python3 scripts/check_compile.py --cxx clang++ "$FILE"
+        run: python3 -m scripts.check_compile --cxx clang++ "$FILE"
 
       - if: steps.verify.outputs.generated == 'true'
         env:
@@ -122,7 +122,7 @@ jobs:
         run: scripts/clang-format.sh "$FILE"
 
       - if: steps.verify.outputs.generated == 'true'
-        run: python3 scripts/gen_meta.py
+        run: python3 -m scripts.gen_meta
 
       - if: steps.verify.outputs.generated == 'true'
         env:
@@ -171,8 +171,8 @@ jobs:
       - if: steps.changed.outputs.count != '0'
         run: |
           xargs scripts/clang-format.sh < changed.txt
-          xargs python3 scripts/check_compile.py --cxx clang++ < changed.txt
-          python3 scripts/gen_meta.py
+          xargs python3 -m scripts.check_compile --cxx clang++ < changed.txt
+          python3 -m scripts.gen_meta
 
       - env:
           GH_TOKEN: ${{ secrets.AIRWINDOWS_BOT_TOKEN || github.token }}

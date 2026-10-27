@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Compile every generated plugin header to catch broken templates.
 
 Explicitly instantiates each plugin's class for float and double, since
@@ -8,44 +7,16 @@ instantiated (a bare #include does not catch this).
 
 import argparse
 import concurrent.futures
-import re
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-INCLUDE_DIR = REPO_ROOT / "include"
-
-CLASS_RE = re.compile(
-    r"namespace\s+airwindohhs::(\w+)"
-    r".*?"
-    r"template\s*<\s*typename\s+(\w+)\s*>\s*class\s+(\w+)\s+final\s*:\s*public\s+Effect<\2>",
-    re.DOTALL,
-)
-
-
-META_DIR = INCLUDE_DIR / "meta"
-
-
-def find_headers():
-    return sorted(
-        p
-        for p in INCLUDE_DIR.rglob("*.hpp")
-        if p.name != "effect.hpp" and p != INCLUDE_DIR / "meta.hpp" and META_DIR not in p.parents
-    )
-
-
-def extract_namespace_and_class(header):
-    match = CLASS_RE.search(header.read_text())
-    if not match:
-        return None
-    namespace, _template_param, class_name = match.groups()
-    return namespace, class_name
+from scripts.headers import INCLUDE_DIR, REPO_ROOT, find_headers, plugin_class
 
 
 def check_header(header, cxx):
-    extracted = extract_namespace_and_class(header)
+    extracted = plugin_class(header)
     if extracted is None:
         return header, False, "could not find 'namespace airwindohhs::X ... class Y final : public Effect<T>' pattern"
 

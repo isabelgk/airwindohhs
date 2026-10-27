@@ -74,7 +74,7 @@ rescans `include/**/*.hpp` and rewrites the registry from scratch, so it's
 always regenerated in full rather than updated incrementally:
 
 ```
-python3 scripts/gen_meta.py
+python3 -m scripts.gen_meta
 ```
 
 CI regenerates it and fails if the checked-in copy doesn't match, so it's
