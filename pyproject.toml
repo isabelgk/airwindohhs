@@ -16,3 +16,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["scripts"]
+
+[dependency-groups]
+dev = [
+    "clang-format==22.1.8",
+]
