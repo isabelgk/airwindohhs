@@ -144,9 +144,11 @@ jobs:
           uv run grab --refresh-changed \
             --airwindows-ref "${{ needs.detect.outputs.latest_sha }}" --update-pin
 
+      # A recategorized plugin shows up as a deleted header plus a new one.
       - id: changed
         run: |
-          git diff --name-only -- include/ > changed.txt
+          git add -A include/
+          git diff --cached --name-only --diff-filter=d -- include/ > changed.txt
           echo "count=$(wc -l < changed.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
       - if: steps.changed.outputs.count != '0'

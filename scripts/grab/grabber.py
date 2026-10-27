@@ -128,13 +128,27 @@ def existing_plugins_in_dirs(project_root: Path, categories: dict[str, str], sou
     }
 
 
+def find_headers(project_root: Path, title: str) -> list[Path]:
+    """Every generated header for `title`, under whichever category directory it was written to."""
+    slug = title.replace(" ", "").lower()
+    return [p for p in (project_root / "include").glob(f"*/{slug}.hpp") if p.parent.name != "meta"]
+
+
 def find_missing_plugins(project_root: Path, categories: dict[str, str]) -> list[str]:
-    """Plugin titles from `categories` that don't have a generated header yet."""
-    missing = []
+    """Plugin titles from `categories` that don't have a generated header in any category yet."""
+    return [title for title in categories if not find_headers(project_root, title)]
+
+
+def find_recategorized_headers(project_root: Path, categories: dict[str, str]) -> dict[str, list[Path]]:
+    """Titles whose header sits under a category other than the one `categories`
+    now assigns, mapped to those stale headers."""
+    stale = {}
     for title, category in categories.items():
-        if not header_path(project_root, title, category).exists():
-            missing.append(title)
-    return missing
+        current = header_path(project_root, title, category)
+        others = [p for p in find_headers(project_root, title) if p != current]
+        if others:
+            stale[title] = others
+    return stale
 
 
 def num_to_alpha(num: int) -> str:

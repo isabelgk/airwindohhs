@@ -1,7 +1,8 @@
 import argparse
 from pathlib import Path
 
-from scripts.grab.grabber import Grabber, existing_plugins_in_dirs, find_missing_plugins, plugin_categories
+from scripts.grab.grabber import (Grabber, existing_plugins_in_dirs, find_missing_plugins,
+                                  find_recategorized_headers, header_path, plugin_categories)
 from scripts.grab.source_fetch import UpstreamSource, VersionPin, changed_plugin_dirs, read_version_pin, write_version_pin
 
 
@@ -109,17 +110,27 @@ def main(argv=None):
             return
 
         plugin_filter = set(args.plugin) if args.plugin else None
+        recategorized = {}
         if args.refresh_changed:
             categories = plugin_categories(source.airwindopedia_path, source.plugin_source_dir)
             changed = changed_plugin_dirs(source.root, old_pin.ref)
-            plugin_filter = existing_plugins_in_dirs(project_root, categories, changed)
-            print(f"upstream changed {len(changed)} plugin dirs; refreshing {len(plugin_filter)} existing headers")
+            recategorized = find_recategorized_headers(project_root, categories)
+            plugin_filter = existing_plugins_in_dirs(project_root, categories, changed) | set(recategorized)
+            print(f"upstream changed {len(changed)} plugin dirs; refreshing {len(plugin_filter)} existing headers, "
+                  f"{len(recategorized)} of them recategorized")
             if not plugin_filter:
                 if args.update_pin:
                     write_version_pin(version_file, resolved_pin)
                 return
         category_filter = set(args.category) if args.category else None
         Grabber(project_root, source.plugin_source_dir, source.airwindopedia_path, plugin_filter, category_filter)
+
+        # Grabber logs and skips plugins it fails to generate, so a stale header
+        # is only removed once its replacement exists.
+        for title, stale_headers in recategorized.items():
+            if header_path(project_root, title, categories[title]).exists():
+                for stale in stale_headers:
+                    stale.unlink()
 
         if args.update_pin:
             write_version_pin(version_file, resolved_pin)
