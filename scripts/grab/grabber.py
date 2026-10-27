@@ -411,37 +411,27 @@ class Plugin:
             f.write(filled_template)
 
 
-class Grabber:
-    _project_root: Path
-    _airwindows_root: Path
-    _airwindopedia_path: Path
-    _template_header_path: Path
-    _categories: dict[str, str]
+def generate(project_root: Path, airwindows_root: Path, airwindopedia_path: Path,
+             plugin_filter: set[str] = None, category_filter: set[str] = None) -> list[tuple[str, str]]:
+    """Write a header for each selected plugin, returning (title, message) for each one that failed."""
+    if not os.path.exists(airwindows_root) or not os.path.exists(os.path.join(airwindows_root, "Aura")):
+        raise FileNotFoundError(f"Could not find airwindows plugin source at {airwindows_root} "
+                                "(expected a subdirectory per plugin, e.g. `Aura/`)")
+    if not os.path.exists(airwindopedia_path):
+        raise FileNotFoundError(f"Could not find Airwindopedia.txt at {airwindopedia_path}")
 
-    def __init__(self, project_root: Path, airwindows_root: Path, airwindopedia_path: Path,
-                 plugin_filter: set[str] = None, category_filter: set[str] = None):
-        self._project_root = project_root
-        self._airwindows_root = airwindows_root
-        if not os.path.exists(airwindows_root) or not os.path.exists(os.path.join(airwindows_root, "Aura")):
-            raise FileNotFoundError(f"Could not find airwindows plugin source at {airwindows_root} "
-                                    "(expected a subdirectory per plugin, e.g. `Aura/`)")
-        if not os.path.exists(airwindopedia_path):
-            raise FileNotFoundError(f"Could not find Airwindopedia.txt at {airwindopedia_path}")
-
-        self._airwindopedia_path = airwindopedia_path
-        self._template_header_path = Path(os.path.join(self._project_root, "scripts", "res", "template.hpp"))
-        self._categories = plugin_categories(airwindopedia_path, airwindows_root)
-        self._init_plugins(plugin_filter, category_filter)
-
-    def _init_plugins(self, plugin_filter: set[str] = None, category_filter: set[str] = None):
-        for plugin, category in self._categories.items():
-            if plugin_filter and plugin not in plugin_filter:
-                continue
-            if category_filter and category not in category_filter:
-                continue
-            try:
-                print(f"Writing {plugin} =====")
-                plug = Plugin(self._project_root, self._airwindows_root, self._airwindopedia_path, plugin, category)
-                plug.write(self._project_root, self._template_header_path)
-            except GrabError as e:
-                print(f">>> Failure... {e}\n")
+    template_header_path = Path(os.path.join(project_root, "scripts", "res", "template.hpp"))
+    failures = []
+    for plugin, category in plugin_categories(airwindopedia_path, airwindows_root).items():
+        if plugin_filter and plugin not in plugin_filter:
+            continue
+        if category_filter and category not in category_filter:
+            continue
+        try:
+            print(f"Writing {plugin} =====")
+            plug = Plugin(project_root, airwindows_root, airwindopedia_path, plugin, category)
+            plug.write(project_root, template_header_path)
+        except GrabError as e:
+            print(f">>> Failure... {e}\n")
+            failures.append((plugin, str(e)))
+    return failures

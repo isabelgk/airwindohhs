@@ -69,7 +69,7 @@ def _run(args: list[str], cwd: Path):
 class UpstreamSource:
     """Resolves the airwindows checkout root to read from -- either a fresh
     clone at a pinned ref, or a local escape-hatch path to an existing
-    checkout -- and exposes the two locations Grabber needs within it."""
+    checkout -- and exposes the two locations the generator needs within it."""
 
     def __init__(self, root: Path, temp_dir: Path = None, keep_temp: bool = False):
         self.root = root
