@@ -1,4 +1,3 @@
-import os.path
 import re
 import string
 from pathlib import Path
@@ -49,11 +48,6 @@ def resolve_source_title(airwindows_root: Path, title: str) -> str:
     if matches:
         return matches[0]
     raise GrabError(f"no source directory for {title} under {airwindows_root}")
-
-
-def make_missing_directory(path: Path):
-    if not path.exists():
-        os.mkdir(path)
 
 
 # Airwindopedia.txt's "XYZ Filters" category line has a typo joining two
@@ -255,8 +249,8 @@ class Plugin:
         self.short_description, self.long_description = self._init_descriptions(
             _DESCRIPTION_TITLE_ALIASES.get(listed_title, listed_title))
 
-        self.source_dir = Path(os.path.join(airwindows_root, source_title))
-        self.output_path = Path(os.path.join(project_root, "include", self.category, self.slug + ".hpp"))
+        self.source_dir = Path(airwindows_root) / source_title
+        self.output_path = header_path(project_root, self.title, self.category)
 
         # deferred import: clang_extractor imports GrabError/naive_line_filter from this module
         from scripts.grab.clang_extractor import PluginAst
@@ -346,10 +340,10 @@ class Plugin:
             # param-specific:
             "param_enum": self._param_enum(),
             "set_parameter_value_body": self.set_parameter_code,
-            "get_parameter_value_switch": self._param_get_value_switch(),
-            "get_parameter_default_switch": self._param_default_switch(),
-            "get_parameter_name_switch": self._param_name_switch(),
-            "get_parameter_title_switch": self._param_title_switch(),
+            "get_parameter_value_switch": self._param_switch(lambda p: p.member),
+            "get_parameter_default_switch": self._param_switch(lambda p: p.default_value),
+            "get_parameter_name_switch": self._param_switch(lambda p: f'"{escape_cpp_string(p.slug)}"'),
+            "get_parameter_title_switch": self._param_switch(lambda p: f'"{escape_cpp_string(p.title)}"'),
             "get_parameter_display_body": self.display_code,
             "get_parameter_label_body": self.label_code,
             "shadow_warnings_push": _SHADOW_WARNINGS_PUSH if self.shadows_members else "",
@@ -365,35 +359,13 @@ class Plugin:
         lines.append(f"kNumParameters = {len(self.parameters)}")
         return "".join(lines)
 
-    def _param_get_value_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return {param.member}; break;\n"
-            lines.append(line)
-        return "".join(lines)
+    def _param_switch(self, return_expr) -> str:
+        return "".join(
+            f"case {param.enum_name}: return {return_expr(param)}; break;\n"
+            for param in self.parameters.values()
+        )
 
-    def _param_default_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return {param.default_value}; break;\n"
-            lines.append(line)
-        return "".join(lines)
-
-    def _param_name_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return \"{escape_cpp_string(param.slug)}\"; break;\n"
-            lines.append(line)
-        return "".join(lines)
-
-    def _param_title_switch(self) -> str:
-        lines = []
-        for index, param in self.parameters.items():
-            line = f"case {param.enum_name}: return \"{escape_cpp_string(param.title)}\"; break;\n"
-            lines.append(line)
-        return "".join(lines)
-
-    def write(self, project_root: Path, template_header: Path):
+    def write(self, template_header: Path):
         with open(template_header, "r") as f:
             template = f.read()
         template = string.Template(template)
@@ -403,24 +375,21 @@ class Plugin:
         except KeyError:
             raise GrabError("Could not substitute template")
 
-        make_missing_directory(Path(os.path.join(project_root, "include")))
-        make_missing_directory(Path(os.path.join(project_root, "include", self.category)))
-
-        output_path = Path(os.path.join(project_root, "include", self.category, f"{self.slug}.hpp"))
-        with open(output_path, "w") as f:
+        self.output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.output_path, "w") as f:
             f.write(filled_template)
 
 
 def generate(project_root: Path, airwindows_root: Path, airwindopedia_path: Path,
              plugin_filter: set[str] = None, category_filter: set[str] = None) -> list[tuple[str, str]]:
     """Write a header for each selected plugin, returning (title, message) for each one that failed."""
-    if not os.path.exists(airwindows_root) or not os.path.exists(os.path.join(airwindows_root, "Aura")):
+    if not (Path(airwindows_root) / "Aura").exists():
         raise FileNotFoundError(f"Could not find airwindows plugin source at {airwindows_root} "
                                 "(expected a subdirectory per plugin, e.g. `Aura/`)")
-    if not os.path.exists(airwindopedia_path):
+    if not Path(airwindopedia_path).exists():
         raise FileNotFoundError(f"Could not find Airwindopedia.txt at {airwindopedia_path}")
 
-    template_header_path = Path(os.path.join(project_root, "scripts", "res", "template.hpp"))
+    template_header_path = project_root / "scripts" / "res" / "template.hpp"
     failures = []
     for plugin, category in plugin_categories(airwindopedia_path, airwindows_root).items():
         if plugin_filter and plugin not in plugin_filter:
@@ -430,7 +399,7 @@ def generate(project_root: Path, airwindows_root: Path, airwindopedia_path: Path
         try:
             print(f"Writing {plugin} =====")
             plug = Plugin(project_root, airwindows_root, airwindopedia_path, plugin, category)
-            plug.write(project_root, template_header_path)
+            plug.write(template_header_path)
         except GrabError as e:
             print(f">>> Failure... {e}\n")
             failures.append((plugin, str(e)))

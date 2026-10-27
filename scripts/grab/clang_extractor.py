@@ -1,5 +1,4 @@
 import functools
-import os.path
 import re
 import subprocess
 from pathlib import Path
@@ -267,9 +266,9 @@ class PluginAst:
 
     def __init__(self, source_dir: Path, title: str):
         self.title = title
-        self.cpp_path = Path(os.path.join(source_dir, f"{title}.cpp"))
-        self.h_path = Path(os.path.join(source_dir, f"{title}.h"))
-        self.proc_path = Path(os.path.join(source_dir, f"{title}Proc.cpp"))
+        self.cpp_path = source_dir / f"{title}.cpp"
+        self.h_path = source_dir / f"{title}.h"
+        self.proc_path = source_dir / f"{title}Proc.cpp"
 
         self.cpp_tu = parse_source(self.cpp_path)
         self.h_tu = parse_source(self.h_path)
