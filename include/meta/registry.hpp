@@ -17,6 +17,7 @@
 #include "ambience/chorusensemble.hpp"
 #include "ambience/clearcoat.hpp"
 #include "ambience/doublelay.hpp"
+#include "ambience/echojam.hpp"
 #include "ambience/ensemble.hpp"
 #include "ambience/hombre.hpp"
 #include "ambience/kchamberar.hpp"
@@ -467,7 +468,6 @@
 #include "uncategorized/consolexchannel.hpp"
 #include "uncategorized/consolexpre.hpp"
 #include "uncategorized/cstrip.hpp"
-#include "uncategorized/echojam.hpp"
 #include "uncategorized/pafnuty.hpp"
 #include "uncategorized/punchydeluxe.hpp"
 #include "uncategorized/punchyguitar.hpp"
@@ -603,6 +603,14 @@ inline std::unique_ptr<IPlugin<T>> make_doublelay()
     return std::make_unique<PluginAdapter<T, airwindohhs::doublelay::Doublelay>>(
         airwindohhs::doublelay::k_name, airwindohhs::doublelay::k_tags,
         airwindohhs::doublelay::k_short_description, airwindohhs::doublelay::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_echojam()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::echojam::Echojam>>(
+        airwindohhs::echojam::k_name, airwindohhs::echojam::k_tags,
+        airwindohhs::echojam::k_short_description, airwindohhs::echojam::k_long_description);
 }
 
 template <typename T>
@@ -4206,14 +4214,6 @@ inline std::unique_ptr<IPlugin<T>> make_cstrip()
 }
 
 template <typename T>
-inline std::unique_ptr<IPlugin<T>> make_echojam()
-{
-    return std::make_unique<PluginAdapter<T, airwindohhs::echojam::Echojam>>(
-        airwindohhs::echojam::k_name, airwindohhs::echojam::k_tags,
-        airwindohhs::echojam::k_short_description, airwindohhs::echojam::k_long_description);
-}
-
-template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_pafnuty()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::pafnuty::Pafnuty>>(
@@ -4785,6 +4785,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::chorusensemble::k_name, "chorusensemble", "ambience", airwindohhs::chorusensemble::k_tags, airwindohhs::chorusensemble::k_short_description, airwindohhs::chorusensemble::k_long_description, static_cast<int>(airwindohhs::chorusensemble::ChorusEnsemble<T>::kNumParameters), &make_chorusensemble<T> },
         { airwindohhs::clearcoat::k_name, "clearcoat", "ambience", airwindohhs::clearcoat::k_tags, airwindohhs::clearcoat::k_short_description, airwindohhs::clearcoat::k_long_description, static_cast<int>(airwindohhs::clearcoat::ClearCoat<T>::kNumParameters), &make_clearcoat<T> },
         { airwindohhs::doublelay::k_name, "doublelay", "ambience", airwindohhs::doublelay::k_tags, airwindohhs::doublelay::k_short_description, airwindohhs::doublelay::k_long_description, static_cast<int>(airwindohhs::doublelay::Doublelay<T>::kNumParameters), &make_doublelay<T> },
+        { airwindohhs::echojam::k_name, "echojam", "ambience", airwindohhs::echojam::k_tags, airwindohhs::echojam::k_short_description, airwindohhs::echojam::k_long_description, static_cast<int>(airwindohhs::echojam::Echojam<T>::kNumParameters), &make_echojam<T> },
         { airwindohhs::ensemble::k_name, "ensemble", "ambience", airwindohhs::ensemble::k_tags, airwindohhs::ensemble::k_short_description, airwindohhs::ensemble::k_long_description, static_cast<int>(airwindohhs::ensemble::Ensemble<T>::kNumParameters), &make_ensemble<T> },
         { airwindohhs::hombre::k_name, "hombre", "ambience", airwindohhs::hombre::k_tags, airwindohhs::hombre::k_short_description, airwindohhs::hombre::k_long_description, static_cast<int>(airwindohhs::hombre::Hombre<T>::kNumParameters), &make_hombre<T> },
         { airwindohhs::kchamberar::k_name, "kchamberar", "ambience", airwindohhs::kchamberar::k_tags, airwindohhs::kchamberar::k_short_description, airwindohhs::kchamberar::k_long_description, static_cast<int>(airwindohhs::kchamberar::kChamberAR<T>::kNumParameters), &make_kchamberar<T> },
@@ -5235,7 +5236,6 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::consolexchannel::k_name, "consolexchannel", "uncategorized", airwindohhs::consolexchannel::k_tags, airwindohhs::consolexchannel::k_short_description, airwindohhs::consolexchannel::k_long_description, static_cast<int>(airwindohhs::consolexchannel::ConsoleXChannel<T>::kNumParameters), &make_consolexchannel<T> },
         { airwindohhs::consolexpre::k_name, "consolexpre", "uncategorized", airwindohhs::consolexpre::k_tags, airwindohhs::consolexpre::k_short_description, airwindohhs::consolexpre::k_long_description, static_cast<int>(airwindohhs::consolexpre::ConsoleXPre<T>::kNumParameters), &make_consolexpre<T> },
         { airwindohhs::cstrip::k_name, "cstrip", "uncategorized", airwindohhs::cstrip::k_tags, airwindohhs::cstrip::k_short_description, airwindohhs::cstrip::k_long_description, static_cast<int>(airwindohhs::cstrip::CStrip<T>::kNumParameters), &make_cstrip<T> },
-        { airwindohhs::echojam::k_name, "echojam", "uncategorized", airwindohhs::echojam::k_tags, airwindohhs::echojam::k_short_description, airwindohhs::echojam::k_long_description, static_cast<int>(airwindohhs::echojam::Echojam<T>::kNumParameters), &make_echojam<T> },
         { airwindohhs::pafnuty::k_name, "pafnuty", "uncategorized", airwindohhs::pafnuty::k_tags, airwindohhs::pafnuty::k_short_description, airwindohhs::pafnuty::k_long_description, static_cast<int>(airwindohhs::pafnuty::Pafnuty<T>::kNumParameters), &make_pafnuty<T> },
         { airwindohhs::punchydeluxe::k_name, "punchydeluxe", "uncategorized", airwindohhs::punchydeluxe::k_tags, airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description, static_cast<int>(airwindohhs::punchydeluxe::PunchyDeluxe<T>::kNumParameters), &make_punchydeluxe<T> },
         { airwindohhs::punchyguitar::k_name, "punchyguitar", "uncategorized", airwindohhs::punchyguitar::k_tags, airwindohhs::punchyguitar::k_short_description, airwindohhs::punchyguitar::k_long_description, static_cast<int>(airwindohhs::punchyguitar::PunchyGuitar<T>::kNumParameters), &make_punchyguitar<T> },
