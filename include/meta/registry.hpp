@@ -474,6 +474,7 @@
 #include "uncategorized/purestconsole4buss.hpp"
 #include "uncategorized/purestconsole4channel.hpp"
 #include "uncategorized/spiral3.hpp"
+#include "uncategorized/ultralight3.hpp"
 #include "uncategorized/weave.hpp"
 #include "uncategorized/woodenchest.hpp"
 #include "utility/balanced.hpp"
@@ -4262,6 +4263,14 @@ inline std::unique_ptr<IPlugin<T>> make_spiral3()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_ultralight3()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::ultralight3::Ultralight3>>(
+        airwindohhs::ultralight3::k_name, airwindohhs::ultralight3::k_tags,
+        airwindohhs::ultralight3::k_short_description, airwindohhs::ultralight3::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_weave()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::weave::Weave>>(
@@ -5242,6 +5251,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::purestconsole4buss::k_name, "purestconsole4buss", "uncategorized", airwindohhs::purestconsole4buss::k_tags, airwindohhs::purestconsole4buss::k_short_description, airwindohhs::purestconsole4buss::k_long_description, static_cast<int>(airwindohhs::purestconsole4buss::PurestConsole4Buss<T>::kNumParameters), &make_purestconsole4buss<T> },
         { airwindohhs::purestconsole4channel::k_name, "purestconsole4channel", "uncategorized", airwindohhs::purestconsole4channel::k_tags, airwindohhs::purestconsole4channel::k_short_description, airwindohhs::purestconsole4channel::k_long_description, static_cast<int>(airwindohhs::purestconsole4channel::PurestConsole4Channel<T>::kNumParameters), &make_purestconsole4channel<T> },
         { airwindohhs::spiral3::k_name, "spiral3", "uncategorized", airwindohhs::spiral3::k_tags, airwindohhs::spiral3::k_short_description, airwindohhs::spiral3::k_long_description, static_cast<int>(airwindohhs::spiral3::Spiral3<T>::kNumParameters), &make_spiral3<T> },
+        { airwindohhs::ultralight3::k_name, "ultralight3", "uncategorized", airwindohhs::ultralight3::k_tags, airwindohhs::ultralight3::k_short_description, airwindohhs::ultralight3::k_long_description, static_cast<int>(airwindohhs::ultralight3::Ultralight3<T>::kNumParameters), &make_ultralight3<T> },
         { airwindohhs::weave::k_name, "weave", "uncategorized", airwindohhs::weave::k_tags, airwindohhs::weave::k_short_description, airwindohhs::weave::k_long_description, static_cast<int>(airwindohhs::weave::Weave<T>::kNumParameters), &make_weave<T> },
         { airwindohhs::woodenchest::k_name, "woodenchest", "uncategorized", airwindohhs::woodenchest::k_tags, airwindohhs::woodenchest::k_short_description, airwindohhs::woodenchest::k_long_description, static_cast<int>(airwindohhs::woodenchest::WoodenChest<T>::kNumParameters), &make_woodenchest<T> },
         { airwindohhs::balanced::k_name, "balanced", "utility", airwindohhs::balanced::k_tags, airwindohhs::balanced::k_short_description, airwindohhs::balanced::k_long_description, static_cast<int>(airwindohhs::balanced::Balanced<T>::kNumParameters), &make_balanced<T> },
