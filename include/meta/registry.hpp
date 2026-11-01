@@ -468,6 +468,7 @@
 #include "uncategorized/consolexchannel.hpp"
 #include "uncategorized/consolexpre.hpp"
 #include "uncategorized/cstrip.hpp"
+#include "uncategorized/fastdistance2.hpp"
 #include "uncategorized/pafnuty.hpp"
 #include "uncategorized/punchydeluxe.hpp"
 #include "uncategorized/punchyguitar.hpp"
@@ -4214,6 +4215,14 @@ inline std::unique_ptr<IPlugin<T>> make_cstrip()
 }
 
 template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_fastdistance2()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::fastdistance2::FastDistance2>>(
+        airwindohhs::fastdistance2::k_name, airwindohhs::fastdistance2::k_tags,
+        airwindohhs::fastdistance2::k_short_description, airwindohhs::fastdistance2::k_long_description);
+}
+
+template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_pafnuty()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::pafnuty::Pafnuty>>(
@@ -5236,6 +5245,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::consolexchannel::k_name, "consolexchannel", "uncategorized", airwindohhs::consolexchannel::k_tags, airwindohhs::consolexchannel::k_short_description, airwindohhs::consolexchannel::k_long_description, static_cast<int>(airwindohhs::consolexchannel::ConsoleXChannel<T>::kNumParameters), &make_consolexchannel<T> },
         { airwindohhs::consolexpre::k_name, "consolexpre", "uncategorized", airwindohhs::consolexpre::k_tags, airwindohhs::consolexpre::k_short_description, airwindohhs::consolexpre::k_long_description, static_cast<int>(airwindohhs::consolexpre::ConsoleXPre<T>::kNumParameters), &make_consolexpre<T> },
         { airwindohhs::cstrip::k_name, "cstrip", "uncategorized", airwindohhs::cstrip::k_tags, airwindohhs::cstrip::k_short_description, airwindohhs::cstrip::k_long_description, static_cast<int>(airwindohhs::cstrip::CStrip<T>::kNumParameters), &make_cstrip<T> },
+        { airwindohhs::fastdistance2::k_name, "fastdistance2", "uncategorized", airwindohhs::fastdistance2::k_tags, airwindohhs::fastdistance2::k_short_description, airwindohhs::fastdistance2::k_long_description, static_cast<int>(airwindohhs::fastdistance2::FastDistance2<T>::kNumParameters), &make_fastdistance2<T> },
         { airwindohhs::pafnuty::k_name, "pafnuty", "uncategorized", airwindohhs::pafnuty::k_tags, airwindohhs::pafnuty::k_short_description, airwindohhs::pafnuty::k_long_description, static_cast<int>(airwindohhs::pafnuty::Pafnuty<T>::kNumParameters), &make_pafnuty<T> },
         { airwindohhs::punchydeluxe::k_name, "punchydeluxe", "uncategorized", airwindohhs::punchydeluxe::k_tags, airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description, static_cast<int>(airwindohhs::punchydeluxe::PunchyDeluxe<T>::kNumParameters), &make_punchydeluxe<T> },
         { airwindohhs::punchyguitar::k_name, "punchyguitar", "uncategorized", airwindohhs::punchyguitar::k_tags, airwindohhs::punchyguitar::k_short_description, airwindohhs::punchyguitar::k_long_description, static_cast<int>(airwindohhs::punchyguitar::PunchyGuitar<T>::kNumParameters), &make_punchyguitar<T> },
