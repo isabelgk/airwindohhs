@@ -51,6 +51,7 @@
 #include "amp-sims/midamp.hpp"
 #include "amp-sims/pointydeluxe.hpp"
 #include "amp-sims/pointyguitar.hpp"
+#include "amp-sims/punchydeluxe.hpp"
 #include "amp-sims/wolfbot.hpp"
 #include "bass/basskit.hpp"
 #include "bass/dubcenter.hpp"
@@ -469,7 +470,6 @@
 #include "uncategorized/consolexpre.hpp"
 #include "uncategorized/cstrip.hpp"
 #include "uncategorized/pafnuty.hpp"
-#include "uncategorized/punchydeluxe.hpp"
 #include "uncategorized/punchyguitar.hpp"
 #include "uncategorized/purestconsole4buss.hpp"
 #include "uncategorized/purestconsole4channel.hpp"
@@ -875,6 +875,14 @@ inline std::unique_ptr<IPlugin<T>> make_pointyguitar()
     return std::make_unique<PluginAdapter<T, airwindohhs::pointyguitar::PointyGuitar>>(
         airwindohhs::pointyguitar::k_name, airwindohhs::pointyguitar::k_tags,
         airwindohhs::pointyguitar::k_short_description, airwindohhs::pointyguitar::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_punchydeluxe()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::punchydeluxe::PunchyDeluxe>>(
+        airwindohhs::punchydeluxe::k_name, airwindohhs::punchydeluxe::k_tags,
+        airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description);
 }
 
 template <typename T>
@@ -4222,14 +4230,6 @@ inline std::unique_ptr<IPlugin<T>> make_pafnuty()
 }
 
 template <typename T>
-inline std::unique_ptr<IPlugin<T>> make_punchydeluxe()
-{
-    return std::make_unique<PluginAdapter<T, airwindohhs::punchydeluxe::PunchyDeluxe>>(
-        airwindohhs::punchydeluxe::k_name, airwindohhs::punchydeluxe::k_tags,
-        airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description);
-}
-
-template <typename T>
 inline std::unique_ptr<IPlugin<T>> make_punchyguitar()
 {
     return std::make_unique<PluginAdapter<T, airwindohhs::punchyguitar::PunchyGuitar>>(
@@ -4819,6 +4819,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::midamp::k_name, "midamp", "amp-sims", airwindohhs::midamp::k_tags, airwindohhs::midamp::k_short_description, airwindohhs::midamp::k_long_description, static_cast<int>(airwindohhs::midamp::MidAmp<T>::kNumParameters), &make_midamp<T> },
         { airwindohhs::pointydeluxe::k_name, "pointydeluxe", "amp-sims", airwindohhs::pointydeluxe::k_tags, airwindohhs::pointydeluxe::k_short_description, airwindohhs::pointydeluxe::k_long_description, static_cast<int>(airwindohhs::pointydeluxe::PointyDeluxe<T>::kNumParameters), &make_pointydeluxe<T> },
         { airwindohhs::pointyguitar::k_name, "pointyguitar", "amp-sims", airwindohhs::pointyguitar::k_tags, airwindohhs::pointyguitar::k_short_description, airwindohhs::pointyguitar::k_long_description, static_cast<int>(airwindohhs::pointyguitar::PointyGuitar<T>::kNumParameters), &make_pointyguitar<T> },
+        { airwindohhs::punchydeluxe::k_name, "punchydeluxe", "amp-sims", airwindohhs::punchydeluxe::k_tags, airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description, static_cast<int>(airwindohhs::punchydeluxe::PunchyDeluxe<T>::kNumParameters), &make_punchydeluxe<T> },
         { airwindohhs::wolfbot::k_name, "wolfbot", "amp-sims", airwindohhs::wolfbot::k_tags, airwindohhs::wolfbot::k_short_description, airwindohhs::wolfbot::k_long_description, static_cast<int>(airwindohhs::wolfbot::Wolfbot<T>::kNumParameters), &make_wolfbot<T> },
         { airwindohhs::basskit::k_name, "basskit", "bass", airwindohhs::basskit::k_tags, airwindohhs::basskit::k_short_description, airwindohhs::basskit::k_long_description, static_cast<int>(airwindohhs::basskit::BassKit<T>::kNumParameters), &make_basskit<T> },
         { airwindohhs::dubcenter::k_name, "dubcenter", "bass", airwindohhs::dubcenter::k_tags, airwindohhs::dubcenter::k_short_description, airwindohhs::dubcenter::k_long_description, static_cast<int>(airwindohhs::dubcenter::DubCenter<T>::kNumParameters), &make_dubcenter<T> },
@@ -5237,7 +5238,6 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::consolexpre::k_name, "consolexpre", "uncategorized", airwindohhs::consolexpre::k_tags, airwindohhs::consolexpre::k_short_description, airwindohhs::consolexpre::k_long_description, static_cast<int>(airwindohhs::consolexpre::ConsoleXPre<T>::kNumParameters), &make_consolexpre<T> },
         { airwindohhs::cstrip::k_name, "cstrip", "uncategorized", airwindohhs::cstrip::k_tags, airwindohhs::cstrip::k_short_description, airwindohhs::cstrip::k_long_description, static_cast<int>(airwindohhs::cstrip::CStrip<T>::kNumParameters), &make_cstrip<T> },
         { airwindohhs::pafnuty::k_name, "pafnuty", "uncategorized", airwindohhs::pafnuty::k_tags, airwindohhs::pafnuty::k_short_description, airwindohhs::pafnuty::k_long_description, static_cast<int>(airwindohhs::pafnuty::Pafnuty<T>::kNumParameters), &make_pafnuty<T> },
-        { airwindohhs::punchydeluxe::k_name, "punchydeluxe", "uncategorized", airwindohhs::punchydeluxe::k_tags, airwindohhs::punchydeluxe::k_short_description, airwindohhs::punchydeluxe::k_long_description, static_cast<int>(airwindohhs::punchydeluxe::PunchyDeluxe<T>::kNumParameters), &make_punchydeluxe<T> },
         { airwindohhs::punchyguitar::k_name, "punchyguitar", "uncategorized", airwindohhs::punchyguitar::k_tags, airwindohhs::punchyguitar::k_short_description, airwindohhs::punchyguitar::k_long_description, static_cast<int>(airwindohhs::punchyguitar::PunchyGuitar<T>::kNumParameters), &make_punchyguitar<T> },
         { airwindohhs::purestconsole4buss::k_name, "purestconsole4buss", "uncategorized", airwindohhs::purestconsole4buss::k_tags, airwindohhs::purestconsole4buss::k_short_description, airwindohhs::purestconsole4buss::k_long_description, static_cast<int>(airwindohhs::purestconsole4buss::PurestConsole4Buss<T>::kNumParameters), &make_purestconsole4buss<T> },
         { airwindohhs::purestconsole4channel::k_name, "purestconsole4channel", "uncategorized", airwindohhs::purestconsole4channel::k_tags, airwindohhs::purestconsole4channel::k_short_description, airwindohhs::purestconsole4channel::k_long_description, static_cast<int>(airwindohhs::purestconsole4channel::PurestConsole4Channel<T>::kNumParameters), &make_purestconsole4channel<T> },
