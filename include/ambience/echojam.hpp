@@ -11,7 +11,7 @@ constexpr std::string_view k_short_description{
     "Echojam is an echo effect that is secretly a reverb."
 };
 constexpr std::string_view k_long_description{
-    "This doesn't have to be the guitar effect, but it totally can be! The idea is, do an echo effect like in many Pink Floyd, U2 etc etc. records, but instead of using a delay, use a strange failed reverb that gathers all the early delays into a single clump, like a slapback echo. This is because I started getting strange failed reverbs that were trying to be single echoes but blurring them. Rather than immediately fix it, I thought 'what if this could be echojam?' And it totally can. If you use a lot of regeneration, it will absolutely turn into a reverb watch. If you pick certain Select options (there are 17) you'll get a wild stereo effect, but it's no simple ping-pong. What you get is a scattering of 256 individual echoes not really lining up, not doing anything specific in stereo, but often doing very striking things in stereo. There is basically no proper speed control so that can't be adjusted. There is a speed control, but it's sample-locked Bezier undersampling, so it's got an okay tone (still a little odd when very undersampled) but there are only so many positions you can use. Not only that, there is no adjustment for sample rate this time, so you'll be setting it based on your sample rate meaning if you're at 96k (or 192k!) you'll have more speed options because they are subdivisions of the native sample rate. If you're at 44.1k you probably still have working echojam times on tap. Not only that, all the options have faintly different delay times because it works off the strange failed reverbs, not by design. So you have to echojam based on what you hear, because there's no specified tempo or even specific tempo: it's always some form of blur! A little like SoftClock, but in the form of an echojam. But if you can get it to gel, you've got a very lush spacey echojam that really fills up the space with detail, stereo event, and spatiality totally beyond a simple delay no matter how nice its texture is. And of course you can use it as a slapback (especially if you're at high sample rate and it can run real fast) or as a slow dark messy echo on something less rhythmic. You can even get it to do the trick where it makes a big roaring swoop up to a rhythmic sound at the (approximate) delay rate, and you'll be hard pressed to find a better choice for that… assuming you can get it to the right delay speed, or alternately tune your rhythmic thing until it matches Echojam. Echojam ought to be a lot of fun for those who know. And now you know :)"
+    "This doesn't have to be the guitar effect, but it totally can be! The idea is, do an echo effect like in many Pink Floyd, U2 etc etc. records, but instead of using a delay, use a strange failed reverb that gathers all the early delays into a single clump, like a slapback echo. This is because I started getting strange failed reverbs that were trying to be single echoes but blurring them. Rather than immediately fix it, I thought 'what if this could be echojam?' And it totally can. If you use a lot of regeneration, it will absolutely turn into a reverb wash. If you pick certain Select options (there are 17) you'll get a wild stereo effect, but it's no simple ping-pong. What you get is a scattering of 256 individual echoes not really lining up, not doing anything specific in stereo, but often doing very striking things in stereo. There is basically no proper speed control so that can't be adjusted. There is a speed control, but it's sample-locked Bezier undersampling, so it's got an okay tone (still a little odd when very undersampled) but there are only so many positions you can use. Not only that, there is no adjustment for sample rate this time, so you'll be setting it based on your sample rate meaning if you're at 96k (or 192k!) you'll have more speed options because they are subdivisions of the native sample rate. If you're at 44.1k you probably still have working echojam times on tap. Not only that, all the options have faintly different delay times because it works off the strange failed reverbs, not by design. So you have to echojam based on what you hear, because there's no specified tempo or even specific tempo: it's always some form of blur! A little like SoftClock, but in the form of an echojam. But if you can get it to gel, you've got a very lush spacey echojam that really fills up the space with detail, stereo event, and spatiality totally beyond a simple delay no matter how nice its texture is. And of course you can use it as a slapback (especially if you're at high sample rate and it can run real fast) or as a slow dark messy echo on something less rhythmic. You can even get it to do the trick where it makes a big roaring swoop up to a rhythmic sound at the (approximate) delay rate, and you'll be hard pressed to find a better choice for that… assuming you can get it to the right delay speed, or alternately tune your rhythmic thing until it matches Echojam. Echojam ought to be a lot of fun for those who know. And now you know :)"
 };
 constexpr std::string_view k_tags{
     "ambience"
@@ -750,14 +750,14 @@ class Echojam final : public Effect<T>
                 // left verbs
                 inputSampleL = bez[bez_SampL];
                 inputSampleR = bez[bez_SampR];
-                lA[cLA] = fma(fAL, regen, inputSampleL);
-                lB[cLB] = fma(fBL, regen, inputSampleL);
-                lC[cLC] = fma(fCL, regen, inputSampleL);
-                lD[cLD] = fma(fDL, regen, inputSampleL);
-                rD[cRD] = fma(fDR, regen, inputSampleR);
-                rH[cRH] = fma(fHR, regen, inputSampleR);
-                rL[cRL] = fma(fLR, regen, inputSampleR);
-                rP[cRP] = fma(fPR, regen, inputSampleR);
+                lA[cLA] = fAL * regen + inputSampleL;
+                lB[cLB] = fBL * regen + inputSampleL;
+                lC[cLC] = fCL * regen + inputSampleL;
+                lD[cLD] = fDL * regen + inputSampleL;
+                rD[cRD] = fDR * regen + inputSampleR;
+                rH[cRH] = fHR * regen + inputSampleR;
+                rL[cRL] = fLR * regen + inputSampleR;
+                rP[cRP] = fPR * regen + inputSampleR;
                 cLA++;
                 cLB++;
                 cLC++;
@@ -800,14 +800,14 @@ class Echojam final : public Effect<T>
                 hDR = rP[cRP];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                lE[cLE] = fma(hAL, 2.0f, hEL);
-                lF[cLF] = fma(hBL, 2.0f, hEL);
-                lG[cLG] = fma(hCL, 2.0f, hEL);
-                lH[cLH] = fma(hDL, 2.0f, hEL);
-                rC[cRC] = fma(hAR, 2.0f, hER);
-                rG[cRG] = fma(hBR, 2.0f, hER);
-                rK[cRK] = fma(hCR, 2.0f, hER);
-                rO[cRO] = fma(hDR, 2.0f, hER);
+                lE[cLE] = hAL * 2.0f + hEL;
+                lF[cLF] = hBL * 2.0f + hEL;
+                lG[cLG] = hCL * 2.0f + hEL;
+                lH[cLH] = hDL * 2.0f + hEL;
+                rC[cRC] = hAR * 2.0f + hER;
+                rG[cRG] = hBR * 2.0f + hER;
+                rK[cRK] = hCR * 2.0f + hER;
+                rO[cRO] = hDR * 2.0f + hER;
                 cLE++;
                 cLF++;
                 cLG++;
@@ -850,14 +850,14 @@ class Echojam final : public Effect<T>
                 hDR = rO[cRO];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                lI[cLI] = fma(hAL, 2.0f, hEL);
-                lJ[cLJ] = fma(hBL, 2.0f, hEL);
-                lK[cLK] = fma(hCL, 2.0f, hEL);
-                lL[cLL] = fma(hDL, 2.0f, hEL);
-                rB[cRB] = fma(hAR, 2.0f, hER);
-                rF[cRF] = fma(hBR, 2.0f, hER);
-                rJ[cRJ] = fma(hCR, 2.0f, hER);
-                rN[cRN] = fma(hDR, 2.0f, hER);
+                lI[cLI] = hAL * 2.0f + hEL;
+                lJ[cLJ] = hBL * 2.0f + hEL;
+                lK[cLK] = hCL * 2.0f + hEL;
+                lL[cLL] = hDL * 2.0f + hEL;
+                rB[cRB] = hAR * 2.0f + hER;
+                rF[cRF] = hBR * 2.0f + hER;
+                rJ[cRJ] = hCR * 2.0f + hER;
+                rN[cRN] = hDR * 2.0f + hER;
                 cLI++;
                 cLJ++;
                 cLK++;
@@ -900,14 +900,14 @@ class Echojam final : public Effect<T>
                 hDR = rN[cRN];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                lM[cLM] = fma(hAL, 2.0f, hEL);
-                lN[cLN] = fma(hBL, 2.0f, hEL);
-                lO[cLO] = fma(hCL, 2.0f, hEL);
-                lP[cLP] = fma(hDL, 2.0f, hEL);
-                rA[cRA] = fma(hAR, 2.0f, hER);
-                rE[cRE] = fma(hBR, 2.0f, hER);
-                rI[cRI] = fma(hCR, 2.0f, hER);
-                rM[cRM] = fma(hDR, 2.0f, hER);
+                lM[cLM] = hAL * 2.0f + hEL;
+                lN[cLN] = hBL * 2.0f + hEL;
+                lO[cLO] = hCL * 2.0f + hEL;
+                lP[cLP] = hDL * 2.0f + hEL;
+                rA[cRA] = hAR * 2.0f + hER;
+                rE[cRE] = hBR * 2.0f + hER;
+                rI[cRI] = hCR * 2.0f + hER;
+                rM[cRM] = hDR * 2.0f + hER;
                 cLM++;
                 cLN++;
                 cLO++;
@@ -950,14 +950,14 @@ class Echojam final : public Effect<T>
                 hDR = rM[cRM];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                fAL = fma(hAR, 2.0f, hER);
-                fBL = fma(hBR, 2.0f, hER);
-                fCL = fma(hCR, 2.0f, hER);
-                fDL = fma(hDR, 2.0f, hER);
-                fDR = fma(hAL, 2.0f, hEL);
-                fHR = fma(hBL, 2.0f, hEL);
-                fLR = fma(hCL, 2.0f, hEL);
-                fPR = fma(hDL, 2.0f, hEL);
+                fAL = hAR * 2.0f + hER;
+                fBL = hBR * 2.0f + hER;
+                fCL = hCR * 2.0f + hER;
+                fDL = hDR * 2.0f + hER;
+                fDR = hAL * 2.0f + hEL;
+                fHR = hBL * 2.0f + hEL;
+                fLR = hCL * 2.0f + hEL;
+                fPR = hDL * 2.0f + hEL;
                 inputSampleL = (hAL + hBL + hCL + hDL) * 0.0625f;
                 inputSampleR = (hAR + hBR + hCR + hDR) * 0.0625f;
                 bez[bez_CL] = bez[bez_BL];
