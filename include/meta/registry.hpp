@@ -51,6 +51,7 @@
 #include "amp-sims/midamp.hpp"
 #include "amp-sims/pointydeluxe.hpp"
 #include "amp-sims/pointyguitar.hpp"
+#include "amp-sims/punchydeluxe2.hpp"
 #include "amp-sims/wolfbot.hpp"
 #include "bass/basskit.hpp"
 #include "bass/dubcenter.hpp"
@@ -875,6 +876,14 @@ inline std::unique_ptr<IPlugin<T>> make_pointyguitar()
     return std::make_unique<PluginAdapter<T, airwindohhs::pointyguitar::PointyGuitar>>(
         airwindohhs::pointyguitar::k_name, airwindohhs::pointyguitar::k_tags,
         airwindohhs::pointyguitar::k_short_description, airwindohhs::pointyguitar::k_long_description);
+}
+
+template <typename T>
+inline std::unique_ptr<IPlugin<T>> make_punchydeluxe2()
+{
+    return std::make_unique<PluginAdapter<T, airwindohhs::punchydeluxe2::PunchyDeluxe2>>(
+        airwindohhs::punchydeluxe2::k_name, airwindohhs::punchydeluxe2::k_tags,
+        airwindohhs::punchydeluxe2::k_short_description, airwindohhs::punchydeluxe2::k_long_description);
 }
 
 template <typename T>
@@ -4819,6 +4828,7 @@ inline const std::vector<PluginEntry<T>>& all_plugins()
         { airwindohhs::midamp::k_name, "midamp", "amp-sims", airwindohhs::midamp::k_tags, airwindohhs::midamp::k_short_description, airwindohhs::midamp::k_long_description, static_cast<int>(airwindohhs::midamp::MidAmp<T>::kNumParameters), &make_midamp<T> },
         { airwindohhs::pointydeluxe::k_name, "pointydeluxe", "amp-sims", airwindohhs::pointydeluxe::k_tags, airwindohhs::pointydeluxe::k_short_description, airwindohhs::pointydeluxe::k_long_description, static_cast<int>(airwindohhs::pointydeluxe::PointyDeluxe<T>::kNumParameters), &make_pointydeluxe<T> },
         { airwindohhs::pointyguitar::k_name, "pointyguitar", "amp-sims", airwindohhs::pointyguitar::k_tags, airwindohhs::pointyguitar::k_short_description, airwindohhs::pointyguitar::k_long_description, static_cast<int>(airwindohhs::pointyguitar::PointyGuitar<T>::kNumParameters), &make_pointyguitar<T> },
+        { airwindohhs::punchydeluxe2::k_name, "punchydeluxe2", "amp-sims", airwindohhs::punchydeluxe2::k_tags, airwindohhs::punchydeluxe2::k_short_description, airwindohhs::punchydeluxe2::k_long_description, static_cast<int>(airwindohhs::punchydeluxe2::PunchyDeluxe2<T>::kNumParameters), &make_punchydeluxe2<T> },
         { airwindohhs::wolfbot::k_name, "wolfbot", "amp-sims", airwindohhs::wolfbot::k_tags, airwindohhs::wolfbot::k_short_description, airwindohhs::wolfbot::k_long_description, static_cast<int>(airwindohhs::wolfbot::Wolfbot<T>::kNumParameters), &make_wolfbot<T> },
         { airwindohhs::basskit::k_name, "basskit", "bass", airwindohhs::basskit::k_tags, airwindohhs::basskit::k_short_description, airwindohhs::basskit::k_long_description, static_cast<int>(airwindohhs::basskit::BassKit<T>::kNumParameters), &make_basskit<T> },
         { airwindohhs::dubcenter::k_name, "dubcenter", "bass", airwindohhs::dubcenter::k_tags, airwindohhs::dubcenter::k_short_description, airwindohhs::dubcenter::k_long_description, static_cast<int>(airwindohhs::dubcenter::DubCenter<T>::kNumParameters), &make_dubcenter<T> },
