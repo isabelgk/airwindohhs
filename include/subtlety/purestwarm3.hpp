@@ -164,7 +164,7 @@ class PurestWarm3 final : public Effect<T>
             if (asym != 0.0) {
                 double bip_delta = inputSampleL; // delta can be just local and re-used
                 inputSampleL *= asym;
-                inputSampleL = fma(((inputSampleL * inputSampleL) * -0.166666666666666), (inputSampleL * inputSampleL), inputSampleL);
+                inputSampleL = ((inputSampleL * inputSampleL) * -0.166666666666666) * (inputSampleL * inputSampleL) + inputSampleL;
                 inputSampleL /= asym;
                 bip[bip_dvLA] = bip_delta - inputSampleL; // these are derivatives: raw clip is position
                 bip[bip_dvLB] = bip[bip_pvLA] - bip[bip_dvLA];
@@ -178,7 +178,7 @@ class PurestWarm3 final : public Effect<T>
                 inputSampleL *= (1.0 + (fabs(bip[bip_dvLC]) * 0.0618) + (fabs(bip[bip_dvLD]) * -0.05982) + (fabs(bip_dvE) * 0.0206));
                 bip_delta = inputSampleR; // delta can be just local and re-used
                 inputSampleR *= asym;
-                inputSampleR = fma(((inputSampleR * inputSampleR) * -0.166666666666666), (inputSampleR * inputSampleR), inputSampleR);
+                inputSampleR = ((inputSampleR * inputSampleR) * -0.166666666666666) * (inputSampleR * inputSampleR) + inputSampleR;
                 inputSampleR /= asym;
                 bip[bip_dvRA] = bip_delta - inputSampleR; // these are derivatives: raw clip is position
                 bip[bip_dvRB] = bip[bip_pvRA] - bip[bip_dvRA];
