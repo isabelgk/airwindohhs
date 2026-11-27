@@ -8,13 +8,13 @@ namespace airwindohhs::woodenchest {
 
 constexpr std::string_view k_name{ "WoodenChest" };
 constexpr std::string_view k_short_description{
-    ""
+    "WoodenChest is like a slightly larger reverb for converting DI to acoustic."
 };
 constexpr std::string_view k_long_description{
-    ""
+    "The request was for a plugin like WoodenBox to improve the sound of an upright bass, presumably recorded without enough oomph, perhaps through a piezo bridge pickup. Thing is, WoodenBox wasn't simply a 'acoustic guitar-ifier'. It doesn't specifically have any guitar-body elements. It's not an IR. It's a tiny ambience… so tiny, it's like a room the size of a large box. It's not even wooden, technically! That would be a limiting factor, but there isn't anything but ambience, done the way I do small reverbs. Going slightly larger wasn't a challenge… but it unlocked some very interesting spaces. It's not surprising that it takes bad DAW pianos and makes them sound more physical. What I didn't expect was taking DI Fender Rhodes, a real one, and making that sound like a record. I think of DI Rhodes as already being an acceptable sound, even a great one, but the next thing you know it sounds realer, more like itself, solid. I tried already-miked amp tones. They turned floofier, peeled themselves off the speakers and picked up a texture that was like what I'd expect a miked amp's speaker to sound like. I could make it lose all definition, or bring it as much as I liked, just with the dry/wet control. Tried it with PunchyDeluxe2 last week. By itself, all the super-highs came through. In conjunction with Cabs2, I got a sound that was as amp-like as anything I've ever made, including miking real amps. I feel certain that if I need to hunt down an EVH-like tone to test out a future Sunset Chamber sound, I'd be using this as part of the recipe. But it doesn't stop there. I've got some odd little synth sound-makers. Bastl Kastles and Drums, a preview of the sndstation: anything like that, no matter how crass its raw tone is, you just throw WoodenChest on it and find a size/tone you like. Suddenly it has a new shape and physicality that sits alongside other recordings more gracefully, even if they're good. I could take a wooden tray with a piezo, drum on it with my fingers, and turn that into a proper percussion instrument with WoodenChest. I could tap on a tiny aluminum box with a piezo and turn that into an amazing, powerful kick drum with WoodenChest. And it still wouldn't necessarily sound 'wooden', but it'll sound cool :)"
 };
 constexpr std::string_view k_tags{
-    "uncategorized"
+    "tone-color"
 };
 
 template <typename T>
@@ -740,14 +740,14 @@ class WoodenChest final : public Effect<T>
                 // left verbs
                 inputSampleL = bez[bez_SampL];
                 inputSampleR = bez[bez_SampR];
-                lA[cLA] = fma(fAL, regen, inputSampleL);
-                lB[cLB] = fma(fBL, regen, inputSampleL);
-                lC[cLC] = fma(fCL, regen, inputSampleL);
-                lD[cLD] = fma(fDL, regen, inputSampleL);
-                rD[cRD] = fma(fDR, regen, inputSampleR);
-                rH[cRH] = fma(fHR, regen, inputSampleR);
-                rL[cRL] = fma(fLR, regen, inputSampleR);
-                rP[cRP] = fma(fPR, regen, inputSampleR);
+                lA[cLA] = fAL * regen + inputSampleL;
+                lB[cLB] = fBL * regen + inputSampleL;
+                lC[cLC] = fCL * regen + inputSampleL;
+                lD[cLD] = fDL * regen + inputSampleL;
+                rD[cRD] = fDR * regen + inputSampleR;
+                rH[cRH] = fHR * regen + inputSampleR;
+                rL[cRL] = fLR * regen + inputSampleR;
+                rP[cRP] = fPR * regen + inputSampleR;
                 cLA++;
                 cLB++;
                 cLC++;
@@ -790,14 +790,14 @@ class WoodenChest final : public Effect<T>
                 hDR = rP[cRP];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                lE[cLE] = fma(hAL, 2.0f, hEL);
-                lF[cLF] = fma(hBL, 2.0f, hEL);
-                lG[cLG] = fma(hCL, 2.0f, hEL);
-                lH[cLH] = fma(hDL, 2.0f, hEL);
-                rC[cRC] = fma(hAR, 2.0f, hER);
-                rG[cRG] = fma(hBR, 2.0f, hER);
-                rK[cRK] = fma(hCR, 2.0f, hER);
-                rO[cRO] = fma(hDR, 2.0f, hER);
+                lE[cLE] = hAL * 2.0f + hEL;
+                lF[cLF] = hBL * 2.0f + hEL;
+                lG[cLG] = hCL * 2.0f + hEL;
+                lH[cLH] = hDL * 2.0f + hEL;
+                rC[cRC] = hAR * 2.0f + hER;
+                rG[cRG] = hBR * 2.0f + hER;
+                rK[cRK] = hCR * 2.0f + hER;
+                rO[cRO] = hDR * 2.0f + hER;
                 cLE++;
                 cLF++;
                 cLG++;
@@ -840,14 +840,14 @@ class WoodenChest final : public Effect<T>
                 hDR = rO[cRO];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                lI[cLI] = fma(hAL, 2.0f, hEL);
-                lJ[cLJ] = fma(hBL, 2.0f, hEL);
-                lK[cLK] = fma(hCL, 2.0f, hEL);
-                lL[cLL] = fma(hDL, 2.0f, hEL);
-                rB[cRB] = fma(hAR, 2.0f, hER);
-                rF[cRF] = fma(hBR, 2.0f, hER);
-                rJ[cRJ] = fma(hCR, 2.0f, hER);
-                rN[cRN] = fma(hDR, 2.0f, hER);
+                lI[cLI] = hAL * 2.0f + hEL;
+                lJ[cLJ] = hBL * 2.0f + hEL;
+                lK[cLK] = hCL * 2.0f + hEL;
+                lL[cLL] = hDL * 2.0f + hEL;
+                rB[cRB] = hAR * 2.0f + hER;
+                rF[cRF] = hBR * 2.0f + hER;
+                rJ[cRJ] = hCR * 2.0f + hER;
+                rN[cRN] = hDR * 2.0f + hER;
                 cLI++;
                 cLJ++;
                 cLK++;
@@ -890,14 +890,14 @@ class WoodenChest final : public Effect<T>
                 hDR = rN[cRN];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                lM[cLM] = fma(hAL, 2.0f, hEL);
-                lN[cLN] = fma(hBL, 2.0f, hEL);
-                lO[cLO] = fma(hCL, 2.0f, hEL);
-                lP[cLP] = fma(hDL, 2.0f, hEL);
-                rA[cRA] = fma(hAR, 2.0f, hER);
-                rE[cRE] = fma(hBR, 2.0f, hER);
-                rI[cRI] = fma(hCR, 2.0f, hER);
-                rM[cRM] = fma(hDR, 2.0f, hER);
+                lM[cLM] = hAL * 2.0f + hEL;
+                lN[cLN] = hBL * 2.0f + hEL;
+                lO[cLO] = hCL * 2.0f + hEL;
+                lP[cLP] = hDL * 2.0f + hEL;
+                rA[cRA] = hAR * 2.0f + hER;
+                rE[cRE] = hBR * 2.0f + hER;
+                rI[cRI] = hCR * 2.0f + hER;
+                rM[cRM] = hDR * 2.0f + hER;
                 cLM++;
                 cLN++;
                 cLO++;
@@ -940,14 +940,14 @@ class WoodenChest final : public Effect<T>
                 hDR = rM[cRM];
                 hEL = -(hAL + hBL + hCL + hDL);
                 hER = -(hAR + hBR + hCR + hDR);
-                fAL = fma(hAR, 2.0f, hER);
-                fBL = fma(hBR, 2.0f, hER);
-                fCL = fma(hCR, 2.0f, hER);
-                fDL = fma(hDR, 2.0f, hER);
-                fDR = fma(hAL, 2.0f, hEL);
-                fHR = fma(hBL, 2.0f, hEL);
-                fLR = fma(hCL, 2.0f, hEL);
-                fPR = fma(hDL, 2.0f, hEL);
+                fAL = hAR * 2.0f + hER;
+                fBL = hBR * 2.0f + hER;
+                fCL = hCR * 2.0f + hER;
+                fDL = hDR * 2.0f + hER;
+                fDR = hAL * 2.0f + hEL;
+                fHR = hBL * 2.0f + hEL;
+                fLR = hCL * 2.0f + hEL;
+                fPR = hDL * 2.0f + hEL;
                 inputSampleL = (hAL + hBL + hCL + hDL) * 0.0625f;
                 inputSampleR = (hAR + hBR + hCR + hDR) * 0.0625f;
                 bez[bez_CL] = bez[bez_BL];
